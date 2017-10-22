@@ -6,6 +6,7 @@ from django.core. validators import RegexValidator
 
 from utils.django_base import BaseModel
 
+
 # Create your models here.
 class ParkingLotType(BaseModel):
     number = models.IntegerField(primary_key=True, verbose_name="駐車場分類No.",
@@ -37,3 +38,9 @@ class ParkingTimeLimit(BaseModel):
 
     def __unicode__(self):
         return self.name
+
+
+class BankCode(BaseModel):
+    code = models.CharField(max_length=4, verbose_name="金融機関コード")
+    name = models.CharField(max_length=30, verbose_name="金融機関名称")
+    kana = models.CharField(max_length=30, verbose_name="金融機関カナ")

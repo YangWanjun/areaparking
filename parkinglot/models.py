@@ -9,6 +9,7 @@ from django.core. validators import RegexValidator
 from master.models import ParkingLotType, ParkingTimeLimit
 from utils.django_base import BaseModel
 
+
 # Create your models here.
 class Company(BaseModel):
     name = models.CharField(unique=True, max_length=30, verbose_name=u"会社名")
