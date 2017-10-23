@@ -25,7 +25,7 @@ SECRET_KEY = 'vkycdut2t=c01f+su75#1d+87y)wn)(arx&^nu-^iw7dgl_izk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.99.100', 'localhost', '127.0.0.1', '*.e-business.co.jp']
 APPEND_SLASH = True
 
 # Application definition
