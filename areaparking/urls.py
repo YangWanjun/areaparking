@@ -27,4 +27,4 @@ urlpatterns = [
     url(r'', include(frontend_urls)),
     # url(r'^admin/login/$', auth_views.logout, name="logout"),
     url(r'^admin/login/$', auth_views.login, name="login"),
-] + static(settings.STATIC_URL, document_root=settings.MEDIA_ROOT)
+] # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

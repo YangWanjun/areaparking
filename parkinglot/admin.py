@@ -16,6 +16,7 @@ class ParkingPositionInline(admin.TabularInline):
 
 @admin.register(models.ParkingLot)
 class ParkingLotAdmin(BaseAdmin):
+    icon = '<i class="material-icons">local_parking</i>'
     list_display = ('code', 'name', 'segment', 'pref_name', 'city_name', 'town_name')
     list_display_links = ('name',)
     search_fields = ('code', 'name')

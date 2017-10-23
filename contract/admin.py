@@ -11,6 +11,7 @@ from utils.django_base import BaseAdmin
 
 @admin.register(models.Contractor)
 class ContractorAdmin(BaseAdmin):
+    icon = '<i class="material-icons">nature_people</i>'
     list_display = ('code', 'name', 'segment', 'personal_address1', 'personal_address2')
     list_display_links = ('code', 'name')
     search_fields = ('code', 'name')
