@@ -101,7 +101,6 @@ ENV/
 .mypy_cache/
 
 .idea*
-migrations/
 .idea/areaparking.iml
 .idea/dbnavigator.xml
 .idea/misc.xml
