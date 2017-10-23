@@ -10,26 +10,26 @@ from utils import constants
 
 # Create your models here.
 class Contractor(BaseModel):
-    number = models.IntegerField(
+    code = models.IntegerField(
         verbose_name="契約者No.", unique=True,
-        validators=(RegexValidator(regex=r'^\d{8}$'),)
+        validators=(RegexValidator(regex=r'^\d{1,8}$'),)
     )
-    name = models.CharField(max_length=15, verbose_name="名前")
-    kana = models.CharField(max_length=15, verbose_name="カナ")
     segment = models.CharField(max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE, verbose_name="契約者分類")
     # 個人情報
-    gender = models.CharField(max_length=1, choices=constants.CHOICE_GENDER, verbose_name="性別")
+    name = models.CharField(max_length=15, blank=True, null=True, verbose_name="名前")
+    kana = models.CharField(max_length=15, blank=True, null=True, verbose_name="カナ")
+    gender = models.CharField(max_length=1, blank=True, null=True, choices=constants.CHOICE_GENDER, verbose_name="性別")
+    personal_birthday = models.DateField(blank=True, null=True, verbose_name="生年月日", help_text="法人の場合は設立年月日")
     personal_post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name=u"郵便番号")
     personal_address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所１")
     personal_address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所２")
     personal_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
     personal_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"ファックス")
     personal_email = models.EmailField(blank=True, null=True, verbose_name="メールアドレス")
-    personal_birthday = models.DateField(blank=True, null=True, verbose_name="生年月日", help_text="法人の場合は設立年月日")
     personal_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
     # 法人情報
-    web_site = models.URLField(blank=True, null=True, verbose_name="ホームページ")
     business_type = models.CharField(max_length=50, blank=True, null=True, verbose_name="業種／事業")
+    web_site = models.URLField(blank=True, null=True, verbose_name="ホームページ")
     president = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"代表者名")
     staff_name = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"担当者名")
     staff_department = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者所属")
@@ -76,3 +76,12 @@ class Contractor(BaseModel):
     guarantor_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"保証人ファックス")
     guarantor_relation = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人との間柄")
     guarantor_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+
+    class Meta:
+        db_table = 'ap_contractor'
+        ordering = ['name']
+        verbose_name = "契約者"
+        verbose_name_plural = "契約者一覧"
+
+    def __unicode__(self):
+        return self.name

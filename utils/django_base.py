@@ -1,7 +1,10 @@
 # -*- coding: utf8 -*-
 from __future__ import unicode_literals
+import datetime
 
+from django.contrib import admin
 from django.db import models
+from django import forms
 
 
 class PublicManager(models.Manager):
@@ -38,3 +41,16 @@ class BaseModel(models.Model):
         self.is_deleted = True
         self.deleted_date = datetime.datetime.now()
         self.save()
+
+
+class BaseAdmin(admin.ModelAdmin):
+
+    def get_actions(self, request):
+        actions = super(BaseAdmin, self).get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
+
+class BaseForm(forms.ModelForm):
+    pass

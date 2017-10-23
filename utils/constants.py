@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 
+SYSTEM_NAME = "エリアパーキング"
+
 CHOICE_CONTRACTOR_TYPE = (
     ('1', '個人'),
     ('2', '法人'),
