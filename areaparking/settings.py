@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'parkinglot.apps.ParkinglotConfig',
     'master.apps.MasterConfig',
     'contract.apps.ContractConfig',
+    'whiteboard.apps.WhiteboardConfig',
 ]
 
 MIDDLEWARE = [

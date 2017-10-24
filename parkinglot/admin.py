@@ -11,6 +11,11 @@ from utils.django_base import BaseAdmin
 # Register your models here.
 class ParkingPositionInline(admin.TabularInline):
     model = models.ParkingPosition
+    extra = 0
+
+
+class ParkingLotImageInline(admin.TabularInline):
+    model = models.ParkingLotImage
     extra = 1
 
 
@@ -32,7 +37,7 @@ class ParkingLotAdmin(BaseAdmin):
         ('car_count', 'bike_count'),
         'comment'
     )
-    inlines = (ParkingPositionInline,)
+    inlines = (ParkingLotImageInline, ParkingPositionInline,)
 
 
 @admin.register(models.ParkingPosition)

@@ -71,9 +71,6 @@ class ParkingLotImage(BaseModel):
         verbose_name = "駐車場画像"
         verbose_name_plural = "駐車場画像一覧"
 
-    def __unicode__(self):
-        return self.image
-
     def get_image_path(self, filename):
         prefix = 'images/'
         name = '{}_{}'.format(self.parking_plot.name, datetime.datetime.now().strftime('%y%m%d%H%M%S%f'))

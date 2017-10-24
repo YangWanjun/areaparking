@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """areaparking URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -13,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from __future__ import unicode_literals
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
@@ -22,28 +24,28 @@ from django.shortcuts import render
 from django.views import generic
 
 from material import frontend
-from material.frontend import urls as frontend_urls
 from material.frontend.apps import ModuleMixin
 from material.frontend.registry import modules
 
 from parkinglot import urls as parkinglot_urls
 
 
-class Demo(ModuleMixin):
+class Home(ModuleMixin):
     """
     Home page module
     """
     order = 1
-    label = 'Introduction'
+    label = 'Home'
+    verbose_name = 'ホーム'
     icon = '<i class="material-icons">account_balance</i>'
 
     @property
     def urls(self):
-        index_view = generic.TemplateView.as_view(template_name='demo/index.html')
+        index_view = generic.TemplateView.as_view(template_name='index.html')
 
         return frontend.ModuleURLResolver(
             '^', [url('^$', index_view, name="index")],
-            module=self, app_name='oa', namespace='demo')
+            module=self, app_name='areaparking', namespace='home')
 
     def index_url(self):
         return '/'
@@ -52,11 +54,11 @@ class Demo(ModuleMixin):
         return True
 
 
-modules.register(Demo())
+modules.register(Home())
 
+from material.frontend import urls as frontend_urls
 
 urlpatterns = [
-    # url(r'^$', generic.TemplateView.as_view(template_name='index.html')),
 
     url(r'', include(frontend_urls)),
     url(r'^parkinglot/', include(parkinglot_urls)),
