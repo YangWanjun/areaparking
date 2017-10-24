@@ -22,7 +22,7 @@ from django.contrib.auth import views as auth_views
 from material.frontend import urls as frontend_urls
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    # url(r'^admin/', admin.site.urls),
 
     url(r'', include(frontend_urls)),
     # url(r'^admin/login/$', auth_views.logout, name="logout"),

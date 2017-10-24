@@ -95,3 +95,6 @@ class Contract(BaseModel):
     contract_date = models.DateField(verbose_name="契約日")
     start_date = models.DateField(verbose_name="契約開始日")
     end_date = models.DateField(verbose_name="契約終了日")
+    pay_date = models.DateField(blank=True, null=True, verbose_name="賃料発生日",
+                                help_text="未入力の場合、契約期間の開始日が賃料発生日として扱われます")
+
