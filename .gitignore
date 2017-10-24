@@ -101,11 +101,5 @@ ENV/
 .mypy_cache/
 
 .idea*
-.idea/areaparking.iml
-.idea/dbnavigator.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
 db.sqlite3
 images/
