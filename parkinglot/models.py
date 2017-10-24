@@ -67,6 +67,14 @@ class ParkingLotImage(BaseModel):
 class ParkingPosition(BaseModel):
     parking_plot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     name = models.CharField(max_length=30, verbose_name="車室名称")
+    # 賃料
+    price_recruitment = models.IntegerField(default=0, verbose_name="募集賃料（税込）")
+    price_recruitment_no_tax = models.IntegerField(default=0, verbose_name="募集賃料（税抜）")
+    price_homepage = models.IntegerField(default=0, verbose_name="ホームページ価格（税込）")
+    price_homepage_no_tax = models.IntegerField(default=0, verbose_name="ホームページ価格（税別）")
+    price_handbill = models.IntegerField(default=0, verbose_name="チラシ価格（税込）")
+    price_handbill_no_tax = models.IntegerField(default=0, verbose_name="チラシ価格（税別）")
+    # サイズ
     length = models.IntegerField(blank=True, null=True, verbose_name="全長")
     width = models.IntegerField(blank=True, null=True, verbose_name="全幅")
     height = models.IntegerField(blank=True, null=True, verbose_name="全高")

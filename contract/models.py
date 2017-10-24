@@ -7,6 +7,8 @@ from django.core. validators import RegexValidator
 from utils.django_base import BaseModel
 from utils import constants
 
+from parkinglot.models import ParkingLot, ParkingPosition
+
 
 # Create your models here.
 class Contractor(BaseModel):
@@ -85,3 +87,11 @@ class Contractor(BaseModel):
 
     def __unicode__(self):
         return self.name
+
+
+class Contract(BaseModel):
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, verbose_name="車室番号")
+    contract_date = models.DateField(verbose_name="契約日")
+    start_date = models.DateField(verbose_name="契約開始日")
+    end_date = models.DateField(verbose_name="契約終了日")
