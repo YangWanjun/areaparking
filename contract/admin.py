@@ -82,3 +82,8 @@ class ContractorAdmin(BaseAdmin):
             )
         })
     )
+
+@admin.register(models.Contract)
+class ContractAdmin(BaseAdmin):
+    list_display = ('contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
+    list_display_links = ('contractor',)

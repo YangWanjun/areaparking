@@ -9,6 +9,10 @@ from utils.django_base import BaseAdmin
 
 
 # Register your models here.
+class ParkingPositionInline(admin.TabularInline):
+    model = models.ParkingPosition
+    extra = 1
+
 
 @admin.register(models.ParkingLot)
 class ParkingLotAdmin(BaseAdmin):
@@ -28,6 +32,7 @@ class ParkingLotAdmin(BaseAdmin):
         ('car_count', 'bike_count'),
         'comment'
     )
+    inlines = (ParkingPositionInline,)
 
 
 @admin.register(models.ParkingPosition)

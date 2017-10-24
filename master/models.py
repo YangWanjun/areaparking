@@ -69,3 +69,17 @@ class BankCode(BaseModel):
 
     def __unicode__(self):
         return self.name
+
+
+class ManagementType(BaseModel):
+    code = models.CharField(max_length=4, verbose_name="管理形態コード")
+    name = models.CharField(max_length=30, verbose_name="管理形態名称")
+
+    class Meta:
+        db_table = 'mst_management_type'
+        ordering = ['code']
+        verbose_name = "管理形態"
+        verbose_name_plural = "管理形態一覧"
+
+    def __unicode__(self):
+        return self.name

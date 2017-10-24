@@ -24,8 +24,7 @@ class CompanyAdmin(BaseAdmin):
 @admin.register(models.ParkingLotType)
 class ParkingLotTypeAdmin(BaseAdmin):
     list_display = ('code', 'name')
-    list_display_links = ('name',)
-    search_fields = ('code', 'name')
+    list_display_links = ('code', 'name')
 
 
 @admin.register(models.ParkingTimeLimit)
@@ -36,3 +35,9 @@ class ParkingTimeLimitAdmin(BaseAdmin):
 @admin.register(models.BankCode)
 class BankCodeAdmin(BaseAdmin):
     pass
+
+
+@admin.register(models.ManagementType)
+class ManagementTypeAdmin(BaseAdmin):
+    list_display = ('code', 'name')
+    list_display_links = ('code', 'name')

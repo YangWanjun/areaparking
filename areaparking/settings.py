@@ -31,6 +31,7 @@ APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
+    'material.theme.cyan',
     'material',
     'material.frontend',
     'material.admin',

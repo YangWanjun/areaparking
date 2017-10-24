@@ -18,13 +18,48 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.shortcuts import render
+from django.views import generic
 
+from material import frontend
 from material.frontend import urls as frontend_urls
+from material.frontend.apps import ModuleMixin
+from material.frontend.registry import modules
+
+from parkinglot import urls as parkinglot_urls
+
+
+class Demo(ModuleMixin):
+    """
+    Home page module
+    """
+    order = 1
+    label = 'Introduction'
+    icon = '<i class="material-icons">account_balance</i>'
+
+    @property
+    def urls(self):
+        index_view = generic.TemplateView.as_view(template_name='demo/index.html')
+
+        return frontend.ModuleURLResolver(
+            '^', [url('^$', index_view, name="index")],
+            module=self, app_name='oa', namespace='demo')
+
+    def index_url(self):
+        return '/'
+
+    def installed(self):
+        return True
+
+
+modules.register(Demo())
+
 
 urlpatterns = [
-    # url(r'^admin/', admin.site.urls),
+    # url(r'^$', generic.TemplateView.as_view(template_name='index.html')),
 
     url(r'', include(frontend_urls)),
+    url(r'^parkinglot/', include(parkinglot_urls)),
     # url(r'^admin/login/$', auth_views.logout, name="logout"),
     url(r'^admin/login/$', auth_views.login, name="login"),
 ] # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

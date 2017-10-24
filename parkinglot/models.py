@@ -6,11 +6,28 @@ import datetime
 from django.db import models
 from django.core. validators import RegexValidator
 
-from master.models import ParkingLotType, ParkingTimeLimit
+from master.models import ParkingLotType, ParkingTimeLimit, ManagementType
 from utils.django_base import BaseModel
 
 
 # Create your models here.
+class Managerment(BaseModel):
+    code = models.IntegerField(
+        verbose_name="管理会社No.", unique=True,
+        validators=(RegexValidator(regex=r'^\d{1,8}$'),)
+    )
+    segment = models.ForeignKey(ManagementType, verbose_name="駐車場分類")
+    name = models.CharField(max_length=100, verbose_name="管理会社名称")
+    kana = models.CharField(max_length=100, blank=True, null=True, verbose_name="管理会社カナ")
+    post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name="郵便番号")
+    address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所１")
+    address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所２")
+    tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
+    fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"ファックス")
+    email = models.EmailField(blank=True, null=True, verbose_name="メールアドレス")
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+
+
 class ParkingLot(BaseModel):
     code = models.IntegerField(
         verbose_name="駐車場No.", unique=True,
@@ -90,6 +107,7 @@ class ParkingPosition(BaseModel):
 
     class Meta:
         db_table = 'ap_parking_position'
+        unique_together = ('parking_plot', 'name')
         ordering = ['name']
         verbose_name = "車室"
         verbose_name_plural = "車室一覧"
