@@ -22,6 +22,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render
 from django.views import generic
+from django.views.static import serve
 
 from material import frontend
 from material.frontend.apps import ModuleMixin
@@ -59,9 +60,11 @@ modules.register(Home())
 from material.frontend import urls as frontend_urls
 
 urlpatterns = [
-
     url(r'', include(frontend_urls)),
     url(r'^parkinglot/', include(parkinglot_urls)),
     # url(r'^admin/login/$', auth_views.logout, name="logout"),
     url(r'^admin/login/$', auth_views.login, name="login"),
+
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT,}),
+
 ] # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,123 @@
+{% extends current_module.base_template %}
+{% load humanize %}
+{% load i18n material_form material_frontend %}
+{% load static %}
+
+{% block breadcrumbs_items %}
+{% endblock %}
+
+
+{% block footer %}
+<script type="text/javascript">
+</script>
+{% endblock %}
+
+{% block content %}
+{% get_media_prefix as MEDIA_PREFIX %}
+<div class="left-panel" style="flex-basis: 100%;">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">{{ parkinglot }}</div>
+            <table class="table bordered">
+                <tbody>
+                <tr>
+                    <th>物件番号：</th>
+                    <td>{{ parkinglot.code }}</td>
+                    <th>名称：</th>
+                    <td>{{ parkinglot.name|default:'' }}</td>
+                </tr>
+                <tr>
+                    <th>駐車場分類：</th>
+                    <td>{{ parkinglot.segment|default:'' }}</td>
+                    <th>郵便番号：</th>
+                    <td>{{ parkinglot.post_code|default:'' }}</td>
+                </tr>
+                <tr>
+                    <th>住所：</th>
+                    <td colspan="3">{{ parkinglot.address|default:'' }}</td>
+                </tr>
+                <tr>
+                    <th>交通：</th>
+                    <td colspan="3">{{ parkinglot.traffic|default:'' }}</td>
+                </tr>
+                <tr>
+                    <th>備考：</th>
+                    <td colspan="3">{{ parkinglot.comment|default:'' }}</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="card-action">
+                <div class="right-align">
+                    <a class="waves-effect waves-light btn white-text grey" href="#">変更</a>
+                    <!-- {% url 'admin:parkinglot_parkinglot_change' parkinglot.pk %} -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">近くの空き物件</div>
+            <table id="table" class="table bordered" data-form-control="datatable" style="width:100%">
+                <thead>
+                <tr>
+                    <th>物件番号</th>
+                    <th>駐車場名</th>
+                    <th>住所</th>
+                    <th>距離</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>0001</td>
+                    <td><a href="javascript:void(0)">パシフィックレジデンス目黒本町</a></td>
+                    <td>東京都目黒区目黒本町2-23-6</td>
+                    <td>100メートル</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">書類一式</div>
+            <table class="table bordered">
+                <tbody>
+                {% for doc in parkinglot.parkinglotdoc_set.all %}
+                    <tr>
+                        <td><a href="{{ MEDIA_PREFIX }}{{ doc.document }}">{{ doc.document }}</a></td>
+                        <td>{{ doc.comment|default:'' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">駐車場画像一覧</div>
+            <table class="table bordered">
+                <tbody>
+                    <tr>
+                    {% for img in parkinglot.parkinglotimage_set.all %}
+                         <td>
+                             <a href="{{ MEDIA_PREFIX }}{{ img.image }}">
+                                <img src="{{ MEDIA_PREFIX }}{{ img.image }}" width="120px"/>
+                             </a>
+                         </td>
+                    {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% block right-panel %}
+{% endblock right-panel %}
+{% block action_btn %}
+<div class="fixed-action-btn">
+    {% if add_url %}
+      <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="{{ add_url }}"><i class="large material-icons">add</i></a>
+    {% endif %}
+</div>
+{% endblock %}
+{% endblock %}

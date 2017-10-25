@@ -60,10 +60,25 @@ class ParkingLot(BaseModel):
     def __unicode__(self):
         return self.name
 
+    def address(self):
+        return "{}{}{}{}{}".format(self.pref_name, self.city_name, self.town_name or '', self.aza_name or '', self.other_name or '')
+
+
+def get_image_path(self, filename):
+    prefix = 'images/'
+    name = '{}_{}'.format(self.parking_lot.name, datetime.datetime.now().strftime('%y%m%d%H%M%S%f'))
+    extension = os.path.splitext(filename)[-1]
+    return prefix + name + extension
+
+
+def get_doc_path(self, filename):
+    prefix = 'docs/{}/'.format(self.parking_lot.name)
+    return prefix + filename
+
 
 class ParkingLotImage(BaseModel):
-    parking_plot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    image = models.ImageField(upload_to='images/parking')
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    image = models.ImageField(upload_to=get_image_path)
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
@@ -71,15 +86,20 @@ class ParkingLotImage(BaseModel):
         verbose_name = "駐車場画像"
         verbose_name_plural = "駐車場画像一覧"
 
-    def get_image_path(self, filename):
-        prefix = 'images/'
-        name = '{}_{}'.format(self.parking_plot.name, datetime.datetime.now().strftime('%y%m%d%H%M%S%f'))
-        extension = os.path.splitext(filename)[-1]
-        return prefix + name + extension
+
+class ParkingLotDoc(BaseModel):
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    document = models.FileField(upload_to=get_doc_path)
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+
+    class Meta:
+        db_table = 'ap_parking_lot_doc'
+        verbose_name = "駐車場書類"
+        verbose_name_plural = "駐車場書類一式"
 
 
 class ParkingPosition(BaseModel):
-    parking_plot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     name = models.CharField(max_length=30, verbose_name="車室名称")
     # 賃料
     price_recruitment = models.IntegerField(default=0, verbose_name="募集賃料（税込）")
@@ -104,10 +124,16 @@ class ParkingPosition(BaseModel):
 
     class Meta:
         db_table = 'ap_parking_position'
-        unique_together = ('parking_plot', 'name')
+        unique_together = ('parking_lot', 'name')
         ordering = ['name']
         verbose_name = "車室"
         verbose_name_plural = "車室一覧"
 
     def __unicode__(self):
         return self.name
+
+    def contracts(self, date=None):
+        if not date:
+            date = datetime.date.today()
+        contracts = self.contract_set.filter(start_date__lte=date, end_date__gte=date)
+        return contracts

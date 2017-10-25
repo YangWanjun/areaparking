@@ -2,9 +2,13 @@
 from __future__ import unicode_literals
 import datetime
 
-from django.contrib import admin
-from django.db import models
 from django import forms
+from django.contrib import admin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db import models
+from django.views.generic import View
+from django.views.generic.base import TemplateResponseMixin, ContextMixin
+from django.utils.decorators import method_decorator
 
 
 class PublicManager(models.Manager):
@@ -54,3 +58,28 @@ class BaseAdmin(admin.ModelAdmin):
 
 class BaseForm(forms.ModelForm):
     pass
+
+
+@method_decorator(login_required(login_url='/admin/login/?next=/'), name='dispatch')
+class BaseView(View, ContextMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseView, self).get_context_data(**kwargs)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        kwargs.update({
+            'request': request
+        })
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+class BaseTemplateView(TemplateResponseMixin, BaseView):
+
+    def get_template_names(self):
+        template_names = super(BaseTemplateView, self).get_template_names()
+        return template_names

@@ -19,6 +19,11 @@ class ParkingLotImageInline(admin.TabularInline):
     extra = 1
 
 
+class ParkingLotDocInline(admin.TabularInline):
+    model = models.ParkingLotDoc
+    extra = 1
+
+
 @admin.register(models.ParkingLot)
 class ParkingLotAdmin(BaseAdmin):
     icon = '<i class="material-icons">local_parking</i>'
@@ -37,19 +42,19 @@ class ParkingLotAdmin(BaseAdmin):
         ('car_count', 'bike_count'),
         'comment'
     )
-    inlines = (ParkingLotImageInline, ParkingPositionInline,)
+    inlines = (ParkingLotImageInline, ParkingLotDocInline, ParkingPositionInline,)
 
 
 @admin.register(models.ParkingPosition)
 class ParkingPosition(BaseAdmin):
-    list_display = ('parking_plot', 'name', 'price_recruitment_no_tax', 'price_homepage_no_tax', 'price_handbill_no_tax',
+    list_display = ('parking_lot', 'name', 'price_recruitment_no_tax', 'price_homepage_no_tax', 'price_handbill_no_tax',
                     'length', 'width', 'height', 'weight')
     list_display_links = ('name',)
     search_fields = ('parking_plot__code', 'parking_plot__name')
     fieldsets = (
         (None, {
             'fields': (
-                ('parking_plot',),
+                ('parking_lot',),
                 'name',
             )
         }),
@@ -77,7 +82,7 @@ class ParkingPosition(BaseAdmin):
         }),
     )
     # fields = (
-    #     ('parking_plot',),
+    #     ('parking_lot',),
     #     'name',
     #     ('length', 'width', 'height', 'weight'),
     #     ('tyre_width', 'tyre_width_ap', 'min_height', 'min_height_ap'),

@@ -8,6 +8,8 @@ from . import views
 
 
 urlpatterns = [
-    url('^$', generic.TemplateView.as_view(template_name="whiteboard/index.html"), name="index"),
-    # url('^whiteboard/', include(views.ParkingLotViewSet().urls)),
+    url('^$', views.ParkingPositionListView.as_view(), name="index"),
+    url('^parking-lot-(?P<id>\d+)\.html', views.ParkingLotDetail.as_view(), name='parking-lot-detail'),
+    url('^parking-position-(?P<id>\d+)\.html', views.ParkingPositionDetail.as_view(), name='parking-position-detail'),
+    url('^waiting-list\.html', views.WaitingListView.as_view(), name='waiting-list'),
 ]

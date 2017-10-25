@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.99.100', 'localhost', '127.0.0.1', '*.e-business.co.jp']
 APPEND_SLASH = True
+NUMBER_GROUPING = 3
 
 # Application definition
 
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     'material',
     'material.frontend',
     'material.admin',
+    'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

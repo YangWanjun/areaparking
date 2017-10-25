@@ -1,6 +1,6 @@
 {% extends current_module.base_template %}
-{% load i18n material_form material_frontend %}
 {% load humanize %}
+{% load i18n material_form material_frontend %}
 
 {% block breadcrumbs_items %}
 {% endblock %}
@@ -25,29 +25,24 @@
                         <th data-name="{{ header }}" class="{{ header }}">種類</th>
                         <th>担当</th>
                         <th>空き</th>
-                        <th>契約終了日</th>
                         <th>フリーレント<br/>終了日</th>
                         <th>募集賃料</th>
-                        <th>ＨＰ<br/>価格</th>
-                        <th>チラシ<br/>価格</th>
+                        <th>ホームページ価格</th>
+                        <th>チラシ価格</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for object in queryset %}
                     <tr>
                         <td>{{ object.parking_lot.code }}</td>
-                        <td>{{ object.parking_lot.address }}</td>
+                        <td>{{ object.parking_lot.pref_name|default:'' }}{{ object.parking_lot.city_name|default:'' }}
+                            {{ object.parking_lot.town_name|default:'' }}{{ object.parking_lot.aza_name|default:'' }}{{ object.parking_lot.other_name|default:'' }}
+                        </td>
                         <td>{{ object.parking_lot }}</td>
-                        <td><a href="{% url 'whiteboard:parking-position-detail' object.pk %}">{{ object.name }}</a></td>
+                        <td>{{ object.name }}</td>
                         <td>{{ object.parking_lot.segment }}</td>
                         <td>楊</td>
-                        {% if object.contracts.count > 0 %}
-                            <td class="red-text">×</td>
-                            <td>{{ object.contracts.first.end_date }}</td>
-                        {% else %}
-                            <td><span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span></td>
-                            <td></td>
-                        {% endif %}
+                        <td>○</td>
                         <td>2017/11/30</td>
                         <td>{{ object.price_recruitment|intcomma }}</td>
                         <td>{{ object.price_homepage|intcomma }}</td>
@@ -56,41 +51,11 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <div class="card-action" style="float: inherit; margin-top: -50px;">
-                <div class="right-align">
-                    <a class="waves-effect waves-light btn grey">反響表</a>
-                    <a class="waves-effect waves-light btn grey" style="margin-right: 10px;">怪しい電話</a>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 {% block right-panel %}
 <div class="right-panel">
-    <div class="card filters-card">
-        <div class="card-content">
-            <span class="card-title">地域で絞り込む</span>
-            <div class="row" style="margin-top:-10px">
-                <div class="input-field col s12">
-                    <ul>
-                        <li><a href="#">千葉県</a></li>
-                        <li><a href="#">東京都</a>
-                            <ul style="margin-left: 30px;">
-                                <li><a href="#">新宿</a></li>
-                                <li><a href="#">目黒</a></li>
-                                <li><a href="#">文京区</a></li>
-                                <li><a href="#">港区</a></li>
-                                <li><a href="#">豊島区</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">神奈川県</a></li>
-                        <li><a href="#">......</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="clearfix"></div>
-        </div>
-    </div>
     <div class="card filters-card">
         <div class="card-content">
             <span class="card-title">フィルター</span>

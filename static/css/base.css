@@ -1,0 +1,12 @@
+@CHARSET "utf-8";
+
+div.modal form th,
+div.modal form td {
+    padding-top: 2px;
+    padding-bottom: 0px;
+}
+
+div.modal form td input {
+    margin: 0px;
+    height: 40px;
+}
