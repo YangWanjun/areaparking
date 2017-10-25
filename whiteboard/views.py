@@ -9,6 +9,7 @@ from utils.django_base import BaseView, BaseTemplateView
 from parkinglot import models as parkinglot_model
 from contract.forms import ContractorForm
 
+
 # Create your views here.
 class ParkingPositionListView(BaseTemplateView):
     template_name = "./whiteboard/index.html"
