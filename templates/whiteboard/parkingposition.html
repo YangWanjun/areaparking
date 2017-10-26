@@ -3,10 +3,6 @@
 {% load humanize %}
 {% load static %}
 
-{% block extrahead %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}"/>
-{% endblock extrahead %}
-
 {% block breadcrumbs_items %}
 {% endblock %}
 
@@ -25,7 +21,7 @@ $(document).ready(function(){
             //alert("Ready");
             console.log(modal, trigger);
         },
-        complete: function() {
+        complete: function(obj) {
             //alert('Closed');
         } // Callback for Modal close
     });
@@ -35,6 +31,27 @@ $(document).ready(function(){
         }
     });
 });
+
+function save_contractor(obj) {
+    form_obj = $("#new_contractor_form")
+    form_obj.submit(function(){
+        eb.ajax_request(
+            $(this).attr('action'),
+            $(this).attr('method'),
+            $(this).serialize(),
+            function mail_callback_fn(data) {
+                window.location = "{% url 'contractual:create_temp_contract' %}?parking_position_id={{ parkingposition.pk }}";
+                $('#start_contract').modal('close');
+            },
+            function failure(result) {
+                eb.reflection_form_errors(form_obj, result.responseJSON);
+            },
+            function always(result) {}
+        );
+        return false;
+    });
+    form_obj.submit();
+}
 </script>
 {% endblock %}
 
@@ -45,7 +62,10 @@ $(document).ready(function(){
         <div class="card-content">
             <div class="card-title">
                 {{ parkingposition.parking_lot }} － 車室 {{ parkingposition.name }}
-                {% if parkingposition.contracts.count == 0 %}
+                {% if parkingposition.contracts.count %}
+                {% elif parkingposition.temp_contracts.count %}
+                    <span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>
+                {% else %}
                     <span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>
                 {% endif %}
             </div>
@@ -109,12 +129,12 @@ $(document).ready(function(){
             </table>
             <div class="card-action">
                 <div class="right-align">
-                    {% if parkingposition.contracts.count > 0 %}
-                    <a class="waves-effect waves-light btn white-text" href="#">順番待ちへ</a>
+                    {% if parkingposition.contracts.count %}
+                        <a class="waves-effect waves-light btn white-text" href="#">順番待ちへ</a>
+                    {% elif parkingposition.temp_contracts.count %}
                     {% else %}
-                    <a class="waves-effect waves-light btn modal-trigger" href="#start_contract">契約に進む</a>
+                        <button data-target="start_contract" class="btn modal-trigger">契約に進む</button>
                     {% endif %}
-                    <!-- {% url 'admin:parkinglot_parkinglot_change' parkingposition.pk %} -->
                 </div>
             </div>
             <div id="start_contract" class="modal modal-fixed-footer">
@@ -123,14 +143,15 @@ $(document).ready(function(){
                     <div class="row">
                         <div class="col s12">
                             <ul class="tabs">
-                                <li class="tab col s2"><a href="#bask_info" class="active">基本情報</a></li>
+                                <li class="tab col s2"><a href="#bask_info" class="active">基本情報<span class="red-text">*</span></a></li>
+                                <li class="tab col s2"><a href="#personal_info">個人情報</a></li>
                                 <li class="tab col s2"><a href="#corporate_info">法人情報</a></li>
                                 <li class="tab col s2"><a href="#workplace_info">勤務先</a></li>
                                 <li class="tab col s2"><a href="#contact_info">連絡先</a></li>
                                 <li class="tab col s2"><a href="#delivery_info">書類送付先</a></li>
                             </ul>
                         </div>
-                        <form method="post" action="#!" id="contractor_form">
+                        <form method="post" action="/api/contractor/" id="new_contractor_form">
                             <div id="bask_info" class="col s12">
                                 <table>
                                     <tr>
@@ -146,7 +167,7 @@ $(document).ready(function(){
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>{{ contractor_form.name.label_tag }}</th>
+                                        <th>{{ contractor_form.name.label_tag }}<span class="red-text">*</span></th>
                                         <td>
                                             {{ contractor_form.name.errors }}
                                             {{ contractor_form.name }}
@@ -158,10 +179,59 @@ $(document).ready(function(){
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>{{ contractor_form.gender.label_tag }}</th>
+                                        <th>{{ contractor_form.post_code.label_tag }}</th>
+                                        <td colspan="3">
+                                            {{ contractor_form.post_code.errors }}
+                                            {{ contractor_form.post_code }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ contractor_form.address1.label_tag }}</th>
                                         <td>
-                                            {{ contractor_form.gender.errors }}
-                                            {{ contractor_form.gender }}
+                                            {{ contractor_form.address1.errors }}
+                                            {{ contractor_form.address1 }}
+                                        </td>
+                                        <th>{{ contractor_form.address2.label_tag }}</th>
+                                        <td>
+                                            {{ contractor_form.address2.errors }}
+                                            {{ contractor_form.address2 }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ contractor_form.tel.label_tag }}</th>
+                                        <td>
+                                            {{ contractor_form.tel.errors }}
+                                            {{ contractor_form.tel }}
+                                        </td>
+                                        <th>{{ contractor_form.fax.label_tag }}</th>
+                                        <td>
+                                            {{ contractor_form.fax.errors }}
+                                            {{ contractor_form.fax }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ contractor_form.email.label_tag }}</th>
+                                        <td colspan="3">
+                                            {{ contractor_form.email.errors }}
+                                            {{ contractor_form.email }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ contractor_form.comment.label_tag }}</th>
+                                        <td colspan="3">
+                                            {{ contractor_form.comment.errors }}
+                                            {{ contractor_form.comment }}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="personal_info" class="col s12">
+                                <table>
+                                    <tr>
+                                        <th>{{ contractor_form.personal_gender.label_tag }}</th>
+                                        <td>
+                                            {{ contractor_form.personal_gender.errors }}
+                                            {{ contractor_form.personal_gender }}
                                         </td>
                                         <th>{{ contractor_form.personal_birthday.label_tag }}</th>
                                         <td>
@@ -169,108 +239,63 @@ $(document).ready(function(){
                                             {{ contractor_form.personal_birthday }}
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <th>{{ contractor_form.personal_post_code.label_tag }}</th>
-                                        <td colspan="3">
-                                            {{ contractor_form.personal_post_code.errors }}
-                                            {{ contractor_form.personal_post_code }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>{{ contractor_form.personal_address1.label_tag }}</th>
-                                        <td>
-                                            {{ contractor_form.personal_address1.errors }}
-                                            {{ contractor_form.personal_address1 }}
-                                        </td>
-                                        <th>{{ contractor_form.personal_address2.label_tag }}</th>
-                                        <td>
-                                            {{ contractor_form.personal_address2.errors }}
-                                            {{ contractor_form.personal_address2 }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>{{ contractor_form.personal_tel.label_tag }}</th>
-                                        <td>
-                                            {{ contractor_form.personal_tel.errors }}
-                                            {{ contractor_form.personal_tel }}
-                                        </td>
-                                        <th>{{ contractor_form.personal_fax.label_tag }}</th>
-                                        <td>
-                                            {{ contractor_form.personal_fax.errors }}
-                                            {{ contractor_form.personal_fax }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>{{ contractor_form.personal_email.label_tag }}</th>
-                                        <td colspan="3">
-                                            {{ contractor_form.personal_email.errors }}
-                                            {{ contractor_form.personal_email }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>{{ contractor_form.personal_comment.label_tag }}</th>
-                                        <td colspan="3">
-                                            {{ contractor_form.personal_comment.errors }}
-                                            {{ contractor_form.personal_comment }}
-                                        </td>
-                                    </tr>
                                 </table>
                             </div>
                             <div id="corporate_info" class="col s12">
                                 <table>
                                     <tr>
-                                        <th>{{ contractor_form.business_type.label_tag }}</th>
+                                        <th>{{ contractor_form.corporate_business_type.label_tag }}</th>
                                         <td>
-                                            {{ contractor_form.business_type.errors }}
-                                            {{ contractor_form.business_type }}
+                                            {{ contractor_form.corporate_business_type.errors }}
+                                            {{ contractor_form.corporate_business_type }}
                                         </td>
-                                        <th>{{ contractor_form.web_site.label_tag }}</th>
+                                        <th>{{ contractor_form.corporate_web_site.label_tag }}</th>
                                         <td>
-                                            {{ contractor_form.web_site.errors }}
-                                            {{ contractor_form.web_site }}
+                                            {{ contractor_form.corporate_web_site.errors }}
+                                            {{ contractor_form.corporate_web_site }}
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>{{ contractor_form.president.label_tag }}</th>
+                                        <th>{{ contractor_form.corporate_president.label_tag }}</th>
                                         <td colspan="3">
-                                            {{ contractor_form.president.errors }}
-                                            {{ contractor_form.president }}
+                                            {{ contractor_form.corporate_president.errors }}
+                                            {{ contractor_form.corporate_president }}
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>{{ contractor_form.staff_name.label_tag }}</th>
+                                        <th>{{ contractor_form.corporate_staff_name.label_tag }}</th>
                                         <td>
-                                            {{ contractor_form.staff_name.errors }}
-                                            {{ contractor_form.staff_name }}
+                                            {{ contractor_form.corporate_staff_name.errors }}
+                                            {{ contractor_form.corporate_staff_name }}
                                         </td>
-                                        <th>{{ contractor_form.staff_department.label_tag }}</th>
+                                        <th>{{ contractor_form.corporate_staff_department.label_tag }}</th>
                                         <td>
-                                            {{ contractor_form.staff_department.errors }}
-                                            {{ contractor_form.staff_department }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>{{ contractor_form.position.label_tag }}</th>
-                                        <td>
-                                            {{ contractor_form.position.errors }}
-                                            {{ contractor_form.position }}
-                                        </td>
-                                        <th>{{ contractor_form.extension.label_tag }}</th>
-                                        <td>
-                                            {{ contractor_form.extension.errors }}
-                                            {{ contractor_form.extension }}
+                                            {{ contractor_form.corporate_staff_department.errors }}
+                                            {{ contractor_form.corporate_staff_department }}
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>{{ contractor_form.capital.label_tag }}</th>
+                                        <th>{{ contractor_form.corporate_staff_position.label_tag }}</th>
                                         <td>
-                                            {{ contractor_form.capital.errors }}
-                                            {{ contractor_form.capital }}
+                                            {{ contractor_form.corporate_staff_position.errors }}
+                                            {{ contractor_form.corporate_staff_position }}
                                         </td>
-                                        <th>{{ contractor_form.turnover.label_tag }}</th>
+                                        <th>{{ contractor_form.corporate_extension.label_tag }}</th>
                                         <td>
-                                            {{ contractor_form.turnover.errors }}
-                                            {{ contractor_form.turnover }}
+                                            {{ contractor_form.corporate_extension.errors }}
+                                            {{ contractor_form.corporate_extension }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ contractor_form.corporate_capital.label_tag }}</th>
+                                        <td>
+                                            {{ contractor_form.corporate_capital.errors }}
+                                            {{ contractor_form.corporate_capital }}
+                                        </td>
+                                        <th>{{ contractor_form.corporate_turnover.label_tag }}</th>
+                                        <td>
+                                            {{ contractor_form.corporate_turnover.errors }}
+                                            {{ contractor_form.corporate_turnover }}
                                         </td>
                                     </tr>
                                 </table>
@@ -434,7 +459,7 @@ $(document).ready(function(){
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">登録</a>
+                    <a href="javascript:save_contractor(this)" class="modal-action waves-effect waves-green btn-flat ">次へ</a>
                     <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
                 </div>
             </div>

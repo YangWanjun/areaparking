@@ -3,8 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404
 
-from material.frontend.views import ListModelView
-from utils.django_base import BaseView, BaseTemplateView
+from utils.django_base import BaseTemplateView
 
 from parkinglot import models as parkinglot_model
 from contract.forms import ContractorForm

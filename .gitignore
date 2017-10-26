@@ -102,4 +102,4 @@ ENV/
 
 .idea*
 # db.sqlite3
-images/
+# images/

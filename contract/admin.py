@@ -12,31 +12,35 @@ from utils.django_base import BaseAdmin
 @admin.register(models.Contractor)
 class ContractorAdmin(BaseAdmin):
     icon = '<i class="material-icons">nature_people</i>'
-    list_display = ('code', 'name', 'segment', 'personal_address1', 'personal_address2')
+    list_display = ('code', 'name', 'segment', 'address1', 'address2')
     list_display_links = ('code', 'name')
     search_fields = ('code', 'name')
     form = forms.ContractorForm
     fieldsets = (
-        (None, {'fields': ('code', 'segment')}),
+        (None, {
+            'fields': (
+                ('code', 'segment'),
+                ('name', 'kana',),
+                'post_code',
+                ('address1', 'address2'),
+                ('tel', 'fax',),
+                'email',
+                'comment',
+            )
+        }),
         ("個人情報", {
             'classes': ('collapse',),
             'fields': (
-                ('name', 'kana', ),
-                ('gender', 'personal_birthday', ),
-                'personal_post_code',
-                ('personal_address1', 'personal_address2'),
-                ('personal_tel', 'personal_fax',),
-                'personal_email',
-                'personal_comment',
+                ('personal_gender', 'personal_birthday', ),
             )
         }),
         ("法人情報", {
             'classes': ('collapse',),
             'fields': (
-                ('business_type', ),
-                ('president', 'web_site'),
-                ('staff_name', 'staff_department', 'position', 'extension'),
-                ('capital', 'turnover'),
+                ('corporate_business_type', ),
+                ('corporate_president', 'corporate_web_site'),
+                ('corporate_staff_name', 'corporate_staff_department', 'corporate_staff_position', 'corporate_extension'),
+                ('corporate_capital', 'corporate_turnover'),
             )
         }),
         ("勤務先", {
@@ -61,8 +65,8 @@ class ContractorAdmin(BaseAdmin):
         ("書類送付先", {
             'classes': ('collapse',),
             'fields': (
-                'paper_delivery_type',
-                'honorific',
+                'delivery_type',
+                'delivery_honorific',
                 ('delivery_name', 'delivery_kana',),
                 'delivery_post_code',
                 ('delivery_address1', 'delivery_address2'),

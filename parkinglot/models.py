@@ -137,3 +137,11 @@ class ParkingPosition(BaseModel):
             date = datetime.date.today()
         contracts = self.contract_set.filter(start_date__lte=date, end_date__gte=date)
         return contracts
+
+    def temp_contracts(self):
+        """手続き中の契約を取得する。
+
+        :return:
+        """
+        queryset = self.tempcontract_set.filter(start_date__gte=datetime.date.today())
+        return queryset

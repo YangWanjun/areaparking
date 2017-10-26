@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'master.apps.MasterConfig',
     'contract.apps.ContractConfig',
     'whiteboard.apps.WhiteboardConfig',
+    'contractual.apps.ContractualConfig',
     'rest_framework',
 ]
 

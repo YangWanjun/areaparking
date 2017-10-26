@@ -41,9 +41,12 @@
                         <td><a href="{% url 'whiteboard:parking-position-detail' object.pk %}">{{ object.name }}</a></td>
                         <td>{{ object.parking_lot.segment }}</td>
                         <td>楊</td>
-                        {% if object.contracts.count > 0 %}
+                        {% if object.contracts.count %}
                             <td class="red-text">×</td>
                             <td>{{ object.contracts.first.end_date }}</td>
+                        {% elif object.temp_contracts.count %}
+                            <td><span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span></td>
+                            <td></td>
                         {% else %}
                             <td><span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span></td>
                             <td></td>
