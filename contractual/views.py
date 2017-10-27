@@ -53,8 +53,12 @@ class TempContractDetailView(BaseTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TempContractDetailView, self).get_context_data(**kwargs)
-        parkingposition = get_object_or_404(parkinglot_model.ParkingPosition, pk=kwargs.get('id'))
+        temp_contract = get_object_or_404(models.TempContract, pk=kwargs.get('id'))
+        parkingposition = temp_contract.parking_position
+        contractor = temp_contract.contractor
         context.update({
+            'temp_contract': temp_contract,
+            'contractor': contractor,
             'parkingposition': parkingposition,
         })
         return context

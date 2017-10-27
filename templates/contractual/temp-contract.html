@@ -25,39 +25,101 @@ $(document).ready(function(){
             //alert('Closed');
         } // Callback for Modal close
     });
-    $('ul.tabs').tabs({
-        onShow: function() {
-            //alert(1);
-        }
-    });
-});
 
-function save_contractor(obj) {
-    form_obj = $("#new_contractor_form")
-    form_obj.submit(function(){
-        eb.ajax_request(
-            $(this).attr('action'),
-            $(this).attr('method'),
-            $(this).serialize(),
-            function mail_callback_fn(data) {
-                window.location = "{% url 'contractual:create_temp_contract' %}?parking_position_id={{ parkingposition.pk }}";
-                $('#start_contract').modal('close');
-            },
-            function failure(result) {
-                eb.reflection_form_errors(form_obj, result.responseJSON);
-            },
-            function always(result) {}
-        );
-        return false;
-    });
-    form_obj.submit();
-}
+    $('.tooltipped').tooltip({delay: 50});
+});
 </script>
 {% endblock %}
 
 {% block content %}
 {% get_media_prefix as MEDIA_PREFIX %}
 <div class="left-panel" style="flex-basis: 100%;">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">仮契約情報</div>
+            <table class="table bordered">
+                <tbody>
+                <tr>
+                    <th>仮契約者：</th>
+                    <td>{{ contractor }}</td>
+                    <th>契約者分類：</th>
+                    <td>{{ contractor.get_segment_display }}</td>
+                </tr>
+                <tr>
+                    <th>郵便番号：</th>
+                    <td>{{ contractor.post_code|default:'' }}</td>
+                    <th>住所：</th>
+                    <td>{{ contractor.address1|default:'' }}{{ contractor.address2|default:'' }}</td>
+                </tr>
+                <tr>
+                    <th>契約開始日：</th>
+                    <td>{{ temp_contract.start_date|default:'' }}</td>
+                    <th>契約終了日：</th>
+                    <td>{{ temp_contract.end_date|default:'' }}</td>
+                </tr>
+                <tr>
+                    <th>初期費用振込日：</th>
+                    <td></td>
+                    <th>契約書類送付先：</th>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">進捗情報</div>
+            <table class="table bordered">
+                <tbody>
+                <tr>
+                    <td colspan="2">
+                        <div>進捗：30%</div>
+                        <div class="progress" style="height: 14px;">
+                            <div class="determinate" style="width: 30%"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="width: 50%;">申込書類の送付：</th>
+                    <td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>
+                </tr>
+                <tr>
+                    <th>申込書類の確認</th>
+                    <td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>
+                </tr>
+                <tr>
+                    <th>住所・電話番号 審査・確認</th>
+                    <td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>
+                </tr>
+                <tr>
+                    <th>勤め先審査</th>
+                    <td><span class="new badge left green" data-badge-caption="実施中" style="margin-left: 0px;"></span></td>
+                </tr>
+                <tr>
+                    <th>車両サイズ審査</th>
+                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
+                </tr>
+                <tr>
+                    <th>申込ルート元審査</th>
+                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
+                </tr>
+                <tr>
+                    <th>契約書類一式の送付</th>
+                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
+                </tr>
+                <tr>
+                    <th>入金確認</th>
+                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
+                </tr>
+                <tr>
+                    <th>本番契約</th>
+                    <td><a class="waves-effect waves-light btn tooltipped grey" data-position="top" data-delay="50" data-tooltip="押下したら契約完了とする">登録</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     <div class="card">
         <div class="card-content">
             <div class="card-title">

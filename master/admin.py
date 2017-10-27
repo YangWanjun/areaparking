@@ -41,3 +41,20 @@ class BankCodeAdmin(BaseAdmin):
 class ManagementTypeAdmin(BaseAdmin):
     list_display = ('code', 'name')
     list_display_links = ('code', 'name')
+
+
+@admin.register(models.CarMaker)
+class CarMakerAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(models.CarModel)
+class CarModelAdmin(BaseAdmin):
+    list_display = ('maker', 'name', 'grade_name', 'sale_date',
+                    'length', 'width', 'height', 'weight')
+    search_fields = ('maker__name', 'name', 'grade_name')
+
+
+@admin.register(models.Bank)
+class BankAdmin(BaseAdmin):
+    list_display = ('bank_name', 'branch_no', 'branch_name', 'account_type', 'account_number', 'account_holder')

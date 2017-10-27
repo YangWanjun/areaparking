@@ -8,6 +8,7 @@ from utils.django_base import BaseModel
 from utils import constants
 
 from parkinglot.models import ParkingLot, ParkingPosition
+from master import models as master_models
 
 
 # Create your models here.
@@ -98,6 +99,8 @@ class Contract(BaseModel):
     end_date = models.DateField(verbose_name="契約終了日")
     pay_date = models.DateField(blank=True, null=True, verbose_name="賃料発生日",
                                 help_text="未入力の場合、契約期間の開始日が賃料発生日として扱われます")
+    # 口座情報
+    bank = models.ForeignKey(master_models.Bank, blank=True, null=True, verbose_name="振込先口座")
 
     class Meta:
         db_table = 'ap_contract'

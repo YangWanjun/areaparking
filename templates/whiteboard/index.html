@@ -42,7 +42,7 @@
                         <td>{{ object.parking_lot.segment }}</td>
                         <td>楊</td>
                         {% if object.contracts.count %}
-                            <td class="red-text">×</td>
+                            <td><span class="new badge left grey" data-badge-caption="なし" style="margin-left: 0px;"></span></td>
                             <td>{{ object.contracts.first.end_date }}</td>
                         {% elif object.temp_contracts.count %}
                             <td><span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span></td>
@@ -59,12 +59,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <div class="card-action" style="float: inherit; margin-top: -50px;">
-                <div class="right-align">
-                    <a class="waves-effect waves-light btn grey">反響表</a>
-                    <a class="waves-effect waves-light btn grey" style="margin-right: 10px;">怪しい電話</a>
-                </div>
-            </div>
         </div>
     </div>
 </div>

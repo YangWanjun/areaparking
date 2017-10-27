@@ -5,6 +5,7 @@ from django.db import models
 from django.core. validators import RegexValidator
 
 from utils.django_base import BaseModel
+from utils import constants
 
 
 # Create your models here.
@@ -83,3 +84,59 @@ class ManagementType(BaseModel):
 
     def __unicode__(self):
         return self.name
+
+
+class CarMaker(BaseModel):
+    name = models.CharField(max_length=30, unique=True, verbose_name="メーカー")
+
+    class Meta:
+        db_table = 'mst_car_maker'
+        ordering = ['name']
+        verbose_name = "メーカー"
+        verbose_name_plural = "メーカー一覧"
+
+    def __unicode__(self):
+        return self.name
+
+
+class CarModel(BaseModel):
+    maker = models.ForeignKey(CarMaker, verbose_name="メーカー")
+    name = models.CharField(max_length=50, verbose_name="車種")
+    grade_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="グレード名")
+    sale_date = models.DateField(blank=True, null=True, verbose_name="発売年度")
+    length = models.IntegerField(blank=False, null=True, verbose_name="全長")
+    width = models.IntegerField(blank=False, null=True, verbose_name="全幅")
+    height = models.IntegerField(blank=False, null=True, verbose_name="全高")
+    weight = models.IntegerField(blank=False, null=True, verbose_name="重量")
+    f_value = models.IntegerField(blank=False, null=True, verbose_name="F値")
+    r_value = models.IntegerField(blank=False, null=True, verbose_name="R値")
+    min_height = models.IntegerField(blank=False, null=True, verbose_name="ﾒｰｶｰの地上最低高")
+
+    class Meta:
+        db_table = 'mst_car_model'
+        ordering = ['name']
+        unique_together = ('maker', 'name', 'grade_name')
+        verbose_name = "車種"
+        verbose_name_plural = "車種一覧"
+
+    def __unicode__(self):
+        return self.name
+
+
+class Bank(BaseModel):
+    bank_name = models.CharField(max_length=20, verbose_name=u"銀行名称")
+    branch_no = models.CharField(max_length=7, verbose_name=u"支店番号")
+    branch_name = models.CharField(max_length=20, verbose_name=u"支店名称")
+    account_type = models.CharField(max_length=1, choices=constants.CHOICE_ACCOUNT_TYPE, verbose_name=u"預金種類")
+    account_number = models.CharField(max_length=7, verbose_name=u"口座番号")
+    account_holder = models.CharField(blank=True, null=True, max_length=20, verbose_name=u"口座名義")
+
+    class Meta:
+        db_table = 'mst_bank'
+        ordering = ['bank_name', 'branch_no']
+        unique_together = ('branch_no', 'account_number')
+        verbose_name = "銀行口座"
+        verbose_name_plural = "銀行口座一覧"
+
+    def __unicode__(self):
+        return self.bank_name

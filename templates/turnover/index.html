@@ -1,0 +1,76 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+
+{% block breadcrumbs_items %}
+{% endblock %}
+
+
+{% block footer %}
+<script type="text/javascript">
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="left-panel" style="flex-basis: 100%;">
+    <div class="card list-card">
+        <div class="card-content">
+            <table id="table" class="table bordered" data-form-control="datatable" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>物件番号</th>
+                        <th>駐車場名</th>
+                        <th>担当者</th>
+                        <th>駐車台数</th>
+                        <th>契約台数</th>
+                        <th>空き台数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>116001</td>
+                        <td>オザワビルディング駐車場（平成29年1月31日1台解約）</td>
+                        <td>担当者１</td>
+                        <td>14</td>
+                        <td>14</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>117003</td>
+                        <td>トナカイタワーズビル駐車場</td>
+                        <td>担当者１</td>
+                        <td>14</td>
+                        <td>14</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>201005</td>
+                        <td>コウノ・ビルＭＭ21駐車場</td>
+                        <td>担当者１</td>
+                        <td>14</td>
+                        <td>14</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">合計</td>
+                        <td>100</td>
+                        <td>90</td>
+                        <td>10</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+{% block right-panel %}
+{% endblock right-panel %}
+{% block action_btn %}
+<div class="fixed-action-btn">
+    {% if add_url %}
+      <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="{{ add_url }}"><i class="large material-icons">add</i></a>
+    {% endif %}
+</div>
+{% endblock %}
+{% endblock %}
