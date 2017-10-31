@@ -8,6 +8,28 @@
 
 {% block footer %}
 <script type="text/javascript">
+$(document).ready(function(){
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+            //alert("Ready");
+            console.log(modal, trigger);
+        },
+        complete: function(obj) {
+            //alert('Closed');
+        } // Callback for Modal close
+    });
+    $('ul.tabs').tabs({
+        onShow: function() {
+            //alert(1);
+        }
+    });
+});
 </script>
 {% endblock %}
 
@@ -15,54 +37,66 @@
 <div class="left-panel">
     <div class="card list-card">
         <div class="card-content">
+            <!--<div style="overflow-x: scroll; max-width: 800px;">-->
+            <!--<div style="width: 1500px;">-->
             <table id="table" class="table bordered" data-form-control="datatable" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>物件番号</th>
-                        <th data-name="{{ header }}" class="{{ header }}">住所</th>
-                        <th data-name="{{ header }}" class="{{ header }}">駐車場名</th>
+                <thead class="complex">
+                    <tr style="border-bottom-style: dotted;">
+                        <th rowspan="2">物件番号</th>
+                        <th>住所</th>
                         <th>車室</th>
-                        <th data-name="{{ header }}" class="{{ header }}">種類</th>
+                        <th>種類</th>
                         <th>担当</th>
                         <th>空き</th>
                         <th>契約終了日</th>
                         <th>順番待ち</th>
-                        <th>フリーレント<br/>終了日</th>
+                    </tr>
+                    <tr>
+                        <th style="padding-left: 5px;">駐車場名</th>
                         <th>募集賃料</th>
-                        <th>ＨＰ<br/>価格</th>
-                        <th>チラシ<br/>価格</th>
+                        <th>ＨＰ価格</th>
+                        <th>チラシ価格</th>
+                        <th>既契約者</th>
+                        <th>新テナント</th>
+                        <th>フリーレント</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="complex">
                     {% for object in queryset %}
-                    <tr>
-                        <td>{{ object.parking_lot.code }}</td>
+                    <tr style="border-bottom-style: dotted;{% cycle 'background-color: #f2f2f2' '' %}">
+                        <td rowspan="2">{{ object.parking_lot.code }}</td>
                         <td>{{ object.parking_lot.address }}</td>
-                        <td>{{ object.parking_lot }}</td>
                         <td><a href="{% url 'whiteboard:parking-position-detail' object.pk %}">{{ object.name }}</a></td>
                         <td>{{ object.parking_lot.segment }}</td>
                         <td>{{ object.parking_lot.staff|default:'' }}</td>
                         {% if object.contracts.count %}
                             <td><span class="new badge left grey" data-badge-caption="なし" style="margin-left: 0px;"></span></td>
                             <td>{{ object.contracts.first.end_date }}</td>
-                            <td><a href="{% url 'whiteboard:waiting-list' %}">3</a></td>
+                            <td class="center"><a href="{% url 'whiteboard:waiting-list' %}">3</a></td>
                         {% elif object.temp_contracts.count %}
                             <td><span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span></td>
                             <td></td>
-                            <td><a href="{% url 'whiteboard:waiting-list' %}">3</a></td>
+                            <td class="center"><a href="{% url 'whiteboard:waiting-list' %}">3</a></td>
                         {% else %}
                             <td><span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span></td>
                             <td></td>
                             <td></td>
                         {% endif %}
-                        <td>{{ object.parking_lot.free_end_date|default:'' }}</td>
+                    </tr>
+                    <tr style="{% cycle 'background-color: #f2f2f2' '' %}">
+                        <td style="padding-left: 5px;">{{ object.parking_lot }}</td>
                         <td>{{ object.price_recruitment|default:''|intcomma }}</td>
                         <td>{{ object.price_homepage|default:''|intcomma }}</td>
                         <td>{{ object.price_handbill|default:''|intcomma }}</td>
+                        <td>{{ object.parking_lot.free_end_date|default:'' }}</td>
+                        <td class="center">{% if object.parking_lot.is_existed_contractor_allowed %}○{% else %}×{% endif %}</td>
+                        <td class="center">{% if object.parking_lot.is_new_contractor_allowed %}○{% else %}×{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <!--</div>-->
+            <!--</div>-->
         </div>
     </div>
 </div>
@@ -87,9 +121,17 @@
                         <li><a href="#">神奈川県</a></li>
                         <li><a href="#">......</a></li>
                     </ul>
+                    <div>
+                        <button data-target="search_by_map" class="btn modal-trigger">地図上で検索</button>
+                    </div>
                 </div>
             </div>
             <div class="clearfix"></div>
+            <div id="search_by_map" class="modal modal-fixed-footer">
+                <div class="modal-content">
+                    <h4>地図上で検索</h4>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card filters-card">

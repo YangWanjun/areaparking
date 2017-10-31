@@ -117,7 +117,7 @@ function save_contractor(obj) {
                     <th>R値：</th>
                     <td>{{ parkingposition.r_value|default:''|intcomma }}</td>
                     <th>時間制限：</th>
-                    <td>{{ parkingposition.time_limit }}</td>
+                    <td>{{ parkingposition.time_limit|default:'' }}</td>
                     <th></th>
                     <td></td>
                 </tr>

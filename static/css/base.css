@@ -21,3 +21,14 @@ div.modal form td input {
 .side-nav li>a {
     font-size: 13px;
 }*/
+
+/**************** 複雑なテーブル *****************/
+thead.complex th {
+    font-size: 13px;
+    padding: 5px 5px;
+}
+
+tbody.complex td {
+    font-size: 13px;
+    padding: 3px 5px;
+}
