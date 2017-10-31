@@ -9,12 +9,12 @@ from utils.django_base import BaseModel
 
 # Create your models here.
 class TempContract(BaseModel):
-    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    parking_position = models.ForeignKey(ParkingPosition, verbose_name="車室番号")
-    contractor = models.ForeignKey(Contractor, verbose_name="契約者")
-    contract_date = models.DateField(verbose_name="契約日")
-    start_date = models.DateField(verbose_name="契約開始日")
-    end_date = models.DateField(verbose_name="契約終了日")
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    contract_date = models.DateField(blank=True, null=True, verbose_name="契約日")
+    start_date = models.DateField(blank=True, null=True, verbose_name="契約開始日")
+    end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")
     pay_date = models.DateField(blank=True, null=True, verbose_name="賃料発生日",
                                 help_text="未入力の場合、契約期間の開始日が賃料発生日として扱われます")
 

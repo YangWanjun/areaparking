@@ -25,6 +25,7 @@
                         <th>契約開始日</th>
                         <th>契約終了日</th>
                         <th>賃料発生日</th>
+                        <th>担当者</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,20 +34,21 @@
                         <td>{{ object.parking_lot }}</td>
                         <td><a href="{% url 'contractual:tempcontract_detail' object.pk %}">{{ object.parking_position }}</a></td>
                         <td>{{ object.contractor }}</td>
-                        <td>{{ object.contract_date }}</td>
-                        <td>{{ object.start_date }}</td>
-                        <td>{{ object.end_date }}</td>
+                        <td>{{ object.contract_date|default:'' }}</td>
+                        <td>{{ object.start_date|default:'' }}</td>
+                        <td>{{ object.end_date|default:'' }}</td>
                         <td>{{ object.pay_date|default:'' }}</td>
+                        <td>{{ object.parking_lot.staff|default:'' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <div class="card-action" style="float: inherit; margin-top: -50px;">
-                <div class="right-align">
-                    <a class="waves-effect waves-light btn" href="{% url 'contractual:create_temp_contract' %}">仮契約追加</a>
-                    <!--<a class="waves-effect waves-light btn grey" style="margin-right: 10px;">怪しい電話</a>-->
-                </div>
-            </div>
+            <!--<div class="card-action" style="float: inherit; margin-top: -50px;">-->
+                <!--<div class="right-align">-->
+                    <!--<a class="waves-effect waves-light btn" href="{% url 'contractual:create_temp_contract' %}">仮契約追加</a>-->
+                    <!--&lt;!&ndash;<a class="waves-effect waves-light btn grey" style="margin-right: 10px;">怪しい電話</a>&ndash;&gt;-->
+                <!--</div>-->
+            <!--</div>-->
         </div>
     </div>
 </div>

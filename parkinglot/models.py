@@ -4,9 +4,11 @@ import os
 import datetime
 
 from django.db import models
+from django.db.models import Q
 from django.core. validators import RegexValidator
 
 from master.models import ParkingLotType, ParkingTimeLimit, ManagementType
+from department import models as department_models
 from utils.django_base import BaseModel
 
 
@@ -47,8 +49,12 @@ class ParkingLot(BaseModel):
     lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
     post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name="郵便番号")
     traffic = models.CharField(max_length=200, blank=True, null=True, verbose_name="交通")
+    nearest_station = models.CharField(max_length=15, blank=True, null=True, verbose_name="最寄駅")
     car_count = models.IntegerField(default=0, verbose_name="駐車台数")
     bike_count = models.IntegerField(default=0, verbose_name="駐輪台数")
+    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
+    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
+    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
@@ -62,6 +68,26 @@ class ParkingLot(BaseModel):
 
     def address(self):
         return "{}{}{}{}{}".format(self.pref_name, self.city_name, self.town_name or '', self.aza_name or '', self.other_name or '')
+
+    @property
+    def staff(self):
+        staff = self.parkinglotstaff_set.filter(start_date__lte=datetime.date.today()).first()
+        return staff.member if staff else None
+
+
+class ParkingLotStaff(BaseModel):
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    member = models.ForeignKey(department_models.Member, verbose_name="担当者")
+    start_date = models.DateField(verbose_name="開始日")
+
+    class Meta:
+        db_table = 'ap_parking_lot_staff'
+        ordering = ['parking_lot', 'member', 'start_date']
+        verbose_name = "駐車場担当者"
+        verbose_name_plural = "駐車場担当者一覧"
+
+    def __unicode__(self):
+        return '{}-{}'.format(unicode(self.parking_lot), unicode(self.member))
 
 
 def get_image_path(self, filename):
@@ -102,12 +128,12 @@ class ParkingPosition(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     name = models.CharField(max_length=30, verbose_name="車室名称")
     # 賃料
-    price_recruitment = models.IntegerField(default=0, verbose_name="募集賃料（税込）")
-    price_recruitment_no_tax = models.IntegerField(default=0, verbose_name="募集賃料（税抜）")
-    price_homepage = models.IntegerField(default=0, verbose_name="ホームページ価格（税込）")
-    price_homepage_no_tax = models.IntegerField(default=0, verbose_name="ホームページ価格（税別）")
-    price_handbill = models.IntegerField(default=0, verbose_name="チラシ価格（税込）")
-    price_handbill_no_tax = models.IntegerField(default=0, verbose_name="チラシ価格（税別）")
+    price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
+    price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税抜）")
+    price_homepage = models.IntegerField(blank=True, null=True, verbose_name="ホームページ価格（税込）")
+    price_homepage_no_tax = models.IntegerField(blank=True, null=True, verbose_name="ホームページ価格（税別）")
+    price_handbill = models.IntegerField(blank=True, null=True, verbose_name="チラシ価格（税込）")
+    price_handbill_no_tax = models.IntegerField(blank=True, null=True, verbose_name="チラシ価格（税別）")
     # サイズ
     length = models.IntegerField(blank=True, null=True, verbose_name="全長")
     width = models.IntegerField(blank=True, null=True, verbose_name="全幅")
@@ -143,5 +169,5 @@ class ParkingPosition(BaseModel):
 
         :return:
         """
-        queryset = self.tempcontract_set.filter(start_date__gte=datetime.date.today())
+        queryset = self.tempcontract_set.filter(Q(start_date__gte=datetime.date.today()) | Q(start_date__isnull=True))
         return queryset

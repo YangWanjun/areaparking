@@ -100,7 +100,7 @@ class CarMaker(BaseModel):
 
 
 class CarModel(BaseModel):
-    maker = models.ForeignKey(CarMaker, verbose_name="メーカー")
+    maker = models.ForeignKey(CarMaker, on_delete=models.PROTECT, verbose_name="メーカー")
     name = models.CharField(max_length=50, verbose_name="車種")
     grade_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="グレード名")
     sale_date = models.DateField(blank=True, null=True, verbose_name="発売年度")

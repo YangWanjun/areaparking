@@ -8,10 +8,13 @@ CHOICE_CONTRACTOR_TYPE = (
     ('1', '個人'),
     ('2', '法人'),
 )
-
 CHOICE_GENDER = (
     ('1', '男'),
     ('2', '女'),
+)
+CHOICE_MARRIED = (
+    ('0', "未婚"),
+    ('1', "既婚"),
 )
 CHOICE_PAPER_DELIVERY_TYPE = (
     ('01', '基本情報の住所'),

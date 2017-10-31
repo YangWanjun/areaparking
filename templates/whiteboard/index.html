@@ -26,6 +26,7 @@
                         <th>担当</th>
                         <th>空き</th>
                         <th>契約終了日</th>
+                        <th>順番待ち</th>
                         <th>フリーレント<br/>終了日</th>
                         <th>募集賃料</th>
                         <th>ＨＰ<br/>価格</th>
@@ -40,21 +41,24 @@
                         <td>{{ object.parking_lot }}</td>
                         <td><a href="{% url 'whiteboard:parking-position-detail' object.pk %}">{{ object.name }}</a></td>
                         <td>{{ object.parking_lot.segment }}</td>
-                        <td>楊</td>
+                        <td>{{ object.parking_lot.staff|default:'' }}</td>
                         {% if object.contracts.count %}
                             <td><span class="new badge left grey" data-badge-caption="なし" style="margin-left: 0px;"></span></td>
                             <td>{{ object.contracts.first.end_date }}</td>
+                            <td><a href="{% url 'whiteboard:waiting-list' %}">3</a></td>
                         {% elif object.temp_contracts.count %}
                             <td><span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span></td>
                             <td></td>
+                            <td><a href="{% url 'whiteboard:waiting-list' %}">3</a></td>
                         {% else %}
                             <td><span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span></td>
                             <td></td>
+                            <td></td>
                         {% endif %}
-                        <td>2017/11/30</td>
-                        <td>{{ object.price_recruitment|intcomma }}</td>
-                        <td>{{ object.price_homepage|intcomma }}</td>
-                        <td>{{ object.price_handbill|intcomma }}</td>
+                        <td>{{ object.parking_lot.free_end_date|default:'' }}</td>
+                        <td>{{ object.price_recruitment|default:''|intcomma }}</td>
+                        <td>{{ object.price_homepage|default:''|intcomma }}</td>
+                        <td>{{ object.price_handbill|default:''|intcomma }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

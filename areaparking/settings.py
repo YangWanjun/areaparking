@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'whiteboard.apps.WhiteboardConfig',
     'contractual.apps.ContractualConfig',
     'turnover.apps.TurnoverConfig',
+    'department.apps.DepartmentConfig',
     'rest_framework',
 ]
 

@@ -41,10 +41,10 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def delete(self, using=None, keep_parents=False):
-        self.is_deleted = True
-        self.deleted_date = datetime.datetime.now()
-        self.save()
+    # def delete(self, using=None, keep_parents=False):
+    #     self.is_deleted = True
+    #     self.deleted_date = datetime.datetime.now()
+    #     self.save()
 
 
 class BaseAdmin(admin.ModelAdmin):

@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404
 
+from material.frontend.views import ModelViewSet
+
 from utils.django_base import BaseTemplateView
 
 from parkinglot import models as parkinglot_model
@@ -10,12 +12,16 @@ from contract.forms import ContractorForm
 
 
 # Create your views here.
+class ParkingPositionViewSet(ModelViewSet):
+    model = parkinglot_model.ParkingPosition
+
+
 class ParkingPositionListView(BaseTemplateView):
     template_name = "./whiteboard/index.html"
 
     def get_context_data(self, **kwargs):
         context = super(ParkingPositionListView, self).get_context_data(**kwargs)
-        queryset = parkinglot_model.ParkingPosition.objects.public_all().order_by()
+        queryset = parkinglot_model.ParkingPosition.objects.public_all().order_by()[:100]
         context.update({
             'queryset': queryset,
         })

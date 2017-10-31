@@ -24,12 +24,22 @@ class ParkingLotDocInline(admin.TabularInline):
     extra = 1
 
 
+class ParkingLotStaff(admin.TabularInline):
+    model = models.ParkingLotStaff
+    extra = 1
+
+
 @admin.register(models.ParkingLot)
 class ParkingLotAdmin(BaseAdmin):
     icon = '<i class="material-icons">local_parking</i>'
     list_display = ('code', 'name', 'segment', 'pref_name', 'city_name', 'town_name')
     list_display_links = ('name',)
     search_fields = ('code', 'name')
+    list_filter = (
+        ('segment', admin.RelatedOnlyFieldListFilter),
+        ('pref_name', admin.AllValuesFieldListFilter),
+        ('city_name', admin.AllValuesFieldListFilter),
+    )
     fields = (
         'code',
         ('name', 'kana'),
@@ -38,11 +48,22 @@ class ParkingLotAdmin(BaseAdmin):
         ('pref_code', 'pref_name', 'city_code', 'city_name'),
         ('town_name', 'aza_name', 'other_name'),
         ('lon', 'lat'),
-        'traffic',
+        ('traffic', 'nearest_station'),
         ('car_count', 'bike_count'),
+        ('is_existed_contractor_allowed', 'is_new_contractor_allowed'),
+        'free_end_date',
         'comment'
     )
-    inlines = (ParkingLotImageInline, ParkingLotDocInline, ParkingPositionInline,)
+    inlines = (ParkingLotImageInline, ParkingLotDocInline, ParkingLotStaff, ParkingPositionInline,)
+
+
+@admin.register(models.ParkingLotStaff)
+class ParkingLotStaffAdmin(BaseAdmin):
+    list_display = ('parking_lot', 'member', 'start_date')
+    search_fields = ('parking_lot', 'member')
+    list_filter = (
+        ('member', admin.RelatedOnlyFieldListFilter),
+    )
 
 
 @admin.register(models.ParkingPosition)
@@ -50,7 +71,7 @@ class ParkingPosition(BaseAdmin):
     list_display = ('parking_lot', 'name', 'price_recruitment_no_tax', 'price_homepage_no_tax', 'price_handbill_no_tax',
                     'length', 'width', 'height', 'weight')
     list_display_links = ('name',)
-    search_fields = ('parking_plot__code', 'parking_plot__name')
+    search_fields = ('parking_lot__code', 'parking_lot__name')
     fieldsets = (
         (None, {
             'fields': (
