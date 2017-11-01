@@ -88,9 +88,9 @@ $(document).ready(function(){
                         <td>{{ object.price_recruitment|default:''|intcomma }}</td>
                         <td>{{ object.price_homepage|default:''|intcomma }}</td>
                         <td>{{ object.price_handbill|default:''|intcomma }}</td>
-                        <td>{{ object.parking_lot.free_end_date|default:'' }}</td>
                         <td class="center">{% if object.parking_lot.is_existed_contractor_allowed %}○{% else %}×{% endif %}</td>
                         <td class="center">{% if object.parking_lot.is_new_contractor_allowed %}○{% else %}×{% endif %}</td>
+                        <td>{{ object.parking_lot.free_end_date|default:'' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -127,9 +127,12 @@ $(document).ready(function(){
                 </div>
             </div>
             <div class="clearfix"></div>
-            <div id="search_by_map" class="modal modal-fixed-footer">
+            <div id="search_by_map" class="modal modal-fixed-footer" style="width: 980px; min-height:550px;">
                 <div class="modal-content">
                     <h4>地図上で検索</h4>
+                    <div class="row" style="text-align: center;">
+                        <img src="/static/img/map.png">
+                    </div>
                 </div>
             </div>
         </div>
