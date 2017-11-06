@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'whiteboard.apps.WhiteboardConfig',
     'turnover.apps.TurnoverConfig',
     'department.apps.DepartmentConfig',
+    'revolution.apps.RevolutionConfig',
     'rest_framework',
 ]
 
@@ -99,7 +100,15 @@ if sys.platform == "win32":
             'PASSWORD': 'root',
             'HOST': r'EB097-PC\SQLEXPRESS',
             'PORT': '',
-        }
+        },
+        'fk5dtsql': {
+            'ENGINE': 'sql_server.pyodbc',
+            'NAME': 'fk5dtsql',
+            'USER': 'sa',
+            'PASSWORD': 'root',
+            'HOST': r'EB097-PC\SQLEXPRESS',
+            'PORT': '',
+        },
         # 'default': {
         #     'ENGINE': 'django.db.backends.sqlite3',
         #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -112,6 +121,8 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+
+DATABASE_ROUTERS = ['areaparking.db_router.DbRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

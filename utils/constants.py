@@ -4,6 +4,9 @@ from __future__ import unicode_literals
 
 SYSTEM_NAME = "エリアパーキング"
 
+DATABASE_DEFAULT = "default"
+DATABASE_REVOLUTION = "fk5dtsql"
+
 CHOICE_CONTRACTOR_TYPE = (
     ('1', '個人'),
     ('2', '法人'),

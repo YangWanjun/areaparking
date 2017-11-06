@@ -7,8 +7,12 @@ import django
 from django.core.management import call_command
 
 from contract import migrations as contract_migrations
+from department import migrations as department_migrations
 from master import migrations as master_migrations
 from parkinglot import migrations as parkinglot_migrations
+from revolution import migrations as revolution_migrations
+from turnover import migrations as turnover_migrations
+from whiteboard import migrations as whiteboard_migrations
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "areaparking.settings")
@@ -25,9 +29,9 @@ else:
 
 
 def main():
-    del_migration_records()
+    # del_migration_records()
     del_migration_files()
-    migrate()
+    # migrate()
 
 
 def migrate():
@@ -56,8 +60,12 @@ def del_migration_records():
 def del_migration_files():
     path_list = list()
     path_list.append(os.path.dirname(contract_migrations.__file__))
+    path_list.append(os.path.dirname(department_migrations.__file__))
     path_list.append(os.path.dirname(master_migrations.__file__))
     path_list.append(os.path.dirname(parkinglot_migrations.__file__))
+    path_list.append(os.path.dirname(revolution_migrations.__file__))
+    path_list.append(os.path.dirname(turnover_migrations.__file__))
+    path_list.append(os.path.dirname(whiteboard_migrations.__file__))
 
     for path in path_list:
         for filename in os.listdir(path):

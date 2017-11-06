@@ -56,6 +56,14 @@ class BaseAdmin(admin.ModelAdmin):
         return actions
 
 
+class BaseAdminChangeOnly(BaseAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 class BaseForm(forms.ModelForm):
     pass
 

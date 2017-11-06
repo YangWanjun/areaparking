@@ -100,7 +100,7 @@ class Contract(BaseModel):
     pay_date = models.DateField(blank=True, null=True, verbose_name="賃料発生日",
                                 help_text="未入力の場合、契約期間の開始日が賃料発生日として扱われます")
     # 口座情報
-    bank = models.ForeignKey(master_models.Bank, blank=True, null=True, on_delete=models.PROTECT, verbose_name="振込先口座")
+    # bank = models.ForeignKey(master_models.Bank, blank=True, null=True, on_delete=models.PROTECT, verbose_name="振込先口座")
 
     class Meta:
         db_table = 'ap_contract'
