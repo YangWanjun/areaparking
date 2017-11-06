@@ -6,8 +6,8 @@ from django.apps import AppConfig
 from material.frontend.apps import ModuleMixin
 
 
-class ContractConfig(AppConfig):
+class ContractConfig(ModuleMixin, AppConfig):
     name = 'contract'
     icon = '<i class="material-icons">done_all</i>'
     verbose_name = '契約管理'
-    order = 31
+    order = 30

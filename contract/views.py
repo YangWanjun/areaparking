@@ -1,12 +1,69 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
+
 from rest_framework import viewsets
+from material.frontend.views import CreateModelView
 
 from . import models, serializers
+from utils.django_base import BaseTemplateView
 
 
 # Create your views here.
 class ContractorViewSet(viewsets.ModelViewSet):
     queryset = models.Contractor.objects.public_all()
     serializer_class = serializers.ContractorSerializer
+
+
+class TempContractListView(BaseTemplateView):
+    template_name = "./contract/index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(TempContractListView, self).get_context_data(**kwargs)
+        queryset = models.TempContract.objects.public_all().order_by()
+        context.update({
+            'queryset': queryset,
+        })
+        return context
+
+
+class CreateTempContractView(CreateModelView):
+    model = models.TempContract
+
+    def get_initial(self):
+        initial = self.initial
+        parking_position_id = self.request.GET.get('parking_position_id', None)
+        if parking_position_id:
+            parking_position = get_object_or_404(models.ParkingPosition, pk=parking_position_id)
+            initial.update({
+                'parking_position': parking_position,
+                'parking_lot': parking_position.parking_lot
+            })
+        contractor_id = self.request.GET.get('contractor', None)
+        if contractor_id:
+            contractor = get_object_or_404(models.Contractor, pk=contractor_id)
+            initial.update({
+                'contractor': contractor,
+            })
+        return initial
+
+    def get_success_url(self):
+        return reverse('contract:tempcontract_detail', args=(self.object.pk,))
+
+
+class TempContractDetailView(BaseTemplateView):
+    template_name = './contract/temp-contract.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TempContractDetailView, self).get_context_data(**kwargs)
+        temp_contract = get_object_or_404(models.TempContract, pk=kwargs.get('id'))
+        parkingposition = temp_contract.parking_position
+        contractor = temp_contract.contractor
+        context.update({
+            'temp_contract': temp_contract,
+            'contractor': contractor,
+            'parkingposition': parkingposition,
+        })
+        return context

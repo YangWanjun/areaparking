@@ -2,3 +2,4 @@ django==1.11.4
 pillow
 django-material==1.0
 xlrd==1.1.0
+django-pyodbc-azure
