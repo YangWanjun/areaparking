@@ -5,53 +5,18 @@ import datetime
 
 from django.db import models
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 from django.core. validators import RegexValidator
 
-from master.models import ParkingLotType, ParkingTimeLimit, ManagementType
+from master.models import ParkingLotType, ParkingTimeLimit
+from revolution.models import BkMst
 from department import models as department_models
 from utils.django_base import BaseModel
 
 
 # Create your models here.
-class Managerment(BaseModel):
-    code = models.IntegerField(
-        verbose_name="管理会社No.", unique=True,
-        validators=(RegexValidator(regex=r'^\d{1,8}$'),)
-    )
-    segment = models.ForeignKey(ManagementType, verbose_name="駐車場分類")
-    name = models.CharField(max_length=100, verbose_name="管理会社名称")
-    kana = models.CharField(max_length=100, blank=True, null=True, verbose_name="管理会社カナ")
-    post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name="郵便番号")
-    address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所１")
-    address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所２")
-    tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
-    fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"ファックス")
-    email = models.EmailField(blank=True, null=True, verbose_name="メールアドレス")
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
-
-
 class ParkingLot(BaseModel):
-    code = models.IntegerField(
-        verbose_name="駐車場No.", unique=True,
-        validators=(RegexValidator(regex=r'^\d{1,8}$'),)
-    )
-    name = models.CharField(max_length=100, verbose_name="駐車場名称")
-    kana = models.CharField(max_length=100, blank=True, null=True, verbose_name="駐車場カナ")
-    segment = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
-    pref_code = models.CharField(max_length=2, verbose_name="都道府県コード")
-    pref_name = models.CharField(max_length=15,verbose_name="都道府県名称")
-    city_code = models.CharField(max_length=5, verbose_name="市区町村コード")
-    city_name = models.CharField(max_length=15,verbose_name="市区町村名称")
-    town_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="町域名称")
-    aza_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="丁番地")
-    other_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="その他")
-    lon = models.FloatField(blank=True, null=True, verbose_name="経度")
-    lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
-    post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name="郵便番号")
-    traffic = models.CharField(max_length=200, blank=True, null=True, verbose_name="交通")
-    nearest_station = models.CharField(max_length=15, blank=True, null=True, verbose_name="最寄駅")
-    car_count = models.IntegerField(default=0, verbose_name="駐車台数")
-    bike_count = models.IntegerField(default=0, verbose_name="駐輪台数")
+    bk_no = models.IntegerField(verbose_name="賃貸革命物件")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
@@ -59,15 +24,27 @@ class ParkingLot(BaseModel):
 
     class Meta:
         db_table = 'ap_parking_lot'
-        ordering = ['code']
         verbose_name = "駐車場"
         verbose_name_plural = "駐車場一覧"
 
     def __unicode__(self):
-        return self.name
+        return unicode(self.buken)
+
+    @property
+    def buken(self):
+        try:
+            return BkMst.objects.get(pk=self.bk_no)
+        except ObjectDoesNotExist:
+            return None
 
     def address(self):
-        return "{}{}{}{}{}".format(self.pref_name, self.city_name, self.town_name or '', self.aza_name or '', self.other_name or '')
+        if self.buken:
+            return "{}{}{}{}{}".format(
+                self.buken.add_ken, self.buken.add_si, self.buken.add_cyo or '',
+                self.buken.add_banti or '', self.buken.add_etc or ''
+            )
+        else:
+            return None
 
     @property
     def staff(self):

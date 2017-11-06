@@ -114,6 +114,35 @@ if sys.platform == "win32":
         #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         # }
     }
+elif sys.platform == "darwin":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'sql_server.pyodbc',
+            'NAME': 'areaparking',
+            'USER': 'sa',
+            'PASSWORD': 'root@123',
+            'HOST': r'localhost',
+            'PORT': '1433',
+            'OPTIONS': {
+                'driver': 'FreeTDS',
+                'host_is_server': True,
+                'extra_params': 'TDS_VERSION=7.3',  # TDS 7.3 in freetds supports latest SQL Server 2008 types.
+            },
+        },
+        'fk5dtsql': {
+            'ENGINE': 'sql_server.pyodbc',
+            'NAME': 'fk5dtsql',
+            'USER': 'sa',
+            'PASSWORD': 'root@123',
+            'HOST': r'localhost',
+            'PORT': '1433',
+            'OPTIONS': {
+                'driver': 'FreeTDS',
+                'host_is_server': True,
+                'extra_params': 'TDS_VERSION=7.3',  # TDS 7.3 in freetds supports latest SQL Server 2008 types.
+            },
+        },
+    }
 else:
     DATABASES = {
         'default': {

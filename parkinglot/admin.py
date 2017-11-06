@@ -32,28 +32,22 @@ class ParkingLotStaff(admin.TabularInline):
 @admin.register(models.ParkingLot)
 class ParkingLotAdmin(BaseAdmin):
     icon = '<i class="material-icons">local_parking</i>'
-    list_display = ('code', 'name', 'segment', 'pref_name', 'city_name', 'town_name')
-    list_display_links = ('name',)
-    search_fields = ('code', 'name')
-    list_filter = (
-        ('segment', admin.RelatedOnlyFieldListFilter),
-        ('pref_name', admin.AllValuesFieldListFilter),
-        ('city_name', admin.AllValuesFieldListFilter),
-    )
-    fields = (
-        'code',
-        ('name', 'kana'),
-        'segment',
-        'post_code',
-        ('pref_code', 'pref_name', 'city_code', 'city_name'),
-        ('town_name', 'aza_name', 'other_name'),
-        ('lon', 'lat'),
-        ('traffic', 'nearest_station'),
-        ('car_count', 'bike_count'),
-        ('is_existed_contractor_allowed', 'is_new_contractor_allowed'),
-        'free_end_date',
-        'comment'
-    )
+    list_display = ('bk_no',)
+    # search_fields = ('buken__bk_name',)
+    # fields = (
+    #     'code',
+    #     ('name', 'kana'),
+    #     'segment',
+    #     'post_code',
+    #     ('pref_code', 'pref_name', 'city_code', 'city_name'),
+    #     ('town_name', 'aza_name', 'other_name'),
+    #     ('lon', 'lat'),
+    #     ('traffic', 'nearest_station'),
+    #     ('car_count', 'bike_count'),
+    #     ('is_existed_contractor_allowed', 'is_new_contractor_allowed'),
+    #     'free_end_date',
+    #     'comment'
+    # )
     inlines = (ParkingLotImageInline, ParkingLotDocInline, ParkingLotStaff, ParkingPositionInline,)
 
 
