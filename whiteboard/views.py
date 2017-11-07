@@ -9,11 +9,12 @@ from utils.django_base import BaseTemplateView
 
 from parkinglot import models as parkinglot_model
 from contract.forms import ContractorForm
+from . import models
 
 
 # Create your views here.
-class ParkingPositionViewSet(ModelViewSet):
-    model = parkinglot_model.ParkingPosition
+class WhiteBoardViewSet(ModelViewSet):
+    model = models.WhiteBoard
 
 
 class ParkingPositionListView(BaseTemplateView):

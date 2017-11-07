@@ -5,37 +5,28 @@ import datetime
 
 from django.db import models
 from django.db.models import Q
-from django.core.exceptions import ObjectDoesNotExist
-from django.core. validators import RegexValidator
 
-from master.models import ParkingLotType, ParkingTimeLimit
+from master.models import ParkingTimeLimit
 from revolution.models import BkMst
-from department import models as department_models
 from utils.django_base import BaseModel
 
 
 # Create your models here.
 class ParkingLot(BaseModel):
-    bk_no = models.IntegerField(verbose_name="賃貸革命物件")
+    buken = models.ForeignKey(BkMst, verbose_name="賃貸革命物件")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
+        managed = False
         db_table = 'ap_parking_lot'
         verbose_name = "駐車場"
         verbose_name_plural = "駐車場一覧"
 
     def __unicode__(self):
         return unicode(self.buken)
-
-    @property
-    def buken(self):
-        try:
-            return BkMst.objects.get(pk=self.bk_no)
-        except ObjectDoesNotExist:
-            return None
 
     def address(self):
         if self.buken:
@@ -45,26 +36,6 @@ class ParkingLot(BaseModel):
             )
         else:
             return None
-
-    @property
-    def staff(self):
-        staff = self.parkinglotstaff_set.filter(start_date__lte=datetime.date.today()).first()
-        return staff.member if staff else None
-
-
-class ParkingLotStaff(BaseModel):
-    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    member = models.ForeignKey(department_models.Member, verbose_name="担当者")
-    start_date = models.DateField(verbose_name="開始日")
-
-    class Meta:
-        db_table = 'ap_parking_lot_staff'
-        ordering = ['parking_lot', 'member', 'start_date']
-        verbose_name = "駐車場担当者"
-        verbose_name_plural = "駐車場担当者一覧"
-
-    def __unicode__(self):
-        return '{}-{}'.format(unicode(self.parking_lot), unicode(self.member))
 
 
 def get_image_path(self, filename):
@@ -77,17 +48,6 @@ def get_image_path(self, filename):
 def get_doc_path(self, filename):
     prefix = 'docs/{}/'.format(self.parking_lot.name)
     return prefix + filename
-
-
-class ParkingLotImage(BaseModel):
-    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    image = models.ImageField(upload_to=get_image_path)
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
-
-    class Meta:
-        db_table = 'ap_parking_lot_image'
-        verbose_name = "駐車場画像"
-        verbose_name_plural = "駐車場画像一覧"
 
 
 class ParkingLotDoc(BaseModel):
@@ -103,7 +63,8 @@ class ParkingLotDoc(BaseModel):
 
 class ParkingPosition(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    name = models.CharField(max_length=30, verbose_name="車室名称")
+    seq_no = models.IntegerField(verbose_name="内部番号")
+    name = models.CharField(max_length=30, blank=True, null=True, verbose_name="車室名称")
     # 賃料
     price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
     price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税抜）")
@@ -127,13 +88,16 @@ class ParkingPosition(BaseModel):
 
     class Meta:
         db_table = 'ap_parking_position'
-        unique_together = ('parking_lot', 'name')
+        unique_together = ('parking_lot', 'seq_no')
         ordering = ['name']
         verbose_name = "車室"
         verbose_name_plural = "車室一覧"
 
     def __unicode__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return self.seq_no
 
     def contracts(self, date=None):
         if not date:

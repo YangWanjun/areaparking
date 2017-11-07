@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import os
 import re
+import logging
 
 
 def get_root_path():
@@ -25,3 +26,7 @@ def get_num_from_str(value):
         return int(re.sub(r'[^\d]*', '', value))
     except ValueError:
         return 0
+
+
+def get_batch_logger():
+    return logging.getLogger('revolution.management.commands')

@@ -3,16 +3,19 @@ from __future__ import unicode_literals
 import os
 import xlrd
 import datetime
+import re
 
 import common
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Value as V, CharField
 from django.db.models.functions import Concat
+from django.utils import timezone
 
 from master.models import CarModel, CarMaker, ParkingLotType
 from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotStaff
 from department.models import Member
+from revolution.models import MBrui, BkMst, BaiRooms, MTanto
 
 def sync_car_models():
     path = os.path.join(common.get_data_path(), '自動車一覧.xls')
@@ -63,7 +66,7 @@ def sync_car_models():
         print "%sが見つかりません。" % path
 
 
-def sync_whiteboard_area():
+def sync_buken_master():
     path = b"C:\Users\EB097\Documents\whiteboard.xlsx"
     if os.path.exists(path):
         book = xlrd.open_workbook(path)
@@ -71,60 +74,72 @@ def sync_whiteboard_area():
         for row in range(sheet.nrows):
             if row == 0:
                 continue
+            bk_no = 0
             try:
-                lot_no = sheet.cell(row, 10).value
-                if isinstance(lot_no, basestring) and lot_no.find('/') > 0:
-                    lot_no = lot_no.split('/')[1]
+                bk_no = sheet.cell(row, 10).value
+                if isinstance(bk_no, basestring) and bk_no.find('/') > 0:
+                    bk_no = bk_no.split('/')[1]
+                if not bk_no:
+                    continue
+                bk_no = int(bk_no)
                 # 駐車場分類
-                lot_type = sheet.cell(row, 26).value
-                if not lot_type:
-                    lot_type = "その他"
+                brui_name = sheet.cell(row, 26).value
+                if not brui_name:
+                    brui_name = "その他"
                 try:
-                    parking_lot_type = ParkingLotType.objects.get(name=lot_type)
+                    brui = MBrui.objects.get(brui_name=brui_name)
                 except ObjectDoesNotExist:
-                    parking_lot_type = ParkingLotType()
-                    parking_lot_type.code = row
-                    parking_lot_type.name = lot_type
-                    parking_lot_type.save()
+                    brui = MBrui()
+                    brui.brui_no = row
+                    brui.brui_name = brui_name
+                    brui.kosin_date = timezone.now()
+                    brui.save()
                 # 駐車場
                 try:
-                    parking_lot = ParkingLot.objects.get(code=lot_no)
+                    buken = BkMst.objects.get(bk_no=bk_no)
                 except ObjectDoesNotExist:
-                    parking_lot = ParkingLot()
-                    parking_lot.code = lot_no
-                    parking_lot.name = sheet.cell(row, 25).value
-                    parking_lot.segment = parking_lot_type
-                    parking_lot.pref_code = '13'
-                    parking_lot.pref_name = "東京都"
-                    parking_lot.city_code = '13110'
-                    parking_lot.city_name = sheet.cell(row, 9).value + "区"
+                    buken = BkMst()
+                    buken.bk_no = bk_no
+                    buken.bk_name = sheet.cell(row, 25).value
+                    buken.brui = brui
+                    buken.ken_no = 13
+                    buken.add_ken = "東京都"
+                    buken.si_no = '13110'
+                    buken.add_si = sheet.cell(row, 9).value + "区"
                     locations = sheet.cell(row, 22).value.split('/')
                     if len(locations) == 2:
-                        parking_lot.town_name = locations[1]
-                        parking_lot.nearest_station = locations[0]
+                        buken.add_cyo = locations[1]
+                        buken.kotsu1 = locations[0]
                     else:
-                        parking_lot.town_name = sheet.cell(row, 22).value
-                    parking_lot.is_existed_contractor_allowed = sheet.cell(row, 18).value == "○"
-                    parking_lot.is_new_contractor_allowed = sheet.cell(row, 19).value == "○"
+                        buken.add_cyo = sheet.cell(row, 22).value
+                    # buken.is_existed_contractor_allowed = sheet.cell(row, 18).value == "○"
+                    # buken.is_new_contractor_allowed = sheet.cell(row, 19).value == "○"
                     free_end_date = sheet.cell(row, 20).value
                     if isinstance(free_end_date, datetime.date):
-                        parking_lot.free_end_date = free_end_date
-                    parking_lot.save()
-                parking_position = ParkingPosition()
-                parking_position.parking_lot = parking_lot
-                parking_position.name = 'No.{}'.format(row)
-                parking_position.price_recruitment = sheet.cell(row, 28).value or None
-                parking_position.price_recruitment_no_tax = sheet.cell(row, 29).value or None
-                parking_position.price_homepage = sheet.cell(row, 32).value or None
-                parking_position.price_homepage_no_tax = sheet.cell(row, 31).value or None
-                parking_position.price_handbill = sheet.cell(row, 34).value or None
-                parking_position.price_handbill_no_tax = sheet.cell(row, 33).value or None
-                parking_position.save()
+                        # buken.free_end_date = free_end_date
+                        pass
+                    buken.save()
+                # 車室
+                try:
+                    room = BaiRooms.objects.get(buken=buken, naibu_no=row)
+                except ObjectDoesNotExist:
+                    room = BaiRooms()
+                    room.buken = buken
+                    room.naibu_no = row
+                    room.hy_no = 'No.{}'.format(row)
+                    room.kosin_date = timezone.now()
+                    # room.price_recruitment = sheet.cell(row, 28).value or None
+                    # room.price_recruitment_no_tax = sheet.cell(row, 29).value or None
+                    # room.price_homepage = sheet.cell(row, 32).value or None
+                    # room.price_homepage_no_tax = sheet.cell(row, 31).value or None
+                    # room.price_handbill = sheet.cell(row, 34).value or None
+                    # room.price_handbill_no_tax = sheet.cell(row, 33).value or None
+                    room.save()
             except Exception as ex:
-                print row, unicode(ex)
+                print row, bk_no, unicode(ex)
 
 
-def sync_parking_lot_staff():
+def sync_buken_tanto():
     path = b"C:\Users\EB097\Documents\whiteboard.xlsx"
     if os.path.exists(path):
         book = xlrd.open_workbook(path)
@@ -132,26 +147,20 @@ def sync_parking_lot_staff():
         for row in range(sheet.nrows):
             if row == 0:
                 continue
-            lot_no = sheet.cell(row, 44).value
+            bk_no = sheet.cell(row, 44).value
             name = sheet.cell(row, 50).value
-            if lot_no and name:
+            if bk_no and name:
                 try:
-                    parking_lot = ParkingLot.objects.get(code=lot_no)
+                    buken = BkMst.objects.get(pk=bk_no)
                     try:
-                        member = Member.objects.annotate(
-                            name=Concat('first_name', V('　'), 'last_name', output_field=CharField())
-                        ).get(name=name)
-                        if ParkingLotStaff.objects.public_filter(parking_lot=parking_lot, member=member).count() == 0:
-                            print 'Adding', name
-                            staff = ParkingLotStaff(parking_lot=parking_lot, member=member, start_date="2017-01-01")
-                            staff.save()
-                        else:
-                            print name, 'existed'
+                        member = MTanto.objects.get(tanto_name=name)
                     except ObjectDoesNotExist:
-                        print name, 'not existed'
+                        member = MTanto(tanto_no=row, tanto_name=name)
+                        member.save()
+                    if not buken.tanto:
+                        buken.tanto = member
+                        buken.save()
+                    else:
+                        print name, 'existed'
                 except ObjectDoesNotExist:
-                    print lot_no, 'not existed'
-
-
-if __name__ == '__main__':
-    sync_whiteboard_area()
+                    print bk_no, 'not existed'

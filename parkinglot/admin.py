@@ -14,58 +14,43 @@ class ParkingPositionInline(admin.TabularInline):
     extra = 0
 
 
-class ParkingLotImageInline(admin.TabularInline):
-    model = models.ParkingLotImage
-    extra = 1
-
-
 class ParkingLotDocInline(admin.TabularInline):
     model = models.ParkingLotDoc
-    extra = 1
-
-
-class ParkingLotStaff(admin.TabularInline):
-    model = models.ParkingLotStaff
     extra = 1
 
 
 @admin.register(models.ParkingLot)
 class ParkingLotAdmin(BaseAdmin):
     icon = '<i class="material-icons">local_parking</i>'
-    list_display = ('bk_no',)
-    # search_fields = ('buken__bk_name',)
-    # fields = (
-    #     'code',
-    #     ('name', 'kana'),
-    #     'segment',
-    #     'post_code',
-    #     ('pref_code', 'pref_name', 'city_code', 'city_name'),
-    #     ('town_name', 'aza_name', 'other_name'),
-    #     ('lon', 'lat'),
-    #     ('traffic', 'nearest_station'),
-    #     ('car_count', 'bike_count'),
-    #     ('is_existed_contractor_allowed', 'is_new_contractor_allowed'),
-    #     'free_end_date',
-    #     'comment'
-    # )
-    inlines = (ParkingLotImageInline, ParkingLotDocInline, ParkingLotStaff, ParkingPositionInline,)
-
-
-@admin.register(models.ParkingLotStaff)
-class ParkingLotStaffAdmin(BaseAdmin):
-    list_display = ('parking_lot', 'member', 'start_date')
-    search_fields = ('parking_lot', 'member')
+    list_display = ('bk_no', 'buken', 'address', 'tanto')
+    search_fields = ('buken__bk_no', 'buken__bk_name',)
+    inlines = (ParkingLotDocInline, ParkingPositionInline,)
     list_filter = (
-        ('member', admin.RelatedOnlyFieldListFilter),
+        'buken__tanto',
     )
+
+    def bk_no(self, obj):
+        return obj.buken.bk_no
+
+    def address(self, obj):
+        return obj.buken.address()
+
+    def tanto(self, obj):
+        return obj.buken.tanto
+
+    bk_no.short_description = "物件番号"
+    bk_no.admin_order_field = 'buken__bk_no'
+    address.short_description = "場所"
+    tanto.short_description = "担当者"
+    tanto.admin_order_field = 'buken__tanto'
 
 
 @admin.register(models.ParkingPosition)
 class ParkingPosition(BaseAdmin):
     list_display = ('parking_lot', 'name', 'price_recruitment_no_tax', 'price_homepage_no_tax', 'price_handbill_no_tax',
                     'length', 'width', 'height', 'weight')
-    list_display_links = ('name',)
-    search_fields = ('parking_lot__code', 'parking_lot__name')
+    list_display_links = ('parking_lot', 'name',)
+    search_fields = ('parking_lot__buken__bk_no', 'parking_lot__buken__bk_name')
     fieldsets = (
         (None, {
             'fields': (
@@ -96,15 +81,6 @@ class ParkingPosition(BaseAdmin):
             )
         }),
     )
-    # fields = (
-    #     ('parking_lot',),
-    #     'name',
-    #     ('length', 'width', 'height', 'weight'),
-    #     ('tyre_width', 'tyre_width_ap', 'min_height', 'min_height_ap'),
-    #     ('f_value', 'r_value', ),
-    #     'time_limit',
-    #     'comment'
-    # )
 
 
 admin.site.site_header = constants.SYSTEM_NAME

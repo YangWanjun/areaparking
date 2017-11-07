@@ -195,3 +195,32 @@ STATICFILES_DIRS = (
 )
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+LOG_ROOT = os.path.join(BASE_DIR, "logs")
+
+if not os.path.exists(LOG_ROOT):
+    os.mkdir(LOG_ROOT)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': "[%(asctime)s] %(levelname)s [PROCESS:%(process)d] [%(module)s:%(lineno)s] %(message)s",
+            'datefmt': "%Y/%m/%d %H:%M:%S"
+        },
+    },
+    'handlers': {
+        'batch': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'standard',
+            'filename': os.path.join(LOG_ROOT, "batch.log"),
+        },
+    },
+    'loggers': {
+        'revolution.management.commands': {
+            'handlers': ['batch'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    }
+}

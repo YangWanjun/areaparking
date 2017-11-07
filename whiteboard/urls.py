@@ -12,5 +12,5 @@ urlpatterns = [
     url('^parking-lot-(?P<id>\d+)\.html', views.ParkingLotDetail.as_view(), name='parking-lot-detail'),
     url('^parking-position-(?P<id>\d+)\.html', views.ParkingPositionDetail.as_view(), name='parking-position-detail'),
     url('^waiting-list\.html', views.WaitingListView.as_view(), name='waiting-list'),
-    # url('^parking-position/', include(views.ParkingPositionViewSet().urls)),
+    url('^whiteboard/', include(views.WhiteBoardViewSet().urls)),
 ]

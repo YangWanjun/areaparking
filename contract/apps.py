@@ -8,6 +8,6 @@ from material.frontend.apps import ModuleMixin
 
 class ContractConfig(ModuleMixin, AppConfig):
     name = 'contract'
-    icon = '<i class="material-icons">done_all</i>'
+    icon = '<i class="material-icons">library_books</i>'
     verbose_name = '契約管理'
     order = 30
