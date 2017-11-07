@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
 from material.frontend.views import ModelViewSet
 
-from utils.django_base import BaseTemplateView
+from utils.django_base import BaseTemplateView, BaseView
 
 from parkinglot import models as parkinglot_model
 from contract.forms import ContractorForm
@@ -13,8 +13,17 @@ from . import models
 
 
 # Create your views here.
+class Index(BaseView):
+
+    def get(self, request, *args, **kwargs):
+        return redirect('whiteboard:whiteboard_list')
+
+
 class WhiteBoardViewSet(ModelViewSet):
     model = models.WhiteBoard
+
+    def has_add_permission(self, request):
+        return False
 
 
 class ParkingPositionListView(BaseTemplateView):

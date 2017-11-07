@@ -12,18 +12,18 @@ SELECT lot.id as parking_lot_id
 	 , bk.bk_no
 	 , br.naibu_no
 	 , br.hy_no as position_name
-	 , lot.is_existed_contractor_allowed		-- ŠùŒ_–ñÒ
-	 , lot.is_new_contractor_allowed			-- Vƒeƒiƒ“ƒg
-	 , lot.free_end_date						-- ƒtƒŠ[ƒŒƒ“ƒgI—¹“ú
-	 , lot.comment as lot_comment				-- ’“Ôê”õl
-	 /* ’À—¿ */
+	 , lot.is_existed_contractor_allowed		-- æ—¢å¥‘ç´„è€…
+	 , lot.is_new_contractor_allowed			-- æ–°ãƒ†ãƒŠãƒ³ãƒˆ
+	 , lot.free_end_date						-- ãƒ•ãƒªãƒ¼ãƒ¬ãƒ³ãƒˆçµ‚äº†æ—¥
+	 , lot.comment as lot_comment				-- é§è»Šå ´å‚™è€ƒ
+	 /* è³ƒæ–™ */
 	 , pos.price_recruitment
 	 , pos.price_recruitment_no_tax
 	 , pos.price_homepage
 	 , pos.price_homepage_no_tax
 	 , pos.price_handbill
 	 , pos.price_handbill_no_tax
-	 /* ƒTƒCƒY */
+	 /* ã‚µã‚¤ã‚º */
 	 , pos.length
 	 , pos.width
 	 , pos.height
@@ -36,7 +36,7 @@ SELECT lot.id as parking_lot_id
 	 , pos.r_value
 
 	 , pos.time_limit_id
-	 , pos.comment as position_comment			-- Ôº‚Ì”õl
+	 , pos.comment as position_comment			-- è»Šå®¤ã®å‚™è€ƒ
   FROM [fk5dtsql].[dbo].[bk_mst] bk
   LEFT JOIN [areaparking].[dbo].[ap_parking_lot] lot ON lot.buken_id = bk.bk_no AND lot.is_deleted = 0
   JOIN [fk5dtsql].[dbo].[bai_rooms] br ON br.bk_no = bk.bk_no
