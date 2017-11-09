@@ -11,6 +11,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
+from utils import constants
+
 
 class ArrowSiwakePtn(models.Model):
     lib_no = models.SmallIntegerField(primary_key=True)
@@ -3737,18 +3739,17 @@ class BaiRendoKeychk(models.Model):
 
 
 class BaiRooms(models.Model):
-    # bk_no = models.IntegerField(primary_key=True, verbose_name="物件番号")
-    buken = models.ForeignKey('BkMst', db_column='bk_no', verbose_name="物件")
-    naibu_no = models.SmallIntegerField(primary_key=True, verbose_name="内部番号")
-    hy_no = models.CharField(max_length=8, blank=True, null=True, verbose_name="部屋番号")
-    chinryo = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name="賃料")
+    bk_no = models.IntegerField(primary_key=True)
+    naibu_no = models.SmallIntegerField(primary_key=True)
+    hy_no = models.CharField(max_length=8, blank=True, null=True)
+    chinryo = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     kyoeki = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     tyusya = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    madori = models.CharField(max_length=10, blank=True, null=True, verbose_name="間取り")
+    madori = models.CharField(max_length=10, blank=True, null=True)
     madori_uname = models.CharField(max_length=50, blank=True, null=True)
-    biko = models.CharField(max_length=50, blank=True, null=True, verbose_name="備考")
-    kosin_date = models.DateTimeField(blank=True, null=True, verbose_name="更新日")
-    kosin_user = models.CharField(max_length=30, blank=True, null=True, verbose_name="更新者")
+    biko = models.CharField(max_length=50, blank=True, null=True)
+    kosin_date = models.DateTimeField(blank=True, null=True)
+    kosin_user = models.CharField(max_length=30, blank=True, null=True)
     yobi_mj1 = models.CharField(max_length=50, blank=True, null=True)
     yobi_mj2 = models.CharField(max_length=50, blank=True, null=True)
     yobi_mj3 = models.CharField(max_length=50, blank=True, null=True)
@@ -3783,18 +3784,7 @@ class BaiRooms(models.Model):
     class Meta:
         managed = False
         db_table = 'bai_rooms'
-        unique_together = (('buken', 'naibu_no'),)
-        verbose_name = "車室"
-        verbose_name_plural = "車室一覧"
-
-    def __unicode__(self):
-        return self.hy_no if self.hy_no else str(self.naibu_no)
-
-    # def buken(self):
-    #     try:
-    #         return BkMst.objects.get(pk=self.bk_no)
-    #     except ObjectDoesNotExist:
-    #         return None
+        unique_together = (('bk_no', 'naibu_no'),)
 
 
 class BaiSeiyaku(models.Model):
@@ -10948,11 +10938,11 @@ class HyMovie(models.Model):
 
 
 class HyMst(models.Model):
-    bk_no = models.IntegerField(primary_key=True)
-    hy_no = models.CharField(max_length=8)
+    bk_no = models.IntegerField(primary_key=True, verbose_name="物件番号")
+    hy_no = models.CharField(max_length=8, verbose_name="部屋番号")
     crui_no = models.SmallIntegerField(blank=True, null=True)
     crui_no_sld = models.SmallIntegerField(blank=True, null=True)
-    madori = models.CharField(max_length=10, blank=True, null=True)
+    madori = models.CharField(max_length=10, blank=True, null=True, verbose_name="間取り")
     madori_sld1 = models.CharField(max_length=3, blank=True, null=True)
     madori_sld2 = models.CharField(max_length=10, blank=True, null=True)
     madoriu_name1 = models.CharField(max_length=50, blank=True, null=True)
@@ -11246,6 +11236,11 @@ class HyMst(models.Model):
         managed = False
         db_table = 'hy_mst'
         unique_together = (('bk_no', 'hy_no'),)
+        verbose_name = "部屋"
+        verbose_name_plural = "部屋一覧"
+
+    def __unicode__(self):
+        return self.hy_no
 
 
 class HySales(models.Model):
@@ -17103,97 +17098,104 @@ class KysGazo(models.Model):
 
 
 class KysMst(models.Model):
-    kys_no = models.IntegerField(primary_key=True)
-    kys_name = models.CharField(max_length=50, blank=True, null=True)
-    kys_kana = models.CharField(max_length=50, blank=True, null=True)
-    kys_rui = models.SmallIntegerField(blank=True, null=True)
-    post = models.CharField(max_length=10, blank=True, null=True)
-    add1 = models.CharField(max_length=50, blank=True, null=True)
-    add2 = models.CharField(max_length=50, blank=True, null=True)
-    tel1 = models.CharField(max_length=20, blank=True, null=True)
-    tel2 = models.CharField(max_length=20, blank=True, null=True)
-    fax = models.CharField(max_length=20, blank=True, null=True)
-    email = models.CharField(max_length=50, blank=True, null=True)
-    busyo_name = models.CharField(max_length=40, blank=True, null=True)
-    tanto_name = models.CharField(max_length=40, blank=True, null=True)
-    naisen_no = models.CharField(max_length=20, blank=True, null=True)
-    sex = models.SmallIntegerField(blank=True, null=True)
-    birthday = models.DateTimeField(blank=True, null=True)
-    honseki = models.CharField(max_length=50, blank=True, null=True)
-    kinmu_name = models.CharField(max_length=50, blank=True, null=True)
-    kinmu_post = models.CharField(max_length=10, blank=True, null=True)
-    kinmu_add1 = models.CharField(max_length=50, blank=True, null=True)
-    kinmu_add2 = models.CharField(max_length=50, blank=True, null=True)
-    kinmu_tel1 = models.CharField(max_length=20, blank=True, null=True)
-    kinmu_tel2 = models.CharField(max_length=20, blank=True, null=True)
-    kinmu_fax = models.CharField(max_length=20, blank=True, null=True)
-    kinmu_gy = models.CharField(max_length=50, blank=True, null=True)
-    kinmu_busyo = models.CharField(max_length=50, blank=True, null=True)
-    kinmu_nsya = models.DateTimeField(blank=True, null=True)
-    nensyu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    ren_name = models.CharField(max_length=50, blank=True, null=True)
-    ren_post = models.CharField(max_length=10, blank=True, null=True)
-    ren_add1 = models.CharField(max_length=50, blank=True, null=True)
-    ren_add2 = models.CharField(max_length=50, blank=True, null=True)
-    ren_tel1 = models.CharField(max_length=20, blank=True, null=True)
-    ren_tel2 = models.CharField(max_length=20, blank=True, null=True)
-    ren_fax = models.CharField(max_length=20, blank=True, null=True)
-    ren_aida = models.CharField(max_length=20, blank=True, null=True)
-    syorui_kbn = models.SmallIntegerField(blank=True, null=True)
-    syorui_name = models.CharField(max_length=50, blank=True, null=True)
-    syorui_post = models.CharField(max_length=10, blank=True, null=True)
-    syorui_add1 = models.CharField(max_length=50, blank=True, null=True)
-    syorui_add2 = models.CharField(max_length=50, blank=True, null=True)
-    syorui_tel1 = models.CharField(max_length=20, blank=True, null=True)
-    syorui_tel2 = models.CharField(max_length=20, blank=True, null=True)
-    syorui_fax = models.CharField(max_length=20, blank=True, null=True)
-    hs1_name = models.CharField(max_length=50, blank=True, null=True)
-    hs1_post = models.CharField(max_length=10, blank=True, null=True)
-    hs1_add1 = models.CharField(max_length=50, blank=True, null=True)
-    hs1_add2 = models.CharField(max_length=50, blank=True, null=True)
-    hs1_tel1 = models.CharField(max_length=20, blank=True, null=True)
-    hs1_tel2 = models.CharField(max_length=20, blank=True, null=True)
-    hs1_fax = models.CharField(max_length=20, blank=True, null=True)
-    hs1_aida = models.CharField(max_length=20, blank=True, null=True)
-    hs1_kinmu_name = models.CharField(max_length=50, blank=True, null=True)
-    hs1_kinmu_post = models.CharField(max_length=10, blank=True, null=True)
-    hs1_kinmu_add1 = models.CharField(max_length=50, blank=True, null=True)
-    hs1_kinmu_add2 = models.CharField(max_length=50, blank=True, null=True)
-    hs1_kinmu_tel1 = models.CharField(max_length=20, blank=True, null=True)
-    hs1_kinmu_tel2 = models.CharField(max_length=20, blank=True, null=True)
-    hs1_kinmu_fax = models.CharField(max_length=20, blank=True, null=True)
-    hs1_nensyu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    hs1_biko = models.CharField(max_length=50, blank=True, null=True)
-    hs2_name = models.CharField(max_length=50, blank=True, null=True)
-    hs2_post = models.CharField(max_length=10, blank=True, null=True)
-    hs2_add1 = models.CharField(max_length=50, blank=True, null=True)
-    hs2_add2 = models.CharField(max_length=50, blank=True, null=True)
-    hs2_tel1 = models.CharField(max_length=20, blank=True, null=True)
-    hs2_tel2 = models.CharField(max_length=20, blank=True, null=True)
-    hs2_fax = models.CharField(max_length=20, blank=True, null=True)
-    hs2_aida = models.CharField(max_length=20, blank=True, null=True)
-    hs2_kinmu_name = models.CharField(max_length=50, blank=True, null=True)
-    hs2_kinmu_post = models.CharField(max_length=10, blank=True, null=True)
-    hs2_kinmu_add1 = models.CharField(max_length=50, blank=True, null=True)
-    hs2_kinmu_add2 = models.CharField(max_length=50, blank=True, null=True)
-    hs2_kinmu_tel1 = models.CharField(max_length=20, blank=True, null=True)
-    hs2_kinmu_tel2 = models.CharField(max_length=20, blank=True, null=True)
-    hs2_kinmu_fax = models.CharField(max_length=20, blank=True, null=True)
-    hs2_nensyu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    hs2_biko = models.CharField(max_length=50, blank=True, null=True)
-    bankpost_kbn = models.SmallIntegerField(blank=True, null=True)
-    kinyu_no = models.SmallIntegerField(blank=True, null=True)
-    ten_no = models.SmallIntegerField(blank=True, null=True)
-    kosyu_no = models.SmallIntegerField(blank=True, null=True)
-    koza_no = models.IntegerField(blank=True, null=True)
-    post_kigo = models.CharField(max_length=5, blank=True, null=True)
-    post_n = models.CharField(max_length=1, blank=True, null=True)
-    post_bango = models.CharField(max_length=8, blank=True, null=True)
-    koza_meigi = models.CharField(max_length=50, blank=True, null=True)
-    koza_kana = models.CharField(max_length=50, blank=True, null=True)
-    fkae_no = models.SmallIntegerField(blank=True, null=True)
-    fkae_tesu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    kys_bango = models.CharField(max_length=20, blank=True, null=True)
+    kys_no = models.IntegerField(primary_key=True, verbose_name="番号")
+    kys_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="名前")
+    kys_kana = models.CharField(max_length=50, blank=True, null=True, verbose_name="カナ")
+    kys_rui = models.SmallIntegerField(blank=True, null=True, verbose_name="分類")
+    post = models.CharField(max_length=10, blank=True, null=True, verbose_name="郵便番号")
+    add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="住所１")
+    add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="住所２")
+    tel1 = models.CharField(max_length=20, blank=True, null=True, verbose_name="電話番号１")
+    tel2 = models.CharField(max_length=20, blank=True, null=True, verbose_name="電話番号２")
+    fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="ファックス")
+    email = models.CharField(max_length=50, blank=True, null=True, verbose_name="メールアドレス")
+    sex = models.SmallIntegerField(blank=True, null=True, verbose_name="性別")
+    birthday = models.DateTimeField(blank=True, null=True, verbose_name="生年月日", help_text="個人の場合：契約者の生年月日、法人の場合：設立年月日")
+    honseki = models.CharField(max_length=50, blank=True, null=True, verbose_name="本籍")
+    # 法人情報
+    busyo_name = models.CharField(max_length=40, blank=True, null=True, verbose_name="所属部署", help_text="法人の場合、担当者の所属部署を入力する。")
+    tanto_name = models.CharField(max_length=40, blank=True, null=True, verbose_name="担当者")
+    naisen_no = models.CharField(max_length=20, blank=True, null=True, verbose_name="内線番号", help_text="法人の場合、担当者の直通電話、内線番号等を入力する。")
+    # 勤務情報
+    kinmu_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="勤務先名称")
+    kinmu_post = models.CharField(max_length=10, blank=True, null=True, verbose_name="勤務先郵便番号")
+    kinmu_add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="勤務先住所１")
+    kinmu_add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="勤務先住所２")
+    kinmu_tel1 = models.CharField(max_length=20, blank=True, null=True, verbose_name="勤務先電話番号１")
+    kinmu_tel2 = models.CharField(max_length=20, blank=True, null=True, verbose_name="勤務先電話番号２")
+    kinmu_fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="勤務先ファックス")
+    kinmu_gy = models.CharField(max_length=50, blank=True, null=True, verbose_name="勤務先業種")
+    kinmu_busyo = models.CharField(max_length=50, blank=True, null=True, verbose_name="勤務先部署・役割")
+    kinmu_nsya = models.DateTimeField(blank=True, null=True, verbose_name="入社年月")
+    nensyu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name="年収")
+    # 連絡先情報
+    ren_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="連絡先名称")
+    ren_post = models.CharField(max_length=10, blank=True, null=True, verbose_name="連絡先郵便番号")
+    ren_add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="連絡先住所１")
+    ren_add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="連絡先住所２")
+    ren_tel1 = models.CharField(max_length=20, blank=True, null=True, verbose_name="連絡先電話番号１")
+    ren_tel2 = models.CharField(max_length=20, blank=True, null=True, verbose_name="連絡先電話番号２")
+    ren_fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="連絡先ファックス")
+    ren_aida = models.CharField(max_length=20, blank=True, null=True, verbose_name="連絡先間柄")
+    # 書類送付先情報
+    syorui_kbn = models.SmallIntegerField(blank=True, null=True, verbose_name="書類送付先区分")
+    syorui_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="送付先名称")
+    syorui_post = models.CharField(max_length=10, blank=True, null=True, verbose_name="送付先郵便番号")
+    syorui_add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="送付先住所１")
+    syorui_add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="送付先住所２")
+    syorui_tel1 = models.CharField(max_length=20, blank=True, null=True, verbose_name="送付先電話番号１")
+    syorui_tel2 = models.CharField(max_length=20, blank=True, null=True, verbose_name="送付先電話番号２")
+    syorui_fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="送付先ファックス")
+    # 保証人①
+    hs1_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人①名称")
+    hs1_post = models.CharField(max_length=10, blank=True, null=True, verbose_name="保証人①郵便番号")
+    hs1_add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人①住所１")
+    hs1_add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人①住所２")
+    hs1_tel1 = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人①電話番号１")
+    hs1_tel2 = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人①電話番号２")
+    hs1_fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人①ファックス")
+    hs1_aida = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人①間柄")
+    hs1_kinmu_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人①勤務先名称")
+    hs1_kinmu_post = models.CharField(max_length=10, blank=True, null=True, verbose_name="保証人①勤務先郵便番号")
+    hs1_kinmu_add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人①勤務先住所１")
+    hs1_kinmu_add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人①勤務先住所２")
+    hs1_kinmu_tel1 = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人①勤務先電話番号１")
+    hs1_kinmu_tel2 = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人①勤務先電話番号２")
+    hs1_kinmu_fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人①勤務先ファックス")
+    hs1_nensyu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name="保証人①年収")
+    hs1_biko = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人①備考")
+    # 保証人②
+    hs2_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人②名称")
+    hs2_post = models.CharField(max_length=10, blank=True, null=True, verbose_name="保証人②郵便番号")
+    hs2_add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人②住所１")
+    hs2_add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人②住所２")
+    hs2_tel1 = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人②電話番号１")
+    hs2_tel2 = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人②電話番号２")
+    hs2_fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人②ファックス")
+    hs2_aida = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人②間柄")
+    hs2_kinmu_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人②勤務先名称")
+    hs2_kinmu_post = models.CharField(max_length=10, blank=True, null=True, verbose_name="保証人②勤務先郵便番号")
+    hs2_kinmu_add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人②勤務先住所１")
+    hs2_kinmu_add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人②勤務先住所２")
+    hs2_kinmu_tel1 = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人②勤務先電話番号１")
+    hs2_kinmu_tel2 = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人②勤務先電話番号２")
+    hs2_kinmu_fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人②勤務先ファックス")
+    hs2_nensyu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name="保証人②年収")
+    hs2_biko = models.CharField(max_length=50, blank=True, null=True, verbose_name="保証人②備考")
+    # 講座情報
+    bankpost_kbn = models.SmallIntegerField(blank=True, null=True, choices=constants.CHOICE_BANK_POST_KBN, verbose_name="口座区分")
+    kinyu = models.ForeignKey('MKinyu', db_column='kinyu_no', blank=True, null=True, verbose_name="金融機関")
+    ten = models.ForeignKey('MTen', db_column='ten_no', blank=True, null=True, verbose_name="金融機関支店")
+    kosyu_no = models.SmallIntegerField(blank=True, null=True, choices=constants.CHOICE_BANK_ACCOUNT_TYPE, verbose_name="口座種別")
+    koza_no = models.IntegerField(blank=True, null=True, verbose_name="口座番号")
+    koza_meigi = models.CharField(max_length=50, blank=True, null=True, verbose_name="口座名義")
+    koza_kana = models.CharField(max_length=50, blank=True, null=True, verbose_name="名義カナ")
+    post_kigo = models.CharField(max_length=5, blank=True, null=True, verbose_name="通帳記号")
+    post_n = models.CharField(max_length=1, blank=True, null=True, verbose_name="郵便局の")
+    post_bango = models.CharField(max_length=8, blank=True, null=True, verbose_name="通帳番号")
+    fkae_no = models.SmallIntegerField(blank=True, null=True, verbose_name="振替口座№")
+    fkae_tesu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name="振替手数料")
+    kys_bango = models.CharField(max_length=20, blank=True, null=True, verbose_name="契約者番号")
     fkomfkae_tutiumu = models.BooleanField(default=False)
     tokusoku_umu = models.BooleanField(default=False)
     sqsyo_umu = models.BooleanField(default=False)
@@ -17348,6 +17350,11 @@ class KysMst(models.Model):
     class Meta:
         managed = False
         db_table = 'kys_mst'
+        verbose_name = "契約者"
+        verbose_name_plural = "契約者一覧"
+
+    def __unicode__(self):
+        return self.kys_name if self.kys_name else str(self.kys_no)
 
 
 class KyusaiMst(models.Model):
@@ -22326,19 +22333,19 @@ class MKenri(models.Model):
 
 
 class MKinyu(models.Model):
-    kinyu_no = models.SmallIntegerField(primary_key=True)
-    kinyu_kana = models.CharField(max_length=50, blank=True, null=True)
-    kinyu_name = models.CharField(max_length=50, blank=True, null=True)
-    post = models.CharField(max_length=10, blank=True, null=True)
-    add1 = models.CharField(max_length=50, blank=True, null=True)
-    add2 = models.CharField(max_length=50, blank=True, null=True)
-    tel1 = models.CharField(max_length=15, blank=True, null=True)
-    tel2 = models.CharField(max_length=15, blank=True, null=True)
-    fax = models.CharField(max_length=15, blank=True, null=True)
+    kinyu_no = models.SmallIntegerField(primary_key=True, verbose_name="金融機関№")
+    kinyu_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="金融機関名称")
+    kinyu_kana = models.CharField(max_length=50, blank=True, null=True, verbose_name="金融機関カナ")
+    post = models.CharField(max_length=10, blank=True, null=True, verbose_name="郵便番号")
+    add1 = models.CharField(max_length=50, blank=True, null=True, verbose_name="住所１")
+    add2 = models.CharField(max_length=50, blank=True, null=True, verbose_name="住所２")
+    tel1 = models.CharField(max_length=15, blank=True, null=True, verbose_name="電話番号１")
+    tel2 = models.CharField(max_length=15, blank=True, null=True, verbose_name="電話番号２")
+    fax = models.CharField(max_length=15, blank=True, null=True, verbose_name="ファックス")
     fkae_no = models.SmallIntegerField(blank=True, null=True)
-    biko = models.CharField(max_length=50, blank=True, null=True)
-    kosin_date = models.DateTimeField(blank=True, null=True)
-    kosin_user = models.CharField(max_length=30, blank=True, null=True)
+    biko = models.CharField(max_length=50, blank=True, null=True, verbose_name="備考")
+    kosin_date = models.DateTimeField(blank=True, null=True, verbose_name="更新日")
+    kosin_user = models.CharField(max_length=30, blank=True, null=True, verbose_name="更新者")
     yobi_mj1 = models.CharField(max_length=50, blank=True, null=True)
     yobi_mj2 = models.CharField(max_length=50, blank=True, null=True)
     yobi_mj3 = models.CharField(max_length=50, blank=True, null=True)
@@ -22369,11 +22376,17 @@ class MKinyu(models.Model):
     yobi_bt3 = models.BooleanField(default=False)
     yobi_bt4 = models.BooleanField(default=False)
     yobi_bt5 = models.BooleanField(default=False)
-    eng_kinyu_name = models.CharField(max_length=100, blank=True, null=True)
+    eng_kinyu_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="金融機関名（英語）")
 
     class Meta:
         managed = False
         db_table = 'm_kinyu'
+        ordering = ('kinyu_no',)
+        verbose_name = "金融機関"
+        verbose_name_plural = "金融機関一覧"
+
+    def __unicode__(self):
+        return self.kinyu_name if self.kinyu_name else str(self.kinyu_no)
 
 
 class MKkBkGroup(models.Model):
@@ -22868,6 +22881,11 @@ class MKozaFuri(models.Model):
     class Meta:
         managed = False
         db_table = 'm_koza_furi'
+        verbose_name = "振替口座"
+        verbose_name_plural = "振替口座一覧"
+
+    def __unicode__(self):
+        return self.fkae_name if self.fkae_name else str(self.fkae_no)
 
 
 class MKozaFuriCal(models.Model):
@@ -25524,14 +25542,14 @@ class MTekiyo(models.Model):
 
 
 class MTen(models.Model):
-    kinyu_no = models.SmallIntegerField(primary_key=True)
-    ten_no = models.SmallIntegerField()
-    ten_kana = models.CharField(max_length=50, blank=True, null=True)
-    ten_name = models.CharField(max_length=50, blank=True, null=True)
+    kinyu_no = models.SmallIntegerField(verbose_name="金融機関№")
+    ten_no = models.SmallIntegerField(primary_key=True, verbose_name="支店番号")
+    ten_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="支店名称")
+    ten_kana = models.CharField(max_length=50, blank=True, null=True, verbose_name="支店カナ")
     koukan_no = models.CharField(max_length=4, blank=True, null=True)
-    biko = models.CharField(max_length=50, blank=True, null=True)
-    kosin_date = models.DateTimeField(blank=True, null=True)
-    kosin_user = models.CharField(max_length=30, blank=True, null=True)
+    biko = models.CharField(max_length=50, blank=True, null=True, verbose_name="備考")
+    kosin_date = models.DateTimeField(blank=True, null=True, verbose_name="更新日")
+    kosin_user = models.CharField(max_length=30, blank=True, null=True, verbose_name="更新者")
     yobi_mj1 = models.CharField(max_length=50, blank=True, null=True)
     yobi_mj2 = models.CharField(max_length=50, blank=True, null=True)
     yobi_mj3 = models.CharField(max_length=50, blank=True, null=True)
@@ -25562,12 +25580,17 @@ class MTen(models.Model):
     yobi_bt3 = models.BooleanField(default=False)
     yobi_bt4 = models.BooleanField(default=False)
     yobi_bt5 = models.BooleanField(default=False)
-    eng_ten_name = models.CharField(max_length=100, blank=True, null=True)
+    eng_ten_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="支店名（英語）")
 
     class Meta:
         managed = False
         db_table = 'm_ten'
         unique_together = (('kinyu_no', 'ten_no'),)
+        verbose_name = "銀行支店"
+        verbose_name_plural = "銀行支店一覧"
+
+    def __unicode__(self):
+        return self.ten_name if self.ten_name else str(self.ten_no)
 
 
 class MTikublk(models.Model):

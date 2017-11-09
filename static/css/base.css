@@ -35,3 +35,13 @@ tbody.complex td {
 table > tbody.complex > tr:hover {
     background-color: white;
 }
+/**************** 検索フィルター *****************/
+.input-field input[type=search] {
+    display: block;
+    line-height: inherit;
+    padding-left: 0px;;
+    width: 100%;
+}
+.input-field input[type=search]:focus {
+    border-bottom: 1px solid rgb(158, 158, 158);
+}

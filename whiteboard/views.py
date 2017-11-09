@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import django_filters
+import operator
 
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 
 from material.frontend.views import ModelViewSet, ListModelView
@@ -19,33 +20,28 @@ class Index(BaseView):
         return redirect('whiteboard:whiteboard_list')
 
 
-class WhiteBoardFilter(django_filters.FilterSet):
-    class Meta:
-        model = models.WhiteBoard
-        fields = ['bk_no']
-
-
 class WhiteBoardListView(ListModelView):
     # paginate_by = 25
-    filterset_class = WhiteBoardFilter
 
-    def get_template_names(self):
-        templates = super(WhiteBoardListView, self).get_template_names()
-        return templates
-
-    def get_context_data(self, **kwargs):
-        context = super(WhiteBoardListView, self).get_context_data()
-        return context
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(WhiteBoardListView, self).get_queryset()
+        q = self.request.GET.get('datatable-search[value]', None)
+        if q:
+            orm_lookups = ['bk_no__icontains', 'bk_name__icontains', 'address__icontains']
+            for bit in q.split():
+                or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
+        return queryset
 
 
 class WhiteBoardViewSet(ModelViewSet):
     model = models.WhiteBoard
     list_display = (
-        'bk_no', 'parking_lot', 'parking_position', 'is_existed_contractor_allowed', 'is_new_contractor_allowed', 'free_end_date', 'time_limit_id',
-        'address', 'price_recruitment', 'price_recruitment_no_tax', 'price_homepage', 'price_homepage_no_tax', 'price_handbill', 'price_handbill_no_tax',
+        'bk_no', 'parking_lot', 'parking_position', 'contract_status', 'is_existed_contractor_allowed', 'is_new_contractor_allowed', 'free_end_date', 'time_limit_id',
+        'address', 'tanto_name', 'price_recruitment', 'price_recruitment_no_tax', 'price_homepage', 'price_homepage_no_tax', 'price_handbill', 'price_handbill_no_tax',
         'length', 'width', 'height', 'weight', 'tyre_width', 'tyre_width_ap', 'min_height', 'min_height_ap', 'f_value', 'r_value', 'position_comment'
     )
-    list_display_links = ('bk_no', 'parking_lot')
+    list_display_links = ('bk_no', 'parking_lot', 'parking_position')
     list_view_class = WhiteBoardListView
 
     def has_add_permission(self, request):

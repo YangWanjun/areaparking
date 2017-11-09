@@ -11,9 +11,12 @@ SELECT RIGHT('0000000000'+ CONVERT(VARCHAR, bk.bk_no), 10) + '|' + RIGHT('00000'
      , lot.id as parking_lot_id
      , pos.id as parking_position_id
      , bk.bk_no
+     , bk.bk_name
      , br.naibu_no
      , br.hy_no as position_name
+	 , 'なし' as contract_status
 	 , CONCAT(bk.add_ken, bk.add_si, bk.add_cyo, bk.add_banti, bk.add_etc) as address
+	 , mt.tanto_name							-- 担当者
      , lot.is_existed_contractor_allowed        -- 既契約者
      , lot.is_new_contractor_allowed            -- 新テナント
      , lot.free_end_date                        -- フリーレント終了日
@@ -43,5 +46,6 @@ SELECT RIGHT('0000000000'+ CONVERT(VARCHAR, bk.bk_no), 10) + '|' + RIGHT('00000'
   LEFT JOIN [areaparking].[dbo].[ap_parking_lot] lot ON lot.buken_id = bk.bk_no AND lot.is_deleted = 0
   JOIN [fk5dtsql].[dbo].[bai_rooms] br ON br.bk_no = bk.bk_no
   LEFT JOIN [areaparking].[dbo].[ap_parking_position] pos ON pos.parking_lot_id = lot.id AND pos.is_deleted = 0 AND pos.seq_no = br.naibu_no
+  LEFT JOIN [fk5dtsql].[dbo].[m_tanto] mt ON mt.tanto_no = bk.tanto_no
 
 GO

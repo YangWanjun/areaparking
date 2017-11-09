@@ -84,41 +84,50 @@ EB.prototype.reset_whiteboard_row = function(tr, idx) {
         row2.css("background-color", "#f2f2f2");
         row3.css("background-color", "#f2f2f2");
     }
-    bk_no = tr.children().eq(0);
-    parking_lot = tr.children().eq(1);
-    parking_position = tr.children().eq(2);
-    is_existed_contractor_allowed = tr.children().eq(3);
-    is_new_contractor_allowed = tr.children().eq(4);
-    free_end_date = tr.children().eq(5);
-    time_limit_id = tr.children().eq(6);
-    address = tr.children().eq(7);
-    price_recruitment = tr.children().eq(8);
-    price_recruitment_no_tax = tr.children().eq(9);
-    price_homepage = tr.children().eq(10);
-    price_homepage_no_tax = tr.children().eq(11);
-    price_handbill = tr.children().eq(12);
-    price_handbill_no_tax = tr.children().eq(13);
-    length = tr.children().eq(14);
-    width = tr.children().eq(15);
-    height = tr.children().eq(16);
-    weight = tr.children().eq(17);
-    tyre_width = tr.children().eq(18);
-    tyre_width_ap = tr.children().eq(19);
-    min_height = tr.children().eq(20);
-    min_height_ap = tr.children().eq(21);
-    f_value = tr.children().eq(22);
-    r_value = tr.children().eq(23);
-    position_comment = tr.children().eq(24);
+    bk_no                           = tr.children().eq(0);
+    parking_lot                     = tr.children().eq(1);
+    parking_position                = tr.children().eq(2);
+    contract_status                 = tr.children().eq(3);
+    is_existed_contractor_allowed   = tr.children().eq(4);
+    is_new_contractor_allowed       = tr.children().eq(5);
+    free_end_date                   = tr.children().eq(6);
+    time_limit_id                   = tr.children().eq(7);
+    address                         = tr.children().eq(8);
+    tanto_name                      = tr.children().eq(9);
+    price_recruitment               = tr.children().eq(10);
+    price_recruitment_no_tax        = tr.children().eq(11);
+    price_homepage                  = tr.children().eq(12);
+    price_homepage_no_tax           = tr.children().eq(13);
+    price_handbill                  = tr.children().eq(14);
+    price_handbill_no_tax           = tr.children().eq(15);
+    length                          = tr.children().eq(16);
+    width                           = tr.children().eq(17);
+    height                          = tr.children().eq(18);
+    weight                          = tr.children().eq(19);
+    tyre_width                      = tr.children().eq(20);
+    tyre_width_ap                   = tr.children().eq(21);
+    min_height                      = tr.children().eq(22);
+    min_height_ap                   = tr.children().eq(23);
+    f_value                         = tr.children().eq(24);
+    r_value                         = tr.children().eq(25);
+    position_comment                = tr.children().eq(26);
 
     bk_no.attr("rowspan", 3);
     parking_lot.attr("colspan", 5);
-    time_limit_id.attr("colspan", 2);
-    address.attr("colspan", 5);
+    address.attr("colspan", 4);
     address.css("padding-left", "5px");
 
     row1.append(bk_no);
     row1.append(parking_lot);
     row1.append(parking_position);
+    row1.append(contract_status);
+    if (contract_status.text() === "空き") {
+        contract_status.html('<span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>');
+    } else if (contract_status.text() === "手続中") {
+        contract_status.html('<span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>');
+    } else {
+        contract_status.html('<span class="new badge left grey" data-badge-caption="なし" style="margin-left: 0px;"></span>');
+    }
     row1.append(is_existed_contractor_allowed);
     row1.append(is_new_contractor_allowed);
     row1.append(free_end_date);
@@ -128,6 +137,7 @@ EB.prototype.reset_whiteboard_row = function(tr, idx) {
     });
 
     row2.append(address);
+    row2.append(tanto_name);
     row2.append(price_recruitment);
     row2.append(price_recruitment_no_tax);
     row2.append(price_homepage);
@@ -161,7 +171,7 @@ EB.prototype.reset_whiteboard_row = function(tr, idx) {
             position_comment.attr("data-position", "top");
             position_comment.attr("data-delay", "50");
             position_comment.attr("data-tooltip", text);
-            position_comment.text(text.substring(0, 5) + "...");
+            position_comment.text(text.substring(0, 4) + "...");
         }
     }
     row3.append(position_comment);
