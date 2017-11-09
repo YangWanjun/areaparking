@@ -59,4 +59,121 @@ EB.prototype.reflection_form_errors = function(form_obj, errors) {
     });
 }
 
+EB.prototype.isNumeric = function(num) {
+    return !isNaN(num);
+}
+
+EB.prototype.toNumComma = function(num) {
+    int_comma = (num + "").replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    return int_comma;
+}
+
+EB.prototype.reset_whiteboard_row = function(tr, idx) {
+    var self = this;
+    tr = $(tr)
+    var row1 = tr.clone();
+    var row2 = tr.clone();
+    var row3 = tr.clone();
+    row1.html("");
+    row2.html("");
+    row3.html("");
+    row1.css("border-bottom-style", "dotted");
+    row2.css("border-bottom-style", "dotted");
+    if (idx % 2 == 0) {
+        row1.css("background-color", "#f2f2f2");
+        row2.css("background-color", "#f2f2f2");
+        row3.css("background-color", "#f2f2f2");
+    }
+    bk_no = tr.children().eq(0);
+    parking_lot = tr.children().eq(1);
+    parking_position = tr.children().eq(2);
+    is_existed_contractor_allowed = tr.children().eq(3);
+    is_new_contractor_allowed = tr.children().eq(4);
+    free_end_date = tr.children().eq(5);
+    time_limit_id = tr.children().eq(6);
+    address = tr.children().eq(7);
+    price_recruitment = tr.children().eq(8);
+    price_recruitment_no_tax = tr.children().eq(9);
+    price_homepage = tr.children().eq(10);
+    price_homepage_no_tax = tr.children().eq(11);
+    price_handbill = tr.children().eq(12);
+    price_handbill_no_tax = tr.children().eq(13);
+    length = tr.children().eq(14);
+    width = tr.children().eq(15);
+    height = tr.children().eq(16);
+    weight = tr.children().eq(17);
+    tyre_width = tr.children().eq(18);
+    tyre_width_ap = tr.children().eq(19);
+    min_height = tr.children().eq(20);
+    min_height_ap = tr.children().eq(21);
+    f_value = tr.children().eq(22);
+    r_value = tr.children().eq(23);
+    position_comment = tr.children().eq(24);
+
+    bk_no.attr("rowspan", 3);
+    parking_lot.attr("colspan", 5);
+    time_limit_id.attr("colspan", 2);
+    address.attr("colspan", 5);
+    address.css("padding-left", "5px");
+
+    row1.append(bk_no);
+    row1.append(parking_lot);
+    row1.append(parking_position);
+    row1.append(is_existed_contractor_allowed);
+    row1.append(is_new_contractor_allowed);
+    row1.append(free_end_date);
+    row1.append(time_limit_id);
+    $('td', row1).each(function() {
+        $(this).css('display', '');
+    });
+
+    row2.append(address);
+    row2.append(price_recruitment);
+    row2.append(price_recruitment_no_tax);
+    row2.append(price_homepage);
+    row2.append(price_homepage_no_tax);
+    row2.append(price_handbill);
+    if (price_handbill_no_tax.html() == "") {
+        price_handbill_no_tax.html("&nbsp");
+    }
+    row2.append(price_handbill_no_tax);
+    $('td', row2).each(function() {
+        $(this).css('display', '');
+    });
+
+    row3.append(length);
+    row3.append(width);
+    row3.append(height);
+    row3.append(weight);
+    row3.append(tyre_width);
+    row3.append(tyre_width_ap);
+    row3.append(min_height);
+    row3.append(min_height_ap);
+    row3.append(f_value);
+    row3.append(r_value);
+    // 車室の備考
+    if (position_comment.html() == "") {
+        position_comment.html("&nbsp;");
+    } else {
+        if (position_comment.text().length > 5) {
+            text = position_comment.text();
+            position_comment.addClass("tooltipped");
+            position_comment.attr("data-position", "top");
+            position_comment.attr("data-delay", "50");
+            position_comment.attr("data-tooltip", text);
+            position_comment.text(text.substring(0, 5) + "...");
+        }
+    }
+    row3.append(position_comment);
+    $('td', row3).each(function() {
+        $(this).css('display', '');
+        if (self.isNumeric($(this).text())) {
+            $(this).css('text-align', 'right');
+            $(this).text(self.toNumComma($(this).text()));
+        }
+    });
+
+    return [row1, row2, row3];
+}
+
 var eb = new EB();

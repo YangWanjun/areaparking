@@ -1,0 +1,198 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block breadcrumbs_items %}
+<a class="active" href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+{% endblock %}
+
+
+{% block footer %}
+<script type="text/javascript">
+  config = {{ datatable_config|safe }};
+  config['ajax']['data'] = function(data) {
+    var keys = Object.keys(data);
+    for(var i=0; i<=keys.length; i++) {
+      var key = keys[i],
+          value = data[key];
+      delete data[key];
+      data['datatable-' + key] = value;
+    }
+  };
+  config['ajax']['beforeSend'] = function(request) {
+    request.setRequestHeader("datatable", true);
+  };
+  $(document).one("turbolinks:load", function() {
+    if ( ! $.fn.DataTable.isDataTable( '#table' ) ) {
+      var datatable = $('#table').DataTable(config);
+      new $.fn.dataTable.FixedHeader(datatable);
+
+      $(document).one("turbolinks:before-cache", function() {
+        datatable.destroy();
+      });
+    }
+  });
+    $('.tooltipped').tooltip({delay: 50});
+</script>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card list-card">
+        <div class="card-content">
+            <table id="table" class="table bordered" data-form-control="datatable" style="width:100%">
+                <thead class="complex">
+                    <tr role="row">
+                        <th data-name="bk_no" class="bk_no sorting" tabindex="0" aria-controls="table" rowspan="3"
+                            colspan="1" style="" aria-label="物件番号: activate to sort column ascending">物件番号
+                        </th>
+                        <th data-name="parking_lot" class="parking_lot sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="5" style=""
+                            aria-label="駐車場: activate to sort column ascending">駐車場
+                        </th>
+                        <th data-name="parking_position" class="parking_position sorting" tabindex="0"
+                            aria-controls="table" rowspan="1" colspan="1" style=""
+                            aria-label="車室: activate to sort column ascending">車室
+                        </th>
+                        <th data-name="is_existed_contractor_allowed" class="is_existed_contractor_allowed sorting"
+                            tabindex="0" aria-controls="table" rowspan="1" colspan="1" style=""
+                            aria-label="既契約者: activate to sort column ascending">既契約者
+                        </th>
+                        <th data-name="is_new_contractor_allowed" class="is_new_contractor_allowed sorting" tabindex="0"
+                            aria-controls="table" rowspan="1" colspan="1" style=""
+                            aria-label="新テナント: activate to sort column ascending">新テナント
+                        </th>
+                        <th data-name="free_end_date" class="free_end_date sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="1" style=""
+                            aria-label="フリーレント終了日: activate to sort column ascending">ﾌﾘｰﾚﾝﾄ
+                        </th>
+                        <th data-name="time_limit_id" class="time_limit_id sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="2" style=""
+                            aria-label="時間制限: activate to sort column ascending">時間制限
+                        </th>
+                    </tr>
+                    <tr role="row">
+                        <th data-name="address" class="address sorting" tabindex="0"
+                            aria-controls="table" rowspan="1" colspan="5" style="padding-left: 5px;"
+                            aria-label="場所: activate to sort column ascending">場所
+                        </th>
+                        <th data-name="price_recruitment" class="price_recruitment sorting" tabindex="0"
+                            aria-controls="table" rowspan="1" colspan="1" style=""
+                            aria-label="募集（税込）: activate to sort column ascending">募集 税込
+                        </th>
+                        <th data-name="price_recruitment_no_tax" class="price_recruitment_no_tax sorting" tabindex="0"
+                            aria-controls="table" rowspan="1" colspan="1" style=""
+                            aria-label="募集（税抜）: activate to sort column ascending">募集 税抜
+                        </th>
+                        <th data-name="price_homepage" class="price_homepage sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="1" style=""
+                            aria-label="ホームページ（税込）: activate to sort column ascending">ＨＰ 税込
+                        </th>
+                        <th data-name="price_homepage_no_tax" class="price_homepage_no_tax sorting" tabindex="0"
+                            aria-controls="table" rowspan="1" colspan="1" style=""
+                            aria-label="ホームページ（税別）: activate to sort column ascending">ＨＰ 税別
+                        </th>
+                        <th data-name="price_handbill" class="price_handbill sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="1" style=""
+                            aria-label="チラシ（税込）: activate to sort column ascending">ﾁﾗｼ 税込
+                        </th>
+                        <th data-name="price_handbill_no_tax" class="price_handbill_no_tax sorting" tabindex="0"
+                            aria-controls="table" rowspan="1" colspan="1" style=""
+                            aria-label="チラシ（税別）: activate to sort column ascending">ﾁﾗｼ 税別
+                        </th>
+                    </tr>
+                    <tr role="row">
+                        <th data-name="length" class="length sorting" tabindex="0" aria-controls="table" rowspan="1"
+                            colspan="1" style="padding-left: 5px;" aria-label="全長: activate to sort column ascending">全長
+                        </th>
+                        <th data-name="width" class="width sorting" tabindex="0" aria-controls="table" rowspan="1"
+                            colspan="1" style="" aria-label="全幅: activate to sort column ascending">全幅
+                        </th>
+                        <th data-name="height" class="height sorting" tabindex="0" aria-controls="table" rowspan="1"
+                            colspan="1" style="" aria-label="全高: activate to sort column ascending">全高
+                        </th>
+                        <th data-name="weight" class="weight sorting" tabindex="0" aria-controls="table" rowspan="1"
+                            colspan="1" style="" aria-label="重量: activate to sort column ascending">重量
+                        </th>
+                        <th data-name="tyre_width" class="tyre_width sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="1" style=""
+                            aria-label="ﾒｰｶｰのタイヤ幅: activate to sort column ascending">ﾒｰｶｰﾀｲﾔ幅
+                        </th>
+                        <th data-name="tyre_width_ap" class="tyre_width_ap sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="1" style=""
+                            aria-label="Ap計測のタイヤ幅: activate to sort column ascending">Apﾀｲﾔ幅
+                        </th>
+                        <th data-name="min_height" class="min_height sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="1" style=""
+                            aria-label="ﾒｰｶｰの地上最低高: activate to sort column ascending">ﾒｰｶｰ最低高
+                        </th>
+                        <th data-name="min_height_ap" class="min_height_ap sorting" tabindex="0" aria-controls="table"
+                            rowspan="1" colspan="1" style=""
+                            aria-label="Ap計測の地上最低高: activate to sort column ascending">Ap最低高
+                        </th>
+                        <th data-name="f_value" class="f_value sorting" tabindex="0" aria-controls="table" rowspan="1"
+                            colspan="1" style="" aria-label="F値: activate to sort column ascending">F値
+                        </th>
+                        <th data-name="r_value" class="r_value sorting" tabindex="0" aria-controls="table" rowspan="1"
+                            colspan="1" style="" aria-label="R値: activate to sort column ascending">R値
+                        </th>
+                        <th data-name="position_comment" class="position_comment sorting" tabindex="0"
+                            aria-controls="table" rowspan="1" colspan="1" style=""
+                            aria-label="備考: activate to sort column ascending">備考
+                        </th>
+                    </tr>
+                    <tr style="display: none;">
+                        {% for header, header_title in headers %}
+                        <th data-name="{{ header }}" class="{{ header }}">{{ header_title|title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="complex">
+                    {% for item, row in data %}
+                    <tr style="border-bottom-style: dotted;{% cycle 'background-color: #f2f2f2' '' %}">
+                        <td rowspan="3">{{ row.bk_no }}</td>
+                        <td colspan="5">{{ row.parking_lot }}</td>
+                        <td>{{ row.parking_position }}</td>
+                        <td>{{ row.is_existed_contractor_allowed }}</td>
+                        <td>{{ row.is_new_contractor_allowed }}</td>
+                        <td>{{ row.free_end_date }}</td>
+                        <td colspan="2">{{ row.time_limit_id }}</td>
+                    </tr>
+                    <tr style="border-bottom-style: dotted;{% cycle 'background-color: #f2f2f2' '' %}">
+                        <td colspan="5" style="padding-left: 5px;">{{ row.address }}</td>
+                        <td>{{ row.price_recruitment }}</td>
+                        <td>{{ row.price_recruitment_no_tax }}</td>
+                        <td>{{ row.price_homepage }}</td>
+                        <td>{{ row.price_homepage_no_tax }}</td>
+                        <td>{{ row.price_handbill }}</td>
+                        <td>{{ row.price_handbill_no_tax }}</td>
+                    </tr>
+                    <tr style="{% cycle 'background-color: #f2f2f2' '' %}">
+                        <td style="padding-left: 5px;">{{ row.length }}</td>
+                        <td>{{ row.width }}</td>
+                        <td>{{ row.height }}</td>
+                        <td>{{ row.weight }}</td>
+                        <td>{{ row.tyre_width }}</td>
+                        <td>{{ row.tyre_width_ap }}</td>
+                        <td>{{ row.min_height }}</td>
+                        <td>{{ row.min_height_ap }}</td>
+                        <td>{{ row.f_value }}</td>
+                        <td>{{ row.r_value }}</td>
+                        <td>{{ row.position_comment|slice:":5"|default:'&nbsp;' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}{% endblock right-panel %}
+{% block action_btn %}
+<div class="fixed-action-btn">
+    {% if add_url %}
+      <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="{{ add_url }}"><i class="large material-icons">add</i></a>
+    {% endif %}
+</div>
+{% endblock %}
+{% endblock %}

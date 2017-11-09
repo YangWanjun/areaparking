@@ -8,11 +8,13 @@ from parkinglot.models import ParkingLot, ParkingPosition
 
 # Create your models here.
 class WhiteBoard(models.Model):
+    id = models.CharField(max_length=16, primary_key=True)
     parking_lot = models.ForeignKey(ParkingLot, blank=True, null=True, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, blank=True, null=True, verbose_name="車室")
-    bk_no = models.IntegerField(primary_key=True, verbose_name="物件番号")
+    bk_no = models.IntegerField(verbose_name="物件番号")
     seq_no = models.SmallIntegerField(db_column='naibu_no', verbose_name="内部番号")
     position_name = models.CharField(max_length=30, verbose_name="車室名称")
+    address = models.CharField(max_length=255, blank=True, null=True, verbose_name="場所")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")

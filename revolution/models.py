@@ -3788,7 +3788,7 @@ class BaiRooms(models.Model):
         verbose_name_plural = "車室一覧"
 
     def __unicode__(self):
-        return self.hy_no
+        return self.hy_no if self.hy_no else str(self.naibu_no)
 
     # def buken(self):
     #     try:

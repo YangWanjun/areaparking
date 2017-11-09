@@ -32,3 +32,6 @@ tbody.complex td {
     font-size: 13px;
     padding: 3px 5px;
 }
+table > tbody.complex > tr:hover {
+    background-color: white;
+}
