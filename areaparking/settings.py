@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'contract.apps.ContractConfig',
     'whiteboard.apps.WhiteboardConfig',
     'turnover.apps.TurnoverConfig',
-    'department.apps.DepartmentConfig',
     'revolution.apps.RevolutionConfig',
     'rest_framework',
 ]
