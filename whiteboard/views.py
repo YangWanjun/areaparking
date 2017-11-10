@@ -2,10 +2,16 @@
 from __future__ import unicode_literals
 import operator
 
+from django.core.urlresolvers import reverse
+from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.encoding import force_text
+from django.utils.html import format_html
+from django.utils.http import urlquote
+from django.utils.translation import ugettext as _
 
-from material.frontend.views import ModelViewSet, ListModelView
+from material.frontend.views import ModelViewSet, ListModelView, DetailModelView, UpdateModelView
 
 from utils.django_base import BaseTemplateView, BaseView
 from parkinglot import models as parkinglot_model
@@ -27,11 +33,22 @@ class WhiteBoardListView(ListModelView):
         queryset = super(WhiteBoardListView, self).get_queryset()
         q = self.request.GET.get('datatable-search[value]', None)
         if q:
-            orm_lookups = ['bk_no__icontains', 'bk_name__icontains', 'address__icontains']
+            orm_lookups = ['bk_no__icontains', 'bk_name__icontains', 'address__icontains', 'tanto_name__icontains']
             for bit in q.split():
                 or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
                 queryset = queryset.filter(reduce(operator.or_, or_queries))
         return queryset
+
+
+class WhiteBoardDetailView(DetailModelView):
+
+    def get_context_data(self, **kwargs):
+        context = super(WhiteBoardDetailView, self).get_context_data(**kwargs)
+        object = context.get('object', None)
+        context.update({
+            'change_url': reverse('admin:parkinglot_parkingposition_change', args=(object.parking_position.pk,)) + '?_to_field=id&_popup=1',
+        })
+        return context
 
 
 class WhiteBoardViewSet(ModelViewSet):
@@ -43,9 +60,68 @@ class WhiteBoardViewSet(ModelViewSet):
     )
     list_display_links = ('bk_no', 'parking_lot', 'parking_position')
     list_view_class = WhiteBoardListView
+    detail_view_class = WhiteBoardDetailView
 
     def has_add_permission(self, request):
         return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class WaitingListView(ListModelView):
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(WaitingListView, self).get_queryset()
+        q = self.request.GET.get('datatable-search[value]', None)
+        if q:
+            orm_lookups = ['parking_lot__buken__bk_name__icontains', 'name__icontains', 'address1__icontains', 'address2__icontains']
+            for bit in q.split():
+                or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
+        return queryset
+
+    def get_datatable_config(self):
+        config = super(WaitingListView, self).get_datatable_config()
+        config['searching'] = True
+        return config
+
+    def get_context_data(self, **kwargs):
+        context = super(WaitingListView, self).get_context_data(**kwargs)
+        context.update({
+            'has_filter': True,
+        })
+        return context
+
+
+class WaitingUpdateView(UpdateModelView):
+    def report(self, message, level=messages.INFO, fail_silently=True, **kwargs):
+        """Construct message and notify the user."""
+        opts = self.model._meta
+
+        url = reverse('{}:{}_detail'.format(
+            opts.app_label, opts.model_name), args=[self.object.pk])
+        link = format_html(u'<a href="{}">{}</a>', urlquote(url), force_text(self.object))
+        name = force_text(opts.verbose_name)
+
+        options = {
+            'link': link,
+            'name': name
+        }
+        options.update(kwargs)
+        message = format_html(_(message).format(**options))
+        messages.add_message(self.request, messages.SUCCESS, message, fail_silently=True)
+
+
+class WaitingListViewSet(ModelViewSet):
+    model = models.Waiting
+    list_display = ('parking_lot', 'name', 'tel1', 'address1', 'email', 'created_date')
+    list_display_links = ('parking_lot', 'name')
+    update_view_class = WaitingUpdateView
+    list_view_class = WaitingListView
 
 
 class ParkingPositionListView(BaseTemplateView):
@@ -84,7 +160,3 @@ class ParkingPositionDetail(BaseTemplateView):
             'contractor_form': contractor_form,
         })
         return context
-
-
-class WaitingListView(BaseTemplateView):
-    template_name = "./whiteboard/waiting-list.html"

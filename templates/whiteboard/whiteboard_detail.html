@@ -1,0 +1,119 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+
+{% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object }}</a>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            {% block card %}
+            <div class="card-title">{{ view.model|verbose_name|title }}: {{ object }}</div>
+            <table class="table bordered">
+                <tr>
+                    <th style="width: 20%;">車室名称：</th>
+                    <td>{{ whiteboard.position_name }}</td>
+                    <th style="width: 20%;">空き：</th>
+                    <td>
+                        {% if whiteboard.contract_status == "手続中" %}
+                            <span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>
+                        {% else %}
+                            {% if whiteboard.contract_status == "空き" %}
+                                <span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>
+                            {% else %}
+                                <span class="new badge left grey" data-badge-caption="空きなし" style="margin-left: 0px;"></span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>募集賃料（税込）：</th>
+                    <td>{{ whiteboard.price_recruitment|default:''|intcomma }}</td>
+                    <th>募集賃料（税抜）：</th>
+                    <td>{{ whiteboard.price_recruitment_no_tax|default:''|intcomma }}</td>
+                </tr>
+                <tr>
+                    <th>ホームページ（税込）：</th>
+                    <td>{{ whiteboard.price_homepage|default:''|intcomma }}</td>
+                    <th>ホームページ（税別）：</th>
+                    <td>{{ whiteboard.price_homepage_no_tax|default:''|intcomma }}</td>
+                </tr>
+                <tr>
+                    <th>チラシ価格（税込）：</th>
+                    <td>{{ whiteboard.price_handbill|default:''|intcomma }}</td>
+                    <th>チラシ価格（税抜）：</th>
+                    <td>{{ whiteboard.price_handbill_no_tax|default:''|intcomma }}</td>
+                </tr>
+                <tr>
+                    <th>全長：</th>
+                    <td>{{ whiteboard.length|default:''|intcomma }}</td>
+                    <th>全幅：</th>
+                    <td>{{ whiteboard.width|default:''|intcomma }}</td>
+                </tr>
+                <tr>
+                    <th>全高：</th>
+                    <td>{{ whiteboard.height|default:''|intcomma }}</td>
+                    <th>重量：</th>
+                    <td>{{ whiteboard.weight|default:''|intcomma }}</td>
+                </tr>
+                <tr>
+                    <th>ﾒｰｶｰのタイヤ幅：</th>
+                    <td>{{ whiteboard.tyre_width|default:''|intcomma }}</td>
+                    <th>AP計測のタイヤ幅：</th>
+                    <td>{{ whiteboard.tyre_width_ap|default:''|intcomma }}</td>
+                </tr>
+                <tr>
+                    <th>ﾒｰｶｰの地上最低高：</th>
+                    <td>{{ whiteboard.min_height|default:''|intcomma }}</td>
+                    <th>AP計測の地上最低高：</th>
+                    <td>{{ whiteboard.min_height_ap|default:''|intcomma }}</td>
+                </tr>
+                <tr>
+                    <th>F値：</th>
+                    <td>{{ whiteboard.f_value|default:''|intcomma }}</td>
+                    <th>R値：</th>
+                    <td>{{ whiteboard.r_value|default:''|intcomma }}</td>
+                </tr>
+                <tr>
+                    <th>時間制限：</th>
+                    <td>{{ whiteboard.time_limit|default:'' }}</td>
+                    <th></th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>備考：</th>
+                    <td colspan="3">{{ whiteboard.position_comment|default:'' }}</td>
+                </tr>
+
+                {% endblock %}
+            </table>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% block actions_row %}
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% endblock actions_row %}
+                {% if whiteboard.contract_status != "空き" %}
+                <a class="waves-effect waves-light btn white-text" href="javascript:void(0)">順番待ちへ</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).ready(function() {
+    eb.popup_anchor();
+});
+</script>
+{% endblock %}

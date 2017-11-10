@@ -7,13 +7,12 @@ GO
 
 CREATE view v_whiteboard
 AS
-SELECT RIGHT('0000000000'+ CONVERT(VARCHAR, bk.bk_no), 10) + '|' + RIGHT('00000'+ CONVERT(VARCHAR, hy.hy_no), 5) AS id
+SELECT RIGHT('0000000000'+ CONVERT(VARCHAR, bk.bk_no), 10) + '|' + hy.hy_no AS id
      , lot.id as parking_lot_id
      , pos.id as parking_position_id
      , bk.bk_no
      , bk.bk_name
      , hy.hy_no as position_name
-	 , 'なし' as contract_status
 	 , CONCAT(bk.add_ken, bk.add_si, bk.add_cyo, bk.add_banti, bk.add_etc) as address
 	 , mt.tanto_name							-- 担当者
      , lot.is_existed_contractor_allowed        -- 既契約者
@@ -41,10 +40,16 @@ SELECT RIGHT('0000000000'+ CONVERT(VARCHAR, bk.bk_no), 10) + '|' + RIGHT('00000'
 
      , pos.time_limit_id
      , pos.comment as position_comment          -- 車室の備考
+	 /* 契約 */
+	 , CASE
+	       WHEN ky.ky_no IS NOT NULL THEN 'なし'
+		   ELSE '空き'
+	   END AS contract_status
   FROM [fk5dtsql].[dbo].[bk_mst] bk
   LEFT JOIN [areaparking].[dbo].[ap_parking_lot] lot ON lot.buken_id = bk.bk_no AND lot.is_deleted = 0
   JOIN [fk5dtsql].[dbo].[hy_mst] hy ON hy.bk_no = bk.bk_no
   LEFT JOIN [areaparking].[dbo].[ap_parking_position] pos ON pos.parking_lot_id = lot.id AND pos.is_deleted = 0 AND pos.name = hy.hy_no
   LEFT JOIN [fk5dtsql].[dbo].[m_tanto] mt ON mt.tanto_no = bk.tanto_no
+  LEFT JOIN [fk5dtsql].[dbo].[ky_kosinkai] ky ON ky.bk_no = bk.bk_no AND ky.hy_no = hy.hy_no AND ky.ky_start_ymd <= GETDATE() AND ky.ky_end_ymd >= GETDATE()
 
 GO

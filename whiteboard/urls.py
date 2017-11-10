@@ -11,6 +11,6 @@ urlpatterns = [
     url('^$', views.Index.as_view(), name="index"),
     url('^parking-lot-(?P<id>\d+)\.html', views.ParkingLotDetail.as_view(), name='parking-lot-detail'),
     url('^parking-position-(?P<id>\d+)\.html', views.ParkingPositionDetail.as_view(), name='parking-position-detail'),
-    url('^waiting-list\.html', views.WaitingListView.as_view(), name='waiting-list'),
     url('^whiteboard/', include(views.WhiteBoardViewSet().urls)),
+    url('^waiting/', include(views.WaitingListViewSet().urls)),
 ]

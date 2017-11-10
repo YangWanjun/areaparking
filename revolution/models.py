@@ -10964,11 +10964,11 @@ class HyMst(models.Model):
     kaisu = models.CharField(max_length=6, blank=True, null=True)
     joken = models.CharField(max_length=100, blank=True, null=True)
     key_no = models.CharField(max_length=20, blank=True, null=True)
-    muki = models.CharField(max_length=10, blank=True, null=True)
+    muki = models.CharField(max_length=10, blank=True, null=True, verbose_name="向き")
     key_su = models.SmallIntegerField(blank=True, null=True)
-    tyusya_umu = models.BooleanField(default=False)
-    tyusya_kbn = models.CharField(max_length=10, blank=True, null=True)
-    tyusya_biko = models.CharField(max_length=50, blank=True, null=True)
+    tyusya_umu = models.BooleanField(default=False, verbose_name="駐車場有無")
+    tyusya_kbn = models.CharField(max_length=10, blank=True, null=True, verbose_name="駐車場料金区分")
+    tyusya_biko = models.CharField(max_length=50, blank=True, null=True, verbose_name="駐車場備考")
     sld_umu = models.BooleanField(default=False)
     add_banti = models.CharField(max_length=50, blank=True, null=True)
     add_etc = models.CharField(max_length=50, blank=True, null=True)
@@ -10976,11 +10976,11 @@ class HyMst(models.Model):
     add_etc_eng = models.CharField(max_length=50, blank=True, null=True)
     toritaiyo = models.CharField(max_length=50, blank=True, null=True)
     nyukyo_kano = models.CharField(max_length=50, blank=True, null=True)
-    biko = models.CharField(max_length=400, blank=True, null=True)
+    biko = models.CharField(max_length=400, blank=True, null=True, verbose_name="備考")
     sld_comment = models.CharField(max_length=200, blank=True, null=True)
     grp_comment = models.CharField(max_length=200, blank=True, null=True)
-    kosin_date = models.DateTimeField(blank=True, null=True)
-    kosin_user = models.CharField(max_length=30, blank=True, null=True)
+    kosin_date = models.DateTimeField(blank=True, null=True, verbose_name="更新日")
+    kosin_user = models.CharField(max_length=30, blank=True, null=True, verbose_name="更新者")
     yobi_mj1 = models.CharField(max_length=50, blank=True, null=True)
     yobi_mj2 = models.CharField(max_length=50, blank=True, null=True)
     yobi_mj3 = models.CharField(max_length=50, blank=True, null=True)
@@ -15662,26 +15662,26 @@ class KyKosinSinchokuItem(models.Model):
 
 
 class KyKosinkai(models.Model):
-    bk_no = models.IntegerField(primary_key=True)
-    hy_no = models.CharField(max_length=8)
-    ky_no = models.IntegerField()
+    bk_no = models.IntegerField(primary_key=True, verbose_name="物件番号")
+    hy_no = models.CharField(max_length=8, verbose_name="部屋番号")
+    ky_no = models.IntegerField(verbose_name="契約番号")
     ko_no = models.SmallIntegerField()
     ko_kbn = models.SmallIntegerField(blank=True, null=True)
     tanto_no = models.SmallIntegerField(blank=True, null=True)
     tanto_no_syu = models.SmallIntegerField(blank=True, null=True)
-    ky_date = models.DateTimeField(blank=True, null=True)
-    ky_start_ymd = models.DateTimeField(blank=True, null=True)
-    ky_end_ymd = models.DateTimeField(blank=True, null=True)
+    ky_date = models.DateTimeField(blank=True, null=True, verbose_name="契約日")
+    ky_start_ymd = models.DateTimeField(blank=True, null=True, verbose_name="契約開始日")
+    ky_end_ymd = models.DateTimeField(blank=True, null=True, verbose_name="契約終了日")
     teki_start_ymd = models.DateTimeField(blank=True, null=True)
     teki_end_ymd = models.DateTimeField(blank=True, null=True)
-    tuti_start_ymd = models.DateTimeField(blank=True, null=True)
-    tuti_end_ymd = models.DateTimeField(blank=True, null=True)
-    ky_soymd = models.DateTimeField(blank=True, null=True)
+    tuti_start_ymd = models.DateTimeField(blank=True, null=True, verbose_name="契約終了通知開始日")
+    tuti_end_ymd = models.DateTimeField(blank=True, null=True, verbose_name="契約終了通知終了日")
+    ky_soymd = models.DateTimeField(blank=True, null=True, verbose_name="更新案内発行日")
     nx_kosin_kbn = models.SmallIntegerField(blank=True, null=True)
     nx_kosin_sumi = models.BooleanField(default=False)
     tokusoku_keiumu = models.BooleanField(default=False)
     rai_umu = models.BooleanField(default=False)
-    fkae_startym = models.DateTimeField(blank=True, null=True)
+    fkae_startym = models.DateTimeField(blank=True, null=True, verbose_name="口座振替開始年月")
     keirui_no = models.SmallIntegerField(blank=True, null=True)
     katiprt_ymd = models.DateTimeField(blank=True, null=True)
     kyprt_ymd = models.DateTimeField(blank=True, null=True)
@@ -16020,6 +16020,11 @@ class KyKosinkai(models.Model):
         managed = False
         db_table = 'ky_kosinkai'
         unique_together = (('bk_no', 'hy_no', 'ky_no', 'ko_no'),)
+        verbose_name = "契約"
+        verbose_name_plural = "契約一覧"
+
+    def __unicode__(self):
+        return "%s_%s_%s_%s" % (self.bk_no, self.hy_no, self.ky_no, self.ko_no)
 
 
 class KyKyosaikun(models.Model):
@@ -17195,7 +17200,7 @@ class KysMst(models.Model):
     post_bango = models.CharField(max_length=8, blank=True, null=True, verbose_name="通帳番号")
     fkae_no = models.SmallIntegerField(blank=True, null=True, verbose_name="振替口座№")
     fkae_tesu = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True, verbose_name="振替手数料")
-    kys_bango = models.CharField(max_length=20, blank=True, null=True, verbose_name="契約者番号")
+    kys_bango = models.CharField(max_length=20, blank=True, null=True, verbose_name="契約者番号", help_text="講座振替（引落し）を行う際に、固有の番号が割り当てられる場合に入力します。")
     fkomfkae_tutiumu = models.BooleanField(default=False)
     tokusoku_umu = models.BooleanField(default=False)
     sqsyo_umu = models.BooleanField(default=False)

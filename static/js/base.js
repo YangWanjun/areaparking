@@ -68,6 +68,14 @@ EB.prototype.toNumComma = function(num) {
     return int_comma;
 }
 
+EB.prototype.popup_anchor = function() {
+    $('a.popup').on('click', function() {
+        var href = $(this).attr('href');
+        window.open(href, "", "width=750, height=500");
+        return false;
+    });
+}
+
 EB.prototype.reset_whiteboard_row = function(tr, idx) {
     var self = this;
     tr = $(tr)

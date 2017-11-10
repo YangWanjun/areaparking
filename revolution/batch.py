@@ -14,16 +14,16 @@ def sync_buken():
         )
         buken_count = cursor.rowcount
         cursor.execute(
-            " INSERT INTO areaparking.dbo.ap_parking_position (parking_lot_id, seq_no, name, created_date, updated_date, is_deleted)"
-            " SELECT (SELECT id FROM areaparking.dbo.ap_parking_lot WHERE ap_parking_lot.buken_id=bai_rooms.bk_no) as bk_no"
-            "      , naibu_no, hy_no"
+            " INSERT INTO areaparking.dbo.ap_parking_position (parking_lot_id, name, created_date, updated_date, is_deleted)"
+            " SELECT (SELECT id FROM areaparking.dbo.ap_parking_lot WHERE ap_parking_lot.buken_id=hy_mst.bk_no) as bk_no"
+            "      , hy_no"
             "      , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0 as is_deleted"
-            "   FROM fk5dtsql.dbo.bai_rooms"
+            "   FROM fk5dtsql.dbo.hy_mst"
             "  WHERE NOT EXISTS ("
             "            SELECT 1 FROM areaparking.dbo.ap_parking_lot t1 "
             " 		       JOIN areaparking.dbo.ap_parking_position t2 ON t1.id = t2.parking_lot_id"
-            "             WHERE t1.buken_id = bai_rooms.bk_no"
-            "               AND t2.seq_no = bai_rooms.naibu_no"
+            "             WHERE t1.buken_id = hy_mst.bk_no"
+            "               AND t2.name = hy_mst.hy_no"
             "        )"
         )
         room_count = cursor.rowcount

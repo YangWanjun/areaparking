@@ -6,6 +6,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import models
+from django.http import HttpResponse
 from django.views.generic import View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
@@ -54,6 +55,17 @@ class BaseAdmin(admin.ModelAdmin):
         if 'delete_selected' in actions:
             del actions['delete_selected']
         return actions
+
+    def response_change(self, request, obj):
+        if request.GET.get('_popup', None) == '1':
+            return HttpResponse('''
+               <script type="text/javascript">
+                  window.opener.location.reload();
+                  window.close();
+               </script>''')
+        else:
+            response = super(BaseAdmin, self).response_change(request, obj)
+            return response
 
 
 class BaseAdminChangeOnly(BaseAdmin):

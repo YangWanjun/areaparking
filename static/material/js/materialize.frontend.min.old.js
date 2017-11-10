@@ -4426,21 +4426,7 @@ if (function() {
                         var x = a[o % s];
                         b._sRowStripe != x && (t(w).removeClass(b._sRowStripe).addClass(x), b._sRowStripe = x)
                     }
-                    /* Yang: Start Modified */
-                    if (e.ajax.url === "/whiteboard/whiteboard/") {
-                        var rows = eb.reset_whiteboard_row(w, v);
-                        if (rows instanceof Array) {
-                            for (var r_index = 0; r_index < rows.length; r_index++) {
-                                w = rows[r_index];
-                                Rt(e, "aoRowCallback", null, [w, b._aData, o, v]), i.push(w), o++
-                            }
-                        } else {
-                            Rt(e, "aoRowCallback", null, [w, b._aData, o, v]), i.push(w), o++
-                        }
-                    } else {
-                        Rt(e, "aoRowCallback", null, [w, b._aData, o, v]), i.push(w), o++
-                    }
-                    /* Yang: End Modified */
+                    Rt(e, "aoRowCallback", null, [w, b._aData, o, v]), i.push(w), o++
                 } else {
                     var S = l.sZeroRecords;
                     1 == e.iDraw && "ajax" == qt(e) ? S = l.sLoadingRecords : l.sEmptyTable && 0 === e.fnRecordsTotal() && (S = l.sEmptyTable), i[0] = t("<tr/>", {
@@ -4453,12 +4439,7 @@ if (function() {
                 }
             Rt(e, "aoHeaderCallback", "header", [t(e.nTHead).children("tr")[0], P(e), f, h, d]), Rt(e, "aoFooterCallback", "footer", [t(e.nTFoot).children("tr")[0], P(e), f, h, d]);
             var T = t(e.nTBody);
-            T.children().detach();
-            // debugger;
-            //sub_node = t(i);
-            T.append(i);
-            Rt(e, "aoDrawCallback", "draw", [e]);
-            e.bSorted = !1, e.bFiltered = !1, e.bDrawing = !1
+            T.children().detach(), T.append(t(i)), Rt(e, "aoDrawCallback", "draw", [e]), e.bSorted = !1, e.bFiltered = !1, e.bDrawing = !1
         }
 
         function j(t, e) {
@@ -4512,9 +4493,6 @@ if (function() {
 
         function W(e, n) {
             var r, i, o, a, s, l, c, u, d, f, h, p = t(n).children("tr");
-            if (n.tagName.toUpperCase() === "THEAD" && jQuery(n).hasClass('complex')) {
-                p = t(n).children("tr").last();
-            }
             for (e.splice(0, e.length), o = 0, l = p.length; o < l; o++) e.push([]);
             for (o = 0, l = p.length; o < l; o++)
                 for (r = p[o], u = 0, i = r.firstChild; i;) {
@@ -4535,8 +4513,7 @@ if (function() {
             var r = [];
             n || (n = t.aoHeader, e && (n = [], W(n, e)));
             for (var i = 0, o = n.length; i < o; i++)
-                for (var a = 0, s = n[i].length; a < s; a++) 
-                    !n[i][a].unique || r[a] && t.bSortCellsTop || (r[a] = n[i][a].cell);
+                for (var a = 0, s = n[i].length; a < s; a++) !n[i][a].unique || r[a] && t.bSortCellsTop || (r[a] = n[i][a].cell);
             return r
         }
 
@@ -4574,9 +4551,7 @@ if (function() {
                     var o = Rt(e, null, "xhr", [e, null, e.jqXHR]); - 1 === t.inArray(!0, o) && ("parsererror" == r ? Lt(e, 0, "Invalid JSON response", 1) : 4 === n.readyState && Lt(e, 0, "Ajax error", 7)), ht(e, !1)
                 }
             };
-            e.oAjaxData = n;
-            Rt(e, null, "preXhr", [e, n]);
-            e.fnServerData ? e.fnServerData.call(s, e.sAjaxSource, t.map(n, function(t, e) {
+            e.oAjaxData = n, Rt(e, null, "preXhr", [e, n]), e.fnServerData ? e.fnServerData.call(s, e.sAjaxSource, t.map(n, function(t, e) {
                 return {
                     name: e,
                     value: t
@@ -5057,15 +5032,13 @@ if (function() {
                     var k = t(a).clone().css("visibility", "hidden").removeAttr("id");
                     k.find("tbody tr").remove();
                     var _ = t("<tr/>").appendTo(k.find("tbody"));
-                    for (k.find("thead, tfoot").remove(), k.append(t(n.nTHead).clone()).append(t(n.nTFoot).clone()), k.find("tfoot th, tfoot td").css("width", ""), y = Y(n, k.find("thead")[0]), r = 0; r < g.length; r++) {
-                        i = s[g[r]], y[r].style.width = null !== i.sWidthOrig && "" !== i.sWidthOrig ? xt(i.sWidthOrig) : "", i.sWidthOrig && u && t(y[r]).append(t("<div/>").css({
-                            width: i.sWidthOrig,
-                            margin: 0,
-                            padding: 0,
-                            border: 0,
-                            height: 1
-                        }));
-                    }
+                    for (k.find("thead, tfoot").remove(), k.append(t(n.nTHead).clone()).append(t(n.nTFoot).clone()), k.find("tfoot th, tfoot td").css("width", ""), y = Y(n, k.find("thead")[0]), r = 0; r < g.length; r++) i = s[g[r]], y[r].style.width = null !== i.sWidthOrig && "" !== i.sWidthOrig ? xt(i.sWidthOrig) : "", i.sWidthOrig && u && t(y[r]).append(t("<div/>").css({
+                        width: i.sWidthOrig,
+                        margin: 0,
+                        padding: 0,
+                        border: 0,
+                        height: 1
+                    }));
                     if (n.aoData.length)
                         for (r = 0; r < g.length; r++) o = g[r], i = s[o], t(bt(n, o)).clone(!1).append(i.sContentPadding).appendTo(_);
                     t("[name]", k).removeAttr("name");
@@ -5579,7 +5552,7 @@ if (function() {
             Jt = /<.*?>/g,
             Gt = /^\d{2,4}[\.\/\-]\d{1,2}[\.\/\-]\d{1,2}([T ]{1}\d{1,2}[:\.]\d{2}([\.:]\d{2})?)?$/,
             Zt = new RegExp("(\\" + ["/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^", "-"].join("|\\") + ")", "g"),
-            Kt = /[',$�E�｣竁E���E�･%\u2009\u202F\u20BD\u20a9\u20BArfk]/gi,
+            Kt = /[',$ﾂ｣竄ｬﾂ･%\u2009\u202F\u20BD\u20a9\u20BArfk]/gi,
             te = function(t) {
                 return !t || !0 === t || "-" === t
             },
@@ -7147,8 +7120,8 @@ if (function() {
         var e = {
             i18n: {
                 ar: {
-                    months: ["�E���E��E��E���E�異�E� �E�ｧ�E���E��E��E�ｧ�E���E��E�", "�E�ｴ�E�ｨ�E�ｧ�E�ｷ", "�E�｢�E�ｰ�E�ｧ�E�ｱ", "�E���E�韓ｳ�E�ｧ�E��", "�E���E��E��E�館�E�", "�E�ｭ�E�ｲ�E�韓�E��E�ｧ�E��", "�E�ｪ�E���E�畏ｲ", "�E�｢�E�ｨ", "�E�｣�E�館�E��E�異�E�", "�E�ｪ�E�ｴ�E�ｱ�E�館�E� �E�ｧ�E���E��E��E�異�E�", "�E�ｪ�E�ｴ�E�ｱ�E�館�E� �E�ｧ�E���E��E��E�ｧ�E���E��E�", "�E���E��E��E���E�異�E� �E�ｧ�E���E��E��E�異�E�"],
-                    dayOfWeek: ["�E��", "�E�ｫ", "�E�ｹ", "�E�ｮ", "�E�ｬ", "�E�ｳ", "�E�ｭ"]
+                    months: ["ﾙ��ｧﾙ��異� ﾘｧﾙ��ｫﾘｧﾙ���", "ﾘｴﾘｨﾘｧﾘｷ", "ﾘ｢ﾘｰﾘｧﾘｱ", "ﾙ��韓ｳﾘｧﾙ�", "ﾙ��ｧﾙ館�", "ﾘｭﾘｲﾙ韓ｱﾘｧﾙ�", "ﾘｪﾙ��畏ｲ", "ﾘ｢ﾘｨ", "ﾘ｣ﾙ館��異�", "ﾘｪﾘｴﾘｱﾙ館� ﾘｧﾙ��｣ﾙ異�", "ﾘｪﾘｴﾘｱﾙ館� ﾘｧﾙ��ｫﾘｧﾙ���", "ﾙ��ｧﾙ��異� ﾘｧﾙ��｣ﾙ異�"],
+                    dayOfWeek: ["ﾙ�", "ﾘｫ", "ﾘｹ", "ﾘｮ", "ﾘｬ", "ﾘｳ", "ﾘｭ"]
                 },
                 ro: {
                     months: ["ianuarie", "februarie", "martie", "aprilie", "mai", "iunie", "iulie", "august", "septembrie", "octombrie", "noiembrie", "decembrie"],
@@ -7159,31 +7132,31 @@ if (function() {
                     dayOfWeek: ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"]
                 },
                 bg: {
-                    months: ["�E�ｯ�E�ｽ�E�ρE���E���E�ｸ", "�E�､�E�ｵ�E�ｲ�E���E�ρE���E���E�ｸ", "�E��E�E��E���E��", "�E�籍ｿ�E���E�ｸ�E�ｻ", "�E��E�E��E�ｹ", "�E�ｮ�E�ｽ�E�ｸ", "�E�ｮ�E�ｻ�E�ｸ", "�E�籍ｲ�E�ｳ�E�ρE���E��E�", "�E�｡�E�ｵ�E�ｿ�E��E�E��E�ｼ�E�ｲ�E���E�ｸ", "�E�榧�E��E��E�E��E�ｼ�E�ｲ�E���E�ｸ", "�E�斷�E��E�ｵ�E�ｼ�E�ｲ�E���E�ｸ", "�E�頒ｵ�E�ｺ�E�ｵ�E�ｼ�E�ｲ�E���E�ｸ"],
-                    dayOfWeek: ["�E�斷�E�", "�E�渙ｽ", "�E�柘�E�", "�E�｡�E��", "�E�ｧ�E��", "�E�湲�E�", "�E�｡�E�ｱ"]
+                    months: ["ﾐｯﾐｽﾑσｰﾑ�ﾐｸ", "ﾐ､ﾐｵﾐｲﾑ�ﾑσｰﾑ�ﾐｸ", "ﾐ慴ｰﾑ�ﾑ�", "ﾐ籍ｿﾑ�ﾐｸﾐｻ", "ﾐ慴ｰﾐｹ", "ﾐｮﾐｽﾐｸ", "ﾐｮﾐｻﾐｸ", "ﾐ籍ｲﾐｳﾑτ���", "ﾐ｡ﾐｵﾐｿﾑひｵﾐｼﾐｲﾑ�ﾐｸ", "ﾐ榧ｺﾑひｾﾐｼﾐｲﾑ�ﾐｸ", "ﾐ斷ｾﾐｵﾐｼﾐｲﾑ�ﾐｸ", "ﾐ頒ｵﾐｺﾐｵﾐｼﾐｲﾑ�ﾐｸ"],
+                    dayOfWeek: ["ﾐ斷ｴ", "ﾐ渙ｽ", "ﾐ柘�", "ﾐ｡ﾑ�", "ﾐｧﾑ�", "ﾐ湲�", "ﾐ｡ﾐｱ"]
                 },
                 fa: {
-                    months: ["�E���E��E��E�畏�E��E�ｯ�E�雇�E�", "�E�ｧ�E�ｱ�E�ｯ�E�鈷�E��E���E��E��E�ｪ", "�E�ｮ�E�ｱ�E�ｯ�E�ｧ�E�ｯ", "�E�ｪ�E�鈷�E�", "�E���E��E��E�ｯ�E�ｧ�E�ｯ", "�E�ｴ�E���E��E��E�雇畏ｱ", "�E���E��E��E��E�", "�E�｢�E�ｨ�E�ｧ�E��", "�E�｢�E�ｰ�E�ｱ", "�E�ｯ�E��", "�E�ｨ�E���E��E��E��E�", "�E�ｧ�E�ｳ�E���E��E��E��E�"],
-                    dayOfWeek: ["�E�顧�E��E�ｴ�E���E��E��E��", "�E�ｯ�E�畏�E��E���E��E��E��", "�E�ｳ�E�� �E�ｴ�E���E��E��E��", "�E���E��E��E��E��E�ｱ�E�ｴ�E���E��E��E��", "�E�ｾ�E���E��E��E�ｴ�E���E��E��E��", "�E�ｬ�E���E��E��E��", "�E�ｴ�E���E��E��E��"]
+                    months: ["ﾙ��ｱﾙ畏ｱﾘｯﾛ雇�", "ﾘｧﾘｱﾘｯﾛ鈷ｨﾙ��ｴﾘｪ", "ﾘｮﾘｱﾘｯﾘｧﾘｯ", "ﾘｪﾛ鈷ｱ", "ﾙ��ｱﾘｯﾘｧﾘｯ", "ﾘｴﾙ��ｱﾛ雇畏ｱ", "ﾙ����ｱ", "ﾘ｢ﾘｨﾘｧﾙ�", "ﾘ｢ﾘｰﾘｱ", "ﾘｯﾛ�", "ﾘｨﾙ�����", "ﾘｧﾘｳﾙ����ｯ"],
+                    dayOfWeek: ["ﾛ顧ｩﾘｴﾙ��ｨﾙ�", "ﾘｯﾙ畏ｴﾙ��ｨﾙ�", "ﾘｳﾙ� ﾘｴﾙ��ｨﾙ�", "ﾚ����ｧﾘｱﾘｴﾙ��ｨﾙ�", "ﾙｾﾙ��ｬﾘｴﾙ��ｨﾙ�", "ﾘｬﾙ��ｹﾙ�", "ﾘｴﾙ��ｨﾙ�"]
                 },
                 ru: {
-                    months: ["�E�ｯ�E�ｽ�E�ｲ�E�ｰ�E���E��", "�E�､�E�ｵ�E�ｲ�E���E�ｰ�E�ｻ�E��", "�E��E�E��E���E��", "�E�籍ｿ�E���E�ｵ�E�ｻ�E��", "�E��E�E��E�ｹ", "�E�佯社�E��E��", "�E�佯社�E��E��", "�E�籍ｲ�E�ｳ�E�ρE���E��E�", "�E�｡�E�ｵ�E�ｽ�E��E紹�E��E���E��", "�E�榧�E��E��E紹�E��E���E��", "�E�斷�E��E�紹�E��E���E��", "�E�頒ｵ�E�ｺ�E�ｰ�E�ｱ�E���E��"],
-                    dayOfWeek: ["�E�柘�E��E��E�", "�E�渙ｽ", "�E�柘�E�", "�E�｡�E��", "�E�ｧ�E��", "�E�湲�E�", "�E�｡�E�ｱ"]
+                    months: ["ﾐｯﾐｽﾐｲﾐｰﾑ�ﾑ�", "ﾐ､ﾐｵﾐｲﾑ�ﾐｰﾐｻﾑ�", "ﾐ慴ｰﾑ�ﾑ�", "ﾐ籍ｿﾑ�ﾐｵﾐｻﾑ�", "ﾐ慴ｰﾐｹ", "ﾐ佯社ｽﾑ�", "ﾐ佯社ｻﾑ�", "ﾐ籍ｲﾐｳﾑτ���", "ﾐ｡ﾐｵﾐｽﾑび紹ｱﾑ�ﾑ�", "ﾐ榧ｺﾑび紹ｱﾑ�ﾑ�", "ﾐ斷ｾﾑ紹ｱﾑ�ﾑ�", "ﾐ頒ｵﾐｺﾐｰﾐｱﾑ�ﾑ�"],
+                    dayOfWeek: ["ﾐ柘��ｺ", "ﾐ渙ｽ", "ﾐ柘�", "ﾐ｡ﾑ�", "ﾐｧﾑ�", "ﾐ湲�", "ﾐ｡ﾐｱ"]
                 },
                 uk: {
-                    months: ["�E�｡�E�毛��E��E��E�ｽ�E��", "�E�嶝紗�E�E��E�ｹ", "�E�岱�E��E���E�ｵ�E�ｷ�E�ｵ�E�ｽ�E��", "�E�墟ｲ�E�毛�E�E��E�ｽ�E��", "�E�｢�E���E�ｰ�E�ｲ�E�ｵ�E�ｽ�E��", "�E�ｧ�E�ｵ�E���E�ｲ�E�ｵ�E�ｽ�E��", "�E�嶢�E��E�ｿ�E�ｵ�E�ｽ�E��", "�E�｡�E�ｵ�E���E�ｿ�E�ｵ�E�ｽ�E��", "�E�漬�E��E���E�ｵ�E���E��E��E�ｽ�E��", "�E�孟ｾ�E�ｲ�E��E�E��E�ｽ�E��", "�E�嶢�E��E���E�ひ�E��E�ｿ�E�ｰ�E�ｴ", "�E��E�E��E�ρE���E�ｵ�E�ｽ�E��"],
-                    dayOfWeek: ["�E�斷�E��E�ｻ", "�E�渙ｽ�E�ｴ", "�E�柘び�E�", "�E�｡�E���E�ｴ", "�E�ｧ�E��E�E�", "�E�湲ひ�E�", "�E�｡�E�ｱ�E��"]
+                    months: ["ﾐ｡ﾑ毛��ｵﾐｽﾑ�", "ﾐ嶝紗ひｸﾐｹ", "ﾐ岱ｵﾑ�ﾐｵﾐｷﾐｵﾐｽﾑ�", "ﾐ墟ｲﾑ毛ひｵﾐｽﾑ�", "ﾐ｢ﾑ�ﾐｰﾐｲﾐｵﾐｽﾑ�", "ﾐｧﾐｵﾑ�ﾐｲﾐｵﾐｽﾑ�", "ﾐ嶢ｸﾐｿﾐｵﾐｽﾑ�", "ﾐ｡ﾐｵﾑ�ﾐｿﾐｵﾐｽﾑ�", "ﾐ漬ｵﾑ�ﾐｵﾑ��ｵﾐｽﾑ�", "ﾐ孟ｾﾐｲﾑひｵﾐｽﾑ�", "ﾐ嶢ｸﾑ��ひｾﾐｿﾐｰﾐｴ", "ﾐ酉�ﾑσｴﾐｵﾐｽﾑ�"],
+                    dayOfWeek: ["ﾐ斷ｴﾐｻ", "ﾐ渙ｽﾐｴ", "ﾐ柘び�", "ﾐ｡ﾑ�ﾐｴ", "ﾐｧﾑひｲ", "ﾐ湲ひｽ", "ﾐ｡ﾐｱﾑ�"]
                 },
                 en: {
                     months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                     dayOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
                 },
                 el: {
-                    months: ["�E�厥�E��E�ｽ�E�ｿ�E���E��E��E��E�E��E�ｿ�E��", "�E�ｦ�E�ｵ�E�ｲ�E��E�E��E���E��E��E��E�E��E�ｿ�E��", "�E��E�E��E���E��E��E��E��E�ｿ�E��", "�E�耐��E��E�E��E�ｻ�E�ｹ�E�ｿ�E��", "�E��E�E��E�ｹ�E�ｿ�E��", "�E�厥�E��E�歳�E��E�ｹ�E�ｿ�E��", "�E�厥�E��E�歳�E��E�ｹ�E�ｿ�E��", "�E�耐歳�E��E�ｿ�E���E�ρE���E��E��E��", "�E�｣�E�ｵ�E���E���E��E��E�ｼ�E�ｲ�E��E�E��E�ｿ�E��", "�E�湮�E��E���E�斜ｲ�E��E�E��E�ｿ�E��", "�E�斟�E��E�ｭ�E�ｼ�E�ｲ�E��E�E��E�ｿ�E��", "�E�釆�E��E�ｺ�E�ｭ�E�ｼ�E�ｲ�E��E�E��E�ｿ�E��"],
-                    dayOfWeek: ["�E�墹�E��E��E�", "�E�釆�E��E��", "�E�､�E��E�E�", "�E�､�E�ｵ�E��", "�E���E�ｵ�E�ｼ", "�E���E�ｱ�E��", "�E�｣�E�ｱ�E�ｲ"]
+                    months: ["ﾎ厥ｱﾎｽﾎｿﾏ��ｬﾏ∃ｹﾎｿﾏ�", "ﾎｦﾎｵﾎｲﾏ∃ｿﾏ��ｬﾏ∃ｹﾎｿﾏ�", "ﾎ慚ｬﾏ����ｹﾎｿﾏ�", "ﾎ耐�ﾏ∃ｯﾎｻﾎｹﾎｿﾏ�", "ﾎ慚ｬﾎｹﾎｿﾏ�", "ﾎ厥ｿﾏ歳ｽﾎｹﾎｿﾏ�", "ﾎ厥ｿﾏ歳ｻﾎｹﾎｿﾏ�", "ﾎ耐歳ｳﾎｿﾏ��ρ��ｿﾏ�", "ﾎ｣ﾎｵﾏ�ﾏ��ｭﾎｼﾎｲﾏ∃ｹﾎｿﾏ�", "ﾎ湮ｺﾏ��斜ｲﾏ∃ｹﾎｿﾏ�", "ﾎ斟ｿﾎｭﾎｼﾎｲﾏ∃ｹﾎｿﾏ�", "ﾎ釆ｵﾎｺﾎｭﾎｼﾎｲﾏ∃ｹﾎｿﾏ�"],
+                    dayOfWeek: ["ﾎ墹���", "ﾎ釆ｵﾏ�", "ﾎ､ﾏ∃ｹ", "ﾎ､ﾎｵﾏ�", "ﾎ�ﾎｵﾎｼ", "ﾎ�ﾎｱﾏ�", "ﾎ｣ﾎｱﾎｲ"]
                 },
                 de: {
-                    months: ["Januar", "Februar", "M�E�E��rz", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+                    months: ["Januar", "Februar", "Mﾃ､rz", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
                     dayOfWeek: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
                 },
                 nl: {
@@ -7191,40 +7164,40 @@ if (function() {
                     dayOfWeek: ["zo", "ma", "di", "wo", "do", "vr", "za"]
                 },
                 tr: {
-                    months: ["Ocak", "�E�E��bat", "Mart", "Nisan", "May�E�E��s", "Haziran", "Temmuz", "A�E�E��stos", "Eyl�E�E��l", "Ekim", "Kas�E�E��m", "Aral�E�E��k"],
-                    dayOfWeek: ["Paz", "Pts", "Sal", "�E�E��r", "Per", "Cum", "Cts"]
+                    months: ["Ocak", "ﾅ柆bat", "Mart", "Nisan", "Mayﾄｱs", "Haziran", "Temmuz", "Aﾄ殷stos", "Eylﾃｼl", "Ekim", "Kasﾄｱm", "Aralﾄｱk"],
+                    dayOfWeek: ["Paz", "Pts", "Sal", "ﾃ㌢r", "Per", "Cum", "Cts"]
                 },
                 fr: {
-                    months: ["Janvier", "F�E�E��vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Ao�E�E��t", "Septembre", "Octobre", "Novembre", "D�E�E��cembre"],
+                    months: ["Janvier", "Fﾃｩvrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aoﾃｻt", "Septembre", "Octobre", "Novembre", "Dﾃｩcembre"],
                     dayOfWeek: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]
                 },
                 es: {
                     months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-                    dayOfWeek: ["Dom", "Lun", "Mar", "Mi�E�E��", "Jue", "Vie", "S�E�E��b"]
+                    dayOfWeek: ["Dom", "Lun", "Mar", "Miﾃｩ", "Jue", "Vie", "Sﾃ｡b"]
                 },
                 th: {
-                    months: ["犧�E�犧≒ｸ�E�犧�E�犧�E��E��E��E�", "犧≒ｸ�E�犧�E�犧�E�犧�E�犧樁E���E�犧吭�E�倨�E��E�", "犧�E�犧�E�犧吭�E��E�犧�E��E��E��E�", "犹�E�犧�E�犧�E�犧�E�犧�E�犧�E�", "犧樁E���E�犧�E�犧�E�犧�E�犧�E��E��E��E�", "犧�E�犧�E�犧籾�E��E�犧吭�E��E�犧�E�犧�E�", "犧≒ｸ�E�犧≒ｸ錫�E��E�犧�E��E��E��E�", "犧�E�犧�E�犧�E��E��E��E�犧�E�犧�E��E��E��E�", "犧≒ｸ�E�犧吭�E��E�犧�E�犧�E�犧�E�", "犧歩�E��E�犧�E�犧�E�犧�E��E��E��E�", "犧樁E���E�犧�E�犧謂ｸ�E�犧≒ｸ�E�犧�E�犧�E�", "犧倨�E��E�犧吭�E��E�犧�E�犧�E��E��E��E�"],
-                    dayOfWeek: ["犧�E�犧�E�.", "犧�E�.", "犧�E�.", "犧�E�.", "犧樁E���E�.", "犧�E�.", "犧�E�."]
+                    months: ["犧｡犧≒ｸ｣犧ｲ犧��ｸ｡", "犧≒ｸｸ犧｡犧�犧ｲ犧樅ｸｱ犧吭ｸ倨ｹ�", "犧｡犧ｵ犧吭ｸｲ犧��ｸ｡", "犹�犧｡犧ｩ犧ｲ犧｢犧�", "犧樅ｸ､犧ｩ犧�犧ｲ犧��ｸ｡", "犧｡犧ｴ犧籾ｸｸ犧吭ｸｲ犧｢犧�", "犧≒ｸ｣犧≒ｸ錫ｸｲ犧��ｸ｡", "犧ｪ犧ｴ犧��ｸｫ犧ｲ犧��ｸ｡", "犧≒ｸｱ犧吭ｸ｢犧ｲ犧｢犧�", "犧歩ｸｸ犧･犧ｲ犧��ｸ｡", "犧樅ｸ､犧ｨ犧謂ｸｴ犧≒ｸｲ犧｢犧�", "犧倨ｸｱ犧吭ｸｧ犧ｲ犧��ｸ｡"],
+                    dayOfWeek: ["犧ｭ犧ｲ.", "犧�.", "犧ｭ.", "犧�.", "犧樅ｸ､.", "犧ｨ.", "犧ｪ."]
                 },
                 pl: {
-                    months: ["stycze�E�E��", "luty", "marzec", "kwiecie�E�E��", "maj", "czerwiec", "lipiec", "sierpie�E�E��", "wrzesie�E�E��", "pa�E�E��dziernik", "listopad", "grudzie�E�E��"],
-                    dayOfWeek: ["nd", "pn", "wt", "����ｭ�", "cz", "pt", "sb"]
+                    months: ["styczeﾅ�", "luty", "marzec", "kwiecieﾅ�", "maj", "czerwiec", "lipiec", "sierpieﾅ�", "wrzesieﾅ�", "paﾅｺdziernik", "listopad", "grudzieﾅ�"],
+                    dayOfWeek: ["nd", "pn", "wt", "ﾅ孑", "cz", "pt", "sb"]
                 },
                 pt: {
-                    months: ["Janeiro", "Fevereiro", "Mar�E�E��o", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+                    months: ["Janeiro", "Fevereiro", "Marﾃｧo", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
                     dayOfWeek: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]
                 },
                 ch: {
-                    months: ["荳�E�譛�", "莠梧怦", "荳画怦", "蝗帶怦", "莠疲怦", "蜈ｭ譛�", "荳�E��E�怦", "蜈ｫ譛�", "荵晁E��", "蜊∵怦", "蜊∽�E��E�譛�", "蜊∽�E�梧怦"],
-                    dayOfWeek: ["譌･", "荳�E�", "莠�E�", "荳�E�", "蝗�", "莠�E�", "蜈ｭ"]
+                    months: ["荳�譛�", "莠梧怦", "荳画怦", "蝗帶怦", "莠疲怦", "蜈ｭ譛�", "荳��怦", "蜈ｫ譛�", "荵晄怦", "蜊∵怦", "蜊∽ｸ�譛�", "蜊∽ｺ梧怦"],
+                    dayOfWeek: ["譌･", "荳�", "莠�", "荳�", "蝗�", "莠�", "蜈ｭ"]
                 },
                 se: {
                     months: ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"],
-                    dayOfWeek: ["S�E�E��n", "M�E�E��n", "Tis", "Ons", "Tor", "Fre", "L�E�E��r"]
+                    dayOfWeek: ["Sﾃｶn", "Mﾃ･n", "Tis", "Ons", "Tor", "Fre", "Lﾃｶr"]
                 },
                 kr: {
-                    months: ["1�E��E��E�", "2�E��E��E�", "3�E��E��E�", "4�E��E��E�", "5�E��E��E�", "6�E��E��E�", "7�E��E��E�", "8�E��E��E�", "9�E��E��E�", "10�E��E��E�", "11�E��E��E�", "12�E��E��E�"],
-                    dayOfWeek: ["�E��E��E�", "�E��E��E�", "�E��E��E�", "�E��E��E�", "�E��E��E�", "�E��E��E�", "�E��E��E�"]
+                    months: ["1���", "2���", "3���", "4���", "5���", "6���", "7���", "8���", "9���", "10���", "11���", "12���"],
+                    dayOfWeek: ["��ｼ", "���", "���", "���", "��ｩ", "���", "���"]
                 },
                 it: {
                     months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
@@ -7232,31 +7205,31 @@ if (function() {
                 },
                 da: {
                     months: ["January", "Februar", "Marts", "April", "Maj", "Juni", "July", "August", "September", "Oktober", "November", "December"],
-                    dayOfWeek: ["S�E�E��n", "Man", "Tir", "Ons", "Tor", "Fre", "L�E�E��r"]
+                    dayOfWeek: ["Sﾃｸn", "Man", "Tir", "Ons", "Tor", "Fre", "Lﾃｸr"]
                 },
                 no: {
                     months: ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"],
-                    dayOfWeek: ["S�E�E��n", "Man", "Tir", "Ons", "Tor", "Fre", "L�E�E��r"]
+                    dayOfWeek: ["Sﾃｸn", "Man", "Tir", "Ons", "Tor", "Fre", "Lﾃｸr"]
                 },
                 ja: {
                     months: ["1譛�", "2譛�", "3譛�", "4譛�", "5譛�", "6譛�", "7譛�", "8譛�", "9譛�", "10譛�", "11譛�", "12譛�"],
-                    dayOfWeek: ["譌･", "譛�", "轣�E�", "豌ｴ", "譛ｨ", "驥�E�", "蝨�E�"]
+                    dayOfWeek: ["譌･", "譛�", "轣ｫ", "豌ｴ", "譛ｨ", "驥�", "蝨�"]
                 },
                 vi: {
-                    months: ["Th�E�E��ng 1", "Th�E�E��ng 2", "Th�E�E��ng 3", "Th�E�E��ng 4", "Th�E�E��ng 5", "Th�E�E��ng 6", "Th�E�E��ng 7", "Th�E�E��ng 8", "Th�E�E��ng 9", "Th�E�E��ng 10", "Th�E�E��ng 11", "Th�E�E��ng 12"],
+                    months: ["Thﾃ｡ng 1", "Thﾃ｡ng 2", "Thﾃ｡ng 3", "Thﾃ｡ng 4", "Thﾃ｡ng 5", "Thﾃ｡ng 6", "Thﾃ｡ng 7", "Thﾃ｡ng 8", "Thﾃ｡ng 9", "Thﾃ｡ng 10", "Thﾃ｡ng 11", "Thﾃ｡ng 12"],
                     dayOfWeek: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"]
                 },
                 sl: {
                     months: ["Januar", "Februar", "Marec", "April", "Maj", "Junij", "Julij", "Avgust", "September", "Oktober", "November", "December"],
-                    dayOfWeek: ["Ned", "Pon", "Tor", "Sre", "�E�E�Et", "Pet", "Sob"]
+                    dayOfWeek: ["Ned", "Pon", "Tor", "Sre", "ﾄ憩t", "Pet", "Sob"]
                 },
                 cs: {
-                    months: ["Leden", "�E�E��or", "B�E�E�Ezen", "Duben", "Kv�E�E��en", "�E�E�Erven", "�E�E�Ervenec", "Srpen", "Z�E�E���E�E�ہE�", "�E�E��ｭjen", "Listopad", "Prosinec"],
-                    dayOfWeek: ["Ne", "Po", "�E�E��", "St", "�E�E��", "P�E�E��", "So"]
+                    months: ["Leden", "ﾃ嗜or", "Bﾅ册zen", "Duben", "Kvﾄ孚en", "ﾄ憩rven", "ﾄ憩rvenec", "Srpen", "Zﾃ｡ﾅ凖ｭ", "ﾅ佚ｭjen", "Listopad", "Prosinec"],
+                    dayOfWeek: ["Ne", "Po", "ﾃ嗾", "St", "ﾄ荊", "Pﾃ｡", "So"]
                 },
                 hu: {
-                    months: ["Janu�E�E��r", "Febru�E�E��r", "M�E�E��rcius", "�E�E��rilis", "M�E�E��jus", "J�E�E��nius", "J�E�E��lius", "Augusztus", "Szeptember", "Okt�E�E��ber", "November", "December"],
-                    dayOfWeek: ["Va", "H�E�E��", "Ke", "Sze", "Cs", "P�E�E��", "Szo"]
+                    months: ["Januﾃ｡r", "Februﾃ｡r", "Mﾃ｡rcius", "ﾃ｝rilis", "Mﾃ｡jus", "Jﾃｺnius", "Jﾃｺlius", "Augusztus", "Szeptember", "Oktﾃｳber", "November", "December"],
+                    dayOfWeek: ["Va", "Hﾃｩ", "Ke", "Sze", "Cs", "Pﾃｩ", "Szo"]
                 }
             },
             value: "",
@@ -9060,19 +9033,7 @@ if (function() {
                     a = o.children("thead"),
                     s = o.children("tfoot"),
                     l = i.tbody;
-                /* Yang: Start Modified */
-                if (e.ajax.url() === "/whiteboard/whiteboard/") {
-                    r.visible = o.is(":visible");
-                    r.width = o.outerWidth();
-                    r.left = o[0].getBoundingClientRect().left; //o.offset().left;
-                    r.theadTop = a.offset().top; //a[0].getBoundingClientRect().top; //
-                    r.tbodyTop = l.offset().top; //l[0].getBoundingClientRect().top;
-                    r.theadHeight = r.tbodyTop - r.theadTop;
-                    s.length ? (r.tfootTop = s.offset().top, r.tfootBottom = r.tfootTop + s.outerHeight(), r.tfootHeight = r.tfootBottom - r.tfootTop) : (r.tfootTop = r.tbodyTop + l.outerHeight(), r.tfootBottom = r.tfootTop, r.tfootHeight = r.tfootTop)
-                } else {
-                    r.visible = o.is(":visible"), r.width = o.outerWidth(), r.left = o.offset().left, r.theadTop = a.offset().top, r.tbodyTop = l.offset().top, r.theadHeight = r.tbodyTop - r.theadTop, s.length ? (r.tfootTop = s.offset().top, r.tfootBottom = r.tfootTop + s.outerHeight(), r.tfootHeight = r.tfootBottom - r.tfootTop) : (r.tfootTop = r.tbodyTop + l.outerHeight(), r.tfootBottom = r.tfootTop, r.tfootHeight = r.tfootTop)
-                }
-                /* Yang: End Modified */
+                r.visible = o.is(":visible"), r.width = o.outerWidth(), r.left = o.offset().left, r.theadTop = a.offset().top, r.tbodyTop = l.offset().top, r.theadHeight = r.tbodyTop - r.theadTop, s.length ? (r.tfootTop = s.offset().top, r.tfootBottom = r.tfootTop + s.outerHeight(), r.tfootHeight = r.tfootBottom - r.tfootTop) : (r.tfootTop = r.tbodyTop + l.outerHeight(), r.tfootBottom = r.tfootTop, r.tfootHeight = r.tfootTop)
             },
             _scroll: function(e) {
                 var r, i, o = t(n).scrollTop(),

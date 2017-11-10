@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from . import models
+from . import models, forms
 from utils import constants
 from utils.django_base import BaseAdmin
 
@@ -21,6 +21,7 @@ class ParkingLotDocInline(admin.TabularInline):
 
 @admin.register(models.ParkingLot)
 class ParkingLotAdmin(BaseAdmin):
+    form = forms.ParkingLotForm
     icon = '<i class="material-icons">local_parking</i>'
     list_display = ('bk_no', 'buken', 'address', 'tanto')
     search_fields = ('buken__bk_no', 'buken__bk_name',)
@@ -47,6 +48,7 @@ class ParkingLotAdmin(BaseAdmin):
 
 @admin.register(models.ParkingPosition)
 class ParkingPosition(BaseAdmin):
+    form = forms.ParkingPositionForm
     list_display = ('parking_lot', 'name', 'price_recruitment_no_tax', 'price_homepage_no_tax', 'price_handbill_no_tax',
                     'length', 'width', 'height', 'weight')
     list_display_links = ('parking_lot', 'name',)

@@ -140,3 +140,16 @@ class Bank(BaseModel):
 
     def __unicode__(self):
         return self.bank_name
+
+
+class TransmissionRoute(BaseModel):
+    name = models.CharField(max_length=50, unique=True, verbose_name="名称")
+
+    class Meta:
+        db_table = 'mst_transmission_route'
+        ordering = ['name']
+        verbose_name = "媒体"
+        verbose_name_plural = "媒体"
+
+    def __unicode__(self):
+        return self.name

@@ -6,12 +6,13 @@ import datetime
 
 import common
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
 
-from master.models import CarModel, CarMaker
+from master.models import CarModel, CarMaker, TransmissionRoute
 from parkinglot.models import ParkingLot
 from revolution.models import MBrui, BkMst, HyMst, MTanto
+from whiteboard.models import Waiting
 
 def sync_car_models():
     path = os.path.join(common.get_data_path(), '自動車一覧.xls')
@@ -255,3 +256,58 @@ def sync_parking_size(path):
                 print '{}行目'.format(row + 1), '駐車場名', name, 'skipped'
             elif not name and address:
                 print '{}行目'.format(row + 1), '住所', address, 'skipped'
+
+
+def sync_waiting_list(path):
+    if os.path.exists(path):
+        book = xlrd.open_workbook(path)
+        sheet = book.sheet_by_name("順番待ﾘｽﾄ")
+        for row in range(sheet.nrows):
+            if row < 2:
+                continue
+            waiting = Waiting()
+            excel_date = sheet.cell(row, 0).value
+            if isinstance(excel_date, (int, float)):
+                excel_date = int(excel_date)
+                waiting.created_date = waiting.updated_date = datetime.datetime.fromordinal(datetime.datetime(1900, 1, 1).toordinal() + excel_date - 2).date()
+            tanto_name = sheet.cell(row, 1).value
+            if tanto_name:
+                try:
+                    tanto = MTanto.objects.get(tanto_name__icontains=tanto_name)
+                    waiting.tanto_no = tanto.pk
+                except (ObjectDoesNotExist, MultipleObjectsReturned):
+                    pass
+            parking_lot_name = sheet.cell(row, 4).value
+            if parking_lot_name:
+                try:
+                    waiting.parking_lot = ParkingLot.objects.get(buken__bk_name__icontains=parking_lot_name)
+                except (ObjectDoesNotExist, MultipleObjectsReturned):
+                    continue
+
+            waiting.name = sheet.cell(row, 6).value or '氏名%s' % row
+            waiting.tel1 = sheet.cell(row, 8).value or '080-1234-4578'
+            waiting.tel2 = sheet.cell(row, 9).value or '070-1234-4578'
+            if sheet.cell(row, 13).value:
+                cars = sheet.cell(row, 13).value.split("　")
+                if cars == 2:
+                    waiting.car_maker = cars[0]
+                    waiting.car_model = cars[1]
+            waiting.length = sheet.cell(row, 14).value or None
+            waiting.width = sheet.cell(row, 15).value or None
+            waiting.height = sheet.cell(row, 16).value or None
+            waiting.weight = sheet.cell(row, 17).value or None
+            media = None
+            if sheet.cell(row, 18).value:
+                media_name = sheet.cell(row, 18).value
+                try:
+                    media = TransmissionRoute.objects.get(name=media_name)
+                except ObjectDoesNotExist:
+                    media = TransmissionRoute(name=media_name)
+                    media.save()
+            waiting.media = media
+            waiting.price_handbill = sheet.cell(row, 19).value
+            waiting.comment = sheet.cell(row, 20).value
+            try:
+                waiting.save()
+            except Exception as ex:
+                print "%s行目" % row, unicode(ex), ex.message

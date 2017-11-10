@@ -67,3 +67,9 @@ class MTenAdmin(BaseAdmin):
 class MKozaFuriAdmin(BaseAdmin):
     list_display = ('fkae_no', 'fkae_name', 'kinyu_no', 'ten_no')
     list_display_links = ('fkae_no', 'fkae_name',)
+
+
+@admin.register(models.KyKosinkai)
+class KyKosinkaiAdmin(BaseAdmin):
+    list_display = ('bk_no', 'hy_no', 'ky_no', 'ko_no', 'ky_date', 'ky_start_ymd', 'ky_end_ymd')
+    list_display_links = ('bk_no', 'hy_no', 'ky_no', 'ko_no')

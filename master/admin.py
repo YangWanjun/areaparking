@@ -21,10 +21,10 @@ class CompanyAdmin(BaseAdmin):
         return False
 
 
-@admin.register(models.ParkingLotType)
-class ParkingLotTypeAdmin(BaseAdmin):
-    list_display = ('code', 'name')
-    list_display_links = ('code', 'name')
+# @admin.register(models.ParkingLotType)
+# class ParkingLotTypeAdmin(BaseAdmin):
+#     list_display = ('code', 'name')
+#     list_display_links = ('code', 'name')
 
 
 @admin.register(models.ParkingTimeLimit)
@@ -32,15 +32,15 @@ class ParkingTimeLimitAdmin(BaseAdmin):
     pass
 
 
-@admin.register(models.BankCode)
-class BankCodeAdmin(BaseAdmin):
-    pass
+# @admin.register(models.BankCode)
+# class BankCodeAdmin(BaseAdmin):
+#     pass
 
 
-@admin.register(models.ManagementType)
-class ManagementTypeAdmin(BaseAdmin):
-    list_display = ('code', 'name')
-    list_display_links = ('code', 'name')
+# @admin.register(models.ManagementType)
+# class ManagementTypeAdmin(BaseAdmin):
+#     list_display = ('code', 'name')
+#     list_display_links = ('code', 'name')
 
 
 @admin.register(models.CarMaker)
@@ -55,6 +55,11 @@ class CarModelAdmin(BaseAdmin):
     search_fields = ('maker__name', 'name', 'grade_name')
 
 
-@admin.register(models.Bank)
-class BankAdmin(BaseAdmin):
-    list_display = ('bank_name', 'branch_no', 'branch_name', 'account_type', 'account_number', 'account_holder')
+# @admin.register(models.Bank)
+# class BankAdmin(BaseAdmin):
+#     list_display = ('bank_name', 'branch_no', 'branch_name', 'account_type', 'account_number', 'account_holder')
+
+
+@admin.register(models.TransmissionRoute)
+class TransmissionRouteAdmin(BaseAdmin):
+    pass
