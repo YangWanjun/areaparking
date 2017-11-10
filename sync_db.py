@@ -7,7 +7,6 @@ import django
 from django.core.management import call_command
 
 from contract import migrations as contract_migrations
-from department import migrations as department_migrations
 from master import migrations as master_migrations
 from parkinglot import migrations as parkinglot_migrations
 from revolution import migrations as revolution_migrations
@@ -36,9 +35,12 @@ def main():
 
 def migrate():
     call_command('migrate', '--fake')
+    call_command('makemigrations', 'contract')
     call_command('makemigrations', 'master')
     call_command('makemigrations', 'parkinglot')
-    call_command('makemigrations', 'contract')
+    call_command('makemigrations', 'revolution')
+    call_command('makemigrations', 'turnover')
+    call_command('makemigrations', 'whiteboard')
     call_command('migrate', '--fake')
 
 
@@ -60,7 +62,6 @@ def del_migration_records():
 def del_migration_files():
     path_list = list()
     path_list.append(os.path.dirname(contract_migrations.__file__))
-    path_list.append(os.path.dirname(department_migrations.__file__))
     path_list.append(os.path.dirname(master_migrations.__file__))
     path_list.append(os.path.dirname(parkinglot_migrations.__file__))
     path_list.append(os.path.dirname(revolution_migrations.__file__))

@@ -63,8 +63,7 @@ class ParkingLotDoc(BaseModel):
 
 class ParkingPosition(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    seq_no = models.IntegerField(verbose_name="内部番号")
-    name = models.CharField(max_length=30, blank=True, null=True, verbose_name="車室名称")
+    name = models.CharField(max_length=30, verbose_name="車室名称")
     # 賃料
     price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
     price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税抜）")
@@ -88,16 +87,13 @@ class ParkingPosition(BaseModel):
 
     class Meta:
         db_table = 'ap_parking_position'
-        unique_together = ('parking_lot', 'seq_no')
+        unique_together = ('parking_lot', 'name')
         ordering = ['name']
         verbose_name = "車室"
         verbose_name_plural = "車室一覧"
 
     def __unicode__(self):
-        if self.name:
-            return self.name
-        else:
-            return self.seq_no
+        return self.name
 
     def contracts(self, date=None):
         if not date:

@@ -10938,8 +10938,8 @@ class HyMovie(models.Model):
 
 
 class HyMst(models.Model):
-    bk_no = models.IntegerField(primary_key=True, verbose_name="物件番号")
-    hy_no = models.CharField(max_length=8, verbose_name="部屋番号")
+    bk_no = models.IntegerField(verbose_name="物件番号")
+    hy_no = models.CharField(primary_key=True, max_length=8, verbose_name="部屋番号")
     crui_no = models.SmallIntegerField(blank=True, null=True)
     crui_no_sld = models.SmallIntegerField(blank=True, null=True)
     madori = models.CharField(max_length=10, blank=True, null=True, verbose_name="間取り")
@@ -10947,8 +10947,8 @@ class HyMst(models.Model):
     madori_sld2 = models.CharField(max_length=10, blank=True, null=True)
     madoriu_name1 = models.CharField(max_length=50, blank=True, null=True)
     madoriu_name2 = models.CharField(max_length=50, blank=True, null=True)
-    men = models.FloatField(blank=True, null=True)
-    tubo = models.FloatField(blank=True, null=True)
+    men = models.FloatField(blank=True, null=True, verbose_name="面積")
+    tubo = models.FloatField(blank=True, null=True, verbose_name="坪")
     t_nobe_men = models.FloatField(blank=True, null=True)
     g_nobe_men = models.FloatField(blank=True, null=True)
     t_sen_men = models.FloatField(blank=True, null=True)

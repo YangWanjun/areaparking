@@ -13,7 +13,6 @@ class WhiteBoard(models.Model):
     parking_position = models.ForeignKey(ParkingPosition, blank=True, null=True, verbose_name="車室")
     bk_no = models.IntegerField(verbose_name="物件番号")
     bk_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="駐車場名称")
-    seq_no = models.SmallIntegerField(db_column='naibu_no', verbose_name="内部番号")
     position_name = models.CharField(max_length=30, verbose_name="車室名称")
     address = models.CharField(max_length=255, blank=True, null=True, verbose_name="場所")
     contract_status = models.CharField(max_length=10, blank=True, null=True, verbose_name="空き")
@@ -50,4 +49,4 @@ class WhiteBoard(models.Model):
         verbose_name_plural = "駐車場一覧"
 
     def __unicode__(self):
-        return self.bk_name
+        return self.bk_name if self.bk_name else str(self.bk_no)

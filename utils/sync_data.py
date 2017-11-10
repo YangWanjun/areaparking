@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from master.models import CarModel, CarMaker
 from parkinglot.models import ParkingLot
-from revolution.models import MBrui, BkMst, BaiRooms, MTanto
+from revolution.models import MBrui, BkMst, HyMst, MTanto
 
 def sync_car_models():
     path = os.path.join(common.get_data_path(), '自動車一覧.xls')
@@ -116,11 +116,10 @@ def sync_buken_master(path):
                     buken.save()
                 # 車室
                 try:
-                    room = BaiRooms.objects.get(buken=buken, naibu_no=row)
+                    room = HyMst.objects.get(bk_no=buken.bk_no, hy_no=row)
                 except ObjectDoesNotExist:
-                    room = BaiRooms()
-                    room.buken = buken
-                    room.naibu_no = row
+                    room = HyMst()
+                    room.bk_no = buken.bk_no
                     room.hy_no = 'No.{}'.format(row)
                     room.kosin_date = timezone.now()
                     # room.price_recruitment = sheet.cell(row, 28).value or None
