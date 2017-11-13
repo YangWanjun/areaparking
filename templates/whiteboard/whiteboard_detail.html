@@ -32,6 +32,10 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>場所：</th>
+                    <td colspan="3">{{ whiteboard.address }}</td>
+                </tr>
+                <tr>
                     <th>募集賃料（税込）：</th>
                     <td>{{ whiteboard.price_recruitment|default:''|intcomma }}</td>
                     <th>募集賃料（税抜）：</th>
@@ -107,7 +111,9 @@
     </div>
 </div>
 {% endblock left-panel %}
-{% block right-panel %}{% endblock right-panel %}
+{% block right-panel %}
+
+{% endblock right-panel %}
 {% endblock %}
 
 {% block footer %}

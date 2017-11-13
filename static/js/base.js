@@ -76,6 +76,67 @@ EB.prototype.popup_anchor = function() {
     });
 }
 
+EB.prototype.reset_whiteboard_header = function(tHeader) {
+    if ($('tr', tHeader).length > 1) {
+        return;
+    }
+    var row2 = $('tr', tHeader).clone();
+    var row3 = $('tr', tHeader).clone();
+    row2.html("");
+    row3.html("");
+    $('th', tHeader).each(function() {
+        th = $(this);
+        if (th.attr('data-name') == 'bk_no') {
+            th.attr('rowspan', 3);
+        } else if (th.attr('data-name') == 'parking_lot') {
+            th.attr('colspan', 5);
+        } else if (th.attr('data-name') == 'address') {
+            th.attr('colspan', 4);
+            th.css('padding-left', '5px');
+            th.appendTo(row2);
+        } else if (th.attr('data-name') == 'tanto_name') {
+            th.appendTo(row2);
+        } else if (th.attr('data-name') == 'price_recruitment') {
+            th.appendTo(row2);
+        } else if (th.attr('data-name') == 'price_recruitment_no_tax') {
+            th.appendTo(row2);
+        } else if (th.attr('data-name') == 'price_homepage') {
+            th.appendTo(row2);
+        } else if (th.attr('data-name') == 'price_homepage_no_tax') {
+            th.appendTo(row2);
+        } else if (th.attr('data-name') == 'price_handbill') {
+            th.appendTo(row2);
+        } else if (th.attr('data-name') == 'price_handbill_no_tax') {
+            th.appendTo(row2);
+        } else if (th.attr('data-name') == 'length') {
+            th.css('padding-left', '5px');
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'width') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'height') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'weight') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'tyre_width') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'tyre_width_ap') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'min_height') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'min_height_ap') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'f_value') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'r_value') {
+            th.appendTo(row3);
+        } else if (th.attr('data-name') == 'position_comment') {
+            th.appendTo(row3);
+        }
+    });
+    tHeader.appendChild(row2[0]);
+    tHeader.appendChild(row3[0]);
+}
+
 EB.prototype.reset_whiteboard_row = function(tr, idx) {
     var self = this;
     tr = $(tr)
@@ -124,7 +185,8 @@ EB.prototype.reset_whiteboard_row = function(tr, idx) {
     parking_lot.attr("colspan", 5);
     address.attr("colspan", 4);
     address.css("padding-left", "5px");
-
+    length.css("padding-left", "5px");
+    
     row1.append(bk_no);
     row1.append(parking_lot);
     row1.append(parking_position);

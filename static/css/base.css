@@ -45,3 +45,8 @@ table > tbody.complex > tr:hover {
 .input-field input[type=search]:focus {
     border-bottom: 1px solid rgb(158, 158, 158);
 }
+/**************** 検索フィルター *****************/
+div.nowrap {
+    overflow: hidden;
+    white-space: nowrap;
+}

@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 import operator
 
 from django.core.urlresolvers import reverse
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.db.models import Q
+from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.encoding import force_text
 from django.utils.html import format_html
@@ -12,6 +14,7 @@ from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
 
 from material.frontend.views import ModelViewSet, ListModelView, DetailModelView, UpdateModelView
+from material.frontend.forms import DatatableRequestForm
 
 from utils.django_base import BaseTemplateView, BaseView
 from parkinglot import models as parkinglot_model
@@ -31,13 +34,37 @@ class WhiteBoardListView(ListModelView):
 
     def get_queryset(self, *args, **kwargs):
         queryset = super(WhiteBoardListView, self).get_queryset()
-        q = self.request.GET.get('datatable-search[value]', None)
+        q = self.request.POST.get('datatable-search[value]', None)
         if q:
             orm_lookups = ['bk_no__icontains', 'bk_name__icontains', 'address__icontains', 'tanto_name__icontains']
             for bit in q.split():
                 or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
                 queryset = queryset.filter(reduce(operator.or_, or_queries))
         return queryset
+
+    def dispatch(self, request, *args, **kwargs):
+        """Handle for browser HTTP and AJAX requests from datatables."""
+        if not self.has_view_permission(self.request):
+            raise PermissionDenied
+        self.request_form = DatatableRequestForm(request.POST, prefix='datatable')
+        self.object_list = self.get_object_list()
+        if 'HTTP_DATATABLE' in request.META:
+            handler = self.get_json_data
+        elif request.method.lower() in self.http_method_names:
+            handler = getattr(
+                self, request.method.lower(), self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)
+
+    def get_datatable_config(self):
+        config = super(WhiteBoardListView, self).get_datatable_config()
+        config['sServerMethod'] = 'POST'
+        headers = {'X-CSRFToken': get_token(self.request)}
+        config['ajax'].update({
+            'headers': headers,
+        })
+        return config
 
 
 class WhiteBoardDetailView(DetailModelView):
