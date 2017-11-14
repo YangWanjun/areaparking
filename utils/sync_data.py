@@ -30,6 +30,8 @@ def sync_car_models():
             except ObjectDoesNotExist:
                 maker = CarMaker(name=maker_name)
                 maker.save()
+            except Exception as ex:
+                print maker_name, "保存失敗", unicode(ex)
             try:
                 model = CarModel.objects.get(maker=maker, name=name, grade_name=grade_name)
             except Exception:
@@ -58,7 +60,10 @@ def sync_car_models():
                 model.min_height = common.get_num_from_str(sheet.cell(row, 33).value)
             except Exception as ex:
                 print unicode(ex), sheet.cell(row, 33).value
-            model.save()
+            try:
+                model.save()
+            except Exception as ex:
+                print maker_name, "モデル保存失敗", unicode(ex)
     else:
         print "%sが見つかりません。" % path
 

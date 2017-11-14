@@ -87,7 +87,7 @@ class ManagementType(BaseModel):
 
 
 class CarMaker(BaseModel):
-    name = models.CharField(max_length=30, unique=True, verbose_name="メーカー")
+    name = models.CharField(max_length=50, unique=True, verbose_name="メーカー")
 
     class Meta:
         db_table = 'mst_car_maker'
@@ -101,8 +101,8 @@ class CarMaker(BaseModel):
 
 class CarModel(BaseModel):
     maker = models.ForeignKey(CarMaker, on_delete=models.PROTECT, verbose_name="メーカー")
-    name = models.CharField(max_length=50, verbose_name="車種")
-    grade_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="グレード名")
+    name = models.CharField(max_length=100, verbose_name="車種")
+    grade_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="グレード名")
     sale_date = models.DateField(blank=True, null=True, verbose_name="発売年度")
     length = models.IntegerField(blank=False, null=True, verbose_name="全長")
     width = models.IntegerField(blank=False, null=True, verbose_name="全幅")
@@ -120,7 +120,10 @@ class CarModel(BaseModel):
         verbose_name_plural = "車種一覧"
 
     def __unicode__(self):
-        return self.name
+        if self.grade_name:
+            return '%s - %s ' % (self.name, self.grade_name)
+        else:
+            return self.name
 
 
 class Bank(BaseModel):

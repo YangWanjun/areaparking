@@ -74,6 +74,49 @@ $(document).ready( function() {
             }
         }
     });
+    jQuery_2_2_4('#id_car_maker').autocomplete({
+        source: function( req, res ) {
+            jQuery_2_2_4.ajax({
+                url: "/api/car-maker/?search=" + encodeURIComponent(req.term),
+                dataType: "json",
+                success: function( data ) {
+                    var c = [];
+                    $.each(data.results, function (i, a) {
+                      a.label = a.name;
+                      c.push(a);
+                    });
+                    res(c);
+                }
+            });
+        },
+        autoFocus: true,
+        delay: 500,
+        minLength: 1
+    });
+    jQuery_2_2_4('#id_car_model').autocomplete({
+        source: function( req, res ) {
+            maker = $("#id_car_maker").val();
+            q_maker = "";
+            if (maker != "") {
+                q_maker = "&maker__name=" + maker
+            }
+            jQuery_2_2_4.ajax({
+                url: "/api/car-model/?search=" + encodeURIComponent(req.term) + q_maker,
+                dataType: "json",
+                success: function( data ) {
+                    var c = [];
+                    $.each(data.results, function (i, a) {
+                      a.label = a.full_name;
+                      c.push(a);
+                    });
+                    res(c);
+                }
+            });
+        },
+        autoFocus: true,
+        delay: 500,
+        minLength: 1
+    });
 });
 </script>
 {% endblock %}
