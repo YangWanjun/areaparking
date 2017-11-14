@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
+from django.utils.html import mark_safe
 
 
 class PublicManager(models.Manager):
@@ -78,6 +79,34 @@ class BaseAdminChangeOnly(BaseAdmin):
 
 class BaseForm(forms.ModelForm):
     pass
+
+
+class DynamicListWidget(forms.HiddenInput):
+    def __init__(self, attrs=None):
+        super(DynamicListWidget, self).__init__(attrs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        label = ''
+        verbose_name = ''
+        if isinstance(value, models.Model):
+            verbose_name = unicode(value)
+            value = value.pk
+        if hasattr(self, 'form_instance'):
+            label = self.form_instance.fields[name].label if self.form_instance else ''
+            if not verbose_name and self.form_instance.instance and hasattr(self.form_instance.instance, name):
+                verbose_name = unicode(getattr(self.form_instance.instance, name))
+        text_html = super(DynamicListWidget, self).render(name, value, attrs, renderer)
+        output = ['<div class="row">']
+        output.append('<div class="input-field col s12" id="id_{0}_container">'.format(name))
+        output.append(text_html)
+        html = '<input id="id_ac_{0}" name="ac_{0}" type="text" value="{2}">' \
+               '<label for="id_ac_{0}" class="">{1}</label>'.format(
+            name, label, verbose_name
+        )
+        output.append(html)
+        output.append('</div>')
+        output.append('</div>')
+        return mark_safe('\n'.join(output))
 
 
 @method_decorator(login_required(login_url='/admin/login/?next=/'), name='dispatch')

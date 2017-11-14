@@ -104,7 +104,7 @@
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
                 {% if whiteboard.contract_status != "空き" %}
-                <a class="waves-effect waves-light btn white-text" href="javascript:void(0)">順番待ちへ</a>
+                <a class="waves-effect waves-light btn white-text" href="{% url 'whiteboard:waiting_add' %}?parking_lot_id={{ whiteboard.parking_lot.pk }}">順番待ちへ</a>
                 {% endif %}
             </div>
         </div>

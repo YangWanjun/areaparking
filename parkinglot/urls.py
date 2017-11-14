@@ -4,9 +4,14 @@ from __future__ import unicode_literals
 from django.conf.urls import url, include
 from django.views import generic
 
+from rest_framework import routers
+
 from . import views
 
 
+router = routers.DefaultRouter()
+router.register(r'parking-lot', views.ParkingLotViewSet)
+
 urlpatterns = [
-    url('^$', generic.TemplateView.as_view(template_name="parkinglot/index.html"), name="index"),
+    # url('^parking-lot-autocomplete/$', views.ParkingLotAutocomplete.as_view(), name="parking_lot_autocomplete"),
 ]

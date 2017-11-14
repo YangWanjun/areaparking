@@ -13,6 +13,7 @@ SELECT RIGHT('0000000000'+ CONVERT(VARCHAR, bk.bk_no), 10) + '|' + hy.hy_no AS i
      , bk.bk_no
      , bk.bk_name
 	 , (SELECT COUNT(1) FROM [areaparking].[dbo].[ap_parking_position] s1 WHERE s1.parking_lot_id = lot.id AND s1.is_deleted = 0) as position_count
+	 , (SELECT COUNT(1) FROM [areaparking].[dbo].[ap_waiting_list] s1 WHERE s1.parking_lot_id = lot.id) as waiting_count
      , hy.hy_no as position_name
 	 , CONCAT(bk.add_ken, bk.add_si, bk.add_cyo, bk.add_banti, bk.add_etc) as address
 	 , mt.tanto_name							-- 担当者

@@ -13,13 +13,13 @@ from django.utils.html import format_html
 from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
 
-from material.frontend.views import ModelViewSet, ListModelView, DetailModelView, UpdateModelView
+from material.frontend.views import ModelViewSet, ListModelView, DetailModelView, UpdateModelView, CreateModelView
 from material.frontend.forms import DatatableRequestForm
 
 from utils.django_base import BaseTemplateView, BaseView
 from parkinglot import models as parkinglot_model
 from contract.forms import ContractorForm
-from . import models
+from . import models, forms
 
 
 # Create your views here.
@@ -92,9 +92,6 @@ class WhiteBoardViewSet(ModelViewSet):
     def has_add_permission(self, request):
         return False
 
-    def has_change_permission(self, request, obj=None):
-        return True
-
     def has_delete_permission(self, request, obj=None):
         return False
 
@@ -124,6 +121,20 @@ class WaitingListView(ListModelView):
         return context
 
 
+class WaitingCreateView(CreateModelView):
+    form_class = forms.WaitingForm
+
+    def get_initial(self):
+        initials = super(WaitingCreateView, self).get_initial()
+        parking_lot_id = self.request.GET.get('parking_lot_id', None)
+        if parking_lot_id:
+            parking_lot = get_object_or_404(parkinglot_model.ParkingLot, pk=parking_lot_id)
+            initials.update({
+                'parking_lot': parking_lot
+            })
+        return initials
+
+
 class WaitingUpdateView(UpdateModelView):
     def report(self, message, level=messages.INFO, fail_silently=True, **kwargs):
         """Construct message and notify the user."""
@@ -149,6 +160,7 @@ class WaitingListViewSet(ModelViewSet):
     list_display_links = ('parking_lot', 'name')
     update_view_class = WaitingUpdateView
     list_view_class = WaitingListView
+    create_view_class = WaitingCreateView
 
 
 class ParkingPositionListView(BaseTemplateView):
