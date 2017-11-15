@@ -40,7 +40,7 @@ window.onload = function() {
                                 for (var i=0; i< keys.length; i++) {
                                     key = keys[i];
                                     eb.jQuery("#" + key).val(ui.item[fields[key]]);
-                                    eb.jQuery("#" + key).attr("placeholder", "placeholder");
+                                    eb.jQuery("#" + key).next().addClass("active");
                                 }
                             }
                         }
