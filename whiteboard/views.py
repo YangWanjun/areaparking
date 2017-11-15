@@ -81,7 +81,7 @@ class WhiteBoardDetailView(DetailModelView):
 class WhiteBoardViewSet(ModelViewSet):
     model = models.WhiteBoard
     list_display = (
-        'bk_no', 'parking_lot', 'parking_position', 'contract_status', 'is_existed_contractor_allowed', 'is_new_contractor_allowed', 'free_end_date', 'time_limit_id',
+        'bk_no', 'parking_lot', 'parking_position', 'contract_status', 'waiting_count', 'is_existed_contractor_allowed', 'is_new_contractor_allowed', 'free_end_date', 'time_limit_id',
         'address', 'tanto_name', 'price_recruitment', 'price_recruitment_no_tax', 'price_homepage', 'price_homepage_no_tax', 'price_handbill', 'price_handbill_no_tax',
         'length', 'width', 'height', 'weight', 'tyre_width', 'tyre_width_ap', 'min_height', 'min_height_ap', 'f_value', 'r_value', 'position_comment'
     )

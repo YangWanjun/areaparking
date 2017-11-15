@@ -63,13 +63,14 @@
                         <td colspan="5">{{ row.parking_lot }}</td>
                         <td>{{ row.parking_position }}</td>
                         <td><span class="new badge left grey" data-badge-caption="{{ row.contract_status }}" style="margin-left: 0px;"></span></td>
+                        <td>{{ row.waiting_count }}</td>
                         <td>{{ row.is_existed_contractor_allowed }}</td>
                         <td>{{ row.is_new_contractor_allowed }}</td>
                         <td>{{ row.free_end_date }}</td>
                         <td>{{ row.time_limit_id }}</td>
                     </tr>
                     <tr style="border-bottom-style: dotted;{% cycle 'background-color: #f2f2f2' '' %}">
-                        <td colspan="4" style="padding-left: 5px;">{{ row.address }}</td>
+                        <td colspan="5" style="padding-left: 5px;">{{ row.address }}</td>
                         <td>{{ row.tanto_name }}</td>
                         <td>{{ row.price_recruitment }}</td>
                         <td>{{ row.price_recruitment_no_tax }}</td>
@@ -89,7 +90,7 @@
                         <td>{{ row.min_height_ap }}</td>
                         <td>{{ row.f_value }}</td>
                         <td>{{ row.r_value }}</td>
-                        <td>{{ row.position_comment|slice:":5"|default:'&nbsp;' }}</td>
+                        <td colspan="2">{{ row.position_comment|slice:":5"|default:'&nbsp;' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

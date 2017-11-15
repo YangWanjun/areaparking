@@ -142,7 +142,7 @@ EB.prototype.reset_whiteboard_header = function(tHeader) {
         } else if (th.attr('data-name') == 'parking_lot') {
             th.attr('colspan', 5);
         } else if (th.attr('data-name') == 'address') {
-            th.attr('colspan', 4);
+            th.attr('colspan', 5);
             th.css('padding-left', '5px');
             th.appendTo(row2);
         } else if (th.attr('data-name') == 'tanto_name') {
@@ -181,6 +181,7 @@ EB.prototype.reset_whiteboard_header = function(tHeader) {
         } else if (th.attr('data-name') == 'r_value') {
             th.appendTo(row3);
         } else if (th.attr('data-name') == 'position_comment') {
+            th.attr('colspan', 2);
             th.appendTo(row3);
         }
     });
@@ -208,35 +209,37 @@ EB.prototype.reset_whiteboard_row = function(tr, idx) {
     parking_lot                     = tr.children().eq(1);
     parking_position                = tr.children().eq(2);
     contract_status                 = tr.children().eq(3);
-    is_existed_contractor_allowed   = tr.children().eq(4);
-    is_new_contractor_allowed       = tr.children().eq(5);
-    free_end_date                   = tr.children().eq(6);
-    time_limit_id                   = tr.children().eq(7);
-    address                         = tr.children().eq(8);
-    tanto_name                      = tr.children().eq(9);
-    price_recruitment               = tr.children().eq(10);
-    price_recruitment_no_tax        = tr.children().eq(11);
-    price_homepage                  = tr.children().eq(12);
-    price_homepage_no_tax           = tr.children().eq(13);
-    price_handbill                  = tr.children().eq(14);
-    price_handbill_no_tax           = tr.children().eq(15);
-    length                          = tr.children().eq(16);
-    width                           = tr.children().eq(17);
-    height                          = tr.children().eq(18);
-    weight                          = tr.children().eq(19);
-    tyre_width                      = tr.children().eq(20);
-    tyre_width_ap                   = tr.children().eq(21);
-    min_height                      = tr.children().eq(22);
-    min_height_ap                   = tr.children().eq(23);
-    f_value                         = tr.children().eq(24);
-    r_value                         = tr.children().eq(25);
-    position_comment                = tr.children().eq(26);
+    waiting_count                   = tr.children().eq(4);
+    is_existed_contractor_allowed   = tr.children().eq(5);
+    is_new_contractor_allowed       = tr.children().eq(6);
+    free_end_date                   = tr.children().eq(7);
+    time_limit_id                   = tr.children().eq(8);
+    address                         = tr.children().eq(9);
+    tanto_name                      = tr.children().eq(10);
+    price_recruitment               = tr.children().eq(11);
+    price_recruitment_no_tax        = tr.children().eq(12);
+    price_homepage                  = tr.children().eq(13);
+    price_homepage_no_tax           = tr.children().eq(14);
+    price_handbill                  = tr.children().eq(15);
+    price_handbill_no_tax           = tr.children().eq(16);
+    length                          = tr.children().eq(17);
+    width                           = tr.children().eq(18);
+    height                          = tr.children().eq(19);
+    weight                          = tr.children().eq(20);
+    tyre_width                      = tr.children().eq(21);
+    tyre_width_ap                   = tr.children().eq(22);
+    min_height                      = tr.children().eq(23);
+    min_height_ap                   = tr.children().eq(24);
+    f_value                         = tr.children().eq(25);
+    r_value                         = tr.children().eq(26);
+    position_comment                = tr.children().eq(27);
 
     bk_no.attr("rowspan", 3);
     parking_lot.attr("colspan", 5);
-    address.attr("colspan", 4);
+    address.attr("colspan", 5);
     address.css("padding-left", "5px");
     length.css("padding-left", "5px");
+    position_comment.attr("colspan", 2);
     
     row1.append(bk_no);
     row1.append(parking_lot);
@@ -249,6 +252,7 @@ EB.prototype.reset_whiteboard_row = function(tr, idx) {
     } else {
         contract_status.html('<span class="new badge left grey" data-badge-caption="なし" style="margin-left: 0px;"></span>');
     }
+    row1.append(waiting_count);
     row1.append(is_existed_contractor_allowed);
     row1.append(is_new_contractor_allowed);
     row1.append(free_end_date);
