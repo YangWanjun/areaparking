@@ -1,4 +1,55 @@
-function EB() {}
+function EB() {
+    this.jQuery = null;
+}
+
+window.onload = function() {
+    if (eb.jQuery != null) {
+        eb.jQuery(".eb-autocomplete").each(function(index) {
+            var self = this;
+            if (eb.jQuery(self).attr('eb-autocomplete-url')) {
+                var ajax_url = eb.jQuery(self).attr('eb-autocomplete-url') + "?";
+                var param_name = eb.jQuery(self).attr('eb-autocomplete-parent-name');
+                var field_id = eb.jQuery(self).attr('eb-autocomplete-parent-field-id');
+                if (param_name && field_id && eb.jQuery("#" + field_id).val() != "") {
+                    ajax_url = ajax_url + param_name + '=' + eb.jQuery("#" + field_id).val() + "&";
+                }
+                var target_id = eb.jQuery(self).attr('eb-autocomplete-target-id');
+                var related_fields = eb.jQuery(self).attr('eb-autocomplete-related-fields');
+
+                eb.jQuery(self).autocomplete({
+                    source: function( req, res ) {
+                        eb.jQuery.ajax({
+                            url: ajax_url + "search=" + encodeURIComponent(req.term),
+                            dataType: "json",
+                            success: function( data ) {
+                                res(data.results);
+                            }
+                        });
+                    },
+                    autoFocus: true,
+                    delay: 500,
+                    minLength: 1,
+                    select: function(event, ui) {
+                        if(ui.item){
+                            if (target_id) {
+                                eb.jQuery("#" + target_id).val(ui.item.id);
+                            }
+                            if (related_fields) {
+                                fields = JSON.parse(related_fields);
+                                keys = Object.keys(fields);
+                                for (var i=0; i< keys.length; i++) {
+                                    key = keys[i];
+                                    eb.jQuery("#" + key).val(ui.item[fields[key]]);
+                                    eb.jQuery("#" + key).attr("placeholder", "placeholder");
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+}
 
 EB.prototype.getCookie = function(name) {
     var cookieValue = null;

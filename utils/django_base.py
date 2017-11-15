@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import unicode_literals
-import datetime
 
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.db import models
+from django.forms import widgets
 from django.http import HttpResponse
 from django.views.generic import View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
@@ -81,9 +81,14 @@ class BaseForm(forms.ModelForm):
     pass
 
 
-class DynamicListWidget(forms.HiddenInput):
-    def __init__(self, attrs=None):
-        super(DynamicListWidget, self).__init__(attrs)
+class DynamicListWidget(widgets.Widget):
+    input_type = 'text'
+    template_name = 'django/forms/widgets/text.html'
+
+    def get_context(self, name, value, attrs):
+        context = super(DynamicListWidget, self).get_context(name, value, attrs)
+        context['widget']['type'] = self.input_type
+        return context
 
     def render(self, name, value, attrs=None, renderer=None):
         label = ''
@@ -95,13 +100,18 @@ class DynamicListWidget(forms.HiddenInput):
             label = self.form_instance.fields[name].label if self.form_instance else ''
             if not verbose_name and self.form_instance.instance and hasattr(self.form_instance.instance, name):
                 verbose_name = unicode(getattr(self.form_instance.instance, name))
-        text_html = super(DynamicListWidget, self).render(name, value, attrs, renderer)
+        element_id = attrs.get('id')
+        text_name = element_id.replace('id_', 'ac_')
+        attrs.update({'id': element_id.replace('id_', 'id_ac_')})
+        text_html = super(DynamicListWidget, self).render(text_name, verbose_name, attrs, renderer)
+        hidden_html = '<input type="hidden" id="{0}" name="{1}" value="{2}" />'.format(element_id, element_id.lstrip('id_'), value or '')
+
         output = ['<div class="row">']
         output.append('<div class="input-field col s12" id="id_{0}_container">'.format(name))
+        output.append(hidden_html)
         output.append(text_html)
-        html = '<input id="id_ac_{0}" name="ac_{0}" type="text" value="{2}">' \
-               '<label for="id_ac_{0}" class="">{1}</label>'.format(
-            name, label, verbose_name
+        html = '<label for="id_ac_{0}" class="">{1}</label>'.format(
+            name, label
         )
         output.append(html)
         output.append('</div>')

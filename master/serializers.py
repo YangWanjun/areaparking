@@ -7,20 +7,21 @@ from . import models
 
 
 class CarMakerSerializer(serializers.ModelSerializer):
+    label = serializers.CharField(source='name')
+
     class Meta:
         model = models.CarMaker
-        fields = '__all__'
+        fields = ('id', 'name', 'label')
 
 
 class CarModelSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField('get_full_name3')
+    label = serializers.SerializerMethodField()
 
     class Meta:
         model = models.CarModel
-        fields = ('id', 'maker', 'name', 'grade_name', 'sale_date', 'length', 'width', 'height', 'weight', 'f_value', 'r_value', 'min_height', 'full_name')
+        fields = ('id', 'maker', 'name', 'grade_name', 'sale_date',
+                  'length', 'width', 'height', 'weight', 'f_value', 'r_value', 'min_height',
+                  'label')
 
-    def get_full_name3(self, obj):
-        if obj.grade_name:
-            return '%s - %s' % (obj.name, obj.grade_name)
-        else:
-            return obj.name
+    def get_label(self, obj):
+        return '%s%s' % (obj.name, (' - ' + obj.grade_name) if obj.grade_name else '')

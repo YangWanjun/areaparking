@@ -122,7 +122,7 @@ class WaitingListView(ListModelView):
 
 
 class WaitingCreateView(CreateModelView):
-    form_class = forms.WaitingForm
+    form_class = forms.WaitingAddForm
 
     def get_initial(self):
         initials = super(WaitingCreateView, self).get_initial()
@@ -136,6 +136,8 @@ class WaitingCreateView(CreateModelView):
 
 
 class WaitingUpdateView(UpdateModelView):
+    form_class = forms.WaitingForm
+
     def report(self, message, level=messages.INFO, fail_silently=True, **kwargs):
         """Construct message and notify the user."""
         opts = self.model._meta

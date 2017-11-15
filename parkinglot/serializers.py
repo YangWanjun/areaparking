@@ -7,7 +7,7 @@ from . import models
 
 
 class ParkingLotSerializer(serializers.ModelSerializer):
-    name = serializers.ReadOnlyField(source='buken.bk_name')
+    label = serializers.ReadOnlyField(source='buken.bk_name')
     class Meta:
         model = models.ParkingLot
-        fields = ('id', 'name')
+        fields = ('id', 'label')
