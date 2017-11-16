@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>jQuery UI Signature Basics</title>
+<link rel="stylesheet" type="text/css" href="https://sales.e-business.co.jp/static/contract/css/article.css"/>
+<script type="text/javascript" src="/static/js/signature_pad.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.4.js"></script>
+<style type="text/css">
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-bottom: 10px;
+}
+
+.signature-pad {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width:800px;
+  height:200px;
+  background-color: white;
+  border: 1px solid grey;
+}
+
+div.eb_dialog {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    display: block;
+    background: rgba(127, 127, 127, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 10px 15px;
+    border-radius: 5px;
+    visibility: hidden;
+}
+</style>
+</head>
+<body>
+<article class="contract">
+    <h1 style="margin-bottom: 10px;">雇 用 契 約 書</h1>
+    <div>
+        <u>○ ○○ 殿</u>
+        <div>貴殿を雇用するに当たっての条件は次の通りです。</div>
+    </div>
+    <table border="1" cellpadding="0" cellspacing="0" width="100%">
+        <tbody>
+            <tr>
+                <th>雇用形態</th>
+                <td>正社員</td>
+                <th>所属部署</th>
+                <td>製品部</td>
+                <th>職位</th>
+                <td style="width: 200px;">一般社員</td>
+            </tr>
+            <tr>
+                <th>雇用日</th>
+                <td colspan="5">1234年12月12日</td>
+            </tr>
+            <tr>
+                <th>雇用期間</th>
+                <td colspan="5">
+                    定めなし</td>
+            </tr>
+            <tr>
+                <th>就業の場所<br/>業務の種類</th>
+                <td colspan="5">
+                    就業の場所（当社社内および雇用者が指定した場所）<br/>
+
+                        業務の種類（システムエンジニア）<br/>
+
+                    <pre>就業の場所および業務の種類は、業務の都合により変更することがある。
+出向、転勤、配置転換等の業務命令が発令されることがある。</pre>
+                </td>
+            </tr>
+            <tr>
+                <th>就業時間</th>
+                <td colspan="5"><pre>始業および終業時刻　午前　12時34分　～　午後　12時34分
+休憩時間　　　　　　　正午～午後1時
+就業時間の変更　　前記にかかわらず業務の都合または就業場所変更により
+　　　　　　　　　　　　　始業および終業時刻の変更を行うことがある。
+所定労働時間を越える労働の有無　有</pre></td>
+            </tr>
+            <tr>
+                <th rowspan="5">給　　与</th>
+                <th>基本給</th>
+                <td colspan="4">
+                    ¥123,456円/月
+                </td>
+            </tr>
+            <tr>
+                <th>諸手当</th>
+                <td colspan="4">
+                            職務手当 : ¥123,456円/月&nbsp;<br/>
+                            精勤手当 : ¥123,456円/月&nbsp;<br/>
+                            安全手当 : ¥123,456円/月&nbsp;<br/>
+                            通勤手当 : 実費（上限：￥123,456円とする）<br/>
+                </td>
+            </tr>
+            <tr>
+
+            </tr>
+            <tr>
+                <th>給与締切日<br/>および支払日</th>
+                <td colspan="4"><pre>1、締切日および支払日：毎月末日〆、翌月末日払
+2、支払時の控除：所得税、雇用保険</pre></td>
+            </tr>
+            <tr>
+                <th>昇給および<br/>降給</th>
+                <td colspan="4">会社の業績および社員個人の業績その他の状況を勘案し、昇給または降給を行うことがある。</td>
+            </tr>
+
+            <tr>
+                <th>賞　　与</th>
+                <td colspan="5"><pre>賞与支給要件を満たした者に対し、賞与が年2回、計2ヵ月分。
+ただし会社業績、本人業績、勤怠状況および将来への期待度により、変更の可能性がある。</pre></td>
+            </tr>
+
+            <tr>
+                <th>休　　日</th>
+                <td colspan="5">週休2日制（土・日・祝祭日休み）</td>
+            </tr>
+
+            <tr>
+                <th>有給休暇</th>
+                <td colspan="5">年次有給休暇：労働基準法の定めによる。</td>
+            </tr>
+
+            <tr>
+                <th>無給休暇</th>
+                <td colspan="5">産前産後、育児・介護休業、生理休暇、その他就業規則に定めがあるときは当該休暇。</td>
+            </tr>
+            <tr>
+                <th>退職に関する<br/>事　項</th>
+                <td colspan="5"><pre>1、就業期間中、業務能力が著しく劣り、又は業務実績が著しく不良のとき、会社の業務命令が従わないとき、減給、降職又は諭旨解雇とする。
+2、自己都合退職の際は退職する30日前までに届け出ること。
+3、解雇の事由および手続きは、就業規則の定めるところによる。</pre></td>
+            </tr>
+            <tr>
+                <th>備　　考</th>
+                <td colspan="5"><pre>上記以外の雇用条件については、就業規則の定めることによる。</pre></td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="padding: 10px;">
+        <div style="margin-left: 20px;">契約日:2017年6月30日</div>
+        <div style="text-align: right;">会社および従業員は、上記の雇用条件について確認のうえ、同意いたします。</div>
+        <div>
+            <div class="tail" style="float: left;">株式会社○○○○○○○</div>
+            <div class="tail" style="float: right;" onclick="startSignature()">
+                従業員
+				<img id="imgSignature" src="#" style="width: 150px; height: 30px; display: none;"/>
+                <span style="float:right;">㊞</span>
+            </div>
+        </div>
+        <div>
+            <div class="tail" style="float: left;">
+                代表取締役&nbsp;&nbsp;&nbsp;&nbsp;○　○○
+                <span style="float:right;">㊞</span>
+            </div>
+            <div class="tail" style="float: right;">住所</div>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+</article>
+<div class="eb_dialog" style="width: 100%; height: 100%;">
+	<div style="width: 820px; margin: 0 auto; background: white; padding: 10px;">
+		<div class="wrapper">
+			<canvas id="signature-pad" class="signature-pad"></canvas>
+		</div>
+
+		<button id="save-png">Save as PNG</button>
+		<!--<button id="save-jpeg">Save as JPEG</button>-->
+		<!--<button id="save-svg">Save as SVG</button>-->
+		<!--<button id="draw">Draw</button>-->
+		<!--<button id="erase">Erase</button>-->
+		<button id="clear">Clear</button>
+		<button id="close" onclick="hideDialog()">Close</button>
+
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+	var canvas = document.getElementById('signature-pad');
+window.onload = function() {
+
+	// Adjust canvas coordinate space taking into account pixel ratio,
+	// to make it look crisp on mobile devices.
+	// This also causes canvas to be cleared.
+	function resizeCanvas() {
+		// When zoomed out to less than 100%, for some very strange reason,
+		// some browsers report devicePixelRatio as less than 1
+		// and only part of the canvas is cleared then.
+		var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+		canvas.width = canvas.offsetWidth * ratio;
+		canvas.height = canvas.offsetHeight * ratio;
+		canvas.getContext("2d").scale(ratio, ratio);
+	}
+
+	window.onresize = resizeCanvas;
+	resizeCanvas();
+
+	var signaturePad = new SignaturePad(canvas, {
+	  backgroundColor: 'rgb(255, 255, 255)' // necessary for saving image as JPEG; can be removed is only saving as PNG or SVG
+	});
+
+	document.getElementById('save-png').addEventListener('click', function () {
+	  if (signaturePad.isEmpty()) {
+		return alert("Please provide a signature first.");
+	  }
+
+	  var data = signaturePad.toDataURL('image/png');
+	  console.log(data);
+	  document.getElementById("imgSignature").src = data;
+	  document.getElementById("imgSignature").style.display = "";
+	  hideDialog();
+	  //window.open(data);
+	});
+
+	document.getElementById('clear').addEventListener('click', function () {
+	  signaturePad.clear();
+	});
+};
+
+function startSignature() {
+	$("div.eb_dialog").css("visibility", "visible");
+	var ctx = canvas.getContext('2d');
+	ctx.globalCompositeOperation = 'source-over';
+}
+
+function hideDialog() {
+	$("div.eb_dialog").css("visibility", "hidden");
+}
+</script>
+
+</html>

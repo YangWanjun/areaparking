@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import os
 import re
 import logging
+import pdfkit
 
 
 def get_root_path():
@@ -30,3 +31,13 @@ def get_num_from_str(value):
 
 def get_batch_logger():
     return logging.getLogger('revolution.management.commands')
+
+
+def generate_pdf_from_text(text, out_path):
+    try:
+        # config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+        # TODO: パスに日本語があったら、エラーになる。暫定対策：英語にしてから、また日本語名に変更する。
+        options = {'encoding': "UTF-8"}
+        pdfkit.from_string(text, out_path, options=options)
+    except Exception as ex:
+        print unicode(ex)
