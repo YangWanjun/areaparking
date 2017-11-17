@@ -5,3 +5,4 @@ xlrd==1.1.0
 django-pyodbc-azure
 djangorestframework==3.6.4
 django-filter==1.0.4
+pycrypto==2.6
