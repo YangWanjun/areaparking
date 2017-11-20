@@ -165,6 +165,10 @@ class WaitingListViewSet(ModelViewSet):
     create_view_class = WaitingCreateView
 
 
+class WhiteBoardMapView(BaseTemplateView):
+    template_name = './whiteboard/whiteboard_map.html'
+
+
 class ParkingPositionListView(BaseTemplateView):
     template_name = "./whiteboard/index.html"
 

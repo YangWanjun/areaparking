@@ -13,4 +13,5 @@ urlpatterns = [
     url('^parking-position-(?P<id>\d+)\.html', views.ParkingPositionDetail.as_view(), name='parking-position-detail'),
     url('^whiteboard/', include(views.WhiteBoardViewSet().urls)),
     url('^waiting/', include(views.WaitingListViewSet().urls)),
+    url('^map.html$', views.WhiteBoardMapView.as_view(), name='whiteboard_map')
 ]
