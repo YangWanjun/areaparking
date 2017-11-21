@@ -4,6 +4,8 @@ GO
 CREATE TABLE ap_parking_lot (
     [id] int IDENTITY (1, 1) NOT NULL PRIMARY KEY,
     [buken_id] int NOT NULL,
+    [lng] [float] NULL,
+    [lat] [float] NULL,
     [is_existed_contractor_allowed] bit NOT NULL,
     [is_new_contractor_allowed] bit NOT NULL,
     [free_end_date] date NULL,

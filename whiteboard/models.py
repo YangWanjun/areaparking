@@ -22,6 +22,8 @@ class WhiteBoard(models.Model):
     waiting_count = models.IntegerField(default=0, verbose_name="順番待ち")
     position_name = models.CharField(max_length=30, verbose_name="車室名称")
     address = models.CharField(max_length=255, blank=True, null=True, verbose_name="場所")
+    lng = models.FloatField(blank=True, null=True, verbose_name="経度")
+    lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
     contract_status = models.CharField(max_length=10, blank=True, null=True, verbose_name="空き")
     tanto_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="担当者名前")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")

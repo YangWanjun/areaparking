@@ -14,6 +14,8 @@ from utils.django_base import BaseModel
 # Create your models here.
 class ParkingLot(BaseModel):
     buken = models.ForeignKey(BkMst, verbose_name="賃貸革命物件")
+    lng = models.FloatField(blank=True, null=True, verbose_name="経度")
+    lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")

@@ -16,6 +16,8 @@ SELECT RIGHT('0000000000'+ CONVERT(VARCHAR, bk.bk_no), 10) + '|' + hy.hy_no AS i
 	 , (SELECT COUNT(1) FROM [areaparking].[dbo].[ap_waiting_list] s1 WHERE s1.parking_lot_id = lot.id) as waiting_count
      , hy.hy_no as position_name
 	 , CONCAT(bk.add_ken, bk.add_si, bk.add_cyo, bk.add_banti, bk.add_etc) as address
+	 , lot.lng
+	 , lot.lat
 	 , mt.tanto_name							-- 担当者
      , lot.is_existed_contractor_allowed        -- 既契約者
      , lot.is_new_contractor_allowed            -- 新テナント

@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import os
 import xlrd
 import datetime
+import requests
 
 import common
 
@@ -316,3 +317,23 @@ def sync_waiting_list(path):
                 waiting.save()
             except Exception as ex:
                 print "%s行目" % row, unicode(ex), ex.message
+
+
+def sync_coordinate(url):
+    if not url:
+        print "座標取得のＡＰＩを設定してください。"
+        return
+    queryset = ParkingLot.objects.public_filter(lng__isnull=True, lat__isnull=True)
+    for parking_lot in queryset:
+        address = parking_lot.address()
+        if not address:
+            continue
+
+        r = requests.get(url, {'address': address})
+        if r.status_code == 200:
+            coordinate = r.json()
+            parking_lot.lng = coordinate.get('lng', None)
+            parking_lot.lat = coordinate.get('lat', None)
+            parking_lot.save()
+        else:
+            print "エラー：", r.content
