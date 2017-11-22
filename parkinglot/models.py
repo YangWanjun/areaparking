@@ -110,3 +110,23 @@ class ParkingPosition(BaseModel):
         """
         queryset = self.tempcontract_set.filter(Q(start_date__gte=datetime.date.today()) | Q(start_date__isnull=True))
         return queryset
+
+
+class VParkingLotSummary(BaseModel):
+    name = models.CharField(max_length=100, blank=True, null=True, verbose_name="名称")
+    lng = models.FloatField(blank=True, null=True, verbose_name="経度")
+    lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
+    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
+    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
+    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
+    position_count = models.IntegerField(verbose_name="車室数")
+    contract_count = models.IntegerField(verbose_name="契約数")
+
+    class Meta:
+        managed = False
+        db_table = 'v_parkinglot_summary'
+        verbose_name = "駐車場概要"
+        verbose_name_plural = "駐車場概要一覧"
+
+    def __unicode__(self):
+        return self.name
