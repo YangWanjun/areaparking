@@ -9,7 +9,7 @@
 {% block footer %}
 <script type="text/javascript">
 $(document).ready(function(){
-    ebjs.map.init("gmap", "olmap", {});
+    ebjs.olmap.init("map", {});
 });
 </script>
 {% endblock %}
@@ -18,8 +18,7 @@ $(document).ready(function(){
 <div class="left-panel">
     <div class="card list-card">
         <div class="card-content">
-            <div id="gmap"  style="width: 100%; min-height: 600px;" ></div>
-	        <div id="olmap" style="width: 100%; min-height: 600px;" ></div>
+            <div id="map"  style="width: 100%; height: 100%;" ></div>
         </div>
     </div>
 </div>
