@@ -29,6 +29,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['192.168.99.100', 'localhost', '127.0.0.1', '*.e-business.co.jp']
 APPEND_SLASH = True
 NUMBER_GROUPING = 3
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8000',
+    '127.0.0.1:8000'
+)
 
 # Application definition
 
@@ -52,9 +56,11 @@ INSTALLED_APPS = [
     'revolution.apps.RevolutionConfig',
     'rest_framework',
     'django_filters',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
