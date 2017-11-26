@@ -1,10 +1,11 @@
 django==1.11.4
-pillow
 django-material==1.0
-xlrd==1.1.0
-django-pyodbc-azure
+django-pyodbc-azure==1.11.0.0
 djangorestframework==3.6.4
 django-filter==1.0.4
+django-cors-headers==2.1.0
+pillow==4.2.1
+xlrd==1.1.0
 pycrypto==2.6
-pdfkit
+pdfkit==0.6.1
 googlemaps==2.5.1
