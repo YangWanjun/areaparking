@@ -4,7 +4,7 @@ django-pyodbc-azure==1.11.0.0
 djangorestframework==3.6.4
 django-filter==1.0.4
 django-cors-headers==2.1.0
-pillow==4.2.1
+pillow==4.3
 xlrd==1.1.0
 pycrypto==2.6
 pdfkit==0.6.1
