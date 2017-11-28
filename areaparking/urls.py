@@ -18,14 +18,15 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.views import generic
 from django.views.static import serve
+from django.utils.decorators import method_decorator
 
 from material import frontend
 from material.frontend.apps import ModuleMixin
 from material.frontend.registry import modules
 
-from parkinglot import urls as parkinglot_urls
 from contract.urls import router as contract_router
 from parkinglot.urls import router as parkintlot_router
 from master.urls import router as master_router
@@ -42,7 +43,7 @@ class Home(ModuleMixin):
 
     @property
     def urls(self):
-        index_view = generic.TemplateView.as_view(template_name='index.html')
+        index_view = login_required(generic.TemplateView.as_view(template_name='index.html'))
 
         return frontend.ModuleURLResolver(
             '^', [url('^$', index_view, name="index")],
@@ -61,9 +62,8 @@ from material.frontend import urls as frontend_urls
 
 urlpatterns = [
     url(r'', include(frontend_urls)),
-    url(r'^parkinglot/', include(parkinglot_urls)),
-    # url(r'^admin/login/$', auth_views.logout, name="logout"),
-    url(r'^admin/login/$', auth_views.login, name="login"),
+    url(r'^accounts/logout/$', auth_views.logout, name="logout"),
+    url(r'^accounts/login/$', auth_views.login, {'next': '/'}, name="login"),
 
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 

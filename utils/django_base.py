@@ -119,7 +119,7 @@ class DynamicListWidget(widgets.Widget):
         return mark_safe('\n'.join(output))
 
 
-@method_decorator(login_required(login_url='/admin/login/?next=/'), name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class BaseView(View, ContextMixin):
 
     def get_context_data(self, **kwargs):
