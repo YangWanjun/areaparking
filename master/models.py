@@ -23,7 +23,7 @@ class Company(BaseModel):
         db_table = 'ap_company'
         verbose_name = verbose_name_plural = "自社情報"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -39,7 +39,7 @@ class ParkingLotType(BaseModel):
         verbose_name = "駐車場分類"
         verbose_name_plural = "駐車場分類一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -53,7 +53,7 @@ class ParkingTimeLimit(BaseModel):
         verbose_name = "時間制限"
         verbose_name_plural = "時間制限一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -68,7 +68,7 @@ class BankCode(BaseModel):
         verbose_name = "金融機関"
         verbose_name_plural = "金融機関一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -82,7 +82,7 @@ class ManagementType(BaseModel):
         verbose_name = "管理形態"
         verbose_name_plural = "管理形態一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -95,7 +95,7 @@ class CarMaker(BaseModel):
         verbose_name = "メーカー"
         verbose_name_plural = "メーカー一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -119,7 +119,7 @@ class CarModel(BaseModel):
         verbose_name = "車種"
         verbose_name_plural = "車種一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         if self.grade_name:
             return '%s - %s ' % (self.name, self.grade_name)
         else:
@@ -141,7 +141,7 @@ class Bank(BaseModel):
         verbose_name = "銀行口座"
         verbose_name_plural = "銀行口座一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.bank_name
 
 
@@ -154,5 +154,5 @@ class TransmissionRoute(BaseModel):
         verbose_name = "媒体"
         verbose_name_plural = "媒体"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

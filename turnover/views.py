@@ -29,4 +29,4 @@ class ViewContract(BaseView):
 
     def get(self, request, *args, **kwargs):
         path = kwargs.get('path')
-        return FileResponse(open(path, b'rb'), content_type='application/pdf')
+        return FileResponse(open(path, 'rb'), content_type='application/pdf')

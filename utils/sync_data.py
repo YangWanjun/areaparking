@@ -5,11 +5,10 @@ import xlrd
 import datetime
 import requests
 
-import common
-
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
 
+from . import common
 from master.models import CarModel, CarMaker, TransmissionRoute
 from parkinglot.models import ParkingLot
 from revolution.models import MBrui, BkMst, HyMst, MTanto
@@ -32,7 +31,7 @@ def sync_car_models():
                 maker = CarMaker(name=maker_name)
                 maker.save()
             except Exception as ex:
-                print maker_name, "保存失敗", unicode(ex)
+                print(maker_name, "保存失敗", ex)
             try:
                 model = CarModel.objects.get(maker=maker, name=name, grade_name=grade_name)
             except Exception:
@@ -40,33 +39,33 @@ def sync_car_models():
             try:
                 model.sale_date = datetime.datetime.strptime(sheet.cell(row, 7).value.encode('utf8'), "%Y年%m月%d日".encode('utf8'))
             except Exception as ex:
-                print unicode(ex), sheet.cell(row, 7).value
+                print(ex, sheet.cell(row, 7).value)
             try:
                     model.length = common.get_num_from_str(sheet.cell(row, 29).value)
             except Exception as ex:
-                print unicode(ex), sheet.cell(row,29).value
+                print(ex, sheet.cell(row,29).value)
             try:
                 model.width = common.get_num_from_str(sheet.cell(row, 30).value)
             except Exception as ex:
-                print unicode(ex), sheet.cell(row, 30).value
+                print(ex, sheet.cell(row, 30).value)
             try:
                 model.height = common.get_num_from_str(sheet.cell(row, 31).value)
             except Exception as ex:
-                print unicode(ex), sheet.cell(row, 31).value
+                print(ex, sheet.cell(row, 31).value)
             try:
                 model.weight = common.get_num_from_str(sheet.cell(row, 17).value)
             except Exception as ex:
-                print unicode(ex), sheet.cell(row, 17).value
+                print(ex, sheet.cell(row, 17).value)
             try:
                 model.min_height = common.get_num_from_str(sheet.cell(row, 33).value)
             except Exception as ex:
-                print unicode(ex), sheet.cell(row, 33).value
+                print(ex, sheet.cell(row, 33).value)
             try:
                 model.save()
             except Exception as ex:
-                print maker_name, "モデル保存失敗", unicode(ex)
+                print(maker_name, "モデル保存失敗", ex)
     else:
-        print "%sが見つかりません。" % path
+        print("%sが見つかりません。" % path)
 
 
 def sync_buken_master(path):
@@ -79,7 +78,7 @@ def sync_buken_master(path):
             bk_no = 0
             try:
                 bk_no = sheet.cell(row, 10).value
-                if isinstance(bk_no, basestring) and bk_no.find('/') > 0:
+                if isinstance(bk_no, str) and bk_no.find('/') > 0:
                     bk_no = bk_no.split('/')[1]
                 if not bk_no:
                     continue
@@ -137,7 +136,7 @@ def sync_buken_master(path):
                     # room.price_handbill_no_tax = sheet.cell(row, 33).value or None
                     room.save()
             except Exception as ex:
-                print row, bk_no, unicode(ex)
+                print(row, bk_no, ex)
 
 
 def sync_buken_tanto(path):
@@ -161,9 +160,9 @@ def sync_buken_tanto(path):
                         buken.tanto = member
                         buken.save()
                     else:
-                        print name, 'existed'
+                        print(name, 'existed')
                 except ObjectDoesNotExist:
-                    print bk_no, 'not existed'
+                    print(bk_no, 'not existed')
 
 
 def sync_parking_lot(path):
@@ -174,7 +173,7 @@ def sync_parking_lot(path):
             if row == 0:
                 continue
             bk_no = sheet.cell(row, 10).value
-            if isinstance(bk_no, basestring) and bk_no.find('/') > 0:
+            if isinstance(bk_no, str) and bk_no.find('/') > 0:
                 bk_no = bk_no.split('/')[1]
             if not bk_no:
                 continue
@@ -192,7 +191,7 @@ def sync_parking_lot(path):
                     parking_lot.free_end_date = datetime.datetime.fromordinal(datetime.datetime(1900, 1, 1).toordinal() + excel_date - 2).date()
                 parking_lot.save()
             except ObjectDoesNotExist:
-                print bk_no, 'not existed'
+                print(bk_no, 'not existed')
 
 
 def sync_parking_size(path):
@@ -209,9 +208,9 @@ def sync_parking_size(path):
                 current_name = name.rstrip("駐車場")
                 queryset = ParkingLot.objects.public_filter(buken__bk_name__icontains=current_name)
                 if queryset.count() == 0:
-                    print '{}行目'.format(row + 1), current_name, 'not exists'
+                    print('{}行目'.format(row + 1), current_name, 'not exists')
                 elif queryset.count() > 1:
-                    print '{}行目'.format(row + 1), current_name, 'multi existed'
+                    print('{}行目'.format(row + 1), current_name, 'multi existed')
                 else:
                     parking_lot = queryset.first()
                     i = 0
@@ -259,9 +258,9 @@ def sync_parking_size(path):
                         parking_position.save()
 
             elif name and not address:
-                print '{}行目'.format(row + 1), '駐車場名', name, 'skipped'
+                print('{}行目'.format(row + 1), '駐車場名', name, 'skipped')
             elif not name and address:
-                print '{}行目'.format(row + 1), '住所', address, 'skipped'
+                print('{}行目'.format(row + 1), '住所', address, 'skipped')
 
 
 def sync_waiting_list(path):
@@ -316,12 +315,12 @@ def sync_waiting_list(path):
             try:
                 waiting.save()
             except Exception as ex:
-                print "%s行目" % row, unicode(ex), ex.message
+                print("%s行目" % row, ex)
 
 
 def sync_coordinate(url):
     if not url:
-        print "座標取得のＡＰＩを設定してください。"
+        print("座標取得のＡＰＩを設定してください。")
         return
     queryset = ParkingLot.objects.public_filter(lng__isnull=True, lat__isnull=True)
     for parking_lot in queryset:
@@ -336,4 +335,4 @@ def sync_coordinate(url):
             parking_lot.lat = coordinate.get('lat', None)
             parking_lot.save()
         else:
-            print "エラー：", r.content
+            print("エラー：", r.content)

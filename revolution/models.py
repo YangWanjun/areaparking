@@ -2568,7 +2568,7 @@ class BaiMBusyo(models.Model):
         verbose_name = "部署"
         verbose_name_plural = "部署一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.busyo_name
 
 
@@ -6802,7 +6802,7 @@ class BkMst(models.Model):
         verbose_name = "駐車場"
         verbose_name_plural = "駐車場一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.bk_name
 
     def address(self):
@@ -11239,7 +11239,7 @@ class HyMst(models.Model):
         verbose_name = "部屋"
         verbose_name_plural = "部屋一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.hy_no
 
 
@@ -16023,7 +16023,7 @@ class KyKosinkai(models.Model):
         verbose_name = "契約"
         verbose_name_plural = "契約一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s_%s_%s_%s" % (self.bk_no, self.hy_no, self.ky_no, self.ko_no)
 
 
@@ -17358,7 +17358,7 @@ class KysMst(models.Model):
         verbose_name = "契約者"
         verbose_name_plural = "契約者一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.kys_name if self.kys_name else str(self.kys_no)
 
 
@@ -18300,7 +18300,7 @@ class MBrui(models.Model):
         verbose_name = "分類マスタ"
         verbose_name_plural = "分類一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.brui_name
 
 
@@ -22390,7 +22390,7 @@ class MKinyu(models.Model):
         verbose_name = "金融機関"
         verbose_name_plural = "金融機関一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.kinyu_name if self.kinyu_name else str(self.kinyu_no)
 
 
@@ -22889,7 +22889,7 @@ class MKozaFuri(models.Model):
         verbose_name = "振替口座"
         verbose_name_plural = "振替口座一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.fkae_name if self.fkae_name else str(self.fkae_no)
 
 
@@ -25366,7 +25366,7 @@ class MTanto(models.Model):
         verbose_name = "担当者"
         verbose_name_plural = "担当者一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tanto_name
 
 
@@ -25594,7 +25594,7 @@ class MTen(models.Model):
         verbose_name = "銀行支店"
         verbose_name_plural = "銀行支店一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.ten_name if self.ten_name else str(self.ten_no)
 
 

@@ -228,10 +228,21 @@ LOGGING = {
             'formatter': 'standard',
             'filename': os.path.join(LOG_ROOT, "batch.log"),
         },
+        'area_parking': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'standard',
+            'filename': os.path.join(LOG_ROOT, "area_parking.log"),
+        },
     },
     'loggers': {
         'revolution.management.commands': {
             'handlers': ['batch'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'area_parking': {
+            'handlers': ['area_parking'],
             'level': 'INFO',
             'propagate': True,
         },

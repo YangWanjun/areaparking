@@ -86,7 +86,7 @@ class Contractor(BaseModel):
         verbose_name = "契約者"
         verbose_name_plural = "契約者一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -108,8 +108,8 @@ class Contract(BaseModel):
         verbose_name = "契約情報"
         verbose_name_plural = "契約情報一覧"
 
-    def __unicode__(self):
-        return '%s（%s～%s）' % (unicode(self.contractor), self.start_date, self.end_date)
+    def __str__(self):
+        return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
 
 
 class TempContract(BaseModel):
@@ -128,5 +128,5 @@ class TempContract(BaseModel):
         verbose_name = "仮契約情報"
         verbose_name_plural = "仮契約情報一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.pk)

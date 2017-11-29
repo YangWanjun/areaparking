@@ -57,7 +57,7 @@ class WhiteBoard(models.Model):
         verbose_name = "駐車場"
         verbose_name_plural = "駐車場一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.bk_name if self.bk_name else str(self.bk_no)
 
 
@@ -87,8 +87,8 @@ class Waiting(BaseModel):
         verbose_name = "順番待ち"
         verbose_name_plural = "順番待ちリスト"
 
-    def __unicode__(self):
-        return "%s-%s" % (unicode(self.parking_lot), self.name)
+    def __str__(self):
+        return "%s-%s" % (str(self.parking_lot), self.name)
 
     @property
     def contractor(self):
@@ -111,5 +111,5 @@ class WaitingContact(BaseModel):
         verbose_name = "連絡履歴"
         verbose_name_plural = "連絡リスト"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.comment

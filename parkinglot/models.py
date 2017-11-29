@@ -27,8 +27,8 @@ class ParkingLot(BaseModel):
         verbose_name = "駐車場"
         verbose_name_plural = "駐車場一覧"
 
-    def __unicode__(self):
-        return unicode(self.buken)
+    def __str__(self):
+        return str(self.buken)
 
     def address(self):
         if self.buken:
@@ -94,7 +94,7 @@ class ParkingPosition(BaseModel):
         verbose_name = "車室"
         verbose_name_plural = "車室一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def contracts(self, date=None):
@@ -128,5 +128,5 @@ class VParkingLotSummary(BaseModel):
         verbose_name = "駐車場概要"
         verbose_name_plural = "駐車場概要一覧"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

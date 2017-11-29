@@ -33,7 +33,16 @@ def get_batch_logger():
     return logging.getLogger('revolution.management.commands')
 
 
+def get_ap_logger():
+    """営業システムのロガーを取得する。
+
+    :return:
+    """
+    return logging.getLogger('area_parking')
+
+
 def generate_pdf_from_string(text, out_path):
+    logger = get_ap_logger()
     try:
         # config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
         # TODO: パスに日本語があったら、エラーになる。暫定対策：英語にしてから、また日本語名に変更する。
@@ -41,4 +50,4 @@ def generate_pdf_from_string(text, out_path):
         # css = ['']
         pdfkit.from_string(text, out_path, options=options)
     except Exception as ex:
-        print unicode(ex)
+        logger.error(str(ex))

@@ -94,12 +94,12 @@ class DynamicListWidget(widgets.Widget):
         label = ''
         verbose_name = ''
         if isinstance(value, models.Model):
-            verbose_name = unicode(value)
+            verbose_name = str(value)
             value = value.pk
         if hasattr(self, 'form_instance'):
             label = self.form_instance.fields[name].label if self.form_instance else ''
             if not verbose_name and self.form_instance.instance and hasattr(self.form_instance.instance, name):
-                verbose_name = unicode(getattr(self.form_instance.instance, name))
+                verbose_name = str(getattr(self.form_instance.instance, name))
         element_id = attrs.get('id')
         text_name = element_id.replace('id_', 'ac_')
         attrs.update({'id': element_id.replace('id_', 'id_ac_')})

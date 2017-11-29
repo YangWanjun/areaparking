@@ -1,11 +1,18 @@
-django==1.11.4
+﻿django==1.11.4
 django-material==1.0
 django-pyodbc-azure==1.11.0.0
 djangorestframework==3.6.4
+djangorestframework-gis==0.12
 django-filter==1.0.4
 django-cors-headers==2.1.0
 pillow==4.3
 xlrd==1.1.0
-pycrypto==2.6
+pycrypto==2.6.1
 pdfkit==0.6.1
 googlemaps==2.5.1
+########## Windows上インストール時の注意事項 ##########
+# ■pycryptoインストール失敗の場合
+# ./areaparking/data/pycrypto-2.6.1-cp36-cp36m-win_amd64.whl をインストールしてください。
+# ■GDALをインストールする場合 Microsoft Visual C++ Build Toolsが必要です
+# ./areaparking/data/GDAL-2.2.3-cp36-cp36m-win_amd64 をインストールしてください。
+#######################################################
