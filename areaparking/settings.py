@@ -121,6 +121,36 @@ if sys.platform == "win32":
         #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         # }
     }
+elif sys.platform == "linux":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'sql_server.pyodbc',
+            'NAME': 'areaparking',
+            'USER': 'sa',
+            'PASSWORD': 'root@123',
+            'HOST': r'mssql',
+            'PORT': '1433',
+            'OPTIONS': {
+                'driver': 'FreeTDS',
+                'MARS_Connection': True,
+                'driver_supports_utf8': True,
+            },
+        },
+        'fk5dtsql': {
+            'ENGINE': 'sql_server.pyodbc',
+            'NAME': 'fk5dtsql',
+            'USER': 'sa',
+            'PASSWORD': 'root@123',
+            'HOST': r'mssql',
+            'PORT': '1433',
+            'OPTIONS': {
+                'driver': 'FreeTDS',
+                'MARS_Connection': True,
+                'driver_supports_utf8': True,
+            },
+        },
+    }
+
 elif sys.platform == "darwin":
     DATABASES = {
         'default': {

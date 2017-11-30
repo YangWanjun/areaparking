@@ -104,9 +104,12 @@ class DynamicListWidget(widgets.Widget):
         text_name = element_id.replace('id_', 'ac_')
         attrs.update({'id': element_id.replace('id_', 'id_ac_')})
         text_html = super(DynamicListWidget, self).render(text_name, verbose_name, attrs, renderer)
-        hidden_html = '<input type="hidden" id="{0}" name="{1}" value="{2}" />'.format(element_id, element_id.lstrip('id_'), value or '')
+        hidden_html = '<input type="hidden" id="{0}" name="{1}" value="{2}" />'.format(
+            element_id, element_id.lstrip('id_'), value or ''
+        )
 
-        output = ['<div class="row">']
+        output = list()
+        output.append('<div class="row">')
         output.append('<div class="input-field col s12" id="id_{0}_container">'.format(name))
         output.append(hidden_html)
         output.append(text_html)

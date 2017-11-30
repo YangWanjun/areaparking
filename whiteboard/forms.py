@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from . import models
-from parkinglot.models import ParkingLot
 from utils.django_base import BaseForm, DynamicListWidget
 
 
