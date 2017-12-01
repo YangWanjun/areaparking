@@ -49,12 +49,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'parkinglot.apps.ParkinglotConfig',
     'master.apps.MasterConfig',
-    'contract.apps.ContractConfig',
-    'whiteboard.apps.WhiteboardConfig',
-    'turnover.apps.TurnoverConfig',
-    'revolution.apps.RevolutionConfig',
+    'parkinglot.apps.ParkinglotConfig',
+    # 'contract.apps.ContractConfig',
+    # 'whiteboard.apps.WhiteboardConfig',
+    # 'turnover.apps.TurnoverConfig',
     'rest_framework',
     'django_filters',
     'corsheaders',
@@ -101,11 +100,11 @@ WSGI_APPLICATION = 'areaparking.wsgi.application'
 if sys.platform == "win32":
     DATABASES = {
         'default': {
-            'ENGINE': 'sql_server.pyodbc',
+            'ENGINE': 'django.contrib.gis.db.backends.mysql',
             'NAME': 'areaparking',
-            'USER': 'sa',
+            'USER': 'root',
             'PASSWORD': 'root',
-            'HOST': r'EB097-PC\SQLEXPRESS',
+            'HOST': '',
             'PORT': '',
         },
         'fk5dtsql': {
@@ -188,7 +187,7 @@ else:
         }
     }
 
-DATABASE_ROUTERS = ['areaparking.db_router.DbRouter']
+# DATABASE_ROUTERS = ['areaparking.db_router.DbRouter']
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',

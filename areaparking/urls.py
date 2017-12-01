@@ -67,7 +67,7 @@ urlpatterns = [
 
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 
-    url(r'^api/', include(contract_router.urls)),
+    # url(r'^api/', include(contract_router.urls)),
     url(r'^api/', include(parkintlot_router.urls)),
     url(r'^api/', include(master_router.urls)),
 ]

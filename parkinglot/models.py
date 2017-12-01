@@ -7,13 +7,13 @@ from django.db import models
 from django.db.models import Q
 
 from master.models import ParkingTimeLimit
-from revolution.models import BkMst
 from utils.django_base import BaseModel
 
 
 # Create your models here.
 class ParkingLot(BaseModel):
-    buken = models.ForeignKey(BkMst, verbose_name="賃貸革命物件")
+    code = models.IntegerField(primary_key=True, verbose_name="物件番号")
+    name = 
     lng = models.FloatField(blank=True, null=True, verbose_name="経度")
     lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
