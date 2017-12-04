@@ -140,6 +140,11 @@ class ParkingLot(BaseModel):
     has_turntable = models.BooleanField(default=False, verbose_name="ターンテーブルの有無")
     has_palette = models.BooleanField(default=False, verbose_name="専用パレット")
     time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, verbose_name="時間制限")
+    admin_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員氏名")
+    admin_kana = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員カナ")
+    admin_tel = models.CharField(max_length=15, blank=True, null=True, verbose_name="管理員電話番号",
+                                 validators=(RegexValidator(regex=constants.REG_TEL),))
+    admin_time = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員勤務時間帯")
     # 賃貸借契約の概要
     contract_start_date = models.DateField(blank=True, null=True, verbose_name="契約開始日")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
