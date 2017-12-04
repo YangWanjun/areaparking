@@ -6,13 +6,10 @@ import datetime
 import requests
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.utils import timezone
 
 from . import common
 from master.models import CarModel, CarMaker, TransmissionRoute
-from parkinglot.models import ParkingLot
-from revolution.models import MBrui, BkMst, HyMst, MTanto
-from whiteboard.models import Waiting
+from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition
 
 def sync_car_models():
     path = os.path.join(common.get_data_path(), '自動車一覧.xls')
@@ -68,7 +65,7 @@ def sync_car_models():
         print("%sが見つかりません。" % path)
 
 
-def sync_buken_master(path):
+def sync_parking_lot(path):
     if os.path.exists(path):
         book = xlrd.open_workbook(path)
         sheet = book.sheet_by_index(0)
@@ -84,114 +81,56 @@ def sync_buken_master(path):
                     continue
                 bk_no = int(bk_no)
                 # 駐車場分類
-                brui_name = sheet.cell(row, 26).value
-                if not brui_name:
-                    brui_name = "その他"
+                category = sheet.cell(row, 26).value
+                if not category:
+                    category = "その他"
                 try:
-                    brui = MBrui.objects.get(brui_name=brui_name)
+                    lot_type = ParkingLotType.objects.get(name=category)
                 except ObjectDoesNotExist:
-                    brui = MBrui()
-                    brui.brui_no = row
-                    brui.brui_name = brui_name
-                    brui.kosin_date = timezone.now()
-                    brui.save()
+                    lot_type = ParkingLotType()
+                    lot_type.code = row
+                    lot_type.name = category
+                    lot_type.save()
                 # 駐車場
                 try:
-                    buken = BkMst.objects.get(bk_no=bk_no)
+                    lot = ParkingLot.objects.get(code=bk_no)
                 except ObjectDoesNotExist:
-                    buken = BkMst()
-                    buken.bk_no = bk_no
-                    buken.bk_name = sheet.cell(row, 25).value
-                    buken.brui = brui
-                    buken.ken_no = 13
-                    buken.add_ken = "東京都"
-                    buken.si_no = '13110'
-                    buken.add_si = sheet.cell(row, 9).value + "区"
+                    lot = ParkingLot()
+                    lot.code = bk_no
+                    lot.name = sheet.cell(row, 25).value
+                    lot.segment = lot_type
+                    lot.pref_code = 13
+                    lot.pref_name = "東京都"
+                    lot.city_code = '13110'
+                    lot.city_name = sheet.cell(row, 9).value + "区"
                     locations = sheet.cell(row, 22).value.split('/')
                     if len(locations) == 2:
-                        buken.add_cyo = locations[1]
-                        buken.kotsu1 = locations[0]
+                        lot.town_name = locations[1]
+                        lot.traffic = locations[0]
                     else:
-                        buken.add_cyo = sheet.cell(row, 22).value
-                    # buken.is_existed_contractor_allowed = sheet.cell(row, 18).value == "○"
-                    # buken.is_new_contractor_allowed = sheet.cell(row, 19).value == "○"
+                        lot.town_name = sheet.cell(row, 22).value
+                    lot.is_existed_contractor_allowed = sheet.cell(row, 18).value == "○"
+                    lot.is_new_contractor_allowed = sheet.cell(row, 19).value == "○"
                     free_end_date = sheet.cell(row, 20).value
                     if isinstance(free_end_date, datetime.date):
-                        # buken.free_end_date = free_end_date
-                        pass
-                    buken.save()
+                        lot.free_end_date = free_end_date
+                    lot.save()
                 # 車室
                 try:
-                    room = HyMst.objects.get(bk_no=buken.bk_no, hy_no=row)
+                    room = ParkingPosition.objects.get(parking_lot=lot, name=row)
                 except ObjectDoesNotExist:
-                    room = HyMst()
-                    room.bk_no = buken.bk_no
-                    room.hy_no = 'No.{}'.format(row)
-                    room.kosin_date = timezone.now()
-                    # room.price_recruitment = sheet.cell(row, 28).value or None
-                    # room.price_recruitment_no_tax = sheet.cell(row, 29).value or None
-                    # room.price_homepage = sheet.cell(row, 32).value or None
-                    # room.price_homepage_no_tax = sheet.cell(row, 31).value or None
-                    # room.price_handbill = sheet.cell(row, 34).value or None
-                    # room.price_handbill_no_tax = sheet.cell(row, 33).value or None
+                    room = ParkingPosition()
+                    room.parking_lot = lot
+                    room.name = 'No.{}'.format(row)
+                    room.price_recruitment = sheet.cell(row, 28).value or None
+                    room.price_recruitment_no_tax = sheet.cell(row, 29).value or None
+                    room.price_homepage = sheet.cell(row, 32).value or None
+                    room.price_homepage_no_tax = sheet.cell(row, 31).value or None
+                    room.price_handbill = sheet.cell(row, 34).value or None
+                    room.price_handbill_no_tax = sheet.cell(row, 33).value or None
                     room.save()
             except Exception as ex:
                 print(row, bk_no, ex)
-
-
-def sync_buken_tanto(path):
-    if os.path.exists(path):
-        book = xlrd.open_workbook(path)
-        sheet = book.sheet_by_index(0)
-        for row in range(sheet.nrows):
-            if row == 0:
-                continue
-            bk_no = sheet.cell(row, 44).value
-            name = sheet.cell(row, 50).value
-            if bk_no and name:
-                try:
-                    buken = BkMst.objects.get(pk=bk_no)
-                    try:
-                        member = MTanto.objects.get(tanto_name=name)
-                    except ObjectDoesNotExist:
-                        member = MTanto(tanto_no=row, tanto_name=name)
-                        member.save()
-                    if not buken.tanto:
-                        buken.tanto = member
-                        buken.save()
-                    else:
-                        print(name, 'existed')
-                except ObjectDoesNotExist:
-                    print(bk_no, 'not existed')
-
-
-def sync_parking_lot(path):
-    if os.path.exists(path):
-        book = xlrd.open_workbook(path)
-        sheet = book.sheet_by_index(0)
-        for row in range(sheet.nrows):
-            if row == 0:
-                continue
-            bk_no = sheet.cell(row, 10).value
-            if isinstance(bk_no, str) and bk_no.find('/') > 0:
-                bk_no = bk_no.split('/')[1]
-            if not bk_no:
-                continue
-            try:
-                bk_no = int(bk_no)
-            except:
-                continue
-            try:
-                parking_lot = ParkingLot.objects.get(buken=bk_no)
-                parking_lot.is_existed_contractor_allowed = sheet.cell(row, 18).value == "○"
-                parking_lot.is_new_contractor_allowed = sheet.cell(row, 19).value == "○"
-                excel_date = sheet.cell(row, 20).value
-                if isinstance(excel_date, (int, float)):
-                    excel_date = int(excel_date)
-                    parking_lot.free_end_date = datetime.datetime.fromordinal(datetime.datetime(1900, 1, 1).toordinal() + excel_date - 2).date()
-                parking_lot.save()
-            except ObjectDoesNotExist:
-                print(bk_no, 'not existed')
 
 
 def sync_parking_size(path):
@@ -206,7 +145,7 @@ def sync_parking_size(path):
             name = sheet.cell(row, 3).value
             if name and address and current_name != name:
                 current_name = name.rstrip("駐車場")
-                queryset = ParkingLot.objects.public_filter(buken__bk_name__icontains=current_name)
+                queryset = ParkingLot.objects.public_filter(name__icontains=current_name)
                 if queryset.count() == 0:
                     print('{}行目'.format(row + 1), current_name, 'not exists')
                 elif queryset.count() > 1:
@@ -263,59 +202,60 @@ def sync_parking_size(path):
                 print('{}行目'.format(row + 1), '住所', address, 'skipped')
 
 
-def sync_waiting_list(path):
-    if os.path.exists(path):
-        book = xlrd.open_workbook(path)
-        sheet = book.sheet_by_name("順番待ﾘｽﾄ")
-        for row in range(sheet.nrows):
-            if row < 2:
-                continue
-            waiting = Waiting()
-            excel_date = sheet.cell(row, 0).value
-            if isinstance(excel_date, (int, float)):
-                excel_date = int(excel_date)
-                waiting.created_date = waiting.updated_date = datetime.datetime.fromordinal(datetime.datetime(1900, 1, 1).toordinal() + excel_date - 2).date()
-            tanto_name = sheet.cell(row, 1).value
-            if tanto_name:
-                try:
-                    tanto = MTanto.objects.get(tanto_name__icontains=tanto_name)
-                    waiting.tanto_no = tanto.pk
-                except (ObjectDoesNotExist, MultipleObjectsReturned):
-                    pass
-            parking_lot_name = sheet.cell(row, 4).value
-            if parking_lot_name:
-                try:
-                    waiting.parking_lot = ParkingLot.objects.get(buken__bk_name__icontains=parking_lot_name)
-                except (ObjectDoesNotExist, MultipleObjectsReturned):
-                    continue
-
-            waiting.name = sheet.cell(row, 6).value or '氏名%s' % row
-            waiting.tel1 = sheet.cell(row, 8).value or '080-1234-4578'
-            waiting.tel2 = sheet.cell(row, 9).value or '070-1234-4578'
-            if sheet.cell(row, 13).value:
-                cars = sheet.cell(row, 13).value.split("　")
-                if cars == 2:
-                    waiting.car_maker = cars[0]
-                    waiting.car_model = cars[1]
-            waiting.length = sheet.cell(row, 14).value or None
-            waiting.width = sheet.cell(row, 15).value or None
-            waiting.height = sheet.cell(row, 16).value or None
-            waiting.weight = sheet.cell(row, 17).value or None
-            media = None
-            if sheet.cell(row, 18).value:
-                media_name = sheet.cell(row, 18).value
-                try:
-                    media = TransmissionRoute.objects.get(name=media_name)
-                except ObjectDoesNotExist:
-                    media = TransmissionRoute(name=media_name)
-                    media.save()
-            waiting.media = media
-            waiting.price_handbill = sheet.cell(row, 19).value
-            waiting.comment = sheet.cell(row, 20).value
-            try:
-                waiting.save()
-            except Exception as ex:
-                print("%s行目" % row, ex)
+# def sync_waiting_list(path):
+#     if os.path.exists(path):
+#         book = xlrd.open_workbook(path)
+#         sheet = book.sheet_by_name("順番待ﾘｽﾄ")
+#         for row in range(sheet.nrows):
+#             if row < 2:
+#                 continue
+#             waiting = Waiting()
+#             excel_date = sheet.cell(row, 0).value
+#             if isinstance(excel_date, (int, float)):
+#                 excel_date = int(excel_date)
+#                 waiting.created_date = waiting.updated_date = datetime.datetime.fromordinal(datetime.datetime(1900, 1, 1).toordinal() + excel_date - 2).date()
+#             tanto_name = sheet.cell(row, 1).value
+#             if tanto_name:
+#                 pass
+#                 # try:
+#                 #     tanto = MTanto.objects.get(tanto_name__icontains=tanto_name)
+#                 #     waiting.tanto_no = tanto.pk
+#                 # except (ObjectDoesNotExist, MultipleObjectsReturned):
+#                 #     pass
+#             parking_lot_name = sheet.cell(row, 4).value
+#             if parking_lot_name:
+#                 try:
+#                     waiting.parking_lot = ParkingLot.objects.get(buken__bk_name__icontains=parking_lot_name)
+#                 except (ObjectDoesNotExist, MultipleObjectsReturned):
+#                     continue
+#
+#             waiting.name = sheet.cell(row, 6).value or '氏名%s' % row
+#             waiting.tel1 = sheet.cell(row, 8).value or '080-1234-4578'
+#             waiting.tel2 = sheet.cell(row, 9).value or '070-1234-4578'
+#             if sheet.cell(row, 13).value:
+#                 cars = sheet.cell(row, 13).value.split("　")
+#                 if cars == 2:
+#                     waiting.car_maker = cars[0]
+#                     waiting.car_model = cars[1]
+#             waiting.length = sheet.cell(row, 14).value or None
+#             waiting.width = sheet.cell(row, 15).value or None
+#             waiting.height = sheet.cell(row, 16).value or None
+#             waiting.weight = sheet.cell(row, 17).value or None
+#             media = None
+#             if sheet.cell(row, 18).value:
+#                 media_name = sheet.cell(row, 18).value
+#                 try:
+#                     media = TransmissionRoute.objects.get(name=media_name)
+#                 except ObjectDoesNotExist:
+#                     media = TransmissionRoute(name=media_name)
+#                     media.save()
+#             waiting.media = media
+#             waiting.price_handbill = sheet.cell(row, 19).value
+#             waiting.comment = sheet.cell(row, 20).value
+#             try:
+#                 waiting.save()
+#             except Exception as ex:
+#                 print("%s行目" % row, ex)
 
 
 def sync_coordinate(url):

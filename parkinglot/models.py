@@ -91,7 +91,7 @@ class ParkingTimeLimit(BaseModel):
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
-        db_table = 'mst_parking_time_limit'
+        db_table = 'ap_parking_time_limit'
         ordering = ['name']
         verbose_name = "時間制限"
         verbose_name_plural = "時間制限一覧"

@@ -59,7 +59,7 @@ class ParkingLotAdmin(BaseAdmin):
     inlines = (ParkingLotCommentInline, ParkingLotDocInline, ParkingPositionInline,)
 
     def address(self, obj):
-        return obj.buken.address()
+        return obj.address()
 
     address.short_description = "所在地"
 
@@ -96,8 +96,7 @@ class ParkingPosition(BaseAdmin):
         }),
         (None, {
             'fields': (
-                'time_limit',
-                'comment'
+                'comment',
             )
         }),
     )

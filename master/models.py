@@ -110,7 +110,7 @@ class TransmissionRoute(BaseModel):
         db_table = 'mst_transmission_route'
         ordering = ['name']
         verbose_name = "媒体"
-        verbose_name_plural = "媒体"
+        verbose_name_plural = "媒体一覧"
 
     def __str__(self):
         return self.name
