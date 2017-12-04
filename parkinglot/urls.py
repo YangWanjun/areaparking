@@ -11,7 +11,7 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register(r'parking-lot', views.ParkingLotViewSet)
-router.register(r'parking-lot-summary', views.ParkingLotSummaryViewSet)
+# router.register(r'parking-lot-summary', views.ParkingLotSummaryViewSet)
 
 urlpatterns = [
     # url('^parking-lot-autocomplete/$', views.ParkingLotAutocomplete.as_view(), name="parking_lot_autocomplete"),

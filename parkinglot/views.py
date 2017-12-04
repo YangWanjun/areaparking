@@ -15,9 +15,9 @@ class ParkingLotViewSet(viewsets.ModelViewSet):
     queryset = models.ParkingLot.objects.public_all()
     serializer_class = serializers.ParkingLotSerializer
     filter_backends = [SearchFilter]
-    search_fields = ('buken__bk_name',)
+    search_fields = ('name',)
 
 
-class ParkingLotSummaryViewSet(viewsets.ModelViewSet):
-    queryset = models.VParkingLotSummary.objects.public_all()
-    serializer_class = serializers.ParkingLotSummarySerializer
+# class ParkingLotSummaryViewSet(viewsets.ModelViewSet):
+#     queryset = models.VParkingLotSummary.objects.public_all()
+#     serializer_class = serializers.ParkingLotSummarySerializer

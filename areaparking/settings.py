@@ -107,18 +107,14 @@ if sys.platform == "win32":
             'HOST': '',
             'PORT': '',
         },
-        'fk5dtsql': {
-            'ENGINE': 'sql_server.pyodbc',
-            'NAME': 'fk5dtsql',
-            'USER': 'sa',
-            'PASSWORD': 'root',
-            'HOST': r'EB097-PC\SQLEXPRESS',
-            'PORT': '',
-        },
-        # 'default': {
-        #     'ENGINE': 'django.db.backends.sqlite3',
-        #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # }
+        # 'fk5dtsql': {
+        #     'ENGINE': 'sql_server.pyodbc',
+        #     'NAME': 'fk5dtsql',
+        #     'USER': 'sa',
+        #     'PASSWORD': 'root',
+        #     'HOST': r'EB097-PC\SQLEXPRESS',
+        #     'PORT': '',
+        # },
     }
 elif sys.platform == "linux":
     DATABASES = {

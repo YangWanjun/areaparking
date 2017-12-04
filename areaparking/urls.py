@@ -21,13 +21,11 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.views import generic
 from django.views.static import serve
-from django.utils.decorators import method_decorator
 
 from material import frontend
 from material.frontend.apps import ModuleMixin
 from material.frontend.registry import modules
 
-from contract.urls import router as contract_router
 from parkinglot.urls import router as parkintlot_router
 from master.urls import router as master_router
 

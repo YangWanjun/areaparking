@@ -7,6 +7,8 @@ SYSTEM_NAME = "エリアパーキング"
 DATABASE_DEFAULT = "default"
 DATABASE_REVOLUTION = "fk5dtsql"
 
+REG_TEL = r'^\d+\[0-9-]+d+$'
+
 CHOICE_CONTRACTOR_TYPE = (
     ('1', '個人'),
     ('2', '法人'),

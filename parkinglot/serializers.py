@@ -15,13 +15,13 @@ class ParkingLotSerializer(serializers.ModelSerializer):
         model = models.ParkingLot
         fields = ('id', 'label')
 
-class ParkingLotSummarySerializer(GeoFeatureModelSerializer):
-    point = GeometrySerializerMethodField()
-
-    class Meta:
-        model = models.VParkingLotSummary
-        fields = '__all__'
-        geo_field = 'point'
-
-    def get_point(self, obj):
-        return Point(obj.lng, obj.lat, srid=4326)
+# class ParkingLotSummarySerializer(GeoFeatureModelSerializer):
+#     point = GeometrySerializerMethodField()
+#
+#     class Meta:
+#         model = models.VParkingLotSummary
+#         fields = '__all__'
+#         geo_field = 'point'
+#
+#     def get_point(self, obj):
+#         return Point(obj.lng, obj.lat, srid=4326)

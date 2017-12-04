@@ -4,6 +4,7 @@ import os
 import re
 import logging
 import pdfkit
+import datetime
 
 
 def get_root_path():
@@ -51,3 +52,15 @@ def generate_pdf_from_string(text, out_path):
         pdfkit.from_string(text, out_path, options=options)
     except Exception as ex:
         logger.error(str(ex))
+
+
+def get_parking_lot_image_path(self, filename):
+    prefix = 'images/'
+    name = '{}_{}'.format(self.parking_lot.name, datetime.datetime.now().strftime('%y%m%d%H%M%S%f'))
+    extension = os.path.splitext(filename)[-1]
+    return prefix + name + extension
+
+
+def get_parking_lot_doc_path(self, filename):
+    prefix = 'docs/{}/'.format(self.parking_lot.name)
+    return prefix + filename
