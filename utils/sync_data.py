@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import os
+import re
 import xlrd
 import datetime
 import requests
@@ -10,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from . import common
 from master.models import CarModel, CarMaker, TransmissionRoute
 from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition
+from employee.models import Department, Member, MemberShip
 
 def sync_car_models():
     path = os.path.join(common.get_data_path(), '自動車一覧.xls')
@@ -65,6 +67,39 @@ def sync_car_models():
         print("%sが見つかりません。" % path)
 
 
+def sync_employee(path):
+    if os.path.exists(path):
+        book = xlrd.open_workbook(path)
+        sheet = book.sheet_by_index(0)
+        start_date = datetime.date(2010, 1, 1)
+        try:
+            department = Department.objects.get(name="リーシング")
+        except ObjectDoesNotExist:
+            department = Department(name="リーシング")
+            department.save()
+
+        for row in range(sheet.nrows):
+            if row < 3:
+                continue
+            name = sheet.cell(row, 50).value
+            if not name:
+                continue
+
+            parts = re.split(r'\s+', name)
+            if len(parts) > 1:
+                first_name = parts[0]
+                last_name = parts[1]
+            else:
+                first_name = name
+                last_name = "様"
+            try:
+                Member.objects.get(first_name=first_name, last_name=last_name)
+            except ObjectDoesNotExist:
+                member = Member(first_name=first_name, last_name=last_name)
+                member.save()
+                MemberShip.objects.create(member=member, department=department, start_date=start_date, end_date='9999-12-31')
+
+
 def sync_parking_lot(path):
     if os.path.exists(path):
         book = xlrd.open_workbook(path)
@@ -98,7 +133,7 @@ def sync_parking_lot(path):
                     lot = ParkingLot()
                     lot.code = bk_no
                     lot.name = sheet.cell(row, 25).value
-                    lot.segment = lot_type
+                    lot.category = lot_type
                     lot.pref_code = 13
                     lot.pref_name = "東京都"
                     lot.city_code = '13110'

@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 
 
 SYSTEM_NAME = "エリアパーキング"
+END_DATE = '9999-12-31'
 
 DATABASE_DEFAULT = "default"
 DATABASE_REVOLUTION = "fk5dtsql"
 
 REG_TEL = r'^\d+\[0-9-]+d+$'
+REG_POST_CODE = r"\d{3}[-]?\d{4}"
 
 CHOICE_CONTRACTOR_TYPE = (
     ('1', '個人'),

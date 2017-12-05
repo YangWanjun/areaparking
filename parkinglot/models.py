@@ -5,6 +5,7 @@ import os
 from django.core.validators import RegexValidator
 from django.db import models
 
+from employee.models import Member
 from utils.django_base import BaseModel
 from utils import constants, common
 
@@ -105,7 +106,7 @@ class ParkingLot(BaseModel):
     code = models.IntegerField(primary_key=True, verbose_name="物件番号")
     name = models.CharField(max_length=100, verbose_name="駐車場名称")
     kana = models.CharField(max_length=100, blank=True, null=True, verbose_name="駐車場カナ")
-    segment = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
+    category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
     post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name="郵便番号")
     pref_code = models.CharField(max_length=2, verbose_name="都道府県コード")
     pref_name = models.CharField(max_length=15, verbose_name="都道府県名称")
@@ -135,7 +136,7 @@ class ParkingLot(BaseModel):
     )
     # 駐車場概要
     is_condominium = models.BooleanField(default=False, verbose_name="分譲マンション")
-    car_count = models.IntegerField(default=0, verbose_name="駐車台数")
+    car_count = models.IntegerField(default=0, verbose_name="駐車場総台数")
     entering_method = models.CharField(max_length=30, blank=True, null=True, verbose_name="入出庫方法")
     has_turntable = models.BooleanField(default=False, verbose_name="ターンテーブルの有無")
     has_palette = models.BooleanField(default=False, verbose_name="専用パレット")
@@ -168,6 +169,22 @@ class ParkingLot(BaseModel):
         return "{}{}{}{}{}".format(
             self.pref_name, self.city_name, self.town_name or '', self.aza_name or '', self.other_name or ''
         )
+
+
+class ParkingLotStaff(BaseModel):
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    member = models.ForeignKey(Member)
+    start_date = models.DateField(verbose_name="開始日")
+    end_date = models.DateField(default=constants.END_DATE, verbose_name="終了日")
+
+    class Meta:
+        db_table = 'ap_parking_lot_staff'
+        ordering = ['parking_lot', 'member']
+        verbose_name = "駐車場担当者"
+        verbose_name_plural = "駐車場担当者一覧"
+
+    def __str__(self):
+        return "{} - {}".format(str(self.parking_lot), str(self.member))
 
 
 class ParkingLotComment(BaseModel):

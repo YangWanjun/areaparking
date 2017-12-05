@@ -54,7 +54,7 @@ class TryPuttingOperatorAdmin(BaseAdmin):
 class ParkingLotAdmin(BaseAdmin):
     form = forms.ParkingLotForm
     icon = '<i class="material-icons">local_parking</i>'
-    list_display = ('code', 'name', 'address')
+    list_display = ('code', 'name', 'category', 'address')
     search_fields = ('code', 'name',)
     inlines = (ParkingLotCommentInline, ParkingLotDocInline, ParkingPositionInline,)
 

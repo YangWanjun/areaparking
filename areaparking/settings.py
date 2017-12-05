@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'master.apps.MasterConfig',
+    'employee.apps.EmployeeConfig',
     'parkinglot.apps.ParkinglotConfig',
     # 'contract.apps.ContractConfig',
     # 'whiteboard.apps.WhiteboardConfig',
