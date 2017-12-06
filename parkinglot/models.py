@@ -107,7 +107,8 @@ class ParkingLot(BaseModel):
     name = models.CharField(max_length=100, verbose_name="駐車場名称")
     kana = models.CharField(max_length=100, blank=True, null=True, verbose_name="駐車場カナ")
     category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
-    post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name="郵便番号")
+    post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="郵便番号",
+                                 validators=(RegexValidator(regex=constants.REG_POST_CODE),))
     pref_code = models.CharField(max_length=2, verbose_name="都道府県コード")
     pref_name = models.CharField(max_length=15, verbose_name="都道府県名称")
     city_code = models.CharField(max_length=5, verbose_name="市区町村コード")
@@ -147,14 +148,7 @@ class ParkingLot(BaseModel):
                                  validators=(RegexValidator(regex=constants.REG_TEL),))
     admin_time = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員勤務時間帯")
     # 賃貸借契約の概要
-    contract_start_date = models.DateField(blank=True, null=True, verbose_name="契約開始日")
-    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
-    lease_count = models.SmallIntegerField(default=0, verbose_name="サブリース台数")
-    has_tenant_sign = models.BooleanField(default=False, verbose_name="ＡＰ募集看板の設置")
-    has_call_center = models.BooleanField(default=False, verbose_name="コールセンターの設置")
-    try_putting_operator = models.ForeignKey(TryPuttingOperator, blank=True, null=True, verbose_name="試入れの対応者")
-    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
-    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
+    default_contract_period = models.SmallIntegerField(default=1, verbose_name="契約期間初期値")
 
     class Meta:
         db_table = 'ap_parking_lot'
@@ -173,7 +167,7 @@ class ParkingLot(BaseModel):
 
 class ParkingLotStaff(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    member = models.ForeignKey(Member)
+    member = models.ForeignKey(Member, verbose_name="担当者")
     start_date = models.DateField(verbose_name="開始日")
     end_date = models.DateField(default=constants.END_DATE, verbose_name="終了日")
 
@@ -255,6 +249,7 @@ class ParkingPosition(BaseModel):
     min_height_ap = models.IntegerField(blank=True, null=True, verbose_name="AP計測の地上最低高")
     f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
     r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
+    # 鍵情報
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
@@ -266,6 +261,47 @@ class ParkingPosition(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class ParkingPositionKey(BaseModel):
+    parking_position = models.ForeignKey(ParkingPosition, verbose_name="車室")
+    category = models.CharField(max_length=2, choices=constants.CHOICE_KEY_CATEGORY, verbose_name="種類")
+    key_count = models.SmallIntegerField(verbose_name="本数")
+    comment = models.CharField(max_length=250, verbose_name="備考")
+
+    class Meta:
+        db_table = 'ap_parking_position_key'
+        unique_together = ('parking_position', 'category')
+        ordering = ['parking_position', 'category']
+        verbose_name = "鍵情報"
+        verbose_name_plural = "鍵情報一覧"
+
+    def __str__(self):
+        return self.category
+
+
+class ParkingLotManagement(BaseModel):
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    management_type = models.CharField(max_length=2, default='02', choices=constants.CHOICE_MANAGEMENT_TYPE,
+                                       verbose_name="管理形態")
+    start_date = models.DateField(verbose_name="契約開始日")
+    end_date = models.DateField(default=constants.END_DATE, verbose_name="契約終了日")
+    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
+    lease_count = models.SmallIntegerField(default=0, verbose_name="サブリース台数")
+    has_tenant_sign = models.BooleanField(default=False, verbose_name="ＡＰ募集看板の設置")
+    has_call_center = models.BooleanField(default=False, verbose_name="コールセンターの設置")
+    try_putting_operator = models.ForeignKey(TryPuttingOperator, blank=True, null=True, verbose_name="試入れの対応者")
+    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
+    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
+
+    class Meta:
+        db_table = 'ap_parking_lot_management'
+        ordering = ['parking_lot', 'start_date', 'end_date']
+        verbose_name = "駐車場管理情報"
+        verbose_name_plural = "駐車場管理一覧"
+
+    def __str__(self):
+        return "{}（{}～{}）".format(str(self.parking_lot), self.start_date, self.end_date)
 
 
 # class VParkingLotSummary(BaseModel):

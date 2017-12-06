@@ -8,19 +8,21 @@ from utils.django_base import BaseModel
 from utils import constants
 
 from parkinglot.models import ParkingLot, ParkingPosition
-from master import models as master_models
+from employee.models import Member
+from master.models import Mediation
 
 
 # Create your models here.
 class Contractor(BaseModel):
     code = models.IntegerField(
-        verbose_name="契約者No.", unique=True,
+        primary_key=True, verbose_name="契約者No.",
         validators=(RegexValidator(regex=r'^\d{1,8}$'),)
     )
-    segment = models.CharField(max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE, verbose_name="契約者分類")
+    category = models.CharField(max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE, verbose_name="契約者分類")
     name = models.CharField(max_length=15, verbose_name="名前")
     kana = models.CharField(max_length=15, blank=True, null=True, verbose_name="カナ")
-    post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name=u"郵便番号")
+    post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="郵便番号",
+                                 validators=(RegexValidator(regex=constants.REG_POST_CODE),))
     address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所１")
     address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所２")
     tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
@@ -28,7 +30,8 @@ class Contractor(BaseModel):
     email = models.EmailField(blank=True, null=True, verbose_name="メールアドレス")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
     # 個人情報
-    personal_gender = models.CharField(max_length=1, blank=True, null=True, choices=constants.CHOICE_GENDER, verbose_name="性別")
+    personal_gender = models.CharField(max_length=1, blank=True, null=True, choices=constants.CHOICE_GENDER,
+                                       verbose_name="性別")
     personal_birthday = models.DateField(blank=True, null=True, verbose_name="生年月日")
     # 法人情報
     corporate_business_type = models.CharField(max_length=50, blank=True, null=True, verbose_name="業種／事業")
@@ -93,12 +96,17 @@ class Contractor(BaseModel):
 class Contract(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
+    contract_no = models.CharField(max_length=20, verbose_name="契約番号")
     contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
     contract_date = models.DateField(verbose_name="契約日")
     start_date = models.DateField(verbose_name="契約開始日")
     end_date = models.DateField(verbose_name="契約終了日")
     pay_date = models.DateField(blank=True, null=True, verbose_name="賃料発生日",
                                 help_text="未入力の場合、契約期間の開始日が賃料発生日として扱われます")
+    notify_start_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知開始日")
+    notify_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知終了日")
+    staff = models.ForeignKey(Member, verbose_name="担当者")
+    mediation = models.ForeignKey(Mediation, verbose_name="仲介業者")
     # 口座情報
     # bank = models.ForeignKey(master_models.Bank, blank=True, null=True, on_delete=models.PROTECT, verbose_name="振込先口座")
 

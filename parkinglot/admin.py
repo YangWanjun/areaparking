@@ -24,6 +24,16 @@ class ParkingLotCommentInline(admin.TabularInline):
     extra = 1
 
 
+class ParkingLotStaffInline(admin.TabularInline):
+    model = models.ParkingLotStaff
+    extra = 0
+
+
+class ParkingPositionKeyInline(admin.TabularInline):
+    model = models.ParkingPositionKey
+    extra = 0
+
+
 @admin.register(models.ParkingLotType)
 class ParkingLotTypeAdmin(BaseAdmin):
     list_display = ('code', 'name')
@@ -56,7 +66,7 @@ class ParkingLotAdmin(BaseAdmin):
     icon = '<i class="material-icons">local_parking</i>'
     list_display = ('code', 'name', 'category', 'address')
     search_fields = ('code', 'name',)
-    inlines = (ParkingLotCommentInline, ParkingLotDocInline, ParkingPositionInline,)
+    inlines = (ParkingLotCommentInline, ParkingLotStaffInline, ParkingLotDocInline, ParkingPositionInline,)
 
     def address(self, obj):
         return obj.address()
@@ -94,12 +104,13 @@ class ParkingPosition(BaseAdmin):
                 ('f_value', 'r_value',),
             )
         }),
-        (None, {
+        ('備考', {
             'fields': (
                 'comment',
             )
         }),
     )
+    inlines = (ParkingPositionKeyInline,)
 
 
 admin.site.site_header = constants.SYSTEM_NAME

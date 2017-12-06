@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from . import common
 from master.models import CarModel, CarMaker, TransmissionRoute
-from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition
+from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaff
 from employee.models import Department, Member, MemberShip
 
 def sync_car_models():
@@ -114,6 +114,8 @@ def sync_parking_lot(path):
                     bk_no = bk_no.split('/')[1]
                 if not bk_no:
                     continue
+                if isinstance(bk_no, str) and not re.match(r'^\d+$', bk_no):
+                    continue
                 bk_no = int(bk_no)
                 # 駐車場分類
                 category = sheet.cell(row, 26).value
@@ -151,21 +153,29 @@ def sync_parking_lot(path):
                         lot.free_end_date = free_end_date
                     lot.save()
                 # 車室
+                room_name = 'No.{}'.format(row)
                 try:
-                    room = ParkingPosition.objects.get(parking_lot=lot, name=row)
+                    room = ParkingPosition.objects.get(parking_lot=lot, name=room_name)
                 except ObjectDoesNotExist:
                     room = ParkingPosition()
                     room.parking_lot = lot
-                    room.name = 'No.{}'.format(row)
-                    room.price_recruitment = sheet.cell(row, 28).value or None
-                    room.price_recruitment_no_tax = sheet.cell(row, 29).value or None
-                    room.price_homepage = sheet.cell(row, 32).value or None
-                    room.price_homepage_no_tax = sheet.cell(row, 31).value or None
-                    room.price_handbill = sheet.cell(row, 34).value or None
-                    room.price_handbill_no_tax = sheet.cell(row, 33).value or None
+                    room.name = room_name
+                    if sheet.cell(row, 28).value and isinstance(sheet.cell(row, 28).value, (int, float)):
+                        room.price_recruitment = sheet.cell(row, 28).value or None
+                    if sheet.cell(row, 29).value and isinstance(sheet.cell(row, 29).value, (int, float)):
+                        room.price_recruitment_no_tax = sheet.cell(row, 29).value or None
+                    if sheet.cell(row, 32).value and isinstance(sheet.cell(row, 32).value, (int, float)):
+                        room.price_homepage = sheet.cell(row, 32).value or None
+                    if sheet.cell(row, 31).value and isinstance(sheet.cell(row, 31).value, (int, float)):
+                        room.price_homepage_no_tax = sheet.cell(row, 31).value or None
+                    if sheet.cell(row, 34).value and isinstance(sheet.cell(row, 34).value, (int, float)):
+                        room.price_handbill = sheet.cell(row, 34).value
+                    if sheet.cell(row, 33).value and isinstance(sheet.cell(row, 33).value, (int, float)):
+                        room.price_handbill_no_tax = sheet.cell(row, 33).value
                     room.save()
             except Exception as ex:
                 print(row, bk_no, ex)
+                raise ex
 
 
 def sync_parking_size(path):
@@ -235,6 +245,36 @@ def sync_parking_size(path):
                 print('{}行目'.format(row + 1), '駐車場名', name, 'skipped')
             elif not name and address:
                 print('{}行目'.format(row + 1), '住所', address, 'skipped')
+
+
+def sync_parking_lot_staff(path):
+    if os.path.exists(path):
+        book = xlrd.open_workbook(path)
+        sheet = book.sheet_by_index(0)
+        for row in range(sheet.nrows):
+            if row < 3:
+                continue
+            bk_no = sheet.cell(row, 44).value
+            name = sheet.cell(row, 50).value
+            parts = re.split(r'\s+', name)
+            if len(parts) > 1:
+                first_name = parts[0]
+                last_name = parts[1]
+            else:
+                first_name = name
+                last_name = "様"
+            if bk_no and isinstance(bk_no, (int, float)):
+                try:
+                    parking_lot = ParkingLot.objects.get(code=bk_no)
+                except ObjectDoesNotExist:
+                    continue
+                try:
+                    member = Member.objects.get(first_name=first_name, last_name=last_name)
+                except ObjectDoesNotExist:
+                    continue
+                if ParkingLotStaff.objects.filter(parking_lot=parking_lot, member=member).count() == 0:
+                    ParkingLotStaff.objects.create(parking_lot=parking_lot, member=member, start_date=datetime.date(2017, 1, 1))
+
 
 
 # def sync_waiting_list(path):
