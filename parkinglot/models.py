@@ -147,8 +147,10 @@ class ParkingLot(BaseModel):
     admin_tel = models.CharField(max_length=15, blank=True, null=True, verbose_name="管理員電話番号",
                                  validators=(RegexValidator(regex=constants.REG_TEL),))
     admin_time = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員勤務時間帯")
-    # 賃貸借契約の概要
+    # その他の情報
     default_contract_period = models.SmallIntegerField(default=1, verbose_name="契約期間初期値")
+    staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
+    staff_start_date = models.DateField(blank=True, null=True, verbose_name="担当開始日")
 
     class Meta:
         db_table = 'ap_parking_lot'
@@ -165,17 +167,17 @@ class ParkingLot(BaseModel):
         )
 
 
-class ParkingLotStaff(BaseModel):
+class ParkingLotStaffHistory(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     member = models.ForeignKey(Member, verbose_name="担当者")
     start_date = models.DateField(verbose_name="開始日")
-    end_date = models.DateField(default=constants.END_DATE, verbose_name="終了日")
+    end_date = models.DateField(verbose_name="終了日")
 
     class Meta:
-        db_table = 'ap_parking_lot_staff'
+        db_table = 'ap_parking_lot_staff_history'
         ordering = ['parking_lot', 'member']
-        verbose_name = "駐車場担当者"
-        verbose_name_plural = "駐車場担当者一覧"
+        verbose_name = "駐車場担当者履歴"
+        verbose_name_plural = "駐車場担当者履歴一覧"
 
     def __str__(self):
         return "{} - {}".format(str(self.parking_lot), str(self.member))
@@ -209,7 +211,7 @@ class ParkingLotDoc(BaseModel):
         verbose_name_plural = "駐車場書類一式"
 
     def __str__(self):
-        return os.path.basename(self.path)
+        return os.path.basename(str(self.path))
 
 
 class ParkingLotImage(BaseModel):
@@ -225,7 +227,7 @@ class ParkingLotImage(BaseModel):
         verbose_name_plural = "駐車場画像一覧"
 
     def __str__(self):
-        return os.path.basename(self.path)
+        return os.path.basename(str(self.path))
 
 
 class ParkingPosition(BaseModel):

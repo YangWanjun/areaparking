@@ -9,7 +9,7 @@ from utils import constants
 
 from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
-from master.models import Mediation
+from master.models import Mediation, BankAccount, CarMaker, Payment
 
 
 # Create your models here.
@@ -96,8 +96,9 @@ class Contractor(BaseModel):
 class Contract(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
-    contract_no = models.CharField(max_length=20, verbose_name="契約番号")
     contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    # 基本情報
+    contract_no = models.CharField(max_length=20, verbose_name="契約番号")
     contract_date = models.DateField(verbose_name="契約日")
     start_date = models.DateField(verbose_name="契約開始日")
     end_date = models.DateField(verbose_name="契約終了日")
@@ -107,8 +108,17 @@ class Contract(BaseModel):
     notify_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知終了日")
     staff = models.ForeignKey(Member, verbose_name="担当者")
     mediation = models.ForeignKey(Mediation, verbose_name="仲介業者")
+    staff_proxy = models.ForeignKey(Member, null=True, blank=True, related_name='contract_proxy_set',
+                                    verbose_name="宅建取引士")
     # 口座情報
-    # bank = models.ForeignKey(master_models.Bank, blank=True, null=True, on_delete=models.PROTECT, verbose_name="振込先口座")
+    payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.PROTECT,
+                                           verbose_name="振込先口座")
+    # 車情報
+    car_maker = models.ForeignKey(CarMaker, verbose_name="車メーカー")
+    car_model = models.CharField(max_length=100, verbose_name="車種")
+    car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
+    car_no = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
+    car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
 
     class Meta:
         db_table = 'ap_contract'
@@ -118,6 +128,24 @@ class Contract(BaseModel):
 
     def __str__(self):
         return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
+
+
+class ContractPayment(BaseModel):
+    contract = models.ForeignKey(Contract, on_delete=models.PROTECT, verbose_name="契約情報")
+    pay_timing = models.CharField(max_length=2, choices=constants.CHOICE_PAY_TIMING, verbose_name="タイミング")
+    payment = models.ForeignKey(Payment, verbose_name="入金項目")
+    amount = models.IntegerField(verbose_name="請求額")
+    consumption_tax = models.IntegerField(verbose_name="消費税")
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+
+    class Meta:
+        db_table = 'ap_contract_payment'
+        ordering = ['contract', 'pay_timing']
+        verbose_name = "入金項目"
+        verbose_name_plural = "入金項目一覧"
+
+    def __str__(self):
+        return '%s（%s～%s）' % (str(self.contract), self.start_date, self.end_date)
 
 
 class TempContract(BaseModel):

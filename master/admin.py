@@ -46,3 +46,8 @@ class BankAccountAdmin(BaseAdmin):
 @admin.register(models.TransmissionRoute)
 class TransmissionRouteAdmin(BaseAdmin):
     pass
+
+
+@admin.register(models.Payment)
+class PaymentAdmin(BaseAdmin):
+    list_display = ('name', 'comment')

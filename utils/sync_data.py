@@ -6,12 +6,13 @@ import xlrd
 import datetime
 import requests
 
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist
 
 from . import common
-from master.models import CarModel, CarMaker, TransmissionRoute
-from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaff
+from master.models import CarModel, CarMaker
+from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaffHistory
 from employee.models import Department, Member, MemberShip
+
 
 def sync_car_models():
     path = os.path.join(common.get_data_path(), '自動車一覧.xls')
@@ -272,9 +273,9 @@ def sync_parking_lot_staff(path):
                     member = Member.objects.get(first_name=first_name, last_name=last_name)
                 except ObjectDoesNotExist:
                     continue
-                if ParkingLotStaff.objects.filter(parking_lot=parking_lot, member=member).count() == 0:
-                    ParkingLotStaff.objects.create(parking_lot=parking_lot, member=member, start_date=datetime.date(2017, 1, 1))
-
+                parking_lot.staff = member
+                parking_lot.staff_start_date = datetime.date(2017, 1, 1)
+                parking_lot.save()
 
 
 # def sync_waiting_list(path):

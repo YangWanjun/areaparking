@@ -7,19 +7,24 @@ from . import models, forms
 from utils import constants
 from utils.django_base import BaseAdmin
 
+
 # Register your models here.
+class ContractPaymentInline(admin.TabularInline):
+    model = models.ContractPayment
+    extra = 1
+
 
 @admin.register(models.Contractor)
 class ContractorAdmin(BaseAdmin):
     icon = '<i class="material-icons">nature_people</i>'
-    list_display = ('code', 'name', 'segment', 'address1', 'address2')
+    list_display = ('code', 'name', 'category', 'address1', 'address2')
     list_display_links = ('code', 'name')
     search_fields = ('code', 'name')
     form = forms.ContractorForm
     fieldsets = (
         (None, {
             'fields': (
-                ('code', 'segment'),
+                ('code', 'category'),
                 ('name', 'kana',),
                 'post_code',
                 ('address1', 'address2'),
@@ -87,7 +92,9 @@ class ContractorAdmin(BaseAdmin):
         })
     )
 
+
 @admin.register(models.Contract)
 class ContractAdmin(BaseAdmin):
-    list_display = ('contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
+    list_display = ('contractor', 'parking_lot', 'parking_position', 'contract_date', 'start_date', 'end_date')
     list_display_links = ('contractor',)
+    inlines = (ContractPaymentInline,)

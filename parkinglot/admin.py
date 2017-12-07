@@ -24,9 +24,15 @@ class ParkingLotCommentInline(admin.TabularInline):
     extra = 1
 
 
-class ParkingLotStaffInline(admin.TabularInline):
-    model = models.ParkingLotStaff
+class ParkingLotStaffHistoryInline(admin.TabularInline):
+    model = models.ParkingLotStaffHistory
     extra = 0
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class ParkingPositionKeyInline(admin.TabularInline):
@@ -66,7 +72,7 @@ class ParkingLotAdmin(BaseAdmin):
     icon = '<i class="material-icons">local_parking</i>'
     list_display = ('code', 'name', 'category', 'address')
     search_fields = ('code', 'name',)
-    inlines = (ParkingLotCommentInline, ParkingLotStaffInline, ParkingLotDocInline, ParkingPositionInline,)
+    inlines = (ParkingLotCommentInline, ParkingLotStaffHistoryInline, ParkingLotDocInline, ParkingPositionInline,)
 
     def address(self, obj):
         return obj.address()
@@ -77,8 +83,7 @@ class ParkingLotAdmin(BaseAdmin):
 @admin.register(models.ParkingPosition)
 class ParkingPosition(BaseAdmin):
     form = forms.ParkingPositionForm
-    list_display = ('parking_lot', 'name', 'price_recruitment_no_tax', 'price_homepage_no_tax', 'price_handbill_no_tax',
-                    'length', 'width', 'height', 'weight')
+    list_display = ('parking_lot', 'name', 'length', 'width', 'height', 'weight')
     list_display_links = ('parking_lot', 'name',)
     search_fields = ('parking_lot__code', 'parking_lot__name')
     fieldsets = (

@@ -118,3 +118,26 @@ class TransmissionRoute(BaseModel):
 
 class Mediation(BaseModel):
     name = models.CharField(max_length=50, unique=True, verbose_name="業者名称")
+
+    class Meta:
+        db_table = 'mst_mediation'
+        ordering = ['name']
+        verbose_name = "仲介業者"
+        verbose_name_plural = "仲介業者一覧"
+
+    def __str__(self):
+        return self.name
+
+
+class Payment(BaseModel):
+    name = models.CharField(max_length=30, unique=True, verbose_name="入金項目")
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+
+    class Meta:
+        db_table = 'mst_payment'
+        ordering = ['name']
+        verbose_name = "入金項目"
+        verbose_name_plural = "入金項目一覧"
+
+    def __str__(self):
+        return self.name
