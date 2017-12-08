@@ -35,7 +35,7 @@ class WhiteBoardListView(BaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super(WhiteBoardListView, self).get_context_data(**kwargs)
         request = kwargs.get('request')
-        queryset = models.WhiteBoard.objects.all()[:10]
+        queryset = models.WhiteBoard.objects.all()[:25]
 
         context.update({
             'queryset': queryset,

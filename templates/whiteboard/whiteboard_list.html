@@ -10,8 +10,12 @@
 {% block footer %}
 <script type="text/javascript">
     window.onload = function() {
-        ebjs.utils.autoFixColumns("table");
+        ebjs.utils.autoFixColumns("tblWhiteboard");
+        ebjs.$("#tblWhiteboard").tableFixedHeader({headerRows: 3});
     };
+    $(window).resize(function() {
+        ebjs.utils.autoFixColumns("tblWhiteboard");
+    });
 </script>
 {% endblock %}
 
@@ -20,10 +24,10 @@
 <div class="left-panel">
     <div class="card list-card">
         <div class="card-content">
-            <table id="table" class="table bordered" data-form-control="datatable" style="width:100%">
+            <table id="tblWhiteboard" class="table bordered" style="width:100%">
                 <thead class="complex">
                     <tr>
-                        <th rowspan="3">番号</th>
+                        <th rowspan="3" class="center">番号</th>
                         <th colspan="4">駐車場名称</th>
                         <th>車室</th>
                         <th>空き</th>
@@ -60,7 +64,7 @@
                 <tbody class="complex">
                     {% for whiteboard in queryset %}
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        <td rowspan="3">{{ whiteboard.parking_code }}</td>
+                        <td rowspan="3" class="center">{{ whiteboard.parking_code }}</td>
                         <td colspan="4">{{ whiteboard.parking_lot_name }}</td>
                         <td>{{ whiteboard.parking_position }}</td>
                         <td>{{ whiteboard.contract_status|default:'' }}</td>
