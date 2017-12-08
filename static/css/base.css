@@ -35,7 +35,12 @@ tbody.complex td {
     font-size: 13px;
     padding: 3px 5px;
 }
-table > tbody.complex > tr:hover {
+table > tbody > tr.row1,
+table > tbody > tr.row1:hover {
+    background-color: #f2f2f2;
+}
+table > tbody > tr.row2,
+table > tbody > tr.row2:hover {
     background-color: white;
 }
 /**************** 検索フィルター *****************/

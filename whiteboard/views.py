@@ -29,73 +29,87 @@ class Index(BaseView):
         return redirect('whiteboard:whiteboard_list')
 
 
-class WhiteBoardListView(ListModelView):
-    # paginate_by = 25
-
-    def get_queryset(self, *args, **kwargs):
-        queryset = super(WhiteBoardListView, self).get_queryset()
-        q = self.request.POST.get('datatable-search[value]', None)
-        if q:
-            orm_lookups = ['bk_no__icontains', 'bk_name__icontains', 'address__icontains', 'tanto_name__icontains']
-            for bit in q.split():
-                or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
-                queryset = queryset.filter(reduce(operator.or_, or_queries))
-        return queryset
-
-    def dispatch(self, request, *args, **kwargs):
-        """Handle for browser HTTP and AJAX requests from datatables."""
-        if not self.has_view_permission(self.request):
-            raise PermissionDenied
-        self.request_form = DatatableRequestForm(request.POST, prefix='datatable')
-        self.object_list = self.get_object_list()
-        if 'HTTP_DATATABLE' in request.META:
-            handler = self.get_json_data
-        elif request.method.lower() in self.http_method_names:
-            handler = getattr(
-                self, request.method.lower(), self.http_method_not_allowed)
-        else:
-            handler = self.http_method_not_allowed
-        return handler(request, *args, **kwargs)
-
-    def get_datatable_config(self):
-        config = super(WhiteBoardListView, self).get_datatable_config()
-        config['sServerMethod'] = 'POST'
-        headers = {'X-CSRFToken': get_token(self.request)}
-        config['ajax'].update({
-            'headers': headers,
-        })
-        return config
-
-
-class WhiteBoardDetailView(DetailModelView):
+class WhiteBoardListView(BaseTemplateView):
+    template_name = 'whiteboard/whiteboard_list.html'
 
     def get_context_data(self, **kwargs):
-        context = super(WhiteBoardDetailView, self).get_context_data(**kwargs)
-        object = context.get('object', None)
+        context = super(WhiteBoardListView, self).get_context_data(**kwargs)
+        request = kwargs.get('request')
+        queryset = models.WhiteBoard.objects.all()[:10]
+
         context.update({
-            'change_url': reverse('admin:parkinglot_parkingposition_change', args=(object.parking_position.pk,)) + '?_to_field=id&_popup=1',
+            'queryset': queryset,
         })
         return context
 
 
-class WhiteBoardViewSet(ModelViewSet):
-    model = models.WhiteBoard
-    list_display = (
-        'parking_code', 'parking_lot_name', 'parking_position', 'contract_status', 'waiting_count',
-        'is_existed_contractor_allowed', 'is_new_contractor_allowed', 'free_end_date', 'parking_time_limit', 'address',
-        'staff', 'price_recruitment', 'price_recruitment_no_tax', 'price_homepage', 'price_homepage_no_tax',
-        'price_handbill', 'price_handbill_no_tax', 'length', 'width', 'height', 'weight', 'tyre_width', 'tyre_width_ap',
-        'min_height', 'min_height_ap', 'f_value', 'r_value', 'position_comment'
-    )
-    list_display_links = ('bk_no', 'parking_lot', 'parking_position')
-    list_view_class = WhiteBoardListView
-    detail_view_class = WhiteBoardDetailView
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
+# class WhiteBoardListView(ListModelView):
+#     # paginate_by = 25
+#
+#     def get_queryset(self, *args, **kwargs):
+#         queryset = super(WhiteBoardListView, self).get_queryset()
+#         q = self.request.POST.get('datatable-search[value]', None)
+#         if q:
+#             orm_lookups = ['bk_no__icontains', 'bk_name__icontains', 'address__icontains', 'tanto_name__icontains']
+#             for bit in q.split():
+#                 or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
+#                 queryset = queryset.filter(reduce(operator.or_, or_queries))
+#         return queryset
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         """Handle for browser HTTP and AJAX requests from datatables."""
+#         if not self.has_view_permission(self.request):
+#             raise PermissionDenied
+#         self.request_form = DatatableRequestForm(request.POST, prefix='datatable')
+#         self.object_list = self.get_object_list()
+#         if 'HTTP_DATATABLE' in request.META:
+#             handler = self.get_json_data
+#         elif request.method.lower() in self.http_method_names:
+#             handler = getattr(
+#                 self, request.method.lower(), self.http_method_not_allowed)
+#         else:
+#             handler = self.http_method_not_allowed
+#         return handler(request, *args, **kwargs)
+#
+#     def get_datatable_config(self):
+#         config = super(WhiteBoardListView, self).get_datatable_config()
+#         config['sServerMethod'] = 'POST'
+#         headers = {'X-CSRFToken': get_token(self.request)}
+#         config['ajax'].update({
+#             'headers': headers,
+#         })
+#         return config
+#
+#
+# class WhiteBoardDetailView(DetailModelView):
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(WhiteBoardDetailView, self).get_context_data(**kwargs)
+#         object = context.get('object', None)
+#         context.update({
+#             'change_url': reverse('admin:parkinglot_parkingposition_change', args=(object.parking_position.pk,)) + '?_to_field=id&_popup=1',
+#         })
+#         return context
+#
+#
+# class WhiteBoardViewSet(ModelViewSet):
+#     model = models.WhiteBoard
+#     list_display = (
+#         'parking_code', 'parking_lot_name', 'parking_position', 'contract_status', 'waiting_count',
+#         'is_existed_contractor_allowed', 'is_new_contractor_allowed', 'free_end_date', 'parking_time_limit', 'address',
+#         'staff', 'price_recruitment', 'price_recruitment_no_tax', 'price_homepage', 'price_homepage_no_tax',
+#         'price_handbill', 'price_handbill_no_tax', 'length', 'width', 'height', 'weight', 'tyre_width', 'tyre_width_ap',
+#         'min_height', 'min_height_ap', 'f_value', 'r_value', 'position_comment'
+#     )
+#     list_display_links = ('bk_no', 'parking_lot', 'parking_position')
+#     list_view_class = WhiteBoardListView
+#     detail_view_class = WhiteBoardDetailView
+#
+#     def has_add_permission(self, request):
+#         return False
+#
+#     def has_delete_permission(self, request, obj=None):
+#         return False
 
 
 # class WaitingListView(ListModelView):

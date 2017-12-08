@@ -1,46 +1,17 @@
 {% extends current_module.base_template %}
 {% load i18n material_form material_frontend %}
+{% load humanize %}
 
 {% block breadcrumbs_items %}
-<a class="active" href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active" href=""></a>
 {% endblock %}
 
 
 {% block footer %}
 <script type="text/javascript">
-  config = {{ datatable_config|safe }};
-  config.searching = true;
-  //config.dom = '<"top"i>rt<"bottom"flp><"clear">';
-  config['ajax']['data'] = function(data) {
-    var keys = Object.keys(data);
-    for(var i=0; i<=keys.length; i++) {
-      var key = keys[i],
-          value = data[key];
-      delete data[key];
-      data['datatable-' + key] = value;
-    }
-  };
-  config['ajax']['beforeSend'] = function(request) {
-    request.setRequestHeader("datatable", true);
-  };
-  $(document).one("turbolinks:load", function() {
-    if ( ! $.fn.DataTable.isDataTable( '#table' ) ) {
-      var datatable = $('#table').DataTable(config);
-      new $.fn.dataTable.FixedHeader(datatable);
-      // 検索フィルター
-      $("div#table_filter").css("display", "none");
-      $("#id_q_container input[type=search]").remove();
-      $("div#table_filter input").prependTo("#id_q_container");
-      $("#id_q_container input[type=search]").removeAttr("placeholder");
-      $("#id_q_container input[type=search]").attr("id", "id_q");
-
-      $(document).one("turbolinks:before-cache", function() {
-        datatable.destroy();
-      });
-    }
-  });
-  $('.tooltipped').tooltip({delay: 50});
-
+    window.onload = function() {
+        ebjs.utils.autoFixColumns("table");
+    };
 </script>
 {% endblock %}
 
@@ -52,23 +23,75 @@
             <table id="table" class="table bordered" data-form-control="datatable" style="width:100%">
                 <thead class="complex">
                     <tr>
-                        {% for header, header_title in headers %}
-                        <th data-name="{{ header }}" class="{{ header }}">{{ header_title|title }}</th>
-                        {% endfor %}
+                        <th rowspan="3">番号</th>
+                        <th colspan="4">駐車場名称</th>
+                        <th>車室</th>
+                        <th>空き</th>
+                        <th>待ち数</th>
+                        <th>既契約者</th>
+                        <th>新テナント</th>
+                        <th>フリーテント</th>
+                        <th>時間制限</th>
+                    </tr>
+                    <tr>
+                        <th colspan="4">所在地</th>
+                        <th>担当者</th>
+                        <th>賃料(税込)</th>
+                        <th>賃料(税抜)</th>
+                        <th>HP(税込)</th>
+                        <th>HP(税抜)</th>
+                        <th>チラシ(税込)</th>
+                        <th>チラシ(税抜)</th>
+                    </tr>
+                    <tr>
+                        <th>全長</th>
+                        <th>全幅</th>
+                        <th>全高</th>
+                        <th>重量</th>
+                        <th>タイヤ幅</th>
+                        <th>AP測タイヤ幅</th>
+                        <th>最低高</th>
+                        <th>AP測最低高</th>
+                        <th>F値</th>
+                        <th>R値</th>
+                        <th>備考</th>
                     </tr>
                 </thead>
                 <tbody class="complex">
-                    {% for item, row in data %}
-                    <tr>
-                        {% for column_name, item in row.items %}
-                        <td>
-                            {% if column_name in view.datalist.list_display_links %}
-                            <a href="#">{{ item }}</a>
-                            {% else %}
-                            {{ item }}
-                            {% endif %}
-                        </td>
-                        {% endfor %}
+                    {% for whiteboard in queryset %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td rowspan="3">{{ whiteboard.parking_code }}</td>
+                        <td colspan="4">{{ whiteboard.parking_lot_name }}</td>
+                        <td>{{ whiteboard.parking_position }}</td>
+                        <td>{{ whiteboard.contract_status|default:'' }}</td>
+                        <td>{{ whiteboard.waiting_count|default:'' }}</td>
+                        <td>{{ whiteboard.is_existed_contractor_allowed|default:'' }}</td>
+                        <td>{{ whiteboard.is_new_contractor_allowed|default:'' }}</td>
+                        <td>{{ whiteboard.free_end_date|default:'' }}</td>
+                        <td>{{ whiteboard.parking_time_limit|default:'' }}</td>
+                    </tr>
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td colspan="4">{{ whiteboard.address|default:'' }}</td>
+                        <td>{{ whiteboard.staff|default:'' }}</td>
+                        <td>{{ whiteboard.price_recruitment|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.price_recruitment_no_tax|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.price_homepage|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.price_homepage_no_tax|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.price_handbill|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.price_handbill_no_tax|default:''|intcomma }}</td>
+                    </tr>
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>{{ whiteboard.length|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.width|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.height|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.weight|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.tyre_width|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.tyre_width_ap|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.min_height|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.min_height_ap|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.f_value|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.r_value|default:''|intcomma }}</td>
+                        <td>{{ whiteboard.position_comment|default:' '|slice:':4' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
