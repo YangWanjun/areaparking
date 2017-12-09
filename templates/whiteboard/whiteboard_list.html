@@ -65,10 +65,14 @@
                 <tbody class="complex">
                     {% for whiteboard in queryset %}
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        <td rowspan="3" class="center">{{ whiteboard.parking_code }}</td>
-                        <td colspan="4">{{ whiteboard.parking_lot_name }}</td>
-                        <td>{{ whiteboard.parking_position }}</td>
-                        <td>{{ whiteboard.contract_status|default:'' }}</td>
+                        <td rowspan="3" class="center"><a href="{% url 'whiteboard:whiteboard_detail' whiteboard.pk %}">{{ whiteboard.parking_code }}</a></td>
+                        <td colspan="4"><a href="{% url 'whiteboard:whiteboard_detail' whiteboard.pk %}">{{ whiteboard.parking_lot_name }}</a></td>
+                        <td><a href="{% url 'whiteboard:whiteboard_detail' whiteboard.pk %}">{{ whiteboard.parking_position }}</a></td>
+                        <td>
+                            <span class="new badge left {%if whiteboard.contract_status == '01'%}green{% else %}{%if whiteboard.contract_status == '02' %}deep-orange{%else%}grey{%endif%}{%endif%}"
+                                  data-badge-caption="{{ whiteboard.get_contract_status_display }}"
+                                  style="margin-left: 0px;"></span>
+                        </td>
                         <td>{{ whiteboard.waiting_count|default:'' }}</td>
                         <td>{{ whiteboard.is_existed_contractor_allowed|default:'' }}</td>
                         <td>{{ whiteboard.is_new_contractor_allowed|default:'' }}</td>

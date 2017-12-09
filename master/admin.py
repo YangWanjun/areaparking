@@ -51,3 +51,8 @@ class TransmissionRouteAdmin(BaseAdmin):
 @admin.register(models.Payment)
 class PaymentAdmin(BaseAdmin):
     list_display = ('name', 'comment')
+
+
+@admin.register(models.Mediation)
+class MediationAdmin(BaseAdmin):
+    pass

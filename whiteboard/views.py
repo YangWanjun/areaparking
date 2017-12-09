@@ -18,7 +18,7 @@ from material.frontend.forms import DatatableRequestForm
 
 from utils.django_base import BaseTemplateView, BaseView
 from parkinglot import models as parkinglot_model
-from contract.forms import ContractorForm
+from contract.forms import TempContractorForm
 from . import models, forms
 
 
@@ -81,17 +81,24 @@ class WhiteBoardListView(BaseTemplateView):
 #         return config
 #
 #
-# class WhiteBoardDetailView(DetailModelView):
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(WhiteBoardDetailView, self).get_context_data(**kwargs)
-#         object = context.get('object', None)
-#         context.update({
-#             'change_url': reverse('admin:parkinglot_parkingposition_change', args=(object.parking_position.pk,)) + '?_to_field=id&_popup=1',
-#         })
-#         return context
-#
-#
+class WhiteBoardDetailView(BaseTemplateView):
+    template_name = 'whiteboard/whiteboard_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(WhiteBoardDetailView, self).get_context_data(**kwargs)
+        pk = kwargs.get('id')
+        whiteboard = get_object_or_404(models.WhiteBoard, pk=pk)
+        temp_contractor_form = TempContractorForm()
+        context.update({
+            'model': models.WhiteBoard,
+            'whiteboard': whiteboard,
+            'change_url': reverse('admin:parkinglot_parkingposition_change',
+                                  args=(whiteboard.parking_position.pk,)) + '?_to_field=id&_popup=1',
+            'temp_contractor_form': temp_contractor_form,
+        })
+        return context
+
+
 # class WhiteBoardViewSet(ModelViewSet):
 #     model = models.WhiteBoard
 #     list_display = (
@@ -185,16 +192,16 @@ class WhiteBoardMapView(BaseTemplateView):
     template_name = './whiteboard/whiteboard_map.html'
 
 
-class ParkingPositionListView(BaseTemplateView):
-    template_name = "./whiteboard/index.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(ParkingPositionListView, self).get_context_data(**kwargs)
-        queryset = parkinglot_model.ParkingPosition.objects.public_all().order_by()[:100]
-        context.update({
-            'queryset': queryset,
-        })
-        return context
+# class ParkingPositionListView(BaseTemplateView):
+#     template_name = "./whiteboard/index.html"
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(ParkingPositionListView, self).get_context_data(**kwargs)
+#         queryset = parkinglot_model.ParkingPosition.objects.public_all().order_by()[:100]
+#         context.update({
+#             'queryset': queryset,
+#         })
+#         return context
 
 
 # class ParkingLotDetail(BaseTemplateView):

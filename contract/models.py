@@ -13,11 +13,7 @@ from master.models import Mediation, BankAccount, CarMaker, Payment
 
 
 # Create your models here.
-class Contractor(BaseModel):
-    code = models.IntegerField(
-        primary_key=True, verbose_name="契約者No.",
-        validators=(RegexValidator(regex=r'^\d{1,8}$'),)
-    )
+class BaseContractor(BaseModel):
     category = models.CharField(max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE, verbose_name="契約者分類")
     name = models.CharField(max_length=15, verbose_name="名前")
     kana = models.CharField(max_length=15, blank=True, null=True, verbose_name="カナ")
@@ -84,19 +80,16 @@ class Contractor(BaseModel):
     guarantor_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
-        db_table = 'ap_contractor'
-        ordering = ['name']
-        verbose_name = "契約者"
-        verbose_name_plural = "契約者一覧"
+        abstract = True
 
     def __str__(self):
         return self.name
 
 
-class Contract(BaseModel):
+class BaseContract(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
-    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    contractor = models.ForeignKey('Contractor', on_delete=models.PROTECT, verbose_name="契約者")
     # 基本情報
     contract_no = models.CharField(max_length=20, verbose_name="契約番号")
     contract_date = models.DateField(verbose_name="契約日")
@@ -121,13 +114,32 @@ class Contract(BaseModel):
     car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
 
     class Meta:
+        abstract = True
+
+    def __str__(self):
+        return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
+
+
+class Contractor(BaseContractor):
+    code = models.IntegerField(
+        primary_key=True, verbose_name="契約者No.",
+        validators=(RegexValidator(regex=r'^\d{1,8}$'),)
+    )
+
+    class Meta:
+        db_table = 'ap_contractor'
+        ordering = ['name']
+        verbose_name = "契約者"
+        verbose_name_plural = "契約者一覧"
+
+
+class Contract(BaseContract):
+
+    class Meta:
         db_table = 'ap_contract'
         ordering = ['contractor', 'start_date']
         verbose_name = "契約情報"
         verbose_name_plural = "契約情報一覧"
-
-    def __str__(self):
-        return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
 
 
 class ContractPayment(BaseModel):
@@ -145,24 +157,45 @@ class ContractPayment(BaseModel):
         verbose_name_plural = "入金項目一覧"
 
     def __str__(self):
-        return '%s（%s～%s）' % (str(self.contract), self.start_date, self.end_date)
+        return '%s：%s' % (str(self.contract), self.payment)
 
 
-class TempContract(BaseModel):
-    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
-    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
-    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+class TempContractor(BaseContractor):
+
+    class Meta:
+        db_table = 'ap_temp_contractor'
+        ordering = ['name']
+        verbose_name = "仮契約者"
+        verbose_name_plural = "仮契約者一覧"
+
+
+class TempContract(BaseContract):
+    contractor = models.ForeignKey(TempContractor, on_delete=models.PROTECT, verbose_name="仮契約者")
+    # 基本情報
+    contract_no = models.CharField(blank=True, null=True, max_length=20, verbose_name="契約番号")
     contract_date = models.DateField(blank=True, null=True, verbose_name="契約日")
     start_date = models.DateField(blank=True, null=True, verbose_name="契約開始日")
     end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")
     pay_date = models.DateField(blank=True, null=True, verbose_name="賃料発生日",
                                 help_text="未入力の場合、契約期間の開始日が賃料発生日として扱われます")
+    notify_start_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知開始日")
+    notify_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知終了日")
+    staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
+    mediation = models.ForeignKey(Mediation, blank=True, null=True, verbose_name="仲介業者")
+    staff_proxy = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_proxy_set',
+                                    verbose_name="宅建取引士")
+    # 口座情報
+    payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.PROTECT,
+                                           verbose_name="振込先口座")
+    # 車情報
+    car_maker = models.ForeignKey(CarMaker, blank=True, null=True, verbose_name="車メーカー")
+    car_model = models.CharField(max_length=100, blank=True, null=True, verbose_name="車種")
+    car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
+    car_no = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
+    car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
 
     class Meta:
         db_table = 'ap_temp_contract'
         ordering = ['contractor', 'start_date']
         verbose_name = "仮契約情報"
         verbose_name_plural = "仮契約情報一覧"
-
-    def __str__(self):
-        return str(self.pk)

@@ -26,6 +26,7 @@ from material import frontend
 from material.frontend.apps import ModuleMixin
 from material.frontend.registry import modules
 
+from contract.urls import router as contract_router
 from parkinglot.urls import router as parkintlot_router
 from master.urls import router as master_router
 
@@ -65,7 +66,7 @@ urlpatterns = [
 
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 
-    # url(r'^api/', include(contract_router.urls)),
+    url(r'^api/', include(contract_router.urls)),
     url(r'^api/', include(parkintlot_router.urls)),
     url(r'^api/', include(master_router.urls)),
 ]

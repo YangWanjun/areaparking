@@ -5,6 +5,7 @@ from django.db import models
 
 from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, ParkingTimeLimit
 from employee.models import Member
+from utils import constants
 
 
 # Create your models here.
@@ -25,7 +26,8 @@ class WhiteBoard(models.Model):
     parking_time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, verbose_name="時間制限")
     # 車室情報
     parking_position = models.ForeignKey(ParkingPosition, blank=True, null=True, verbose_name="車室")
-    contract_status = models.CharField(max_length=10, blank=True, null=True, verbose_name="空き")
+    contract_status = models.CharField(max_length=2, choices=constants.CHOICE_CONTRACT_STATUS, verbose_name="空き")
+    contract_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")
     # 賃料
     price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
     price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税抜）")
@@ -53,7 +55,7 @@ class WhiteBoard(models.Model):
         verbose_name_plural = "駐車場一覧"
 
     def __str__(self):
-        return self.bk_name if self.bk_name else str(self.bk_no)
+        return self.parking_lot_name
 
 
 # class Waiting(BaseModel):

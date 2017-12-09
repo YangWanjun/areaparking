@@ -5,11 +5,12 @@ from django.conf.urls import url, include
 
 from rest_framework import routers
 
-from . import views
+from . import views, views_api
 
 
 router = routers.DefaultRouter()
-router.register(r'contractor', views.ContractorViewSet)
+router.register(r'temp-contractor', views_api.TempContractorViewSet)
+router.register(r'temp-contract', views_api.TempContractViewSet)
 
 
 urlpatterns = [

@@ -4,19 +4,13 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets
 from material.frontend.views import CreateModelView
 
-from . import models, serializers
+from . import models
 from utils.django_base import BaseTemplateView
 
 
 # Create your views here.
-class ContractorViewSet(viewsets.ModelViewSet):
-    queryset = models.Contractor.objects.public_all()
-    serializer_class = serializers.ContractorSerializer
-
-
 class TempContractListView(BaseTemplateView):
     template_name = "./contract/index.html"
 

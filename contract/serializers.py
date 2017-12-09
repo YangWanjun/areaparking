@@ -8,9 +8,9 @@ from rest_framework import serializers
 from . import models
 
 
-class ContractorSerializer(serializers.ModelSerializer):
+class TempContractorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Contractor
+        model = models.TempContractor
         fields = '__all__'
 
     # def validate_name(self, value):
@@ -30,3 +30,9 @@ class ContractorSerializer(serializers.ModelSerializer):
     #     if segment == '2' and not value:
     #         raise ValidationError("法人の場合、担当者名を入力してください。")
     #     return value
+
+
+class TempContractSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.TempContract
+        fields = '__all__'

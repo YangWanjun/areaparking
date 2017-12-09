@@ -33,7 +33,7 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
     '127.0.0.1:8000'
 )
-SESSION_COOKIE_AGE = 60 * 30
+SESSION_COOKIE_AGE = 60 * 60 * 24
 
 # Application definition
 
