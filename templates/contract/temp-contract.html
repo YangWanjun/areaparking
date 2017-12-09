@@ -46,10 +46,14 @@ $(document).ready(function(){
                     <td>{{ contractor.get_category_display }}</td>
                 </tr>
                 <tr>
+                    <th>メール：</th>
+                    <td>{{ contractor.email }}</td>
                     <th>郵便番号：</th>
                     <td>{{ contractor.post_code|default:'' }}</td>
+                </tr>
+                <tr>
                     <th>住所：</th>
-                    <td>{{ contractor.address1|default:'' }}{{ contractor.address2|default:'' }}</td>
+                    <td colspan="3">{{ contractor.address1|default:'' }}{{ contractor.address2|default:'' }}</td>
                 </tr>
                 <tr>
                     <th>契約開始日：</th>
@@ -70,72 +74,92 @@ $(document).ready(function(){
     <div class="card">
         <div class="card-content">
             <div class="card-title">進捗情報</div>
-            <table class="table bordered">
-                <tbody>
-                <tr>
-                    <td colspan="3">
-                        <div>進捗：30%</div>
-                        <div class="progress" style="height: 14px;">
-                            <div class="determinate" style="width: 30%"></div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th style="width: 50%;">申込書類の送付：</th>
-                    <td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>
-                    <td style="text-align: right;">
-                        <a class="waves-effect waves-light btn grey">申込み書類の発行</a>
-                    </td>
-                </tr>
-                <tr>
-                    <th>申込書類の確認</th>
-                    <td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>住所・電話番号 審査・確認</th>
-                    <td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>勤め先審査</th>
-                    <td><span class="new badge left green" data-badge-caption="実施中" style="margin-left: 0px;"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>車両サイズ審査</th>
-                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>申込ルート元審査</th>
-                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>契約書類一式の送付</th>
-                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>保管場所使用承諾証明書発行</th>
-                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
-                    <td style="text-align: right;">
-                        <a class="waves-effect waves-light btn grey">保管場所使用承諾証明書発行</a>
-                    </td>
-                </tr>
-                <tr>
-                    <th>入金確認</th>
-                    <td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>本番契約</th>
-                    <td><a class="waves-effect waves-light btn tooltipped grey" data-position="top" data-delay="50" data-tooltip="押下したら契約完了とする">登録</a></td>
-                    <td></td>
-                </tr>
-                </tbody>
-            </table>
+            <div>進捗：30%</div>
+            <div class="progress" style="height: 14px;">
+                <div class="determinate" style="width: 30%"></div>
+            </div>
+            <ul class="collapsible" data-collapsible="expandable">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">looks_one</i>申込書類の送付</div>
+                    <div class="collapsible-body">
+                        <span>Lorem ipsum dolor sit amet.</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">looks_two</i>申込書類の確認</div>
+                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                </li>
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">looks_3</i>住所・電話番号 審査・確認</div>
+                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                </li>
+            </ul>
+            <!--<table class="table bordered">-->
+                <!--<tbody>-->
+                <!--<tr>-->
+                    <!--<td colspan="3">-->
+                        <!--<div>進捗：30%</div>-->
+                        <!--<div class="progress" style="height: 14px;">-->
+                            <!--<div class="determinate" style="width: 30%"></div>-->
+                        <!--</div>-->
+                    <!--</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th style="width: 50%;">申込書類の送付：</th>-->
+                    <!--<td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>-->
+                    <!--<td style="text-align: right;">-->
+                        <!--<a class="waves-effect waves-light btn grey">申込み書類の発行</a>-->
+                    <!--</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>申込書類の確認</th>-->
+                    <!--<td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>住所・電話番号 審査・確認</th>-->
+                    <!--<td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>勤め先審査</th>-->
+                    <!--<td><span class="new badge left green" data-badge-caption="実施中" style="margin-left: 0px;"></span></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>車両サイズ審査</th>-->
+                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>申込ルート元審査</th>-->
+                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>契約書類一式の送付</th>-->
+                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>保管場所使用承諾証明書発行</th>-->
+                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
+                    <!--<td style="text-align: right;">-->
+                        <!--<a class="waves-effect waves-light btn grey">保管場所使用承諾証明書発行</a>-->
+                    <!--</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>入金確認</th>-->
+                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th>本番契約</th>-->
+                    <!--<td><a class="waves-effect waves-light btn tooltipped grey" data-position="top" data-delay="50" data-tooltip="押下したら契約完了とする">登録</a></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+                <!--</tbody>-->
+            <!--</table>-->
         </div>
     </div>
     <div class="card">

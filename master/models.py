@@ -9,6 +9,21 @@ from utils import constants
 
 
 # Create your models here.
+class Config(BaseModel):
+    group = models.CharField(max_length=50, blank=False, null=True, verbose_name=u"グループ")
+    name = models.CharField(max_length=50, unique=True, verbose_name=u"設定名")
+    value = models.CharField(max_length=2000, verbose_name=u"設定値")
+    comment = models.TextField(max_length=255, blank=True, null=True, verbose_name=u"備考")
+
+    class Meta:
+        ordering = ['group', 'name']
+        verbose_name = verbose_name_plural = u"システム設定"
+        db_table = 'mst_config'
+
+    def __str__(self):
+        return self.name
+
+
 class Company(BaseModel):
     name = models.CharField(unique=True, max_length=30, verbose_name=u"会社名")
     kana = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"フリカナ")
@@ -141,3 +156,7 @@ class Payment(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class Report(BaseModel):
+    pass

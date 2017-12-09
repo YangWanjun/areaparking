@@ -61,3 +61,10 @@ div.nowrap {
     overflow: hidden;
     white-space: nowrap;
 }
+
+ul.collapsible {
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    box-shadow: none;
+}

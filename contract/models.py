@@ -199,3 +199,8 @@ class TempContract(BaseContract):
         ordering = ['contractor', 'start_date']
         verbose_name = "仮契約情報"
         verbose_name_plural = "仮契約情報一覧"
+
+
+# class ContractProcess(BaseModel):
+#     temp_contract = models.ForeignKey(TempContract, verbose_name="仮契約")
+
