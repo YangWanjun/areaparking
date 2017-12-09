@@ -26,6 +26,9 @@ div.content {
 }*/
 
 /**************** 複雑なテーブル *****************/
+thead.complex {
+    background-color: white;
+}
 thead.complex th {
     font-size: 13px;
     padding: 5px 5px;

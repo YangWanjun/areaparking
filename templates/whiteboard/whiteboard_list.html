@@ -12,6 +12,7 @@
     window.onload = function() {
         ebjs.utils.autoFixColumns("tblWhiteboard");
         ebjs.$("#tblWhiteboard").tableFixedHeader({headerRows: 3});
+        ebjs.$("table.table-fixed-header").css('table-layout', 'auto');
     };
     $(window).resize(function() {
         ebjs.utils.autoFixColumns("tblWhiteboard");
@@ -24,7 +25,7 @@
 <div class="left-panel">
     <div class="card list-card">
         <div class="card-content">
-            <table id="tblWhiteboard" class="table bordered" style="width:100%">
+            <table id="tblWhiteboard" class="table bordered" style="width:100%; table-layout: auto;">
                 <thead class="complex">
                     <tr>
                         <th rowspan="3" class="center">番号</th>
@@ -95,7 +96,7 @@
                         <td>{{ whiteboard.min_height_ap|default:''|intcomma }}</td>
                         <td>{{ whiteboard.f_value|default:''|intcomma }}</td>
                         <td>{{ whiteboard.r_value|default:''|intcomma }}</td>
-                        <td>{{ whiteboard.position_comment|default:' '|slice:':4' }}</td>
+                        <td>{{ whiteboard.position_comment|default:' ' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
