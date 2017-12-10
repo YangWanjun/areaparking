@@ -91,24 +91,81 @@ $(document).ready(function(){
                                     <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked" />
                                     <label for="chkSubscription">申込書</label>
                                 </td>
-                                <td>プレイビュー</td>
+                                <td><a target="_blank" href="http://www.monthlyparking.co.jp/parking_offer/20170810114452623.pdf">プレイビュー</a></td>
                             </tr>
                             <tr>
                                 <td>
                                     <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked" />
                                     <label for="chkSubscriptionConfirm">申込確認書</label>
                                 </td>
-                                <td>プレイビュー</td>
+                                <td><a target="_blank" href="http://www.monthlyparking.co.jp/parking_offer/offer_tsurumaki.pdf">プレイビュー</a></td>
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <button class="btn waves-effect waves-light" type="submit" name="action">送信
-                                        <i class="material-icons right">send</i>
-                                    </button>
+                                    <button data-target="send_subscription" class="btn modal-trigger">送信<i class="material-icons right">send</i></button>
                                     <span>前回送信日時：2017-12-01 10:10</span>
                                 </td>
                             </tr>
                         </table>
+                    </div>
+                    <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
+                        <form method="post" action="{% url 'contract:send_subscription_mail' temp_contract.pk %}">
+                            {% csrf_token %}
+                            {{ formset.management_form }}
+                        <div class="modal-content">
+                            <h4>申込書の送付</h4>
+                            <div class="row">
+                                <div class="col s12">
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input readonly value="{{ subscription_group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
+                                            <label for="txtSubscriptionSender">差出人</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="{{ contractor.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
+                                            <label for="txtSubscriptionTo">宛先</label>
+                                        </div>
+                                    </div>
+                                    {% if subscription_group.get_cc_list %}
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="{%for cc in subscription_group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
+                                            <label for="txtSubscriptionCC">ＣＣ</label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% if subscription_group.get_bcc_list %}
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="{%for bcc in subscription_group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
+                                            <label for="txtSubscriptionBCC">ＢＣＣ</label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="{{ subscription_group.template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
+                                            <label for="txtSubscriptionTitle">件名</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea">{{ subscription_group.template.body }}</textarea>
+                                            <label for="txtSubscriptionContent">メール本文</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="modal-action btn-flat waves-effect waves-light" type="submit" name="action">送信
+                                <i class="material-icons right">send</i>
+                            </button>
+                            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+                        </div>
+                        </form>
                     </div>
                 </li>
                 <li>

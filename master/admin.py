@@ -8,6 +8,11 @@ from utils.django_base import BaseAdmin
 
 
 # Register your models here.
+class MailCcListInline(admin.TabularInline):
+    model = models.MailCcList
+    extra = 1
+
+
 @admin.register(models.Config)
 class ConfigAdmin(BaseAdmin):
     list_display = ('group', 'name', 'value')
@@ -62,3 +67,14 @@ class PaymentAdmin(BaseAdmin):
 @admin.register(models.Mediation)
 class MediationAdmin(BaseAdmin):
     pass
+
+
+@admin.register(models.MailTemplate)
+class MailTemplateAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(models.MailGroup)
+class MailGroupAdmin(BaseAdmin):
+    list_display = ('code', 'name', 'sender', 'template')
+    inlines = (MailCcListInline,)

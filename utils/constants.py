@@ -8,6 +8,11 @@ END_DATE = '9999-12-31'
 DATABASE_DEFAULT = "default"
 DATABASE_REVOLUTION = "fk5dtsql"
 
+CONFIG_EMAIL_ADDRESS = 'email_address'
+CONFIG_EMAIL_SMTP_HOST = 'email_smtp_host'
+CONFIG_EMAIL_SMTP_PORT = 'email_smtp_port'
+CONFIG_EMAIL_PASSWORD = 'email_password'
+
 REG_TEL = r'^\d+\[0-9-]+d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
 
@@ -68,6 +73,10 @@ CHOICE_CONTRACT_STATUS = (
     ('01', '空き'),
     ('02', '手続中'),
     ('03', '空きなし'),
+)
+CHOICE_MAIL_GROUP = (
+    ('001', '申込書送付'),
+    ('011', '契約書送付'),
 )
 CHOICE_REPORT_KBN = (
     ('01', '申込書'),

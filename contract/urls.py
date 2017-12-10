@@ -15,6 +15,7 @@ router.register(r'temp-contract', views_api.TempContractViewSet)
 
 urlpatterns = [
     url('^$', views.TempContractListView.as_view(), name="index"),
-    url('^temp_contract/create/$', views.CreateTempContractView.as_view(), name='create_temp_contract'),
     url('^temp_contract/(?P<id>\d+)/$', views.TempContractDetailView.as_view(), name='tempcontract_detail'),
+    url('^temp_contract/(?P<id>\d+)/send_subscription_mail/$', views.SendSubscriptionMail.as_view(),
+        name='send_subscription_mail'),
 ]

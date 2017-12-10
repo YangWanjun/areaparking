@@ -40,7 +40,6 @@ function save_contractor(obj) {
             $(this).attr('method'),
             $(this).serialize(),
             function mail_callback_fn(data) {
-                window.location = "{% url 'contract:create_temp_contract' %}?parking_position_id={{ parkingposition.pk }}";
                 $('#start_contract').modal('close');
             },
             function failure(result) {

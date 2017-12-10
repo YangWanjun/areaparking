@@ -173,3 +173,62 @@ class ReportFormat(BaseModel):
 
     def __str__(self):
         return os.path.basename(str(self.path))
+
+
+class MailTemplate(BaseModel):
+    title = models.CharField(max_length=50, unique=True, verbose_name=u"送信メールのタイトル")
+    body = models.TextField(blank=True, null=True, verbose_name=u"メール本文(Plain Text)")
+    password = models.TextField(blank=True, null=True, verbose_name=u"パスワードお知らせ本文(Plain Text)")
+    comment = models.TextField(max_length=255, blank=True, null=True, verbose_name=u"説明")
+
+    class Meta:
+        db_table = 'mst_mail_template'
+        ordering = ['title']
+        verbose_name = verbose_name_plural = u"メールテンプレート"
+
+    def __str__(self):
+        return self.title
+
+
+class MailGroup(BaseModel):
+    code = models.CharField(max_length=3, primary_key=True, choices=constants.CHOICE_MAIL_GROUP, verbose_name=u"コード")
+    name = models.CharField(max_length=50, blank=False, null=True, verbose_name=u"名称")
+    sender = models.EmailField(verbose_name=u"メール差出人")
+    template = models.ForeignKey(MailTemplate, on_delete=models.PROTECT,
+                                      verbose_name=u"メールテンプレート")
+
+    class Meta:
+        db_table = 'mst_mail_group'
+        ordering = ['code']
+        verbose_name = verbose_name_plural = u"メールグループ"
+
+    def __str__(self):
+        return self.name
+
+    def get_cc_list(self):
+        """メール送信時のＣＣ一覧を取得する。
+
+        :return:
+        """
+        return MailCcList.objects.public_filter(group=self, is_bcc=False)
+
+    def get_bcc_list(self):
+        """メール送信時のＢＣＣ一覧を取得する。
+
+        :return:
+        """
+        return MailCcList.objects.public_filter(group=self, is_bcc=True)
+
+
+class MailCcList(BaseModel):
+    group = models.ForeignKey(MailGroup, on_delete=models.PROTECT, verbose_name=u"メールグループ")
+    email = models.EmailField(verbose_name=u"メールアドレス")
+    is_bcc = models.BooleanField(default=False, verbose_name="ＢＣＣ")
+
+    class Meta:
+        db_table = 'mst_mail_cc'
+        ordering = ['group', 'email']
+        verbose_name = verbose_name_plural = u"メールＣＣリスト"
+
+    def __str__(self):
+        return self.email

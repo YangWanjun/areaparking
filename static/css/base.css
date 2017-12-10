@@ -76,3 +76,17 @@ ul.collapsible div.collapsible-body table td {
     padding-top: 5px;
     padding-bottom: 5px;
 }
+/**************** Loading  *****************/
+div.loading {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: rgba(211, 211, 211, 0.7);
+    z-index: 10000;
+}
+div.loading .preloader-wrapper {
+    top: 50%;
+    left: 50%;
+}
