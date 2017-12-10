@@ -61,10 +61,18 @@ div.nowrap {
     overflow: hidden;
     white-space: nowrap;
 }
-
+/**************** Collapsible  *****************/
 ul.collapsible {
     border-top: 0px;
     border-left: 0px;
     border-right: 0px;
     box-shadow: none;
+}
+ul.collapsible div.collapsible-body {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+ul.collapsible div.collapsible-body table td {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }

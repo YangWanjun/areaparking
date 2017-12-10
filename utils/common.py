@@ -55,6 +55,12 @@ def generate_pdf_from_string(text, out_path):
 
 
 def get_parking_lot_image_path(self, filename):
+    """駐車場に関する写真の格納場所を取得する。
+
+    :param self:
+    :param filename:
+    :return:
+    """
     prefix = 'images/'
     name = '{}_{}'.format(self.parking_lot.name, datetime.datetime.now().strftime('%y%m%d%H%M%S%f'))
     extension = os.path.splitext(filename)[-1]
@@ -62,5 +68,22 @@ def get_parking_lot_image_path(self, filename):
 
 
 def get_parking_lot_doc_path(self, filename):
+    """駐車場に関する書類の格納場所を取得する。
+
+    :param self:
+    :param filename:
+    :return:
+    """
     prefix = 'docs/{}/'.format(self.parking_lot.name)
+    return prefix + filename
+
+
+def get_report_format(self, filename):
+    """各帳票フォーマットの格納場所を取得する。
+
+    :param self:
+    :param filename:
+    :return:
+    """
+    prefix = 'reports/{}/'.format(self.parking_lot.name)
     return prefix + filename

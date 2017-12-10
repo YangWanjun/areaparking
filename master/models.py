@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import os
 
 from django.core.validators import RegexValidator
 from django.db import models
 
 from utils.django_base import BaseModel
-from utils import constants
+from utils import constants, common
 
 
 # Create your models here.
@@ -158,5 +159,17 @@ class Payment(BaseModel):
         return self.name
 
 
-class Report(BaseModel):
-    pass
+class ReportFormat(BaseModel):
+    path = models.FileField(upload_to=common.get_parking_lot_doc_path)
+    kbn = models.CharField(max_length=3, choices=constants.CHOICE_REPORT_KBN, verbose_name="帳票区分")
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+    order = models.SmallIntegerField(editable=False, verbose_name="並び順")
+
+    class Meta:
+        db_table = 'mst_report_format'
+        ordering = ['kbn']
+        verbose_name = "帳票フォーマット"
+        verbose_name_plural = "帳票フォーマット一覧"
+
+    def __str__(self):
+        return os.path.basename(str(self.path))

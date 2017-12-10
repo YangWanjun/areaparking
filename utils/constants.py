@@ -69,7 +69,7 @@ CHOICE_CONTRACT_STATUS = (
     ('02', '手続中'),
     ('03', '空きなし'),
 )
-CHOICE_DOC_KBN = (
+CHOICE_REPORT_KBN = (
     ('01', '申込書'),
     ('02', '申込確認書'),
     # ('01', '申込書'),

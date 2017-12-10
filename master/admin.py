@@ -6,7 +6,13 @@ from django.contrib import admin
 from . import models
 from utils.django_base import BaseAdmin
 
+
 # Register your models here.
+@admin.register(models.Config)
+class ConfigAdmin(BaseAdmin):
+    list_display = ('group', 'name', 'value')
+    list_display_links = ('name',)
+
 
 @admin.register(models.Company)
 class CompanyAdmin(BaseAdmin):

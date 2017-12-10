@@ -49,7 +49,7 @@ def del_migration_records():
     cursor = con.cursor()
     try:
         cnt = cursor.execute("delete from django_migrations")
-        print 'EXEC: delete from django_migrations. %s rows deleted' % cnt
+        print('EXEC: delete from django_migrations. %s rows deleted' % cnt)
         con.commit()
     except Exception as e:
         con.roolback()
@@ -73,7 +73,7 @@ def del_migration_files():
             if filename not in ('__init__.py', '__init__.pyc'):
                 file_path = os.path.join(path, filename)
                 os.remove(file_path)
-                print 'DEL: %s' % file_path
+                print('DEL: %s' % file_path)
 
 
 if __name__ == '__main__':

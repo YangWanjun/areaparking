@@ -9,7 +9,7 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import common
-from master.models import CarModel, CarMaker
+from master.models import CarModel, CarMaker, Config
 from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaffHistory
 from employee.models import Department, Member, MemberShip
 
@@ -352,3 +352,14 @@ def sync_coordinate(url):
             parking_lot.save()
         else:
             print("エラー：", r.content)
+
+
+def sync_config():
+    configs = [
+        ('email', 'email_address', 'ebprint@e-business.co.jp'),
+        ('email', 'email_password', '******'),
+        ('email', 'email_smtp_host', 'smtp.e-business.co.jp'),
+        ('email', 'email_smtp_port', '587'),
+    ]
+    for group, name, value in configs:
+        Config.objects.create(group=group, name=name, value=value)
