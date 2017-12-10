@@ -18,6 +18,7 @@ select pos.id as id
      , pos.id as parking_position_id
      , CASE
            WHEN c.id is not null THEN '03' 		-- 空き無
+           WHEN tc.id is not null THEN '02'     -- 手続き中
            ELSE '01'							-- 空き
        END as contract_status
 	 , c.end_date as contract_end_date			-- 契約終了日
@@ -53,3 +54,6 @@ select pos.id as id
                          and c.is_deleted = 0
                          and c.start_date <= current_date()
                          and c.end_date >= current_date()
+  left join ap_temp_contract tc on tc.parking_lot_id = lot.code
+                               and tc.parking_position_id = pos.id
+                               and tc.is_deleted = 0
