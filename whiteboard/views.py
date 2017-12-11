@@ -19,6 +19,7 @@ from material.frontend.forms import DatatableRequestForm
 from utils.django_base import BaseTemplateView, BaseView
 from parkinglot import models as parkinglot_model
 from contract.forms import TempContractorForm
+from master.models import Config
 from . import models, forms
 
 
@@ -190,6 +191,13 @@ class WhiteBoardDetailView(BaseTemplateView):
 
 class WhiteBoardMapView(BaseTemplateView):
     template_name = './whiteboard/whiteboard_map.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(WhiteBoardMapView, self).get_context_data(**kwargs)
+        context.update({
+            'circle_radius': Config.get_circle_radius(),
+        })
+        return context
 
 
 # class ParkingPositionListView(BaseTemplateView):

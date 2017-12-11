@@ -8,10 +8,12 @@ END_DATE = '9999-12-31'
 DATABASE_DEFAULT = "default"
 DATABASE_REVOLUTION = "fk5dtsql"
 
+CONFIG_GROUP_SYSTEM = 'system'
 CONFIG_EMAIL_ADDRESS = 'email_address'
 CONFIG_EMAIL_SMTP_HOST = 'email_smtp_host'
 CONFIG_EMAIL_SMTP_PORT = 'email_smtp_port'
 CONFIG_EMAIL_PASSWORD = 'email_password'
+CONFIG_CIRCLE_RADIUS = 'circle_radius'
 
 REG_TEL = r'^\d+\[0-9-]+d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"

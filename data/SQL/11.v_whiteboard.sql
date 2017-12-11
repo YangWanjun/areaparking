@@ -22,6 +22,10 @@ select pos.id as id
            ELSE '01'							-- 空き
        END as contract_status
 	 , c.end_date as contract_end_date			-- 契約終了日
+     , pos.created_date
+     , pos.updated_date
+     , pos.is_deleted
+	 , pos.deleted_date
      /* 賃料 */
      , pos.price_recruitment
      , pos.price_recruitment_no_tax

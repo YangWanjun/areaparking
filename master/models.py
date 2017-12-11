@@ -3,10 +3,13 @@ from __future__ import unicode_literals
 import os
 
 from django.core.validators import RegexValidator
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 from utils.django_base import BaseModel
 from utils import constants, common
+
+logger = common.get_ap_logger()
 
 
 # Create your models here.
@@ -23,6 +26,27 @@ class Config(BaseModel):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_circle_radius(cls):
+        """地図時で円作成時の半径を取得する。
+
+        取得失敗の場合はデフォルトの2000メートルを返却する。
+
+        :return:
+        """
+        default = 2000
+        try:
+            circle = Config.objects.get(name=constants.CONFIG_CIRCLE_RADIUS)
+            try:
+                return int(circle)
+            except Exception as ex:
+                logger.error(ex)
+                return default
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_CIRCLE_RADIUS,
+                                  value=default)
+            return default
 
 
 class Company(BaseModel):
@@ -195,7 +219,7 @@ class MailGroup(BaseModel):
     name = models.CharField(max_length=50, blank=False, null=True, verbose_name=u"名称")
     sender = models.EmailField(verbose_name=u"メール差出人")
     template = models.ForeignKey(MailTemplate, on_delete=models.PROTECT,
-                                      verbose_name=u"メールテンプレート")
+                                 verbose_name=u"メールテンプレート")
 
     class Meta:
         db_table = 'mst_mail_group'

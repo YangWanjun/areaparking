@@ -9,7 +9,7 @@ from . import views, views_api
 
 
 router = routers.DefaultRouter()
-router.register(r'whiteboard', views_api.WhiteBoardViewSet)
+router.register(r'map-board', views_api.MapBoardViewSet)
 
 urlpatterns = [
     url('^$', views.Index.as_view(), name="index"),
