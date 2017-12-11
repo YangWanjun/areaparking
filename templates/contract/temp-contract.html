@@ -28,6 +28,7 @@ $(document).ready(function(){
 
     $('.tooltipped').tooltip({delay: 50});
     $('.collapsible').collapsible();
+    ebjs.material.popup_anchor();
 });
 </script>
 {% endblock %}
@@ -70,6 +71,10 @@ $(document).ready(function(){
                 </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="card-action right-align">
+            <a href="{% url 'admin:contract_tempcontract_change' temp_contract.pk %}??_to_field=id&_popup=1" class="btn popup">仮契約変更</a>
+            <a href="{% url 'admin:contract_tempcontractor_change' contractor.pk %}??_to_field=id&_popup=1" class="btn popup">仮契約者変更</a>
         </div>
     </div>
     <div class="card">
@@ -161,7 +166,7 @@ $(document).ready(function(){
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="modal-action btn-flat waves-effect waves-light" type="submit" name="action">送信
+                            <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
                                 <i class="material-icons right">send</i>
                             </button>
                             <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
