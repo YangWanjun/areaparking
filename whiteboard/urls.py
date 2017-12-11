@@ -3,8 +3,13 @@ from __future__ import unicode_literals
 
 from django.conf.urls import url
 
-from . import views
+from rest_framework import routers
 
+from . import views, views_api
+
+
+router = routers.DefaultRouter()
+router.register(r'whiteboard', views_api.WhiteBoardViewSet)
 
 urlpatterns = [
     url('^$', views.Index.as_view(), name="index"),

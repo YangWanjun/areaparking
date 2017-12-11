@@ -29,6 +29,7 @@ from material.frontend.registry import modules
 from contract.urls import router as contract_router
 from parkinglot.urls import router as parkintlot_router
 from master.urls import router as master_router
+from whiteboard.urls import router as whiteboard_router
 
 
 class Home(ModuleMixin):
@@ -69,4 +70,5 @@ urlpatterns = [
     url(r'^api/', include(contract_router.urls)),
     url(r'^api/', include(parkintlot_router.urls)),
     url(r'^api/', include(master_router.urls)),
+    url(r'^api/', include(whiteboard_router.urls)),
 ]

@@ -27,6 +27,7 @@ $(document).ready(function(){
     });
 
     $('.tooltipped').tooltip({delay: 50});
+    $('.collapsible').collapsible();
 });
 </script>
 {% endblock %}
@@ -152,7 +153,7 @@ $(document).ready(function(){
                                     </div>
                                     <div class="row">
                                         <div class="input-field col s12">
-                                            <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea">{{ subscription_group.template.body }}</textarea>
+                                            <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea" style="min-height: 300px;">{{ subscription_group.template.body }}</textarea>
                                             <label for="txtSubscriptionContent">メール本文</label>
                                         </div>
                                     </div>
@@ -177,10 +178,76 @@ $(document).ready(function(){
                 </li>
                 <li>
                     <div class="collapsible-header">
-                        <i class="material-icons">looks_3</i>住所・電話番号 審査・確認
+                        <i class="material-icons">looks_3</i>審査・確認
                         <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
                     </div>
                     <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                </li>
+                <li>
+                    <div class="collapsible-header">
+                        <i class="material-icons">looks_4</i>契約書類送付
+                        <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
+                    </div>
+                    <div class="collapsible-body">
+                        <table>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="filled-in" id="chkContract" checked="checked" />
+                                    <label for="chkContract">契約時送付状</label>
+                                </td>
+                                <td>プレイビュー</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="filled-in" id="chkContract2" checked="checked" />
+                                    <label for="chkContract2">契約書×２</label>
+                                </td>
+                                <td>プレイビュー</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="filled-in" id="chkContract3" checked="checked" />
+                                    <label for="chkContract3">契約金計算書</label>
+                                </td>
+                                <td>プレイビュー</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="filled-in" id="chkContract4" checked="checked" />
+                                    <label for="chkContract4">操作説明書</label>
+                                </td>
+                                <td>プレイビュー</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="filled-in" id="chkContract5" checked="checked" />
+                                    <label for="chkContract5">配置図</label>
+                                </td>
+                                <td>プレイビュー</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="filled-in" id="chkContract6" checked="checked" />
+                                    <label for="chkContract6">パズル式駐車場注意事項</label>
+                                </td>
+                                <td>プレイビュー</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="filled-in" id="chkContract7" checked="checked" />
+                                    <label for="chkContract7">契約時アンケート</label>
+                                </td>
+                                <td>プレイビュー</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <a class="waves-effect waves-light btn white-text popup" href="javascript:void(0)">送信
+                                        <i class="material-icons right">send</i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </li>
             </ul>
             <!--<table class="table bordered">-->
