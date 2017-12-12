@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'parkinglot.apps.ParkinglotConfig',
     'contract.apps.ContractConfig',
     'whiteboard.apps.WhiteboardConfig',
+    'format.apps.FormatConfig',
     # 'turnover.apps.TurnoverConfig',
     'rest_framework',
     'django_filters',
