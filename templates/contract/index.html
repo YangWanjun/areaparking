@@ -32,7 +32,7 @@
                     {% for object in queryset %}
                     <tr>
                         <td>{{ object.parking_lot }}</td>
-                        <td><a href="{% url 'contract:tempcontract_detail' object.pk %}">{{ object.parking_position }}</a></td>
+                        <td><a href="javascript:void(0)" onclick="window.location='{% url 'contract:tempcontract_detail' object.pk %}';return false;">{{ object.parking_position }}</a></td>
                         <td>{{ object.contractor }}</td>
                         <td>{{ object.contract_date|default:'' }}</td>
                         <td>{{ object.start_date|default:'' }}</td>

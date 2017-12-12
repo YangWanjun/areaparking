@@ -14,16 +14,28 @@ div.modal form td input {
 div.content {
     height: calc(100% - 110px);
 }
+main {
+    margin-left: 250px;
+    font-size: 13px;
+}
 /**************** サイドバー *****************/
-/*.side-nav {
-    width: 270px;
+.side-nav.fixed .userView {
+    min-height: 100px;
+}
+.side-nav div.userView {
+    min-height: 100px;
+    padding: 9px 9px 0;
+    margin-bottom: 0px;
+}
+.side-nav {
+    width: 250px;
 }
 .side-nav img.background {
-    width: 270px;
+    width: 250px;
 }
 .side-nav li>a {
     font-size: 13px;
-}*/
+}
 
 /**************** 複雑なテーブル *****************/
 thead.complex {

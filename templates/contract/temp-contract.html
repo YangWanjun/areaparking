@@ -27,9 +27,11 @@ $(document).ready(function(){
     });
 
     $('.tooltipped').tooltip({delay: 50});
-    $('.collapsible').collapsible();
     ebjs.material.popup_anchor();
 });
+function abcd() {
+    return false;
+}
 </script>
 {% endblock %}
 
@@ -108,7 +110,7 @@ $(document).ready(function(){
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <button data-target="send_subscription" class="btn modal-trigger">送信<i class="material-icons right">send</i></button>
+                                    <button data-target="send_subscription" onclick="abcd()" class="btn modal-trigger">送信<i class="material-icons right">send</i></button>
                                     <span>前回送信日時：2017-12-01 10:10</span>
                                 </td>
                             </tr>

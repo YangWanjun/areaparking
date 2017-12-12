@@ -131,7 +131,8 @@ class BaseView(View, ContextMixin):
 
     def get(self, request, *args, **kwargs):
         kwargs.update({
-            'request': request
+            'request': request,
+            'debug': True,
         })
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
