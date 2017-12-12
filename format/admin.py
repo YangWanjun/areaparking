@@ -7,4 +7,10 @@ from utils.django_base import BaseAdmin
 # Register your models here.
 @admin.register(models.ReportSubscription)
 class ReportSubscription(BaseAdmin):
-    pass
+    save_as = True
+
+    class Media:
+        js = (
+            '/static/tinymce/tinymce.min.js',
+            '/static/tinymce/tinymce.init.js',
+        )

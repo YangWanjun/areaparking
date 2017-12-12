@@ -1,13 +1,11 @@
 from django.db import models
 
-# from tinymce.models import HTMLField
-
 from utils.django_base import BaseModel
 
 
 # Create your models here.
 class BaseReport(BaseModel):
-    name = models.CharField(max_length=50, verbose_name=u"名称")
+    name = models.CharField(max_length=50, verbose_name="名称")
     content = models.TextField(verbose_name="内容")
 
     class Meta:
