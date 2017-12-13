@@ -1,3 +1,6 @@
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+
+from . import models
 from master.models import Company
 
 
@@ -22,6 +25,11 @@ def get_company_context():
 
 
 def get_parking_lot_context(parking_lot):
+    """テンプレートに出力する駐車場の情報
+
+    :param parking_lot:
+    :return:
+    """
     if parking_lot:
         return {
             'parking_lot_name': parking_lot.name,
@@ -31,6 +39,11 @@ def get_parking_lot_context(parking_lot):
 
 
 def get_contractor_context(contractor):
+    """テンプレートに出力する契約者の情報
+
+    :param contractor:
+    :return:
+    """
     if contractor:
         return {
             'user_name': contractor.name,
@@ -42,3 +55,26 @@ def get_contractor_context(contractor):
         }
     else:
         return dict()
+
+
+def get_default_subscription_report():
+    """デフォルトの申込書テンプレートを取得する。
+
+    :return:
+    """
+    try:
+        return models.ReportSubscription.objects.get(is_default=True)
+    except (ObjectDoesNotExist, MultipleObjectsReturned):
+        return None
+
+
+def get_default_subscription_confirm_report():
+    """デフォルトの申込確認書テンプレートを取得する。
+
+    :return:
+    """
+    try:
+        return models.ReportSubscriptionConfirm.objects.get(is_default=True)
+    except (ObjectDoesNotExist, MultipleObjectsReturned):
+        return models.ReportSubscriptionConfirm.objects.public_all().first()
+

@@ -14,7 +14,7 @@ from utils.django_base import BaseView
 class SubscriptionView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        report = get_object_or_404(models.ReportSubscription, pk=kwargs.get('report_id'))
+        report = get_object_or_404(models.ReportSubscriptionConfirm, pk=kwargs.get('report_id'))
         parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
         contractor = get_object_or_404(TempContractor, pk=kwargs.get('contractor_id'))
         t = Template(report.content)

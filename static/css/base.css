@@ -110,3 +110,9 @@ div.loading .preloader-wrapper {
     height: 20px !important;
     text-align: right !important;
 }
+/**************** number icon  *****************/
+.char-overlay {
+  font-family: 'Helvetica' !important; /* Your font family */
+  font-weight: bold !important;
+  padding: 0px !important;
+}

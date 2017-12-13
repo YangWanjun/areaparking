@@ -82,24 +82,30 @@ function abcd() {
     <div class="card">
         <div class="card-content">
             <div class="card-title">進捗情報</div>
-            <div>進捗：30%</div>
+            <div>進捗：{{ temp_contract.process.get_percent }} %</div>
             <div class="progress" style="height: 14px;">
-                <div class="determinate" style="width: 30%"></div>
+                <div class="determinate" style="width: {{ temp_contract.process.get_percent }}%"></div>
             </div>
             <ul class="collapsible" data-collapsible="expandable">
+                {% for task in temp_contract.process.task_set.all %}
                 <li>
                     <div class="collapsible-header">
-                        <i class="material-icons">looks_one</i>申込書類の送付
+                        <span class="icon-stack">
+                             <i class="icon-sign-blank icon-stack-base"></i>
+                             <span class="icon-fixed-width icon-light char-overlay">{{ forloop.counter }}</span>
+                        </span>
+                        {{ task.name }}
                         <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
                     </div>
                     <div class="collapsible-body">
+                        {% if task.name == "申込書送付" %}
                         <table>
                             <tr>
                                 <td>
                                     <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked" />
                                     <label for="chkSubscriptionConfirm">申込確認書</label>
                                 </td>
-                                <td><a target="_blank" href="{% url 'format:report_subscription' 1 temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a></td>
+                                <td><a target="_blank" href="{% url 'format:report_subscription' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a></td>
                             </tr>
                             <tr>
                                 <td>
@@ -115,87 +121,68 @@ function abcd() {
                                 </td>
                             </tr>
                         </table>
-                    </div>
-                    <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
-                        <form method="post" action="{% url 'contract:send_subscription_mail' temp_contract.pk %}">
-                            {% csrf_token %}
-                            {{ formset.management_form }}
-                        <div class="modal-content">
-                            <h4>申込書の送付</h4>
-                            <div class="row">
-                                <div class="col s12">
-                                    <div class="row">
-                                        <div class="input-field col s12">
-                                            <input readonly value="{{ subscription_group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
-                                            <label for="txtSubscriptionSender">差出人</label>
+                        <!-- メール送信の確認ボックス -->
+                        <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
+                            <form method="post" action="{% url 'contract:send_subscription_mail' temp_contract.pk %}">
+                                {% csrf_token %}
+                                {{ formset.management_form }}
+                            <div class="modal-content">
+                                <h4>申込書の送付</h4>
+                                <div class="row">
+                                    <div class="col s12">
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <input readonly value="{{ subscription_group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
+                                                <label for="txtSubscriptionSender">差出人</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="input-field col s12">
-                                            <input value="{{ contractor.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
-                                            <label for="txtSubscriptionTo">宛先</label>
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <input value="{{ contractor.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
+                                                <label for="txtSubscriptionTo">宛先</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    {% if subscription_group.get_cc_list %}
-                                    <div class="row">
-                                        <div class="input-field col s12">
-                                            <input value="{%for cc in subscription_group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
-                                            <label for="txtSubscriptionCC">ＣＣ</label>
+                                        {% if subscription_group.get_cc_list %}
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <input value="{%for cc in subscription_group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
+                                                <label for="txtSubscriptionCC">ＣＣ</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    {% endif %}
-                                    {% if subscription_group.get_bcc_list %}
-                                    <div class="row">
-                                        <div class="input-field col s12">
-                                            <input value="{%for bcc in subscription_group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
-                                            <label for="txtSubscriptionBCC">ＢＣＣ</label>
+                                        {% endif %}
+                                        {% if subscription_group.get_bcc_list %}
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <input value="{%for bcc in subscription_group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
+                                                <label for="txtSubscriptionBCC">ＢＣＣ</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    {% endif %}
-                                    <div class="row">
-                                        <div class="input-field col s12">
-                                            <input value="{{ subscription_group.template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
-                                            <label for="txtSubscriptionTitle">件名</label>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <input value="{{ subscription_group.template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
+                                                <label for="txtSubscriptionTitle">件名</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="input-field col s12">
-                                            <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea" style="min-height: 300px;">{{ subscription_group.template.body }}</textarea>
-                                            <label for="txtSubscriptionContent">メール本文</label>
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea" style="min-height: 300px;">{{ subscription_group.template.body }}</textarea>
+                                                <label for="txtSubscriptionContent">メール本文</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="modal-footer">
+                                <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
+                                    <i class="material-icons right">send</i>
+                                </button>
+                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+                            </div>
+                            </form>
                         </div>
-                        <div class="modal-footer">
-                            <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
-                                <i class="material-icons right">send</i>
-                            </button>
-                            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
-                        </div>
-                        </form>
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header">
-                        <i class="material-icons">looks_two</i>申込書類の確認
-                        <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
-                    </div>
-                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-                </li>
-                <li>
-                    <div class="collapsible-header">
-                        <i class="material-icons">looks_3</i>審査・確認
-                        <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
-                    </div>
-                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-                </li>
-                <li>
-                    <div class="collapsible-header">
-                        <i class="material-icons">looks_4</i>契約書類送付
-                        <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
-                    </div>
-                    <div class="collapsible-body">
+                        {% endif %}
+                        {% if task.name == "契約書類一式の送付" %}
                         <table>
                             <tr>
                                 <td>
@@ -254,75 +241,11 @@ function abcd() {
                                 </td>
                             </tr>
                         </table>
+                        {% endif %}
                     </div>
                 </li>
+                {% endfor %}
             </ul>
-            <!--<table class="table bordered">-->
-                <!--<tbody>-->
-                <!--<tr>-->
-                    <!--<td colspan="3">-->
-                        <!--<div>進捗：30%</div>-->
-                        <!--<div class="progress" style="height: 14px;">-->
-                            <!--<div class="determinate" style="width: 30%"></div>-->
-                        <!--</div>-->
-                    <!--</td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th style="width: 50%;">申込書類の送付：</th>-->
-                    <!--<td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>-->
-                    <!--<td style="text-align: right;">-->
-                        <!--<a class="waves-effect waves-light btn grey">申込み書類の発行</a>-->
-                    <!--</td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>申込書類の確認</th>-->
-                    <!--<td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>-->
-                    <!--<td></td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>住所・電話番号 審査・確認</th>-->
-                    <!--<td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>-->
-                    <!--<td></td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>勤め先審査</th>-->
-                    <!--<td><span class="new badge left green" data-badge-caption="実施中" style="margin-left: 0px;"></span></td>-->
-                    <!--<td></td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>車両サイズ審査</th>-->
-                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
-                    <!--<td></td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>申込ルート元審査</th>-->
-                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
-                    <!--<td></td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>契約書類一式の送付</th>-->
-                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
-                    <!--<td></td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>保管場所使用承諾証明書発行</th>-->
-                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
-                    <!--<td style="text-align: right;">-->
-                        <!--<a class="waves-effect waves-light btn grey">保管場所使用承諾証明書発行</a>-->
-                    <!--</td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>入金確認</th>-->
-                    <!--<td><span class="new badge left red" data-badge-caption="未実施" style="margin-left: 0px;"></span></td>-->
-                    <!--<td></td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th>本番契約</th>-->
-                    <!--<td><a class="waves-effect waves-light btn tooltipped grey" data-position="top" data-delay="50" data-tooltip="押下したら契約完了とする">登録</a></td>-->
-                    <!--<td></td>-->
-                <!--</tr>-->
-                <!--</tbody>-->
-            <!--</table>-->
         </div>
     </div>
     <div class="card">

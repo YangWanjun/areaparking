@@ -7,12 +7,22 @@ from utils.django_base import BaseModel
 class BaseReport(BaseModel):
     name = models.CharField(max_length=50, verbose_name="名称")
     content = models.TextField(verbose_name="内容")
+    is_default = models.BooleanField(default=False, editable=False, verbose_name="デフォルト")
 
     class Meta:
         abstract = True
 
     def __str__(self):
         return self.name
+
+
+class ReportSubscriptionConfirm(BaseReport):
+
+    class Meta:
+        db_table = 'mst_report_subscription_confirm'
+        ordering = ['name']
+        verbose_name = "申込確認書"
+        verbose_name_plural = u"申込確認書一覧"
 
 
 class ReportSubscription(BaseReport):
@@ -22,4 +32,3 @@ class ReportSubscription(BaseReport):
         ordering = ['name']
         verbose_name = "申込書"
         verbose_name_plural = u"申込書一覧"
-

@@ -200,9 +200,33 @@ class TempContract(BaseContract):
         verbose_name = "仮契約情報"
         verbose_name_plural = "仮契約情報一覧"
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(TempContract, self).save(force_insert, force_update, using, update_fields)
+        # 進捗のプロセス作成
+        process = ContractProcess.objects.create(temp_contract=self)
+        # 申込書送付のタスク
+        Task.objects.create(process=process, order=1, name='申込書送付')
+        # 申込書確認のタスク
+        Task.objects.create(process=process, order=2, name='申込書確認')
+        # 住所・電話番号 審査・確認のタスク
+        Task.objects.create(process=process, order=3, name='住所・電話番号 審査・確認')
+        # 勤め先審査のタスク
+        Task.objects.create(process=process, order=4, name='勤め先審査')
+        # 車両サイズ審査のタスク
+        Task.objects.create(process=process, order=5, name='車両サイズ審査')
+        # 申込ルート元審査のタスク
+        Task.objects.create(process=process, order=6, name='申込ルート元審査')
+        # 契約書類一式の送付のタスク
+        Task.objects.create(process=process, order=7, name='契約書類一式の送付')
+        # 入金確認のタスク
+        Task.objects.create(process=process, order=8, name='入金確認')
+        # 契約完了のタスク
+        Task.objects.create(process=process, order=9, name='契約完了')
+
 
 class ContractProcess(BaseModel):
-    temp_contract = models.ForeignKey(TempContract, verbose_name="仮契約")
+    temp_contract = models.OneToOneField(TempContract, related_name='process', verbose_name="仮契約")
 
     class Meta:
         db_table = 'ap_contract_process'
@@ -210,15 +234,25 @@ class ContractProcess(BaseModel):
         verbose_name = "契約進捗"
         verbose_name_plural = "契約進捗一覧"
 
+    def get_percent(self):
+        """進捗の完成度（%）を取得
+
+        :return:
+        """
+        finished = Task.objects.public_filter(process=self, status__in=['10', '99']).count()
+        total = Task.objects.public_filter(process=self).count()
+        return round(finished / total, 3) * 100 if total else 0.0
+
 
 class Task(BaseModel):
     process = models.ForeignKey(ContractProcess, verbose_name="契約進捗")
+    name = models.CharField(max_length=50, verbose_name="タスク名称")
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_TASK_STATUS, verbose_name='ステータス')
     order = models.SmallIntegerField(verbose_name="並び順")
     is_end = models.BooleanField(default=False, verbose_name="終了タスク")
 
     class Meta:
         db_table = 'ap_task'
-        ordering = ['process']
+        ordering = ['process', 'order']
         verbose_name = "タスク"
         verbose_name_plural = "タスク一覧"

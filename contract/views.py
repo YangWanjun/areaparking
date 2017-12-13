@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import get_object_or_404
 
 from . import models
+from format.biz import get_default_subscription_confirm_report
 from utils.django_base import BaseTemplateView, BaseView
 from utils.mail import EbMail
 from master import biz
@@ -36,6 +37,7 @@ class TempContractDetailView(BaseTemplateView):
             'contractor': contractor,
             'parkingposition': parkingposition,
             'subscription_group': subscription_group,
+            'subscription_confirm_template': get_default_subscription_confirm_report()
         })
         return context
 
