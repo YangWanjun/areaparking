@@ -201,6 +201,24 @@ class TempContract(BaseContract):
         verbose_name_plural = "仮契約情報一覧"
 
 
-# class ContractProcess(BaseModel):
-#     temp_contract = models.ForeignKey(TempContract, verbose_name="仮契約")
+class ContractProcess(BaseModel):
+    temp_contract = models.ForeignKey(TempContract, verbose_name="仮契約")
 
+    class Meta:
+        db_table = 'ap_contract_process'
+        ordering = ['temp_contract']
+        verbose_name = "契約進捗"
+        verbose_name_plural = "契約進捗一覧"
+
+
+class Task(BaseModel):
+    process = models.ForeignKey(ContractProcess, verbose_name="契約進捗")
+    status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_TASK_STATUS, verbose_name='ステータス')
+    order = models.SmallIntegerField(verbose_name="並び順")
+    is_end = models.BooleanField(default=False, verbose_name="終了タスク")
+
+    class Meta:
+        db_table = 'ap_task'
+        ordering = ['process']
+        verbose_name = "タスク"
+        verbose_name_plural = "タスク一覧"

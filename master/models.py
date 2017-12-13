@@ -53,13 +53,14 @@ class Company(BaseModel):
     name = models.CharField(unique=True, max_length=30, verbose_name=u"会社名")
     kana = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"フリカナ")
     president = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"代表者名")
-    post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name=u"郵便番号")
+    post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name=u"郵便番号")
     address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所１")
     address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所２")
     tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号",
                            validators=(RegexValidator(regex=constants.REG_TEL),))
     fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"ファックス",
                            validators=(RegexValidator(regex=constants.REG_TEL),))
+    email = models.EmailField(blank=True, null=True, verbose_name="メール")
 
     class Meta:
         db_table = 'ap_company'
@@ -67,6 +68,14 @@ class Company(BaseModel):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_company(cls):
+        """自社情報を取得する。
+
+        :return:
+        """
+        return Company.objects.public_all().first()
 
 
 class CarMaker(BaseModel):

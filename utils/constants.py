@@ -15,7 +15,7 @@ CONFIG_EMAIL_SMTP_PORT = 'email_smtp_port'
 CONFIG_EMAIL_PASSWORD = 'email_password'
 CONFIG_CIRCLE_RADIUS = 'circle_radius'
 
-REG_TEL = r'^\d+\[0-9-]+d+$'
+REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
 
 CHOICE_CONTRACTOR_TYPE = (
@@ -100,4 +100,11 @@ CHOICE_CONTRACT_PROCESS = (
     ('01', '申込み'),
     ('01', '申込み'),
     ('01', '申込み'),
+)
+CHOICE_TASK_STATUS = (
+    ('01', '未実施'),
+    ('02', '実施中'),
+    ('10', 'スキップ'),
+    ('20', '見送る'),
+    ('99', '完了'),
 )
