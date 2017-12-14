@@ -3,6 +3,8 @@ import datetime
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
+from material.frontend.views import ModelViewSet
+
 from . import models
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
@@ -11,6 +13,10 @@ from utils.mail import EbMail
 
 
 # Create your views here.
+class TempContractVewSet(ModelViewSet):
+    pass
+
+
 class TempContractListView(BaseTemplateView):
     template_name = "./contract/index.html"
 

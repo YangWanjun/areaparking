@@ -29,7 +29,7 @@
                 <thead class="complex">
                     <tr>
                         <th rowspan="3" class="center">番号</th>
-                        <th colspan="4">駐車場名称</th>
+                        <th colspan="5">駐車場名称</th>
                         <th>車室</th>
                         <th>空き</th>
                         <th>待ち数</th>
@@ -39,7 +39,7 @@
                         <th>時間制限</th>
                     </tr>
                     <tr>
-                        <th colspan="4">所在地</th>
+                        <th colspan="5">所在地</th>
                         <th>担当者</th>
                         <th>賃料(税込)</th>
                         <th>賃料(税抜)</th>
@@ -59,14 +59,14 @@
                         <th>AP測最低高</th>
                         <th>F値</th>
                         <th>R値</th>
-                        <th>備考</th>
+                        <th colspan="2">備考</th>
                     </tr>
                 </thead>
                 <tbody class="complex">
                     {% for whiteboard in queryset %}
                     <tr class="{% cycle 'row1' 'row2' %}">
                         <td rowspan="3" class="center"><a href="{% url 'whiteboard:whiteboard_detail' whiteboard.pk %}">{{ whiteboard.parking_code }}</a></td>
-                        <td colspan="4"><a href="{% url 'whiteboard:whiteboard_detail' whiteboard.pk %}">{{ whiteboard.parking_lot_name }}</a></td>
+                        <td colspan="5"><a href="{% url 'whiteboard:whiteboard_detail' whiteboard.pk %}">{{ whiteboard.parking_lot_name }}</a></td>
                         <td><a href="{% url 'whiteboard:whiteboard_detail' whiteboard.pk %}">{{ whiteboard.parking_position }}</a></td>
                         <td>
                             <span class="new badge left {%if whiteboard.contract_status == '01'%}green{% else %}{%if whiteboard.contract_status == '02' %}deep-orange{%else%}grey{%endif%}{%endif%}"
@@ -80,7 +80,7 @@
                         <td>{{ whiteboard.parking_time_limit|default:'' }}</td>
                     </tr>
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        <td colspan="4">{{ whiteboard.address|default:'' }}</td>
+                        <td colspan="5">{{ whiteboard.address|default:'' }}</td>
                         <td>{{ whiteboard.staff|default:'' }}</td>
                         <td>{{ whiteboard.price_recruitment|default:''|intcomma }}</td>
                         <td>{{ whiteboard.price_recruitment_no_tax|default:''|intcomma }}</td>
@@ -100,7 +100,7 @@
                         <td>{{ whiteboard.min_height_ap|default:''|intcomma }}</td>
                         <td>{{ whiteboard.f_value|default:''|intcomma }}</td>
                         <td>{{ whiteboard.r_value|default:''|intcomma }}</td>
-                        <td>{{ whiteboard.position_comment|default:' ' }}</td>
+                        <td colspan="2">{{ whiteboard.position_comment|default:' ' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

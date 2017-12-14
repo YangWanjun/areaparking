@@ -280,3 +280,18 @@ class Task(BaseModel):
             }
         else:
             return dict()
+
+
+class VTempContract(BaseModel):
+    temp_contract = models.ForeignKey(TempContract, verbose_name="仮契約")
+    parking_lot = models.ForeignKey(ParkingLot, blank=True, null=True, verbose_name="駐車場")
+    contractor = models.ForeignKey(TempContractor, verbose_name="仮契約者")
+
+    class Meta:
+        managed = False
+        db_table = 'v_temp_contract'
+        verbose_name = "仮契約"
+        verbose_name_plural = "仮契約一覧"
+
+    def __str__(self):
+        return str(self.temp_contract)
