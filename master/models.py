@@ -37,7 +37,7 @@ class Config(BaseModel):
         """
         default = 2000
         try:
-            circle = Config.objects.get(name=constants.CONFIG_CIRCLE_RADIUS)
+            circle = Config.objects.get(name=constants.CONFIG_CIRCLE_RADIUS).value
             try:
                 return int(circle)
             except Exception as ex:
@@ -45,6 +45,16 @@ class Config(BaseModel):
                 return default
         except ObjectDoesNotExist:
             Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_CIRCLE_RADIUS,
+                                  value=default)
+            return default
+
+    @classmethod
+    def get_domain_name(cls):
+        default = 'http://ap.mopa.jp'
+        try:
+            return Config.objects.get(name=constants.CONFIG_DOMAIN_NAME).value
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_DOMAIN_NAME,
                                   value=default)
             return default
 
@@ -210,9 +220,9 @@ class ReportFormat(BaseModel):
 
 class MailTemplate(BaseModel):
     title = models.CharField(max_length=50, unique=True, verbose_name=u"送信メールのタイトル")
-    body = models.TextField(blank=True, null=True, verbose_name=u"メール本文(Plain Text)")
-    password = models.TextField(blank=True, null=True, verbose_name=u"パスワードお知らせ本文(Plain Text)")
-    comment = models.TextField(max_length=255, blank=True, null=True, verbose_name=u"説明")
+    body = models.TextField(verbose_name=u"メール本文")
+    password = models.TextField(blank=True, null=True, verbose_name=u"パスワードお知らせ本文")
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name=u"説明")
 
     class Meta:
         db_table = 'mst_mail_template'
@@ -251,6 +261,17 @@ class MailGroup(BaseModel):
         :return:
         """
         return MailCcList.objects.public_filter(group=self, is_bcc=True)
+
+    @classmethod
+    def get_subscription_mail_info(cls):
+        """ユーザー申込み時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='001')
+        except ObjectDoesNotExist:
+            return None
 
 
 class MailCcList(BaseModel):

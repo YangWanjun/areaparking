@@ -1,7 +1,22 @@
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+import datetime
+from urllib.parse import urljoin
 
-from . import models
-from master.models import Company
+from django.urls import reverse
+
+from master.models import Company, Config
+
+
+def get_total_context(parking_lot=None, contractor=None):
+    context = get_company_context()
+    if parking_lot:
+        context.update(get_parking_lot_context(parking_lot))
+    if contractor:
+        context.update(get_contractor_context(contractor))
+
+    context.update({
+        'current_date': datetime.date.today(),
+    })
+    return context
 
 
 def get_company_context():
@@ -57,24 +72,7 @@ def get_contractor_context(contractor):
         return dict()
 
 
-def get_default_subscription_report():
-    """デフォルトの申込書テンプレートを取得する。
-
-    :return:
-    """
-    try:
-        return models.ReportSubscription.objects.get(is_default=True)
-    except (ObjectDoesNotExist, MultipleObjectsReturned):
-        return None
-
-
-def get_default_subscription_confirm_report():
-    """デフォルトの申込確認書テンプレートを取得する。
-
-    :return:
-    """
-    try:
-        return models.ReportSubscriptionConfirm.objects.get(is_default=True)
-    except (ObjectDoesNotExist, MultipleObjectsReturned):
-        return models.ReportSubscriptionConfirm.objects.public_all().first()
-
+def get_user_subscription_url(task):
+    url = reverse('format:user_subscription', kwargs={'task_id': task.pk})
+    domain_name = Config.get_domain_name()
+    return {'user_subscription_url': urljoin(domain_name, url)}

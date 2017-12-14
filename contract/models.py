@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models
+from django.contrib.auth.models import User
 from django.core. validators import RegexValidator
+from django.db import models
+from django.template import Context, Template
 
 from utils.django_base import BaseModel
 from utils import constants
 
 from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
-from master.models import Mediation, BankAccount, CarMaker, Payment
+from master.models import Mediation, BankAccount, CarMaker, Payment, MailGroup
+from utils.app_base import get_total_context, get_user_subscription_url
 
 
 # Create your models here.
@@ -202,27 +205,13 @@ class TempContract(BaseContract):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        is_new = True if self.pk is None else False
         super(TempContract, self).save(force_insert, force_update, using, update_fields)
-        # 進捗のプロセス作成
-        process = ContractProcess.objects.create(temp_contract=self)
-        # 申込書送付のタスク
-        Task.objects.create(process=process, order=1, name='申込書送付')
-        # 申込書確認のタスク
-        Task.objects.create(process=process, order=2, name='申込書確認')
-        # 住所・電話番号 審査・確認のタスク
-        Task.objects.create(process=process, order=3, name='住所・電話番号 審査・確認')
-        # 勤め先審査のタスク
-        Task.objects.create(process=process, order=4, name='勤め先審査')
-        # 車両サイズ審査のタスク
-        Task.objects.create(process=process, order=5, name='車両サイズ審査')
-        # 申込ルート元審査のタスク
-        Task.objects.create(process=process, order=6, name='申込ルート元審査')
-        # 契約書類一式の送付のタスク
-        Task.objects.create(process=process, order=7, name='契約書類一式の送付')
-        # 入金確認のタスク
-        Task.objects.create(process=process, order=8, name='入金確認')
-        # 契約完了のタスク
-        Task.objects.create(process=process, order=9, name='契約完了')
+        if is_new:
+            # 進捗のプロセス作成
+            process = ContractProcess.objects.create(temp_contract=self)
+            for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
+                Task.objects.create(process=process, order=i, category=category[0], name=category[1])
 
 
 class ContractProcess(BaseModel):
@@ -246,13 +235,48 @@ class ContractProcess(BaseModel):
 
 class Task(BaseModel):
     process = models.ForeignKey(ContractProcess, verbose_name="契約進捗")
+    category = models.CharField(max_length=3, choices=constants.CHOICE_TASK_CATEGORY, verbose_name="タスク名称")
     name = models.CharField(max_length=50, verbose_name="タスク名称")
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_TASK_STATUS, verbose_name='ステータス')
+    mail_sent_datetime = models.DateTimeField(blank=True, null=True, verbose_name="メール送信日時")
+    updated_user = models.ForeignKey(User, blank=True, null=True, verbose_name="更新ユーザー")
+    url_links = models.CharField(max_length=2000, blank=True, null=True, verbose_name="リンク")
     order = models.SmallIntegerField(verbose_name="並び順")
-    is_end = models.BooleanField(default=False, verbose_name="終了タスク")
 
     class Meta:
         db_table = 'ap_task'
         ordering = ['process', 'order']
         verbose_name = "タスク"
         verbose_name_plural = "タスク一覧"
+
+    def __str__(self):
+        return self.name
+
+    def get_mail_group(self):
+        if self.category == '010':
+            # 申込書送付
+            group = MailGroup.get_subscription_mail_info()
+            return group
+        return None
+
+    def get_mail_template(self):
+        group = self.get_mail_group()
+        if group:
+            t_title = Template(group.template.title)
+            t_body = Template(group.template.body)
+            t_password = Template(group.template.password) if group.template.password else None
+            comment = group.template.comment or ''
+            context = Context(get_total_context(
+                parking_lot=self.process.temp_contract.parking_lot,
+                contractor=self.process.temp_contract.contractor,
+            ))
+            context.update(get_user_subscription_url(self))
+
+            return {
+                'title': t_title.render(context),
+                'body': t_body.render(context),
+                'password': t_password.render(context) if t_password else '',
+                'comment': comment,
+            }
+        else:
+            return dict()

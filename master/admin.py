@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 
 from . import models
-from utils.django_base import BaseAdmin
+from utils.django_base import BaseAdmin, BaseAdminEditor
 
 
 # Register your models here.
@@ -70,7 +70,7 @@ class MediationAdmin(BaseAdmin):
 
 
 @admin.register(models.MailTemplate)
-class MailTemplateAdmin(BaseAdmin):
+class MailTemplateAdmin(BaseAdminEditor):
     pass
 
 

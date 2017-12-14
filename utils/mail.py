@@ -155,6 +155,7 @@ class EbMail(object):
                 cc=self.cc_list,
                 connection=mail_connection
             )
+            email.attach_alternative(self.mail_body, constants.MIME_TYPE_HTML)
             # attachments = self.zip_attachments()
             # if attachments:
             #     email.attach('%s.zip' % self.mail_title, attachments, constants.MIME_TYPE_ZIP)

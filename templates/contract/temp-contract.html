@@ -8,6 +8,8 @@
 
 
 {% block footer %}
+<script type="text/javascript" src="/static/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="/static/tinymce/tinymce.init.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     $('.modal').modal({
@@ -18,19 +20,25 @@ $(document).ready(function(){
         startingTop: '4%', // Starting top style attribute
         endingTop: '10%', // Ending top style attribute
         ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
-            //alert("Ready");
-            console.log(modal, trigger);
+            var subscription_url = "";
+            if ($("#chkSubscriptionConfirm").prop("checked")) {
+                subscription_url = $("#chkSubscriptionConfirm").attr("data-task-url") + ",";
+            }
+            $("#hidSubscriptionUrl").val(subscription_url);
         },
         complete: function(obj) {
             //alert('Closed');
-        } // Callback for Modal close
+        }
     });
 
     $('.tooltipped').tooltip({delay: 50});
     ebjs.material.popup_anchor();
+    // 申込書の送信イベント
+    ebjs.material.send_subscription_mail("frmSendSubscriptionMail");
 });
-function abcd() {
-    return false;
+
+function select_subscription(obj) {
+
 }
 </script>
 {% endblock %}
@@ -88,24 +96,31 @@ function abcd() {
             </div>
             <ul class="collapsible" data-collapsible="expandable">
                 {% for task in temp_contract.process.task_set.all %}
+                {% with group=task.get_mail_group template=task.get_mail_template %}
                 <li>
                     <div class="collapsible-header">
                         <span class="icon-stack">
                              <i class="icon-sign-blank icon-stack-base"></i>
                              <span class="icon-fixed-width icon-light char-overlay">{{ forloop.counter }}</span>
                         </span>
-                        {{ task.name }}
-                        <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
+                        {{ task }}
+                        {% if task.status == '01' %}
+                            <span class="new badge red" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% endif %}
+                        {% if task.status == '99' %}
+                            <span class="new badge grey" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% endif %}
                     </div>
                     <div class="collapsible-body">
-                        {% if task.name == "申込書送付" %}
+                        {% if task.category == "010" %}
                         <table>
                             <tr>
                                 <td>
-                                    <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked" />
+                                    <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
+                                           data-task-url="{% url 'format:report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
                                     <label for="chkSubscriptionConfirm">申込確認書</label>
                                 </td>
-                                <td><a target="_blank" href="{% url 'format:report_subscription' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a></td>
+                                <td><a target="_blank" href="{% url 'format:report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a></td>
                             </tr>
                             <tr>
                                 <td>
@@ -116,23 +131,26 @@ function abcd() {
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <button data-target="send_subscription" onclick="abcd()" class="btn modal-trigger">送信<i class="material-icons right">send</i></button>
-                                    <span>前回送信日時：2017-12-01 10:10</span>
+                                    <button data-target="send_subscription" class="btn modal-trigger" onclick="select_subscription(this)">送信<i class="material-icons right">send</i></button>
+                                    {% if task.mail_sent_datetime %}
+                                    <span style="font-weight: bold;">前回送信日時：</span>{{ task.mail_sent_datetime }}&nbsp;&nbsp;&nbsp;
+                                    <span style="font-weight: bold;">送信者：</span>{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}
+                                    {% endif %}
                                 </td>
                             </tr>
                         </table>
-                        <!-- メール送信の確認ボックス -->
+                        <!-- 申込時メール送信の確認ボックス -->
                         <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
-                            <form method="post" action="{% url 'contract:send_subscription_mail' temp_contract.pk %}">
-                                {% csrf_token %}
+                            <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendSubscriptionMail">
                                 {{ formset.management_form }}
+                                <input type="hidden" id="hidSubscriptionUrl" name="subscription_url"/>
                             <div class="modal-content">
                                 <h4>申込書の送付</h4>
                                 <div class="row">
                                     <div class="col s12">
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <input readonly value="{{ subscription_group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
+                                                <input readonly value="{{ group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
                                                 <label for="txtSubscriptionSender">差出人</label>
                                             </div>
                                         </div>
@@ -142,31 +160,31 @@ function abcd() {
                                                 <label for="txtSubscriptionTo">宛先</label>
                                             </div>
                                         </div>
-                                        {% if subscription_group.get_cc_list %}
+                                        {% if group.get_cc_list %}
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <input value="{%for cc in subscription_group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
+                                                <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
                                                 <label for="txtSubscriptionCC">ＣＣ</label>
                                             </div>
                                         </div>
                                         {% endif %}
-                                        {% if subscription_group.get_bcc_list %}
+                                        {% if group.get_bcc_list %}
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <input value="{%for bcc in subscription_group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
+                                                <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
                                                 <label for="txtSubscriptionBCC">ＢＣＣ</label>
                                             </div>
                                         </div>
                                         {% endif %}
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <input value="{{ subscription_group.template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
+                                                <input value="{{ template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
                                                 <label for="txtSubscriptionTitle">件名</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea" style="min-height: 300px;">{{ subscription_group.template.body }}</textarea>
+                                                <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea" style="min-height: 300px;">{{ template.body|safe }}</textarea>
                                                 <label for="txtSubscriptionContent">メール本文</label>
                                             </div>
                                         </div>
@@ -182,7 +200,7 @@ function abcd() {
                             </form>
                         </div>
                         {% endif %}
-                        {% if task.name == "契約書類一式の送付" %}
+                        {% if task.category == "100" %}
                         <table>
                             <tr>
                                 <td>
@@ -244,6 +262,7 @@ function abcd() {
                         {% endif %}
                     </div>
                 </li>
+                {% endwith %}
                 {% endfor %}
             </ul>
         </div>

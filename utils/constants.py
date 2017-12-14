@@ -8,12 +8,18 @@ END_DATE = '9999-12-31'
 DATABASE_DEFAULT = "default"
 DATABASE_REVOLUTION = "fk5dtsql"
 
+MIME_TYPE_EXCEL = 'application/excel'
+MIME_TYPE_PDF = 'application/pdf'
+MIME_TYPE_ZIP = 'application/zip'
+MIME_TYPE_HTML = 'text/html'
+
 CONFIG_GROUP_SYSTEM = 'system'
 CONFIG_EMAIL_ADDRESS = 'email_address'
 CONFIG_EMAIL_SMTP_HOST = 'email_smtp_host'
 CONFIG_EMAIL_SMTP_PORT = 'email_smtp_port'
 CONFIG_EMAIL_PASSWORD = 'email_password'
 CONFIG_CIRCLE_RADIUS = 'circle_radius'
+CONFIG_DOMAIN_NAME = 'domain_name'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
@@ -100,6 +106,21 @@ CHOICE_CONTRACT_PROCESS = (
     ('01', '申込み'),
     ('01', '申込み'),
     ('01', '申込み'),
+)
+CHOICE_TASK_CATEGORY = (
+    # 01 申込
+    ('010', '申込書送付'),
+    ('011', '申込書確認'),
+    # 03 審査
+    ('030', '住所・電話番号 審査・確認'),
+    ('031', '勤め先審査'),
+    ('032', '車両サイズ審査'),
+    ('033', '申込ルート元審査'),
+    # 契約
+    ('100', '契約書類一式の送付'),
+    # 入金
+    ('110', '入金確認'),
+    ('999', '契約完了'),
 )
 CHOICE_TASK_STATUS = (
     ('01', '未実施'),

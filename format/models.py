@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from utils.django_base import BaseModel
 
@@ -24,6 +25,17 @@ class ReportSubscriptionConfirm(BaseReport):
         verbose_name = "申込確認書"
         verbose_name_plural = u"申込確認書一覧"
 
+    @classmethod
+    def get_default_report(cls):
+        """デフォルトの申込確認書テンプレートを取得する。
+
+        :return:
+        """
+        try:
+            return ReportSubscriptionConfirm.objects.get(is_default=True)
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            return ReportSubscriptionConfirm.objects.public_all().first()
+
 
 class ReportSubscription(BaseReport):
 
@@ -32,3 +44,14 @@ class ReportSubscription(BaseReport):
         ordering = ['name']
         verbose_name = "申込書"
         verbose_name_plural = u"申込書一覧"
+
+    @classmethod
+    def get_default_report(cls):
+        """デフォルトの申込書テンプレートを取得する。
+
+        :return:
+        """
+        try:
+            return ReportSubscription.objects.get(is_default=True)
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            return None

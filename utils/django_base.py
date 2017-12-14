@@ -69,6 +69,14 @@ class BaseAdmin(admin.ModelAdmin):
             return response
 
 
+class BaseAdminEditor(BaseAdmin):
+    class Media:
+        js = (
+            '/static/tinymce/tinymce.min.js',
+            '/static/tinymce/tinymce.init.js',
+        )
+
+
 class BaseAdminChangeOnly(BaseAdmin):
     def has_add_permission(self, request):
         return False

@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import datetime
 
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 from . import models
-from format.biz import get_default_subscription_confirm_report
+from contract.models import Task
+from format.models import ReportSubscriptionConfirm
 from utils.django_base import BaseTemplateView, BaseView
 from utils.mail import EbMail
-from master import biz
 
 
 # Create your views here.
@@ -31,19 +31,21 @@ class TempContractDetailView(BaseTemplateView):
         temp_contract = get_object_or_404(models.TempContract, pk=kwargs.get('id'))
         parkingposition = temp_contract.parking_position
         contractor = temp_contract.contractor
-        subscription_group = biz.get_subscription_mail_info()
         context.update({
             'temp_contract': temp_contract,
             'contractor': contractor,
             'parkingposition': parkingposition,
-            'subscription_group': subscription_group,
-            'subscription_confirm_template': get_default_subscription_confirm_report()
+            'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report()
         })
         return context
 
 
 class SendSubscriptionMail(BaseView):
     def post(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, pk=kwargs.get('task_id'))
+        subscription_url = request.POST.get('subscription_url', None)
+        if not subscription_url:
+            return JsonResponse({'error': True, 'message': '少なくとも１つの申込書を選択してください。'})
         sender = request.POST.get('subscription_sender', None)
         recipient_list = request.POST.get('subscription_to', None)
         cc_list = request.POST.get('subscription_cc', None)
@@ -54,5 +56,20 @@ class SendSubscriptionMail(BaseView):
             'sender': sender, 'recipient_list': recipient_list, 'cc_list': cc_list,
             'bcc_list': bcc_list, 'mail_title': mail_title, 'mail_body': mail_body,
         }
-        mail = EbMail(**mail_data)
-        mail.send_email()
+        try:
+            mail = EbMail(**mail_data)
+            mail.send_email()
+            task.status = '99'      # タスク完了
+            task.mail_sent_datetime = datetime.datetime.now()
+            task.updated_user = request.user
+            task.url_links = subscription_url
+            task.save()
+            json = {
+                'error': False,
+            }
+        except Exception as ex:
+            json = {
+                'error': True,
+                'message': str(ex)
+            }
+        return JsonResponse(json)

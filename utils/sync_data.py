@@ -9,9 +9,25 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import common
-from master.models import CarModel, CarMaker, Config
+from master.models import CarModel, CarMaker, Config, Company
 from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaffHistory
 from employee.models import Department, Member, MemberShip
+
+
+def sync_master():
+    # 自社情報の同期
+    if Company.objects.public_all().count() == 0:
+        company = Company()
+        company.name = "株式会社○○○・○○○○○"
+        company.post_code = '123-4567'
+        company.address1 = '東京都港区芝2丁目'
+        company.address2 = '２－２－２○○ビル　１０階'
+        company.tel = '080-1234-5678'
+        company.fax = '070-1234-5678'
+        company.email = 'email@example.com'
+        company.save()
+    else:
+        print('既に存在しているので、スキップしました。')
 
 
 def sync_car_models():

@@ -2,9 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ title }}</title>
+    <script type="text/javascript" src="/static/js/bundle.js"></script>
+    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>-->
+    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.scrollfire/1.4.0/jquery.scrollfire.js"></script>-->
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>-->
+    <script type="text/javascript">
+        var canvas;
+        ebjs.$(document).ready(function() {
+            canvas = document.getElementById('signature-pad');
+            window.onresize = function () {ebjs.utils.resizeCanvas(canvas);};
+            ebjs.utils.resizeCanvas(canvas);
+            var signaturePad = new ebjs.signature.SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)'
+            });
+            document.getElementById('save-svg').addEventListener('click', function () {
+                if (signaturePad.isEmpty()) {
+                    return alert("Please provide a signature first.");
+                }
+
+                var data = signaturePad.toDataURL('image/svg+xml');
+                var imgSignature = get_img_signature();
+                imgSignature.attr('src', data);
+                //document.getElementById("imgSignature").src = data;
+                //document.getElementById("imgSignature").style.display = "";
+                hideDialog();
+            });
+
+            document.getElementById('clear').addEventListener('click', function () {
+                signaturePad.clear();
+            });
+        });
+        function iFrameInit(obj) {
+            obj.style.height = obj.contentWindow.document.body.scrollHeight + 100 + 'px';
+            ebjs.$(obj).contents().find("img.signature-pad").click(function() {
+                startSignature();
+            });
+        }
+        function get_img_signature() {
+            return ebjs.$('iframe').contents().find("img.signature-pad");
+        }
+        function hideDialog() {
+            ebjs.$("div.signature_dialog").css("visibility", "hidden");
+        }
+        function startSignature() {
+            ebjs.$("div.signature_dialog").css("visibility", "visible");
+            var ctx = canvas.getContext('2d');
+            ctx.globalCompositeOperation = 'source-over';
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <style type="text/css">
+        iframe {
+            width: 100%;
+        }
+        .wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            margin-bottom: 10px;
+        }
+        .signature-pad {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width:800px;
+            height:200px;
+            background-color: white;
+            border: 1px solid grey;
+        }
+        div.signature_dialog {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            display: block;
+            background: rgba(127, 127, 127, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 10px 15px;
+            border-radius: 5px;
+            visibility: hidden;
+        }
+    </style>
 </head>
 <body>
+    <div style="width: 850px;margin: 0px auto;">
+        {% for url in urls %}
+        <iframe src="{{ url }}" frameborder="0" onload="iFrameInit(this)">
+        </iframe>
+        {% endfor %}
+    </div>
+    <div class="signature_dialog" style="width: 100%; height: 100%;">
+        <div style="width: 820px; margin: 0 auto; background: white; padding: 10px;">
+            <div class="wrapper">
+                <canvas id="signature-pad" class="signature-pad"></canvas>
+            </div>
 
+            <button id="save-svg">確定</button>
+            <!--<button id="draw">Draw</button>-->
+            <button id="clear">クリア</button>
+            <button id="close" onclick="hideDialog()">キャンセル</button>
+        </div>
+    </div>
 </body>
 </html>
