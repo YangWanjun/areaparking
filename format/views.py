@@ -36,3 +36,19 @@ class SubscriptionConfirmView(BaseView):
         ))
         html = t.render(ctx)
         return HttpResponse(html)
+
+
+class SubscriptionView(BaseView):
+
+    def get(self, request, *args, **kwargs):
+        report = get_object_or_404(models.ReportSubscription, pk=kwargs.get('report_id'))
+        parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
+        contractor = get_object_or_404(TempContractor, pk=kwargs.get('contractor_id'))
+        t = Template(report.content)
+        ctx = Context(kwargs)
+        ctx.update(get_total_context(
+            parking_lot=parking_lot,
+            contractor=contractor,
+        ))
+        html = t.render(ctx)
+        return HttpResponse(html)

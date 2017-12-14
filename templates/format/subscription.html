@@ -4,31 +4,50 @@
     <meta charset="UTF-8">
     <title>申込書</title>
     <style type="text/css">
+        .mce-content-body table caption, .mce-content-body table td, .mce-content-body table th {
+            padding: 5px 0px !important;
+        }
         * {
             overflow: hidden;
             white-space: nowrap;
+            font-family: "ＭＳ ゴシック", monospace;
         }
         .vertical-words {
             -webkit-writing-mode: vertical-rl;
             -ms-writing-mode: tb-rl;
             writing-mode: vertical-rl;
         }
-        .border-bottom,
-        .border-bottom td {
-            border-bottom: 1px solid black;
+        tr.border-top td {
+            border-top: 2px solid black;
+        }
+        .border-left {
+            border-left: 2px solid black;
+        }
+        .border-right {
+            border-right: 2px solid black;
+        }
+        .center {
+            text-align: center;
         }
     </style>
 </head>
 <body>
-<form method="post" style="margin: 0px auto; width: 910px;position: relative;">
-    <table cellpadding="0" cellspacing="0" style="font-size: 14px;">
-        <thead>
+<form method="post" style="margin: 0px auto; width: 810px;position: relative;">
+    <div style="text-align: center; background-color: #000000; color: #ffffff; font-size: 18px;">申　　込　　書</div>
+    <table width="100%">
         <tr>
-            <th colspan="10" style="text-align: center; background-color: #000000; color: #ffffff; font-size: 18px;">申　　込　　書</th>
+            <td style="font-size: 14px;padding-top:10px;padding-bottom:5px;">申込日: {{ current_date }}</td>
+            <td style="font-size: 10px;"><div style="width: 400px;">※ 保管証発行-車庫証明に必要な書類（発行手数料：消費税別{{ payment_c_commission }}円）</div></td>
+            <td>
+                <input type="radio" name="rdoReceipt" id="rdoReceipt1" />
+                <label for="rdoReceipt1">必要</label>
+                <input type="radio" name="rdoReceipt" id="rdoReceipt2" />
+                <label for="rdoReceipt2">不要</label>
+            </td>
         </tr>
-        </thead>
-        <tbody>
-        <tr style="height: 0px;">
+    </table>
+    <table cellpadding="0" cellspacing="0" style="font-size: 14px;" class="border-left border-right">
+        <tr style="height: 0px; visibility: hidden;">
             <td style="width: 32px;"></td>
             <td style="width: 59px;"></td>
             <td style="width: 52px;"></td>
@@ -40,18 +59,8 @@
             <td style="width: 72px;"></td>
             <td style="width: 190px;"></td>
         </tr>
-        <tr class="border-bottom">
-            <td colspan="4" style="font-size: 14px;padding-top:10px;padding-bottom:5px;">申込日: {{ current_date }}</td>
-            <td colspan="5" style="font-size: 10px;"><div style="width: 400px;">※ 保管証発行-車庫証明に必要な書類（発行手数料：消費税別{{ payment_c_commission }}円）</div></td>
-            <td>
-                <input type="radio" name="rdoReceipt" id="rdoReceipt1" />
-                <label for="rdoReceipt1">必要</label>
-                <input type="radio" name="rdoReceipt" id="rdoReceipt2" />
-                <label for="rdoReceipt2">不要</label>
-            </td>
-        </tr>
-        <tr>
-            <td rowspan="3" style="white-space: normal; font-size: 16px;">駐車場の表示</td>
+        <tr class="border-top">
+            <td rowspan="3" class="border-right center" style="white-space: normal; font-size: 16px;">駐車場の表示</td>
             <td colspan="2" style="font-size: 16px;padding: 10px 0px;">名称・所在地</td>
             <td colspan="7"></td>
         </tr>
@@ -63,7 +72,19 @@
             <td colspan="2" style="font-size: 16px">駐車番号(No.)</td>
             <td colspan="7"></td>
         </tr>
-        </tbody>
+        <tr class="border-top">
+            <td rowspan="3"  class="border-right center" style="white-space: normal; font-size: 16px;">駐車する車</td>
+            <td colspan="2" style="font-size: 16px;padding: 10px 0px;">メーカー</td>
+            <td colspan="7"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 16px">車両登録番号<br/>(ﾅﾝﾊﾞｰﾌﾟﾚｰﾄ)</td>
+            <td colspan="7"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 16px">車体の大きさ</td>
+            <td colspan="7"></td>
+        </tr>
     </table>
 </form>
 </body>

@@ -22,7 +22,10 @@ $(document).ready(function(){
         ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
             var subscription_url = "";
             if ($("#chkSubscriptionConfirm").prop("checked")) {
-                subscription_url = $("#chkSubscriptionConfirm").attr("data-task-url") + ",";
+                subscription_url += $("#chkSubscriptionConfirm").attr("data-task-url") + ",";
+            }
+            if ($("#chkSubscription").prop("checked")) {
+                subscription_url += $("#chkSubscription").attr("data-task-url") + ",";
             }
             $("#hidSubscriptionUrl").val(subscription_url);
         },
@@ -124,10 +127,11 @@ function select_subscription(obj) {
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked" />
+                                    <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked"
+                                           data-task-url="{% url 'format:report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
                                     <label for="chkSubscription">申込書</label>
                                 </td>
-                                <td><a target="_blank" href="http://www.monthlyparking.co.jp/parking_offer/offer_tsurumaki.pdf">プレイビュー</a></td>
+                                <td><a target="_blank" href="{% url 'format:report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a></td>
                             </tr>
                             <tr>
                                 <td colspan="2">

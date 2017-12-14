@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from . import models
 from contract.models import Task
-from format.models import ReportSubscriptionConfirm
+from format.models import ReportSubscriptionConfirm, ReportSubscription
 from utils.django_base import BaseTemplateView, BaseView
 from utils.mail import EbMail
 
@@ -35,7 +35,8 @@ class TempContractDetailView(BaseTemplateView):
             'temp_contract': temp_contract,
             'contractor': contractor,
             'parkingposition': parkingposition,
-            'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report()
+            'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
+            'subscription_template': ReportSubscription.get_default_report(),
         })
         return context
 

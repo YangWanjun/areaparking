@@ -54,4 +54,4 @@ class ReportSubscription(BaseReport):
         try:
             return ReportSubscription.objects.get(is_default=True)
         except (ObjectDoesNotExist, MultipleObjectsReturned):
-            return None
+            return ReportSubscription.objects.public_all().first()
