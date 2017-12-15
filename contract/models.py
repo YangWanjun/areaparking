@@ -194,7 +194,7 @@ class TempContract(BaseContract):
     car_maker = models.ForeignKey(CarMaker, blank=True, null=True, verbose_name="車メーカー")
     car_model = models.CharField(max_length=100, blank=True, null=True, verbose_name="車種")
     car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
-    car_no = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
+    car_no_plate = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
     car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
 
     class Meta:

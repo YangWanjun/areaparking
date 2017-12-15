@@ -35,7 +35,7 @@
             });
         });
         function iFrameInit(obj) {
-            obj.style.height = obj.contentWindow.document.body.scrollHeight + 100 + 'px';
+            obj.style.height = obj.contentWindow.document.body.scrollHeight + 20 + 'px';
             ebjs.$(obj).contents().find("img.signature-pad").click(function() {
                 startSignature();
             });
