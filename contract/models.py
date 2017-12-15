@@ -290,8 +290,8 @@ class VTempContract(BaseModel):
     class Meta:
         managed = False
         db_table = 'v_temp_contract'
-        verbose_name = "仮契約"
-        verbose_name_plural = "仮契約一覧"
+        verbose_name = "仮契約ビュー"
+        verbose_name_plural = "仮契約ビュー一覧"
 
     def __str__(self):
         return str(self.temp_contract)

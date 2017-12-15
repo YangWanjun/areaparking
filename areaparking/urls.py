@@ -72,3 +72,5 @@ urlpatterns = [
     url(r'^api/', include(master_router.urls)),
     url(r'^api/', include(whiteboard_router.urls)),
 ]
+
+handler500 = 'areaparking.views.handler_500'

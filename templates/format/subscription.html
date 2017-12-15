@@ -8,9 +8,12 @@
             padding: 5px 0px !important;
         }
         * {
-            overflow: hidden;
+            /*overflow: hidden;*/
             white-space: nowrap;
             font-family: "ＭＳ ゴシック", monospace;
+        }
+        table td {
+            width: 35px !important;
         }
         .vertical-words {
             -webkit-writing-mode: vertical-rl;
@@ -18,13 +21,22 @@
             writing-mode: vertical-rl;
         }
         tr.border-top td {
-            border-top: 2px solid black;
+            border-top: 1px solid black;
         }
         .border-left {
-            border-left: 2px solid black;
+            border-left: 1px solid black;
         }
         .border-right {
-            border-right: 2px solid black;
+            border-right: 1px solid black;
+        }
+        .border-right-dashed {
+            border-right: 1px dashed black;
+        }
+        .border-bottom {
+            border-bottom: 1px solid black
+        }
+        .border-bottom-dashed {
+            border-bottom: 1px dashed black;
         }
         .center {
             text-align: center;
@@ -47,43 +59,316 @@
         </tr>
     </table>
     <table cellpadding="0" cellspacing="0" style="font-size: 14px;" class="border-left border-right">
-        <tr style="height: 0px; visibility: hidden;">
-            <td style="width: 32px;"></td>
-            <td style="width: 59px;"></td>
-            <td style="width: 52px;"></td>
-            <td style="width: 104px;"></td>
-            <td style="width: 58px;"></td>
-            <td style="width: 87px;"></td>
-            <td style="width: 36px;"></td>
-            <td style="width: 122px;"></td>
-            <td style="width: 72px;"></td>
-            <td style="width: 190px;"></td>
+        <tr class="border-top">
+            <td rowspan="4" class="border-right center" style="white-space: normal; font-size: 16px;">駐<br/>車<br/>場<br/>の<br/>表<br/>示</td>
+            <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 16px;padding: 10px 0px;">名称・所在地</td>
+            <td colspan="19" class="border-bottom" style="height: 40px;"></td>
+        </tr>
+        <tr>
+            <td rowspan="2" class="border-right-dashed border-bottom" colspan="3" style="font-size: 16px">収容可能サイズ</td>
+            <td colspan="19" class="border-bottom-dashed" style="height: 29px;"></td>
+        </tr>
+        <tr>
+            <td colspan="19" class="border-bottom" style="height: 29px;"></td>
+        </tr>
+        <tr>
+            <td colspan="3" class="border-right-dashed" style="font-size: 16px">駐車番号(No.)</td>
+            <td colspan="19" style="height: 40px;"></td>
         </tr>
         <tr class="border-top">
-            <td rowspan="3" class="border-right center" style="white-space: normal; font-size: 16px;">駐車場の表示</td>
-            <td colspan="2" style="font-size: 16px;padding: 10px 0px;">名称・所在地</td>
-            <td colspan="7"></td>
+            <td rowspan="3"  class="border-right center border-bottom" style="white-space: normal; font-size: 16px;">駐<br/>車<br/>す<br/>る<br/>車</td>
+            <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 16px;">メーカー</td>
+            <td colspan="8" class="border-bottom" style="height: 38px;"></td>
+            <td colspan="4" class="border-left border-bottom border-right-dashed">車種(プリウス等)</td>
+            <td colspan="7" class="border-bottom"></td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 16px">収容可能サイズ</td>
-            <td colspan="7"></td>
+            <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 16px;height: 38px;">車両登録番号<br/>(ﾅﾝﾊﾞｰﾌﾟﾚｰﾄ)</td>
+            <td colspan="19" class="border-bottom"></td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 16px">駐車番号(No.)</td>
-            <td colspan="7"></td>
-        </tr>
-        <tr class="border-top">
-            <td rowspan="3"  class="border-right center" style="white-space: normal; font-size: 16px;">駐車する車</td>
-            <td colspan="2" style="font-size: 16px;padding: 10px 0px;">メーカー</td>
-            <td colspan="7"></td>
+            <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 16px">車体の大きさ</td>
+            <td colspan="5" class="border-bottom" style="height: 38px;">全長：</td>
+            <td colspan="5" class="border-bottom" style="height: 38px;">全幅：</td>
+            <td colspan="5" class="border-bottom" style="height: 38px;">全高：</td>
+            <td colspan="4" class="border-bottom" style="height: 38px;">重量：</td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 16px">車両登録番号<br/>(ﾅﾝﾊﾞｰﾌﾟﾚｰﾄ)</td>
-            <td colspan="7"></td>
+            <td rowspan="2" class="border-bottom border-right-dashed" colspan="4" style="font-size: 16px">希望契約開始日</td>
+            <td rowspan="2" class="border-bottom border-right" colspan="7">
+
+            </td>
+            <td rowspan="2" class="border-bottom border-right-dashed" colspan="5">希望契約期間<br/>&nbsp;&nbsp;チェックしてください→</td>
+            <td colspan="7" class="border-bottom" style="height: 27px;">１年間（その後自動更新）</td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 16px">車体の大きさ</td>
-            <td colspan="7"></td>
+            <td colspan="7" class="border-bottom" style="height: 44px;">１・２ヶ月契約（　　月末日まで）<br/>&nbsp;&nbsp;&nbsp;※更新できませんのでご注意ください</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="border-right-dashed" style="height: 23px;">契約方法<br/></td>
+            <td colspan="19">□ 契約書を弊社から郵送で送付し、記名捺印のうえ、郵便で返送する。</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="border-bottom border-right-dashed" style="height: 23px;">&nbsp;チェックしてください→</td>
+            <td colspan="19" class="border-bottom">□ 契約書を弊社からメールで送付し、記名捺印のうえ、郵便で返送する。</td>
+        </tr>
+        <tr>
+            <td rowspan="2" class="border-bottom border-right-dashed" colspan="4">任意保険の加入<br/><span style="font-size: 11px;">（任意保険の加入必須）</span></td>
+            <td rowspan="2" colspan="3" class="border-bottom border-right-dashed">対物限度額<br/><span style="font-size: 11px;">３，０００万円以上に限る</span></td>
+            <td colspan="16" class="border-bottom" style="height: 23px;"></td>
+        </tr>
+        <tr>
+            <td colspan="16" class="border-bottom" style="height: 23px;"></td>
+        </tr>
+        <tr>
+            <td colspan="4" class="border-bottom border-right-dashed" style="height: 26px;">契約時の支払い方法</td>
+            <td colspan="19" class="border-bottom">※契約前にお振込いただきます　　（自動引落しの対応は行っておりません）</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="border-bottom border-right-dashed" style="height: 26px;">賃料の支払い方法</td>
+            <td colspan="12" class="border-bottom">※毎月２５日までに翌月分をお振込いただきます</td>
+            <td colspan="2" class="border-bottom border-left border-right" style="color: red;">月額賃料：</td>
+            <td colspan="5" class="border-bottom" style="color: red;text-align: right;">（税別）</td>
+        </tr>
+        <tr style="height: 27px;">
+            <td colspan="11" class="border-bottom center" style="font-size: 16px;font-weight:bold;">法人申込の方は、こちらにご記入下さい</td>
+            <td colspan="12" class="border-left border-bottom center" style="font-size: 16px;font-weight:bold;">個人申込の方は、こちらにご記入下さい</td>
+        </tr>
+        <tr style="height: 18x;">
+            <td rowspan="8" class="border-bottom border-right">
+                <div style="font-size:9px;float:left;margin-left: 2px;">
+                    (<br/>
+                    空<br/>
+                    欄<br/>
+                    を<br/>
+                    全<br/>
+                    て<br/>
+                    埋<br/>
+                    め<br/>
+                    て<br/>
+                    く<br/>
+                    だ<br/>
+                    さ<br/>
+                    い<br/>
+                    )
+                </div>
+                <div style="float:right;clear:right;font-size: 18px;margin-right: 2px;margin-top: 25px;">
+                    法<br/>
+                    人<br/>
+                    連<br/>
+                    絡<br/>
+                    先
+                </div>
+            </td>
+            <td colspan="3" class="border-bottom border-right-dashed">フリガナ</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td rowspan="8" class="border-bottom border-left border-right">
+                <div style="font-size:9px;float:left;margin-left: 2px;">
+                    (<br/>
+                    空<br/>
+                    欄<br/>
+                    を<br/>
+                    全<br/>
+                    て<br/>
+                    埋<br/>
+                    め<br/>
+                    て<br/>
+                    く<br/>
+                    だ<br/>
+                    さ<br/>
+                    い<br/>
+                    )
+                </div>
+                <div style="float:right;clear:right;font-size: 18px;margin-right: 2px;margin-top: 25px;">
+                    申<br/>
+                    込<br/>
+                    人<br/>
+                    連<br/>
+                    絡<br/>
+                    先
+                </div>
+            </td>
+            <td colspan="3" class="border-bottom border-right-dashed">フリガナ</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 36px;">
+            <td colspan="3" class="border-bottom border-right-dashed">法人名</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">氏名</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 36px;">
+            <td colspan="3" class="border-bottom border-right-dashed">代表者</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">生年月日</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 61px;">
+            <td colspan="3" class="border-bottom border-right-dashed">所在地</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">住所</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 36px;">
+            <td colspan="3" class="border-bottom border-right-dashed">建物名</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">建物名</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 30px;">
+            <td colspan="3" class="border-bottom border-right-dashed">TEL</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">自宅TEL・FAX</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 30px;">
+            <td colspan="3" class="border-bottom border-right-dashed">FAX</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">携帯電話</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 36px;">
+            <td colspan="3" class="border-bottom border-right-dashed">会社業種</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">E-mail</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 18x;">
+            <td rowspan="7" class="border-bottom border-right">
+                <div style="font-size:9px;float:left;margin-left: 2px;">
+                    (<br/>
+                    空<br/>
+                    欄<br/>
+                    を<br/>
+                    全<br/>
+                    て<br/>
+                    埋<br/>
+                    め<br/>
+                    て<br/>
+                    く<br/>
+                    だ<br/>
+                    さ<br/>
+                    い<br/>
+                    )
+                </div>
+                <div style="float:right;clear:right;font-size: 18px;margin-right: 2px;margin-top: 25px;">
+                    契<br/>
+                    約<br/>
+                    担<br/>
+                    当<br/>
+                    者
+                </div>
+            </td>
+            <td colspan="3" class="border-bottom border-right-dashed">フリガナ</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td rowspan="7" class="border-bottom border-left border-right">
+                <div style="font-size:9px;float:left;margin-left: 2px;">
+                    (<br/>
+                    空<br/>
+                    欄<br/>
+                    を<br/>
+                    全<br/>
+                    て<br/>
+                    埋<br/>
+                    め<br/>
+                    て<br/>
+                    く<br/>
+                    だ<br/>
+                    さ<br/>
+                    い<br/>
+                    )
+                </div>
+                <div style="float:right;clear:right;font-size: 18px;margin-right: 2px;margin-top: 25px;">
+                    申<br/>
+                    込<br/>
+                    人<br/>
+                    勤<br/>
+                    務<br/>
+                    先
+                </div>
+            </td>
+            <td rowspan="2" colspan="3" class="border-bottom border-right-dashed">勤務先名</td>
+            <td rowspan="2" colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 18px;">
+            <td rowspan="2" colspan="3" class="border-bottom border-right-dashed">氏名</td>
+            <td rowspan="2" colspan="7" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 18px">
+            <td rowspan="2" colspan="3" class="border-bottom border-right-dashed">
+                所在地<br/>
+                <div style="font-size: 10px;">
+                    ※勤務先のない方は、<br/>
+                    ご家族の勤務先と、そ<br/>
+                    の方のお名前・関係性<br/>
+                    をお知らせください。<br/>
+                </div>
+            </td>
+            <td rowspan="2" colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 54px;">
+            <td colspan="3" class="border-bottom border-right-dashed">E-mail</td>
+            <td colspan="7" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 36px;">
+            <td colspan="3" class="border-bottom border-right-dashed">TEL</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">建物名</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 36px;">
+            <td colspan="3" class="border-bottom border-right-dashed">FAX</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">TEL</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 36px;">
+            <td colspan="3" class="border-bottom border-right-dashed">携帯電話</td>
+            <td colspan="7" class="border-bottom"></td>
+            <td colspan="3" class="border-bottom border-right-dashed">FAX</td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr style="height: 46px;">
+            <td colspan="4" class="border-bottom" style="text-align: center; background-color: #000000; color: #ffffff;">
+                <div style="font-size:13px;">緊急連絡先</div>
+                <div style="font-size:10px;">（※ご本人、勤務先以外）</div>
+                <div style="font-size:10px;">※必ずご記入ください</div>
+            </td>
+            <td colspan="7" class="border-bottom">
+                電話番号
+                （氏名：　　　　　　　契約者との関係）
+            </td>
+            <td colspan="4" class="border-bottom" style="text-align: center; background-color: #000000; color: #ffffff;">
+                <div style="font-size:13px;">緊急連絡先</div>
+                <div style="font-size:10px;">（※ご本人、勤務先以外）</div>
+                <div style="font-size:10px;">※必ずご記入ください</div>
+            </td>
+            <td colspan="8" class="border-bottom"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
 </form>

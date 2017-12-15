@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
+from utils import errors, constants
 from utils.django_base import BaseModel
 
 
@@ -34,7 +35,10 @@ class ReportSubscriptionConfirm(BaseReport):
         try:
             return ReportSubscriptionConfirm.objects.get(is_default=True)
         except (ObjectDoesNotExist, MultipleObjectsReturned):
-            return ReportSubscriptionConfirm.objects.public_all().first()
+            report = ReportSubscriptionConfirm.objects.public_all().first()
+            if report is None:
+                raise errors.SettingException(constants.ERROR_SETTING_NO_SUBSCRIPTION_CONFIRM)
+            return report
 
 
 class ReportSubscription(BaseReport):
@@ -54,4 +58,7 @@ class ReportSubscription(BaseReport):
         try:
             return ReportSubscription.objects.get(is_default=True)
         except (ObjectDoesNotExist, MultipleObjectsReturned):
-            return ReportSubscription.objects.public_all().first()
+            report = ReportSubscription.objects.public_all().first()
+            if report is None:
+                raise errors.SettingException(constants.ERROR_SETTING_NO_SUBSCRIPTION)
+            return report

@@ -11,6 +11,14 @@ class FileNotExistException(MyBaseException):
         MyBaseException.__init__(self, message)
 
 
+class SettingException(MyBaseException):
+    """
+    設定はしてない場合、または設定間違った場合発生する例外
+    """
+    def __init__(self, message=""):
+        MyBaseException.__init__(self, message)
+
+
 class CustomException(MyBaseException):
     def __init__(self, message=""):
         MyBaseException.__init__(self, message)
