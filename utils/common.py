@@ -5,6 +5,7 @@ import re
 import logging
 import pdfkit
 import datetime
+import random
 
 
 def get_root_path():
@@ -21,6 +22,34 @@ def get_data_path():
     :return:
     """
     return os.path.join(get_root_path(), 'data')
+
+
+def get_temp_path():
+    """一時フォルダーを取得する。
+
+    :return:
+    """
+    from django.conf import settings
+    path = os.path.join(settings.MEDIA_ROOT, 'temp')
+    if not os.path.exists(path):
+        os.mkdir(path)
+    return path
+
+
+def get_temp_file(ext):
+    """指定拡張子の一時ファイルを取得する。
+
+    :param ext:
+    :return:
+    """
+    temp_root = get_temp_path()
+    file_name = "{0}_{1}.{2}".format(
+        datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'),
+        random.randint(10000, 99999),
+        ext
+    )
+    temp_file = os.path.join(temp_root, file_name)
+    return temp_file
 
 
 def get_num_from_str(value):
@@ -42,14 +71,18 @@ def get_ap_logger():
     return logging.getLogger('area_parking')
 
 
-def generate_pdf_from_string(text, out_path):
+def generate_pdf_from_string(html, out_path):
     logger = get_ap_logger()
     try:
         # config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
         # TODO: パスに日本語があったら、エラーになる。暫定対策：英語にしてから、また日本語名に変更する。
-        options = {'encoding': "UTF-8"}
+        options = {
+            'encoding': "UTF-8",
+            'page-size': 'A4',
+            'dpi': 300,
+        }
         # css = ['']
-        pdfkit.from_string(text, out_path, options=options)
+        pdfkit.from_string(html, out_path, options=options)
     except Exception as ex:
         logger.error(str(ex))
 

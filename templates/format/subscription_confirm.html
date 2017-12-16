@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="pdfkit-page-size" content="A4"/>
     <title>申込書確認書</title>
     <style type="text/css">
+        @media print{
+        }
+        @page {
+            size: A4
+        }
         .mce-content-body table caption, .mce-content-body table td, .mce-content-body table th {
             padding: 5px 0px !important;
         }
@@ -12,11 +18,13 @@
         }
         * {
             font-family: "ＭＳ ゴシック", monospace;
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
-<body>
-<div style="margin: 0px auto; width: 810px; position: relative;">
+<body style="margin: 0px auto; width: 810px;">
+<div style="position: relative;">
     <p style="text-align: center; background-color: #000000; color: #ffffff; font-size: 18px; height: 30;line-height: 30px;margin-bottom: 0px;">申込確認書　◆ この用紙は、ご署名の上、申込書と一緒にご提出いただきます ◆</p>
     <table id="tblTitle" style="table-layout: fixed; font-size: 14px; float: left;" cellpadding="0" cellspacing="0">
         <tr>

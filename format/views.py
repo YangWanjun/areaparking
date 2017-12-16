@@ -1,11 +1,11 @@
+import urllib
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.template import Context, Template
 
-from . import models
+from . import biz
+from contract.models import Task
 from parkinglot.models import ParkingLot
-from contract.models import TempContractor, Task
-from utils.app_base import get_total_context
 from utils.django_base import BaseView, BaseTemplateView
 
 
@@ -25,30 +25,34 @@ class UserOperationView(BaseTemplateView):
 class SubscriptionConfirmView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        report = get_object_or_404(models.ReportSubscriptionConfirm, pk=kwargs.get('report_id'))
-        parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
-        contractor = get_object_or_404(TempContractor, pk=kwargs.get('contractor_id'))
-        t = Template(report.content)
-        ctx = Context(kwargs)
-        ctx.update(get_total_context(
-            parking_lot=parking_lot,
-            contractor=contractor,
-        ))
-        html = t.render(ctx)
+        html = biz.get_subscription_confirm_html(**kwargs)
         return HttpResponse(html)
 
 
 class SubscriptionView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        report = get_object_or_404(models.ReportSubscription, pk=kwargs.get('report_id'))
-        parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
-        contractor = get_object_or_404(TempContractor, pk=kwargs.get('contractor_id'))
-        t = Template(report.content)
-        ctx = Context(kwargs)
-        ctx.update(get_total_context(
-            parking_lot=parking_lot,
-            contractor=contractor,
-        ))
-        html = t.render(ctx)
+        html = biz.get_subscription_html(**kwargs)
         return HttpResponse(html)
+
+
+class GenerateSubscriptionConfirmPdfView(BaseView):
+
+    def get(self, request, *args, **kwargs):
+        parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
+        html = biz.get_subscription_confirm_html(**kwargs)
+        data = biz.generate_report_pdf_binary(html)
+        response = HttpResponse(data, content_type="application/pdf")
+        response['Content-Disposition'] = "filename=" + parking_lot.name
+        return response
+
+
+class GenerateSubscriptionPdfView(BaseView):
+
+    def get(self, request, *args, **kwargs):
+        parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
+        html = biz.get_subscription_html(**kwargs)
+        data = biz.generate_report_pdf_binary(html)
+        response = HttpResponse(data, content_type="application/pdf")
+        response['Content-Disposition'] = "filename=" + parking_lot.name
+        return response

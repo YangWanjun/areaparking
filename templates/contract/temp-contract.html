@@ -116,33 +116,43 @@ function select_subscription(obj) {
                     </div>
                     <div class="collapsible-body">
                         {% if task.category == "010" %}
-                        <table>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
-                                           data-task-url="{% url 'format:report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
-                                    <label for="chkSubscriptionConfirm">申込確認書</label>
-                                </td>
-                                <td><a target="_blank" href="{% url 'format:report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked"
-                                           data-task-url="{% url 'format:report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
-                                    <label for="chkSubscription">申込書</label>
-                                </td>
-                                <td><a target="_blank" href="{% url 'format:report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <button data-target="send_subscription" class="btn modal-trigger" onclick="select_subscription(this)">送信<i class="material-icons right">send</i></button>
-                                    {% if task.mail_sent_datetime %}
-                                    <span style="font-weight: bold;">前回送信日時：</span>{{ task.mail_sent_datetime }}&nbsp;&nbsp;&nbsp;
-                                    <span style="font-weight: bold;">送信者：</span>{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col s6">
+                                <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
+                                       data-task-url="{% url 'format:report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
+                                <label for="chkSubscriptionConfirm">申込確認書</label>
+                            </div>
+                            <div class="col s4">
+                                <a target="_blank" href="{% url 'format:report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a>
+                            </div>
+                            <div class="col s2">
+                                <a target="_blank" href="{% url 'format:download_report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}"><i class="material-icons">file_download</i></a>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col s6">
+                                <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked"
+                                       data-task-url="{% url 'format:report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
+                                <label for="chkSubscription">申込書</label>
+                            </div>
+                            <div class="col s4">
+                                <a target="_blank" href="{% url 'format:report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a>
+                            </div>
+                            <div class="col s2">
+                                <a target="_blank" href="{% url 'format:download_report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}"><i class="material-icons">file_download</i></a>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col s6">
+                                {% if task.mail_sent_datetime %}
+                                <span style="font-weight: bold;">前回送信日時：</span>{{ task.mail_sent_datetime }}<br/>
+                                <span style="font-weight: bold;">送信者：</span>{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}
+                                {% endif %}
+                            </div>
+                            <div class="col s6 right-align">
+                                <button data-target="send_subscription" class="btn modal-trigger" onclick="select_subscription(this)">送信<i class="material-icons right">send</i></button>
+                            </div>
+                        </div>
                         <!-- 申込時メール送信の確認ボックス -->
                         <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
                             <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendSubscriptionMail">
