@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <title>{{ title }}</title>
     <script type="text/javascript" src="/static/js/bundle.js"></script>
-    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
     <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.scrollfire/1.4.0/jquery.scrollfire.js"></script>-->
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">-->
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script type="text/javascript">
         var canvas;
         ebjs.$(document).ready(function() {
@@ -52,7 +52,6 @@
             ctx.globalCompositeOperation = 'source-over';
         }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <style type="text/css">
         iframe {
             width: 100%;
@@ -91,6 +90,7 @@
     </style>
 </head>
 <body>
+<form method="post" action="?" id="frmSend">
     <div style="width: 850px;margin: 0px auto;">
         {% for url in urls %}
         <iframe src="{{ url }}" frameborder="0" onload="iFrameInit(this)">
@@ -109,5 +109,19 @@
             <button id="close" onclick="hideDialog()">キャンセル</button>
         </div>
     </div>
+    <footer class="page-footer">
+      <div class="container">
+          <a onclick="ebjs.material.send_user_subscription();return false;" class="waves-effect waves-light btn">button</a>
+        <div class="row">
+          <button class="btn waves-effect waves-light blue right" type="submit" name="action">申込み</button>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+        <a class="grey-text text-lighten-4" href="#!">株式会社エリアパーキング</a>
+        </div>
+      </div>
+    </footer>
+</form>
 </body>
 </html>

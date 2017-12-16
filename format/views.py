@@ -3,8 +3,8 @@ import urllib
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-from . import biz
-from contract.models import Task
+from . import biz, models
+from contract.models import Task, TempContractor
 from parkinglot.models import ParkingLot
 from utils.django_base import BaseView, BaseTemplateView
 
@@ -21,6 +21,9 @@ class UserOperationView(BaseTemplateView):
             context.update({'urls': urls})
         return context
 
+    # def post(self, request, *args, **kwargs):
+    #     task = get_object_or_404(Task, pk=kwargs.get('task_id'))
+
 
 class SubscriptionConfirmView(BaseView):
 
@@ -34,6 +37,11 @@ class SubscriptionView(BaseView):
     def get(self, request, *args, **kwargs):
         html = biz.get_subscription_html(**kwargs)
         return HttpResponse(html)
+
+    def post(self, request, *args, **kwargs):
+        report = get_object_or_404(models.ReportSubscription, pk=kwargs.get('report_id'))
+        parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
+        contractor = get_object_or_404(TempContractor, pk=kwargs.get('contractor_id'))
 
 
 class GenerateSubscriptionConfirmPdfView(BaseView):
