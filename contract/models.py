@@ -2,7 +2,9 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
-from django.core. validators import RegexValidator
+from django.contrib.contenttypes.fields import GenericRelation
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import RegexValidator
 from django.db import models
 from django.template import Context, Template
 
@@ -11,6 +13,7 @@ from utils import constants
 
 from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
+from format.models import ReportFile
 from master.models import Mediation, BankAccount, CarMaker, Payment, MailGroup
 from utils.app_base import get_total_context, get_user_subscription_url
 
@@ -104,8 +107,12 @@ class BaseContract(BaseModel):
     notify_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知終了日")
     staff = models.ForeignKey(Member, verbose_name="担当者")
     mediation = models.ForeignKey(Mediation, verbose_name="仲介業者")
-    staff_proxy = models.ForeignKey(Member, null=True, blank=True, related_name='contract_proxy_set',
-                                    verbose_name="宅建取引士")
+    staff_assistant1 = models.ForeignKey(Member, null=True, blank=True, related_name='contract_assistant1_set',
+                                         verbose_name="アシスタント１")
+    staff_assistant2 = models.ForeignKey(Member, null=True, blank=True, related_name='contract_assistant2_set',
+                                         verbose_name="アシスタント２")
+    staff_assistant3 = models.ForeignKey(Member, null=True, blank=True, related_name='contract_assistant3_set',
+                                         verbose_name="アシスタント３")
     # 口座情報
     payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.PROTECT,
                                            verbose_name="振込先口座")
@@ -185,8 +192,12 @@ class TempContract(BaseContract):
     notify_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知終了日")
     staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
     mediation = models.ForeignKey(Mediation, blank=True, null=True, verbose_name="仲介業者")
-    staff_proxy = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_proxy_set',
-                                    verbose_name="宅建取引士")
+    staff_assistant1 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant1_set',
+                                         verbose_name="アシスタント１")
+    staff_assistant2 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant2_set',
+                                         verbose_name="アシスタント２")
+    staff_assistant3 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant3_set',
+                                         verbose_name="アシスタント３")
     # 口座情報
     payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.PROTECT,
                                            verbose_name="振込先口座")
@@ -241,10 +252,12 @@ class Task(BaseModel):
     mail_sent_datetime = models.DateTimeField(blank=True, null=True, verbose_name="メール送信日時")
     updated_user = models.ForeignKey(User, blank=True, null=True, verbose_name="更新ユーザー")
     url_links = models.CharField(max_length=2000, blank=True, null=True, verbose_name="リンク")
+    reports = GenericRelation(ReportFile, related_query_name='subscriptions')
     order = models.SmallIntegerField(verbose_name="並び順")
 
     class Meta:
         db_table = 'ap_task'
+        unique_together = ['process', 'category']
         ordering = ['process', 'order']
         verbose_name = "タスク"
         verbose_name_plural = "タスク一覧"
@@ -281,17 +294,33 @@ class Task(BaseModel):
         else:
             return dict()
 
+    def get_next_task(self):
+        """次のタスクを取得する。
 
-class VTempContract(BaseModel):
-    temp_contract = models.ForeignKey(TempContract, verbose_name="仮契約")
-    parking_lot = models.ForeignKey(ParkingLot, blank=True, null=True, verbose_name="駐車場")
-    contractor = models.ForeignKey(TempContractor, verbose_name="仮契約者")
+        :return:
+        """
+        if self.category == '010':
+            try:
+                return Task.objects.get(process=self.process, category='011')
+            except ObjectDoesNotExist:
+                return None
+        else:
+            return None
 
-    class Meta:
-        managed = False
-        db_table = 'v_temp_contract'
-        verbose_name = "仮契約ビュー"
-        verbose_name_plural = "仮契約ビュー一覧"
+    def get_report_list(self):
+        return ReportFile.objects.public_filter(subscriptions__pk=self.pk)
 
-    def __str__(self):
-        return str(self.temp_contract)
+
+# class VTempContract(models.Model):
+#     temp_contract = models.ForeignKey(TempContract, verbose_name="仮契約")
+#     parking_lot = models.ForeignKey(ParkingLot, blank=True, null=True, verbose_name="駐車場")
+#     contractor = models.ForeignKey(TempContractor, verbose_name="仮契約者")
+#
+#     class Meta:
+#         managed = False
+#         db_table = 'v_temp_contract'
+#         verbose_name = "仮契約ビュー"
+#         verbose_name_plural = "仮契約ビュー一覧"
+#
+#     def __str__(self):
+#         return str(self.temp_contract)

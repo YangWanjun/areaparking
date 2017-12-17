@@ -6,6 +6,7 @@ import logging
 import pdfkit
 import datetime
 import random
+from django.conf import settings
 
 
 def get_root_path():
@@ -29,8 +30,14 @@ def get_temp_path():
 
     :return:
     """
-    from django.conf import settings
     path = os.path.join(settings.MEDIA_ROOT, 'temp')
+    if not os.path.exists(path):
+        os.mkdir(path)
+    return path
+
+
+def get_user_subscription_path():
+    path = os.path.join(settings.MEDIA_ROOT, 'user_subscription')
     if not os.path.exists(path):
         os.mkdir(path)
     return path
@@ -109,6 +116,30 @@ def get_parking_lot_doc_path(self, filename):
     """
     prefix = 'docs/{}/'.format(self.parking_lot.name)
     return prefix + filename
+
+
+def get_report_path(self, filename):
+    """帳票の格納場所を取得する。
+
+    :param self:
+    :param filename:
+    :return:
+    """
+    new_name = filename
+    prefix = ''
+    content_object = self.content_object
+    if content_object.__class__.__name__ == 'Task':
+        prefix = 'user_subscription/'
+        parking_lot = content_object.process.temp_contract.parking_lot
+        contractor = content_object.process.temp_contract.contractor
+        ext = os.path.splitext(filename)[1]
+        new_name = "{0}_{1}_{2}{3}".format(
+            parking_lot.name,
+            contractor.name,
+            datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'),
+            ext
+        )
+    return prefix + new_name
 
 
 def get_report_format(self, filename):

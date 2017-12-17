@@ -16,15 +16,3 @@ class TempContractorViewSet(viewsets.ModelViewSet):
 class TempContractViewSet(viewsets.ModelViewSet):
     queryset = models.TempContract.objects.public_all()
     serializer_class = serializers.TempContractSerializer
-
-
-class SubscriptionUpdateView(APIView):
-
-    def get_object(self, pk):
-        try:
-            return models.Task.objects.get(pk=pk)
-        except ObjectDoesNotExist:
-            raise Http404
-
-    def put(self, request, pk, format=None):
-        task = self.get_object(pk)

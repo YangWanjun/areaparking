@@ -25,8 +25,7 @@
                 var data = signaturePad.toDataURL('image/svg+xml');
                 var imgSignature = get_img_signature();
                 imgSignature.attr('src', data);
-                //document.getElementById("imgSignature").src = data;
-                //document.getElementById("imgSignature").style.display = "";
+                ebjs.$('iframe').contents().find("#hid_signature").val(data);
                 hideDialog();
             });
 
@@ -90,7 +89,7 @@
     </style>
 </head>
 <body>
-<form method="post" action="?" id="frmSend">
+<!--<form method="post" action="?" id="frmSend">-->
     <div style="width: 850px;margin: 0px auto;">
         {% for url in urls %}
         <iframe src="{{ url }}" frameborder="0" onload="iFrameInit(this)">
@@ -111,9 +110,8 @@
     </div>
     <footer class="page-footer">
       <div class="container">
-          <a onclick="ebjs.material.send_user_subscription();return false;" class="waves-effect waves-light btn">button</a>
         <div class="row">
-          <button class="btn waves-effect waves-light blue right" type="submit" name="action">申込み</button>
+          <a onclick="ebjs.material.send_user_subscription();return false;" class="waves-effect waves-light btn blue right">申込み</a>
         </div>
       </div>
       <div class="footer-copyright">
@@ -122,6 +120,6 @@
         </div>
       </div>
     </footer>
-</form>
+<!--</form>-->
 </body>
 </html>

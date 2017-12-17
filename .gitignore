@@ -104,3 +104,4 @@ ENV/
 # db.sqlite3
 # images/
 migrations/
+user_subscription/

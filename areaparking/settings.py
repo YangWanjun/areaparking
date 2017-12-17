@@ -88,6 +88,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'material.frontend.context_processors.modules',
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
             ],
         },
     },

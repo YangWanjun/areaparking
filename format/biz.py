@@ -3,6 +3,7 @@ from io import BytesIO
 
 from django.shortcuts import get_object_or_404
 from django.template import Context, Template
+from django.template.context_processors import csrf
 
 from . import models
 from parkinglot.models import ParkingLot
@@ -11,7 +12,7 @@ from utils import common
 from utils.app_base import get_total_context
 
 
-def get_subscription_confirm_html(**kwargs):
+def get_subscription_confirm_html(request, **kwargs):
     """申込確認書のHTMLを取得する。
 
     :param kwargs:
@@ -26,11 +27,12 @@ def get_subscription_confirm_html(**kwargs):
         parking_lot=parking_lot,
         contractor=contractor,
     ))
+    ctx.update(csrf(request))
     html = t.render(ctx)
     return html
 
 
-def get_subscription_html(**kwargs):
+def get_subscription_html(request, **kwargs):
     """申込書のHTMLを取得する。
 
     :param kwargs:
@@ -45,6 +47,7 @@ def get_subscription_html(**kwargs):
         parking_lot=parking_lot,
         contractor=contractor,
     ))
+    ctx.update(csrf(request))
     html = t.render(ctx)
     return html
 

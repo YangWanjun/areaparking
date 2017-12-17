@@ -13,8 +13,19 @@ from utils.mail import EbMail
 
 
 # Create your views here.
-class TempContractVewSet(ModelViewSet):
-    pass
+class ContractVewSet(ModelViewSet):
+    model = models.Contract
+    list_display = ('contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+# Create your views here.
+class ContractorVewSet(ModelViewSet):
+    model = models.Contractor
+    list_display = ('code', 'get_category_display', 'name', 'tel', 'email', 'address1')
+    list_display_links = ('code', 'name',)
 
 
 class TempContractListView(BaseTemplateView):

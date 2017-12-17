@@ -24,133 +24,141 @@
     </style>
 </head>
 <body style="margin: 0px auto; width: 810px;">
-<div style="position: relative;">
-    <p style="text-align: center; background-color: #000000; color: #ffffff; font-size: 18px; height: 30;line-height: 30px;margin-bottom: 0px;">申込確認書　◆ この用紙は、ご署名の上、申込書と一緒にご提出いただきます ◆</p>
-    <table id="tblTitle" style="table-layout: fixed; font-size: 14px; float: left;" cellpadding="0" cellspacing="0">
-        <tr>
-            <td style="width: 75px;border-bottom:1px solid black;">送 信 先：</td>
-            <td style="width: 230px;border-bottom:1px solid black;">{{ user_name }}&nbsp;&nbsp;&nbsp;様</td>
-            <td style="width: 75px;border-bottom:1px solid black;">発 信 元：</td>
-            <td style="width: 150px;border-bottom:1px solid black;">{{ sender }}</td>
-            <td rowspan="5" style="padding-left: 10px !important;">
-                <span style="font-size: 16px;">{{ company_name }}</span><br/>
-                <span style="font-size: 13px;">〒{{ company_post_code }}</span><br/>
-                <span style="font-size: 13px;">{{ company_address1 }}</span><br/>
-                <span style="font-size: 13px;">{{ company_address2 }}</span><br/>
-                <span style="font-size: 13px;">TEL：</span><span style="font-size: 21px;">{{ company_tel }}</span><br/>
-                <span style="font-size: 13px;">FAX：</span><span style="font-size: 21px;">{{ company_fax }}</span><br/>
-                <span style="font-size: 12px;">（番号間違いにご注意ください。）</span><br/>
-                <span style="font-size: 13px;">E-mail：{{ company_email }}</span><br/>
-            </td>
-        </tr>
-        <tr>
-            <td style="border-bottom:1px solid black;">FAX番号：</td>
-            <td style="border-bottom:1px solid black;">{{ user_fax }}</td>
-            <td style="border-bottom:1px solid black;">送 信 日：</td>
-            <td style="border-bottom:1px solid black;">{{ send_date }}</td>
-        </tr>
-        <tr>
-            <td style="border-bottom:1px solid black;">電話番号：</td>
-            <td style="border-bottom:1px solid black;">{{ user_tel }}</td>
-            <td style="border-bottom:1px solid black;">送信枚数：</td>
-            <td style="border-bottom:1px solid black;font-size:18px;">本票含め 2 枚</td>
-        </tr>
-        <tr>
-            <td style="border-bottom:1px solid black;">要　　件：</td>
-            <td style="border-bottom:1px solid black;font-size: 18px;" colspan="3">「{{ parking_lot_name }}」につきまして</td>
-        </tr>
-        <tr>
-            <td colspan="4" style="font-size: 13px; padding-top: 15px !important">この度は、標記の駐車場についてお問い合わせ頂きまして、誠にありがとうございます。<br/>申込確認書（当用紙）と申込書を、各１枚 お送りいたします。</td>
-        </tr>
-    </table>
-    <div style="background-color: #000000; color: #ffffff; font-size: 14px; clear: both; padding: 12px 20px 5px 20px;;">
-        <div style="text-align: center;">◆◆ 申込には下記の書類が必要です。ＦＡＸ､郵便､Ｅメール等で弊社あてにお送りください ◆◆</div>
-        <div>
-            <span>１、申込確認書（この用紙です。下部矢印のご署名欄にサインをお願いいたします）</span><br/>
-            <span>２、申込書（次葉）</span><br/>
-            <span>３、駐車される車両の車検証の写し（駐車車両は全て事前届出が必要）</span><br/>
-            <span>４、免許証の写し（法人契約の場合は会社謄本の写しも必要です）</span><br/>
-            <span>５、自賠責保険証と任意保険証の写し（更新毎に再提出が必要）</span>
-        </div>
-    </div>
-    <div style="width: 315px; font-size: 13px; border: 2px solid black; position: absolute; left: 485px;top:270px;background-color: white;">
-        <ul style="padding: 0px 25px;">
-            <li style="list-style-type: square;">電話でのご予約は受付けておりません。</li>
-            <li style="list-style-type: square;">空き状況は、短期間でも変動する場合がございます。</li>
-            <li style="list-style-type: square;">書類送付先を間違えられるケースが多発しております。ご注意ください。</li>
-            <li style="list-style-type: square;">申込書類の到着順でのご案内となりますので、ご希望の場合は、早めのご返信をお勧めいたします。</li>
-        </ul>
-    </div>
-    <div style="width: 460px; font-size: 12px; margin-top: 10px;margin-left: 15px;">
-        ◆◆ 契約時に必要な金額は以下の通りです ◆◆
-        <table cellspacing="0" cellpadding="0" width="100%;">
+<form method="post" action="?" id="frmSend">
+    <div style="position: relative;">
+        <p style="text-align: center; background-color: #000000; color: #ffffff; font-size: 18px; height: 30;line-height: 30px;margin-bottom: 0px;">申込確認書　◆ この用紙は、ご署名の上、申込書と一緒にご提出いただきます ◆</p>
+        <table id="tblTitle" style="table-layout: fixed; font-size: 14px; float: left;" cellpadding="0" cellspacing="0">
             <tr>
-                <td>・契約時事務手数料　　　　　　　：</td><td style="text-align: right;">{{ payment_c_commission }}円(消費税別)</td>
+                <td style="width: 75px;border-bottom:1px solid black;">送 信 先：</td>
+                <td style="width: 230px;border-bottom:1px solid black;">{{ user_name }}&nbsp;&nbsp;&nbsp;様</td>
+                <td style="width: 75px;border-bottom:1px solid black;">発 信 元：</td>
+                <td style="width: 150px;border-bottom:1px solid black;">{{ sender }}</td>
+                <td rowspan="5" style="padding-left: 10px !important;">
+                    <span style="font-size: 16px;">{{ company_name }}</span><br/>
+                    <span style="font-size: 13px;">〒{{ company_post_code }}</span><br/>
+                    <span style="font-size: 13px;">{{ company_address1 }}</span><br/>
+                    <span style="font-size: 13px;">{{ company_address2 }}</span><br/>
+                    <span style="font-size: 13px;">TEL：</span><span style="font-size: 21px;">{{ company_tel }}</span><br/>
+                    <span style="font-size: 13px;">FAX：</span><span style="font-size: 21px;">{{ company_fax }}</span><br/>
+                    <span style="font-size: 12px;">（番号間違いにご注意ください。）</span><br/>
+                    <span style="font-size: 13px;">E-mail：{{ company_email }}</span><br/>
+                </td>
             </tr>
             <tr>
-                <td>・契約開始月末日までの日割賃料　：</td><td style="text-align: right;">日割賃料円(消費税別)</td>
+                <td style="border-bottom:1px solid black;">FAX番号：</td>
+                <td style="border-bottom:1px solid black;">{{ user_fax }}</td>
+                <td style="border-bottom:1px solid black;">送 信 日：</td>
+                <td style="border-bottom:1px solid black;">{{ send_date }}</td>
             </tr>
             <tr>
-                <td>・翌月分の賃料　　　　　　　　　：</td><td style="text-align: right;color: red;">{{ payment_rent_monthly }}円(消費税別)</td>
+                <td style="border-bottom:1px solid black;">電話番号：</td>
+                <td style="border-bottom:1px solid black;">{{ user_tel }}</td>
+                <td style="border-bottom:1px solid black;">送信枚数：</td>
+                <td style="border-bottom:1px solid black;font-size:18px;">本票含め 2 枚</td>
+            </tr>
+            <tr>
+                <td style="border-bottom:1px solid black;">要　　件：</td>
+                <td style="border-bottom:1px solid black;font-size: 18px;" colspan="3">「{{ parking_lot_name }}」につきまして</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="font-size: 13px; padding-top: 15px !important">この度は、標記の駐車場についてお問い合わせ頂きまして、誠にありがとうございます。<br/>申込確認書（当用紙）と申込書を、各１枚 お送りいたします。</td>
             </tr>
         </table>
+        <div style="background-color: #000000; color: #ffffff; font-size: 14px; clear: both; padding: 12px 20px 5px 20px;;">
+            <div style="text-align: center;">◆◆ 申込には下記の書類が必要です。ＦＡＸ､郵便､Ｅメール等で弊社あてにお送りください ◆◆</div>
+            <div>
+                <span>１、申込確認書（この用紙です。下部矢印のご署名欄にサインをお願いいたします）</span><br/>
+                <span>２、申込書（次葉）</span><br/>
+                <span>３、駐車される車両の車検証の写し（駐車車両は全て事前届出が必要）</span><br/>
+                <span>４、免許証の写し（法人契約の場合は会社謄本の写しも必要です）</span><br/>
+                <span>５、自賠責保険証と任意保険証の写し（更新毎に再提出が必要）</span>
+            </div>
+        </div>
+        <div style="width: 315px; font-size: 13px; border: 2px solid black; position: absolute; left: 485px;top:270px;background-color: white;">
+            <ul style="padding: 0px 25px;">
+                <li style="list-style-type: square;">電話でのご予約は受付けておりません。</li>
+                <li style="list-style-type: square;">空き状況は、短期間でも変動する場合がございます。</li>
+                <li style="list-style-type: square;">書類送付先を間違えられるケースが多発しております。ご注意ください。</li>
+                <li style="list-style-type: square;">申込書類の到着順でのご案内となりますので、ご希望の場合は、早めのご返信をお勧めいたします。</li>
+            </ul>
+        </div>
+        <div style="width: 460px; font-size: 12px; margin-top: 10px;margin-left: 15px;">
+            ◆◆ 契約時に必要な金額は以下の通りです ◆◆
+            <table cellspacing="0" cellpadding="0" width="100%;">
+                <tr>
+                    <td>・契約時事務手数料　　　　　　　：</td><td style="text-align: right;">{{ payment_c_commission }}円(消費税別)</td>
+                </tr>
+                <tr>
+                    <td>・契約開始月末日までの日割賃料　：</td><td style="text-align: right;">日割賃料円(消費税別)</td>
+                </tr>
+                <tr>
+                    <td>・翌月分の賃料　　　　　　　　　：</td><td style="text-align: right;color: red;">{{ payment_rent_monthly }}円(消費税別)</td>
+                </tr>
+            </table>
+        </div>
+        <pre style="font-size: 12px; margin-top: 10px;margin-left: 15px;">◆◆ お申し込み前に下記の点をご確認下さい ◆◆
+    　      ①当駐車場は、機械式駐車場です。収容可能寸法を超える車両を駐車することはできません。
+    　　      ＊収容可能寸法内でも収容可能寸法と駐車される車両の大きさに余裕が無い場合は、ご契約いただけない場合があります。
+    　　　      また、車種によっては、試し入れをしていただいてからの申し込み受付となります。
+    　      ②駐車場は、申込書類をお送りいただき、弊社がその内容を確認した後、車室確保となります。
+    　　      ＊申込書類が到着した時点で、既に満車になっていることもあります。</pre>
+        <pre style="font-size: 12px; margin-top: 10px;margin: 0 0 0 15px;"><span style="font-weight: bold;">〔初期費用・毎月の賃料のお支払いに関して〕</span>
+    　　　  ＊契約時に{{ payment_c_commission }}円(消費税別)の事務手数料を頂戴致します。	＊敷金､礼金は必要ございません(特記のあるものを除きます)。
+    　　　  ＊契約時に<span style="color: blue;">２ケ月分の賃料を前払い</span>していただきます。		＊請求書・領収書は発行いたしません。
+    　　　  ＊３ヶ月目以降の賃料は、前月の２５日までにお振り込みいただきます(前払い制)。</pre>
+        <pre style="font-size: 12px; margin: 0 0 0 15px;"><span style="font-weight: bold;">〔契約期間に関して〕</span>
+           ＊短期契約：１ヶ月契約と２ヶ月契約があります。
+    　       契約期間満了日をもって解約となり、契約期間の延長ができない契約内容となります。
+    　       ただし、契約期間満了時に駐車場に空きがある場合は新規契約を結んで引続き駐車場をご利用いただくことができます。
+           ＊長期契約： ご利用期間が決まっていない場合は、１年契約をお勧めしています。契約期間中に解約することも可能です。
+    　       その場合は解約のお申し出をいただいた日の翌月末日付の解約になります。</pre>
+        <pre style="font-size: 12px; margin: 0 0 0 15px;"><span style="font-weight: bold;">〔車庫証明に関して〕</span>
+           弊社では、車庫証明の申請に必要な「車両保管場所使用承諾証明書」をご希望者にのみ発行致します。
+           ＊1年契約の契約者様のみが対象です。                    ＊発行手数料は、{{ payment_c_commission }}円（消費税別）です。
+           ＊車両保管場所使用承諾証明書の発行は、ご契約後となります。
+    　       新しく車両を購入される場合は、証明書がいつ頃必要になるかについて、ディーラーとご相談の上、申し付けください。</pre>
+        <pre style="font-size: 12px; margin: 0 0 0 15px;"><span style="font-weight: bold;">〔申込時諸注意〕</span>
+           ＊申込される方がご自身でご記入下さい。
+           ＊ご記入いただいたご連絡先に、お申込内容の確認のためにお電話をする場合がございます。
+           ＊記入漏れや記入内容の虚偽が明らかになった場合には、お申込をお断りする場合やご契約後も解約、解除されることがございます。
+           ＊審査の結果によってはお申込をお断りする場合もございます(内容・理由については一切お答えできません）。
+           ◆<span style="color: red;">現駐車場契約者様は弊社とはご契約いただけません。</span>	◆<span style="color: red;font-size:10px;">当建物の入居者様・区分所有者様は弊社とご契約いただけない場合があります。</span></pre>
+        <div style="background-color: #000000; color: #ffffff; font-size: 12px;padding: 2px 6px;">１．ご契約条件、必要書類などに関して</div>
+        <pre style="font-size: 10px; margin:0 0 0 10px;line-height: 13px;">　　*　駐車場設備又は駐車場所有者等の事情により、お申込をお断りする場合もございます。現在ご利用の駐車場の解約をご検討の場合には、
+     　　   弊社より車室確保の連絡を差し上げるまで手続きをお控え下さい。
+    　　*　お客様との賃料条件は個別条件となります。後日お送りする契約書及び諸注意事項の書類も含め、全て他に漏らさないように厳守をお願いします。
+      　　  これらの内容に違反した場合は、契約期間中でも契約を解除する場合があります。
+    　　*　賃料は、契約更新時に改定する場合があります。また、消費税、地方消費税の税率が変更となった場合、賃料も変更後の税率で計算した金額となります。
+    　　*　申込書にご記入いただいた連絡先が変更になった場合は、必ずその旨のご連絡をお願いします。
+      　　  変更のお届けをいただかず、ご連絡が取れなくなった場合、契約維持の意志なしとみなし解約の手続きをとる場合があります。
+    　　*　新しく車両を購入する等の理由により、ご契約時に車検証の写しをご提出いただけなかった場合、必ず契約開始後1ヶ月以内に車検証の写しをご提出下さい。
+    　　*　登録車両以外の車両は駐車できません。買換等により登録車両を変更される場合は、必ず新しい車両を入庫される前に車検証の写しをご提出下さい。
+    　　*　暴力団、暴力団員、暴力団関係企業、総会屋、社会運動・政治活動標ぼうゴロ、特殊知能暴力集団、その他の反社会的勢力と交流がある方とは
+     　 　  ご契約できません。契約期間中であってもその事実が判明した場合は、直ちに契約を解約致します。
+    　　*　契約期間中は自動車保険他〈強制保険及び任意保険〉に加入し、契約時と更新時、変更の都度新しい自動車保険等の写しを提出していただきます。</pre>
+        <div style="background-color: #000000; color: #ffffff; font-size: 12px;padding: 2px 6px;">２．駐車車両、操作方法他に関して</div>
+        <pre style="font-size: 10px; margin:0 0 0 10px;line-height: 13px;">　　*　収納可能寸法以上の車、改造車、キャリアー、エアロパーツが取り付けてある車は、駐車設備の故障を引き起こす原因になりますので駐車は出来ません。
+    　　*　駐車の際は、ご契約された車室と駐車場に記載してある車室番号や暗証番号を十分確認の上指定された車室に車を停め、必ずドアミラーをたたんで下さい。
+    　　*　車によっては、タイヤ止めの位置で駐車すると車が壁にぶつかる可能性があります。タイヤ止めの位置と壁の位置を十分に確認をしてから駐車してください。
+    　　*　機械式駐車場ご利用の場合、定期及び緊急点検、補修作業、突発的な事故により一時的にご利用出来ない場合があります。
+      　   その場合でも利用者は異議の申し立てはしないものとします。但し、所有者、管理者ならびに弊社は速やかに問題の解決にあたるよう努力しますが、
+     　    部品交換や部品調達などで一時的に利用できなくなったことについての責任は負いません。
+    　　*　駐車場内の掲示物は利用に際しての重要な注意事項もありますので、必ず確認をして下さい。
+    　　*　弊社では法令に基づき、公的機関からの開示要請があった場合、サービス維持提供に必要な範囲で事業活動に関連し、弊社と秘密保持契約を締結して
+    　　　いる業務提携先へ必要な限度において顧客情報を提供することがあります。</pre>
+        <p style="margin: 10px 28px;font-size: 13.3px;">上記（申込確認書）及び 次葉（申込書）の内容を理解し、承諾致します。	</p>
+        <p style="margin: 10px 28px;font-size: 13.3px;">
+            <span style="margin-right: 100px;">{{ current_date }}</span>
+            <span style="color:red;font-size: 16px;">お客様（ご契約名義）ご署名：</span>
+            <span style="position:relative;">
+                <img class="signature-pad" style="position:absolute; left: 0px; bottom: -10px;"
+                     src="{%if signature%}{{signature}}{%else%}/static/img/do_signature.svg{%endif%}"
+                     width="250px"/>
+                <input type="hidden" id="hid_signature" name="hid_signature" />
+            </span>
+        </p>
     </div>
-    <pre style="font-size: 12px; margin-top: 10px;margin-left: 15px;">◆◆ お申し込み前に下記の点をご確認下さい ◆◆
-　      ①当駐車場は、機械式駐車場です。収容可能寸法を超える車両を駐車することはできません。
-　　      ＊収容可能寸法内でも収容可能寸法と駐車される車両の大きさに余裕が無い場合は、ご契約いただけない場合があります。
-　　　      また、車種によっては、試し入れをしていただいてからの申し込み受付となります。
-　      ②駐車場は、申込書類をお送りいただき、弊社がその内容を確認した後、車室確保となります。
-　　      ＊申込書類が到着した時点で、既に満車になっていることもあります。</pre>
-    <pre style="font-size: 12px; margin-top: 10px;margin: 0 0 0 15px;"><span style="font-weight: bold;">〔初期費用・毎月の賃料のお支払いに関して〕</span>
-　　　  ＊契約時に{{ payment_c_commission }}円(消費税別)の事務手数料を頂戴致します。	＊敷金､礼金は必要ございません(特記のあるものを除きます)。
-　　　  ＊契約時に<span style="color: blue;">２ケ月分の賃料を前払い</span>していただきます。		＊請求書・領収書は発行いたしません。
-　　　  ＊３ヶ月目以降の賃料は、前月の２５日までにお振り込みいただきます(前払い制)。</pre>
-    <pre style="font-size: 12px; margin: 0 0 0 15px;"><span style="font-weight: bold;">〔契約期間に関して〕</span>
-       ＊短期契約：１ヶ月契約と２ヶ月契約があります。
-　       契約期間満了日をもって解約となり、契約期間の延長ができない契約内容となります。
-　       ただし、契約期間満了時に駐車場に空きがある場合は新規契約を結んで引続き駐車場をご利用いただくことができます。
-       ＊長期契約： ご利用期間が決まっていない場合は、１年契約をお勧めしています。契約期間中に解約することも可能です。
-　       その場合は解約のお申し出をいただいた日の翌月末日付の解約になります。</pre>
-    <pre style="font-size: 12px; margin: 0 0 0 15px;"><span style="font-weight: bold;">〔車庫証明に関して〕</span>
-       弊社では、車庫証明の申請に必要な「車両保管場所使用承諾証明書」をご希望者にのみ発行致します。
-       ＊1年契約の契約者様のみが対象です。                    ＊発行手数料は、{{ payment_c_commission }}円（消費税別）です。
-       ＊車両保管場所使用承諾証明書の発行は、ご契約後となります。
-　       新しく車両を購入される場合は、証明書がいつ頃必要になるかについて、ディーラーとご相談の上、申し付けください。</pre>
-    <pre style="font-size: 12px; margin: 0 0 0 15px;"><span style="font-weight: bold;">〔申込時諸注意〕</span>
-       ＊申込される方がご自身でご記入下さい。
-       ＊ご記入いただいたご連絡先に、お申込内容の確認のためにお電話をする場合がございます。
-       ＊記入漏れや記入内容の虚偽が明らかになった場合には、お申込をお断りする場合やご契約後も解約、解除されることがございます。
-       ＊審査の結果によってはお申込をお断りする場合もございます(内容・理由については一切お答えできません）。
-       ◆<span style="color: red;">現駐車場契約者様は弊社とはご契約いただけません。</span>	◆<span style="color: red;font-size:10px;">当建物の入居者様・区分所有者様は弊社とご契約いただけない場合があります。</span></pre>
-    <div style="background-color: #000000; color: #ffffff; font-size: 12px;padding: 2px 6px;">１．ご契約条件、必要書類などに関して</div>
-    <pre style="font-size: 10px; margin:0 0 0 10px;line-height: 13px;">　　*　駐車場設備又は駐車場所有者等の事情により、お申込をお断りする場合もございます。現在ご利用の駐車場の解約をご検討の場合には、
- 　　   弊社より車室確保の連絡を差し上げるまで手続きをお控え下さい。
-　　*　お客様との賃料条件は個別条件となります。後日お送りする契約書及び諸注意事項の書類も含め、全て他に漏らさないように厳守をお願いします。
-  　　  これらの内容に違反した場合は、契約期間中でも契約を解除する場合があります。
-　　*　賃料は、契約更新時に改定する場合があります。また、消費税、地方消費税の税率が変更となった場合、賃料も変更後の税率で計算した金額となります。
-　　*　申込書にご記入いただいた連絡先が変更になった場合は、必ずその旨のご連絡をお願いします。
-  　　  変更のお届けをいただかず、ご連絡が取れなくなった場合、契約維持の意志なしとみなし解約の手続きをとる場合があります。
-　　*　新しく車両を購入する等の理由により、ご契約時に車検証の写しをご提出いただけなかった場合、必ず契約開始後1ヶ月以内に車検証の写しをご提出下さい。
-　　*　登録車両以外の車両は駐車できません。買換等により登録車両を変更される場合は、必ず新しい車両を入庫される前に車検証の写しをご提出下さい。
-　　*　暴力団、暴力団員、暴力団関係企業、総会屋、社会運動・政治活動標ぼうゴロ、特殊知能暴力集団、その他の反社会的勢力と交流がある方とは
- 　 　  ご契約できません。契約期間中であってもその事実が判明した場合は、直ちに契約を解約致します。
-　　*　契約期間中は自動車保険他〈強制保険及び任意保険〉に加入し、契約時と更新時、変更の都度新しい自動車保険等の写しを提出していただきます。</pre>
-    <div style="background-color: #000000; color: #ffffff; font-size: 12px;padding: 2px 6px;">２．駐車車両、操作方法他に関して</div>
-    <pre style="font-size: 10px; margin:0 0 0 10px;line-height: 13px;">　　*　収納可能寸法以上の車、改造車、キャリアー、エアロパーツが取り付けてある車は、駐車設備の故障を引き起こす原因になりますので駐車は出来ません。
-　　*　駐車の際は、ご契約された車室と駐車場に記載してある車室番号や暗証番号を十分確認の上指定された車室に車を停め、必ずドアミラーをたたんで下さい。
-　　*　車によっては、タイヤ止めの位置で駐車すると車が壁にぶつかる可能性があります。タイヤ止めの位置と壁の位置を十分に確認をしてから駐車してください。
-　　*　機械式駐車場ご利用の場合、定期及び緊急点検、補修作業、突発的な事故により一時的にご利用出来ない場合があります。
-  　   その場合でも利用者は異議の申し立てはしないものとします。但し、所有者、管理者ならびに弊社は速やかに問題の解決にあたるよう努力しますが、
- 　    部品交換や部品調達などで一時的に利用できなくなったことについての責任は負いません。
-　　*　駐車場内の掲示物は利用に際しての重要な注意事項もありますので、必ず確認をして下さい。
-　　*　弊社では法令に基づき、公的機関からの開示要請があった場合、サービス維持提供に必要な範囲で事業活動に関連し、弊社と秘密保持契約を締結して
-　　　いる業務提携先へ必要な限度において顧客情報を提供することがあります。</pre>
-    <p style="margin: 10px 28px;font-size: 13.3px;">上記（申込確認書）及び 次葉（申込書）の内容を理解し、承諾致します。	</p>
-    <p style="margin: 10px 28px;font-size: 13.3px;">
-        <span style="margin-right: 100px;">{{ current_date }}</span>
-        <span style="color:red;font-size: 16px;">お客様（ご契約名義）ご署名：</span>
-        <span style="position:relative;"><img class="signature-pad" style="position:absolute; left: 0px; bottom: -10px;" src="/static/img/do_signature.svg" width="250px"/></span>
-    </p>
-</div>
+    {% csrf_token %}
+</form>
 </body>
 </html>

@@ -24,6 +24,9 @@ CONFIG_DOMAIN_NAME = 'domain_name'
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
 
+REPORT_SUBSCRIPTION_CONFIRM = "申込確認書"
+REPORT_SUBSCRIPTION = "申込書"
+
 CHOICE_CONTRACTOR_TYPE = (
     ('1', '個人'),
     ('2', '法人'),
@@ -80,15 +83,15 @@ CHOICE_PAY_TIMING = (
 CHOICE_CONTRACT_STATUS = (
     ('01', '空き'),
     ('02', '手続中'),
-    ('03', '空きなし'),
+    ('03', '空無'),
 )
 CHOICE_MAIL_GROUP = (
     ('001', '申込書送付'),
     ('011', '契約書送付'),
 )
 CHOICE_REPORT_KBN = (
-    ('001', '申込書'),
-    ('002', '申込確認書'),
+    ('001', REPORT_SUBSCRIPTION),
+    ('002', REPORT_SUBSCRIPTION_CONFIRM),
     # ('01', '申込書'),
     # ('01', '申込書'),
     # ('01', '申込書'),
@@ -132,3 +135,4 @@ CHOICE_TASK_STATUS = (
 
 ERROR_SETTING_NO_SUBSCRIPTION = "申込書の出力書式が設定されていません、管理サイトで「出力書式」->「申込書一覧」にて設定してください。"
 ERROR_SETTING_NO_SUBSCRIPTION_CONFIRM = "申込確認書の出力書式が設定されていません、管理サイトで「出力書式」->「申込確認書一覧」にて設定してください。"
+ERROR_REQUEST_SIGNATURE = "サインしてください。"

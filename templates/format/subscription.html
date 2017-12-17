@@ -82,7 +82,7 @@
     </style>
 </head>
 <body>
-<form method="post" style="margin: 0px auto; width: 810px;position: relative;">
+<form method="post" action="?" style="margin: 0px auto; width: 810px;position: relative;">
     <div class="center bold" style="background-color: #000000; color: #ffffff; font-size: 18px;padding:5px 0px;">申　　込　　書</div>
     <table cellpadding="0" cellspacing="0" style="font-size: 14px;table-layout: fixed;">
         <tr style="height: 26px;">
@@ -556,6 +556,7 @@
         </tr>
     </table>
     <div style="text-align: center; font-size: 15px;">書類送付先：{{company_name}}&nbsp;&nbsp;TEL.{{company_tel}}/FAX.{{company_fax}}/E-mail：{{company_email}}</div>
+    {% csrf_token %}
 </form>
 </body>
 </html>

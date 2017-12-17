@@ -119,11 +119,11 @@ function select_subscription(obj) {
                         <div class="row" style="margin-bottom: 5px;">
                             <div class="col s6">
                                 <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
-                                       data-task-url="{% url 'format:report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
+                                       data-task-url="{% url 'format:report_subscription_confirm' task.pk subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
                                 <label for="chkSubscriptionConfirm">申込確認書</label>
                             </div>
                             <div class="col s4">
-                                <a target="_blank" href="{% url 'format:report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a>
+                                <a target="_blank" href="{% url 'format:report_subscription_confirm' task.pk subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a>
                             </div>
                             <div class="col s2">
                                 <a target="_blank" href="{% url 'format:download_report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}"><i class="material-icons">file_download</i></a>
@@ -132,11 +132,11 @@ function select_subscription(obj) {
                         <div class="row" style="margin-bottom: 5px;">
                             <div class="col s6">
                                 <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked"
-                                       data-task-url="{% url 'format:report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
+                                       data-task-url="{% url 'format:report_subscription' task.pk subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
                                 <label for="chkSubscription">申込書</label>
                             </div>
                             <div class="col s4">
-                                <a target="_blank" href="{% url 'format:report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a>
+                                <a target="_blank" href="{% url 'format:report_subscription' task.pk subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a>
                             </div>
                             <div class="col s2">
                                 <a target="_blank" href="{% url 'format:download_report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}"><i class="material-icons">file_download</i></a>
@@ -150,7 +150,12 @@ function select_subscription(obj) {
                                 {% endif %}
                             </div>
                             <div class="col s6 right-align">
-                                <button data-target="send_subscription" class="btn modal-trigger" onclick="select_subscription(this)">送信<i class="material-icons right">send</i></button>
+                                <!--<button data-target="send_subscription" class="btn modal-trigger" onclick="select_subscription(this)">送信<i class="material-icons right">send</i></button>-->
+                                <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                   class="btn-floating modal-trigger tooltipped" onclick="select_subscription(this)">
+                                    <i class="tiny material-icons">send</i>
+                                </a>
+                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。" class="btn-floating tooltipped"><i class="tiny material-icons">done</i></a>
                             </div>
                         </div>
                         <!-- 申込時メール送信の確認ボックス -->
@@ -174,22 +179,18 @@ function select_subscription(obj) {
                                                 <label for="txtSubscriptionTo">宛先</label>
                                             </div>
                                         </div>
-                                        {% if group.get_cc_list %}
                                         <div class="row">
                                             <div class="input-field col s12">
                                                 <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
                                                 <label for="txtSubscriptionCC">ＣＣ</label>
                                             </div>
                                         </div>
-                                        {% endif %}
-                                        {% if group.get_bcc_list %}
                                         <div class="row">
                                             <div class="input-field col s12">
                                                 <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
                                                 <label for="txtSubscriptionBCC">ＢＣＣ</label>
                                             </div>
                                         </div>
-                                        {% endif %}
                                         <div class="row">
                                             <div class="input-field col s12">
                                                 <input value="{{ template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
@@ -212,6 +213,21 @@ function select_subscription(obj) {
                                 <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
                             </div>
                             </form>
+                        </div>
+                        {% endif %}
+                        {% if task.category == "011" %}
+                            {% for report_file in task.get_report_list %}
+                                <div class="row" style="margin-bottom: 5px;">
+                                    <div class="col s12">
+                                        <a target="_blank" href="{{ MEDIA_URL }}{{ report_file.path }}">{{ report_file.name }}</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col s12 right-align">
+                                <!--<button data-target="send_subscription" class="btn modal-trigger" onclick="select_subscription(this)">送信<i class="material-icons right">send</i></button>-->
+                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。" class="btn-floating tooltipped"><i class="tiny material-icons">done</i></a>
+                            </div>
                         </div>
                         {% endif %}
                         {% if task.category == "100" %}
