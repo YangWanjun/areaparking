@@ -66,6 +66,9 @@
         .bold {
             font-weight: bold;
         }
+        .red {
+            color: red;
+        }
         .line_text {
             border-left: 0px;
             border-top: 0px;
@@ -84,14 +87,39 @@
 <body>
 <form method="post" action="?" style="margin: 0px auto; width: 810px;position: relative;">
     <div class="center bold" style="background-color: #000000; color: #ffffff; font-size: 18px;padding:5px 0px;">申　　込　　書</div>
-    <table cellpadding="0" cellspacing="0" style="font-size: 14px;table-layout: fixed;">
+    <table cellpadding="0" cellspacing="0" style="font-size: 14px;table-layout: fixed;margin-top: -24px;">
+        <tr style="height:20px;">
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+            <td style="width: 35px;"></td>
+        </tr>
         <tr style="height: 26px;">
             <td colspan="7" style="font-size: 14px;padding-top:10px;padding-bottom:5px;">申込日: {{ current_date }}</td>
             <td colspan="12" style="font-size: 10px;">※ 保管証発行-車庫証明に必要な書類（発行手数料：消費税別{{payment_c_commission}}円）</td>
             <td colspan="4">
-                <input type="radio" name="rdoReceipt" id="rdoReceipt1" />
+                <input type="radio" name="rdo_receipt_yes" id="rdoReceipt1" />
                 <label for="rdoReceipt1">必要</label>
-                <input type="radio" name="rdoReceipt" id="rdoReceipt2" />
+                <input type="radio" name="rdo_receipt_no" id="rdoReceipt2" />
                 <label for="rdoReceipt2">不要</label>
             </td>
         </tr>
@@ -115,7 +143,7 @@
         </tr>
         <tr class="border-top" style="height: 38px;">
             <td rowspan="3"  class="border-left border-right center border-bottom" style="white-space: normal; font-size: 16px;">駐<br/>車<br/>す<br/>る<br/>車</td>
-            <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 14px;">メーカー</td>
+            <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 14px;">メーカー<span class="red">*</span></td>
             <td colspan="8" class="border-bottom">
                 <input type="text" class="box_text" id="txtCarMaker" name="txt_car_maker" style="font-size: 18px;height: 35px;" />
             </td>
@@ -132,33 +160,37 @@
         </tr>
         <tr style="height: 38px;">
             <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 14px">車体の大きさ</td>
-            <td colspan="5" class="border-bottom">
-                全長：<input type="text" id="txtCarLength" name="txt_car_length" class="line_text" style="width: 80px;height:25px;"/>
+            <td class="border-bottom">全長:</td>
+            <td colspan="4" class="border-bottom">
+                <input type="text" id="txtCarLength" name="txt_car_length" class="box_text" style="height: 35px;font-size: 16px;"/>
             </td>
-            <td colspan="5" class="border-bottom">
-                全幅：<input type="text" id="txtCarWidth" name="txt_car_width" class="line_text" style="width: 80px;height:25px;"/>
+            <td class="border-bottom">全幅:</td>
+            <td colspan="4" class="border-bottom">
+                <input type="text" id="txtCarWidth" name="txt_car_width" class="box_text" style="height: 35px;font-size: 16px;"/>
             </td>
-            <td colspan="5" class="border-bottom">
-                全高：<input type="text" id="txtCarHeight" name="txt_car_height" class="line_text" style="width: 80px;height:25px;"/>
+            <td class="border-bottom">全高:</td>
+            <td colspan="4" class="border-bottom">
+                <input type="text" id="txtCarHeight" name="txt_car_height" class="box_text" style="height: 35px;font-size: 16px;"/>
             </td>
-            <td colspan="4" class="border-bottom border-right">
-                重量：<input type="text" id="txtCarWeight" name="txt_car_weight" class="line_text" style="width: 60px;height:25px;"/>
+            <td class="border-bottom">重量:</td>
+            <td colspan="3" class="border-bottom border-right">
+                <input type="text" id="txtCarWeight" name="txt_car_weight" class="box_text" style="height: 35px;font-size: 16px;"/>
             </td>
         </tr>
         <tr style="height: 27px;">
             <td rowspan="2" class="border-left border-bottom border-right-dashed" colspan="4" style="font-size: 14px">希望契約開始日</td>
             <td rowspan="2" class="border-bottom border-right" colspan="7">
-                <input type="text" id="txtContractStartDate" name="txt_car_width" class="line_text" style="width: 120px;height:25px;font-size: 16px;"/>
+                <input type="text" id="txtContractStartDate" name="txt_contract_start_date" class="box_text" style="height:60px;font-size: 16px;"/>
             </td>
             <td rowspan="2" colspan="4" class="border-bottom border-right-dashed">希望契約期間<br/>&nbsp;<span style="font-size:11px;">チェックしてください→</span></td>
-            <td colspan="8" class="border-bottom border-right">
-                <input type="radio" id="rdoContractLong" name="rdo_contract_period"/>
+            <td colspan="8" class="border-bottom border-right" style="font-size: 13px;">
+                <input type="radio" id="rdoContractLong" name="rdo_contract_period_long"/>
                 <label for="rdoContractLong">１年間（その後自動更新）</label>
             </td>
         </tr>
         <tr style="height: 44px;">
-            <td colspan="8" class="border-bottom border-right" style="font-size: 12px;">
-                <input type="radio" id="rdoContractShort" name="rdo_contract_period"/>
+            <td colspan="8" class="border-bottom border-right" style="font-size: 13px;">
+                <input type="radio" id="rdoContractShort" name="rdo_contract_period_short"/>
                 <label for="rdoContractShort">１・２ヶ月契約（　　月末日まで）<br/>&nbsp;&nbsp;&nbsp;※更新できませんのでご注意ください</label>
             </td>
         </tr>
@@ -194,7 +226,7 @@
         </tr>
         <tr style="height: 18px;">
             <td rowspan="8" class="border-left-3 border-bottom border-right">
-                <div style="font-size:9px;float:left;margin-left: 2px;">
+                <div style="font-size:9px;float:left;">
                     <span class="vertical-direction">(</span><br/>
                     空<br/>
                     欄<br/>
@@ -223,7 +255,7 @@
                 <input type="text" class="box_text" id="txtCorporateKana" name="txt_corporate_kana" />
             </td>
             <td rowspan="8" class="border-bottom border-left-3 border-right">
-                <div style="font-size:9px;float:left;margin-left: 2px;">
+                <div style="font-size:9px;float:left;">
                     <span class="vertical-direction">(</span><br/>
                     空<br/>
                     欄<br/>
@@ -333,7 +365,7 @@
         </tr>
         <tr style="height: 18px;">
             <td rowspan="7" class="border-left-3 border-bottom border-right">
-                <div style="font-size:9px;float:left;margin-left: 2px;">
+                <div style="font-size:9px;float:left;">
                     <span class="vertical-direction">(</span><br/>
                     空<br/>
                     欄<br/>
@@ -362,7 +394,7 @@
                 <input type="text" class="box_text" id="txtCorporateStaffKana" name="txt_corporate_staff_kana" />
             </td>
             <td rowspan="7" class="border-bottom border-left-3 border-right">
-                <div style="font-size:9px;float:left;margin-left: 2px;">
+                <div style="font-size:9px;float:left;">
                     <span class="vertical-direction">(</span><br/>
                     空<br/>
                     欄<br/>
@@ -523,39 +555,14 @@
         <tr style="height: 30px;font-size:15px;">
             <td colspan="17" class="bold" style="background-color: #000000; color: #ffffff;">申込書の到着時点で当駐車場が満車になっていた場合､順番待ちを希望しますか？⇒</td>
             <td colspan="6" class="center">
-                <input type="radio" name="rdo_waiting" id="rdoWaitingOk" />
-                <label for="rdoWaitingOk" class="bold" style="font-size:15px;">はい</label>
-                <input type="radio" name="rdo_waiting" id="rdoWaitingNo" />
+                <input type="radio" name="rdo_waiting_yes" id="rdoWaitingYes" />
+                <label for="rdoWaitingYes" class="bold" style="font-size:15px;">はい</label>
+                <input type="radio" name="rdo_waiting_no" id="rdoWaitingNo" />
                 <label for="rdoWaitingNo" class="bold" style="font-size:15px;">いいえ</label>
             </td>
         </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
     </table>
-    <div style="text-align: center; font-size: 15px;">書類送付先：{{company_name}}&nbsp;&nbsp;TEL.{{company_tel}}/FAX.{{company_fax}}/E-mail：{{company_email}}</div>
+    <div style="text-align: center; font-size: 14px;">書類送付先：{{company_name}}&nbsp;&nbsp;TEL.{{company_tel}}/FAX.{{company_fax}}/E-mail：{{company_email}}</div>
     {% csrf_token %}
 </form>
 </body>

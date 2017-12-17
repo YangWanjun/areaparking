@@ -116,6 +116,7 @@ function select_subscription(obj) {
                     </div>
                     <div class="collapsible-body">
                         {% if task.category == "010" %}
+                        <!-- 申込書送付 -->
                         <div class="row" style="margin-bottom: 5px;">
                             <div class="col s6">
                                 <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
@@ -142,22 +143,16 @@ function select_subscription(obj) {
                                 <a target="_blank" href="{% url 'format:download_report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}"><i class="material-icons">file_download</i></a>
                             </div>
                         </div>
+                        {% if task.mail_sent_datetime %}
                         <div class="row" style="margin-bottom: 5px;">
                             <div class="col s6">
-                                {% if task.mail_sent_datetime %}
                                 <span style="font-weight: bold;">前回送信日時：</span>{{ task.mail_sent_datetime }}<br/>
-                                <span style="font-weight: bold;">送信者：</span>{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}
-                                {% endif %}
                             </div>
-                            <div class="col s6 right-align">
-                                <!--<button data-target="send_subscription" class="btn modal-trigger" onclick="select_subscription(this)">送信<i class="material-icons right">send</i></button>-->
-                                <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
-                                   class="btn-floating modal-trigger tooltipped" onclick="select_subscription(this)">
-                                    <i class="tiny material-icons">send</i>
-                                </a>
-                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。" class="btn-floating tooltipped"><i class="tiny material-icons">done</i></a>
+                            <div class="col s6">
+                                <span style="font-weight: bold;">送信者：</span>{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}
                             </div>
                         </div>
+                        {% endif %}
                         <!-- 申込時メール送信の確認ボックス -->
                         <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
                             <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendSubscriptionMail">
@@ -216,6 +211,7 @@ function select_subscription(obj) {
                         </div>
                         {% endif %}
                         {% if task.category == "011" %}
+                        <!-- 申込書確認 -->
                             {% for report_file in task.get_report_list %}
                                 <div class="row" style="margin-bottom: 5px;">
                                     <div class="col s12">
@@ -223,14 +219,9 @@ function select_subscription(obj) {
                                     </div>
                                 </div>
                             {% endfor %}
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s12 right-align">
-                                <!--<button data-target="send_subscription" class="btn modal-trigger" onclick="select_subscription(this)">送信<i class="material-icons right">send</i></button>-->
-                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。" class="btn-floating tooltipped"><i class="tiny material-icons">done</i></a>
-                            </div>
-                        </div>
                         {% endif %}
                         {% if task.category == "100" %}
+                        <!-- 契約書類送付 -->
                         <table>
                             <tr>
                                 <td>
@@ -281,15 +272,27 @@ function select_subscription(obj) {
                                 </td>
                                 <td>プレイビュー</td>
                             </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <a class="waves-effect waves-light btn white-text popup" href="javascript:void(0)">送信
-                                        <i class="material-icons right">send</i>
-                                    </a>
-                                </td>
-                            </tr>
                         </table>
                         {% endif %}
+                        <div>
+                            <div class="col s12 right-align">
+                                {% if task.category == "010" %}
+                                <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                   onclick="select_subscription(this)"
+                                   class="waves-effect waves-light btn-floating modal-trigger tooltipped" >
+                                    <i class="tiny material-icons">send</i>
+                                </a>
+                                {% endif %}
+                                {% if task.category == "100" %}
+                                <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                   onclick="javascript:void(0)"
+                                   class="waves-effect waves-light btn-floating tooltipped" >
+                                    <i class="tiny material-icons">send</i>
+                                </a>
+                                {% endif %}
+                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。" class="waves-effect waves-light btn-floating tooltipped"><i class="tiny material-icons">done</i></a>
+                            </div>
+                        </div>
                     </div>
                 </li>
                 {% endwith %}
