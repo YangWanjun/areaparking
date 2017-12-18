@@ -390,4 +390,5 @@ def sync_config():
         ('system', 'page_size', '25'),
     ]
     for group, name, value in configs:
-        Config.objects.create(group=group, name=name, value=value)
+        if Config.objects.public_filter(name=name).count() == 0:
+            Config.objects.create(group=group, name=name, value=value)

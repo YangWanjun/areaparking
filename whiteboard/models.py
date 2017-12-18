@@ -10,6 +10,7 @@ from utils.django_base import BaseModel
 
 # Create your models here.
 class WhiteBoard(models.Model):
+    code = models.IntegerField(primary_key=True, verbose_name="コード")
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
     category = models.ForeignKey(ParkingLotType, verbose_name="分類")

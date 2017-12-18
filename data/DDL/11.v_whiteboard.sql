@@ -1,5 +1,5 @@
 CREATE OR REPLACE VIEW v_whiteboard AS
-select lot.code as id
+select lot.code as code
      , lot.code as parking_lot_id
      , lot.name as parking_lot_name
      , lot.staff_id
