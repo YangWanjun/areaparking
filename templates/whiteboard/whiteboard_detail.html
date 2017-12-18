@@ -1,8 +1,9 @@
 {% extends current_module.base_template %}
 {% load i18n material_form material_frontend %}
-{% load humanize %}
 
 {% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object }}</a>
 {% endblock %}
 
 {% block content %}
@@ -11,83 +12,20 @@
     <div class="card">
         <div class="card-content">
             {% block card %}
-            <div class="card-title">{{ model|verbose_name|title }}: {{ whiteboard }}</div>
+            <div class="card-title">{{ view.model|verbose_name|title }}: {{ object }}</div>
             <table class="table bordered">
+                {% for field_name, value in object_data %}
                 <tr>
-                    <th style="width: 20%;">車室名称：</th>
-                    <td>{{ whiteboard.parking_position }}</td>
-                    <th style="width: 20%;">空き：</th>
-                    <td>
-                        <span class="new badge left {%if whiteboard.contract_status == '01'%}green{% else %}{%if whiteboard.contract_status == '02' %}deep-orange{%else%}grey{%endif%}{%endif%}"
-                              data-badge-caption="{{ whiteboard.get_contract_status_display }}"
-                              style="margin-left: 0px;"></span>
-                    </td>
+                    <th>{{ field_name }}</th>
+                    {% if value.get_absolute_url %}
+                    <td><a href="{{ value.get_absolute_url }}">{{ value }}</a></td>
+                    {% else %}
+                    <td>{{ value }}</td>
+                    {% endif %}
                 </tr>
-                <tr>
-                    <th>場所：</th>
-                    <td colspan="3">{{ whiteboard.address }}</td>
-                </tr>
-                <tr>
-                    <th>募集賃料（税込）：</th>
-                    <td>{{ whiteboard.price_recruitment|default:''|intcomma }}</td>
-                    <th>募集賃料（税抜）：</th>
-                    <td>{{ whiteboard.price_recruitment_no_tax|default:''|intcomma }}</td>
-                </tr>
-                <tr>
-                    <th>ホームページ（税込）：</th>
-                    <td>{{ whiteboard.price_homepage|default:''|intcomma }}</td>
-                    <th>ホームページ（税別）：</th>
-                    <td>{{ whiteboard.price_homepage_no_tax|default:''|intcomma }}</td>
-                </tr>
-                <tr>
-                    <th>チラシ価格（税込）：</th>
-                    <td>{{ whiteboard.price_handbill|default:''|intcomma }}</td>
-                    <th>チラシ価格（税抜）：</th>
-                    <td>{{ whiteboard.price_handbill_no_tax|default:''|intcomma }}</td>
-                </tr>
-                <tr>
-                    <th>全長：</th>
-                    <td>{{ whiteboard.length|default:''|intcomma }}</td>
-                    <th>全幅：</th>
-                    <td>{{ whiteboard.width|default:''|intcomma }}</td>
-                </tr>
-                <tr>
-                    <th>全高：</th>
-                    <td>{{ whiteboard.height|default:''|intcomma }}</td>
-                    <th>重量：</th>
-                    <td>{{ whiteboard.weight|default:''|intcomma }}</td>
-                </tr>
-                <tr>
-                    <th>ﾒｰｶｰのタイヤ幅：</th>
-                    <td>{{ whiteboard.tyre_width|default:''|intcomma }}</td>
-                    <th>AP計測のタイヤ幅：</th>
-                    <td>{{ whiteboard.tyre_width_ap|default:''|intcomma }}</td>
-                </tr>
-                <tr>
-                    <th>ﾒｰｶｰの地上最低高：</th>
-                    <td>{{ whiteboard.min_height|default:''|intcomma }}</td>
-                    <th>AP計測の地上最低高：</th>
-                    <td>{{ whiteboard.min_height_ap|default:''|intcomma }}</td>
-                </tr>
-                <tr>
-                    <th>F値：</th>
-                    <td>{{ whiteboard.f_value|default:''|intcomma }}</td>
-                    <th>R値：</th>
-                    <td>{{ whiteboard.r_value|default:''|intcomma }}</td>
-                </tr>
-                <tr>
-                    <th>時間制限：</th>
-                    <td>{{ whiteboard.time_limit|default:'' }}</td>
-                    <th></th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>備考：</th>
-                    <td colspan="3">{{ whiteboard.position_comment|default:'' }}</td>
-                </tr>
-
-                {% endblock %}
+                {% endfor %}
             </table>
+            {% endblock %}
         </div>
         <div class="card-action">
             <div class="right-align">
@@ -95,138 +33,16 @@
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
-                {% if whiteboard.contract_status != "01" %}
-                    <a class="waves-effect waves-light btn white-text popup" href="?parking_lot_id={{ whiteboard.parking_lot.pk }}&_popup=1">順番待ちへ</a>
-                {% else %}
-                    <button data-target="start_temp_contract" class="btn modal-trigger">契約に進む</button>
-                {% endif %}
-            </div>
-        </div>
-        <div id="start_temp_contract" class="modal modal-fixed-footer" style="min-height: 500px;">
-            <div class="modal-content">
-                <h4>仮契約登録</h4>
-                <div class="row">
-                    <form method="post" action="/api/temp-contractor/" id="new_temp_ontractor_form" class="col s12">
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">call_split</i>
-                                {{ temp_contractor_form.category }}
-                                {{ temp_contractor_form.category.label_tag }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">account_circle</i>
-                                {{ temp_contractor_form.name }}
-                                {{ temp_contractor_form.name.label_tag }}
-                            </div>
-                            <div class="input-field col s6">
-                                {{ temp_contractor_form.kana }}
-                                {{ temp_contractor_form.kana.label_tag }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">email</i>
-                                {{ temp_contractor_form.email }}
-                                {{ temp_contractor_form.email.label_tag }}
-                            </div>
-                            <div class="input-field col s6">
-                                {{ temp_contractor_form.post_code }}
-                                {{ temp_contractor_form.post_code.label_tag }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">add_location</i>
-                                {{ temp_contractor_form.address1 }}
-                                {{ temp_contractor_form.address1.label_tag }}
-                            </div>
-                            <div class="input-field col s6">
-                                {{ temp_contractor_form.address2 }}
-                                {{ temp_contractor_form.address2.label_tag }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">phone</i>
-                                {{ temp_contractor_form.tel }}
-                                {{ temp_contractor_form.tel.label_tag }}
-                            </div>
-                            <div class="input-field col s6">
-                                {{ temp_contractor_form.fax }}
-                                {{ temp_contractor_form.fax.label_tag }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">comment</i>
-                                {{ temp_contractor_form.comment }}
-                                {{ temp_contractor_form.comment.label_tag }}
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a href="javascript:void(0)" onclick="save_temp_contractor(this)" class="modal-action waves-effect waves-green btn-flat ">次へ</a>
-                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
             </div>
         </div>
     </div>
 </div>
 {% endblock left-panel %}
-{% block right-panel %}
-
-{% endblock right-panel %}
+{% block right-panel %}{% endblock right-panel %}
 {% endblock %}
 
 {% block footer %}
 <script type="text/javascript">
-$(document).ready(function() {
     ebjs.material.popup_anchor();
-
-    $('.modal').modal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        inDuration: 300, // Transition in duration
-        outDuration: 200, // Transition out duration
-        startingTop: '4%', // Starting top style attribute
-        endingTop: '10%', // Ending top style attribute
-        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
-            //alert("Ready");
-            console.log(modal, trigger);
-        },
-        complete: function(obj) {
-            //alert('Closed');
-        } // Callback for Modal close
-    });
-
-    var form_obj = $("#new_temp_ontractor_form")
-    form_obj.submit(function(){
-        ebjs.utils.ajax_request(
-            $(this).attr('action'),
-            $(this).attr('method'),
-            $(this).serialize()
-        ).done(function(result){
-            ebjs.utils.ajax_post(
-                '/api/temp-contract/',
-                {contractor: result.id, parking_lot: {{ whiteboard.parking_lot.pk }}, parking_position: {{ whiteboard.parking_position.pk }}}
-            ).done(function(result2){
-                window.location = '/contract/temp_contract/' + result2.id;
-                $('#start_temp_contract').modal('close');
-            });
-        }).fail(function(result){
-            ebjs.material.reflection_form_errors(form_obj, result.responseJSON);
-        }).always(function(result){
-        });
-        return false;
-    });
-});
-
-function save_temp_contractor(obj) {
-    var form_obj = $("#new_temp_ontractor_form")
-    form_obj.submit();
-}
 </script>
 {% endblock %}

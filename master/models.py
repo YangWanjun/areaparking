@@ -199,11 +199,12 @@ class Mediation(BaseModel):
 
 class Payment(BaseModel):
     name = models.CharField(max_length=30, unique=True, verbose_name="入金項目")
+    timing = models.CharField(max_length=2, choices=constants.CHOICE_PAY_TIMING, verbose_name="タイミング")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
         db_table = 'mst_payment'
-        ordering = ['name']
+        ordering = ['timing', 'name']
         verbose_name = "入金項目"
         verbose_name_plural = "入金項目一覧"
 

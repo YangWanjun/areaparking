@@ -9,7 +9,7 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import common
-from master.models import CarModel, CarMaker, Config, Company
+from master.models import CarModel, CarMaker, Config, Company, Payment
 from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaffHistory
 from employee.models import Department, Member, MemberShip
 
@@ -26,8 +26,17 @@ def sync_master():
         company.fax = '070-1234-5678'
         company.email = 'email@example.com'
         company.save()
-    else:
-        print('既に存在しているので、スキップしました。')
+        print('作成', '自社情報は作成しました。')
+    # 入金項目
+    if Payment.objects.public_filter(timing='10').count() == 0:
+        Payment.objects.create(timing='10', name="契約時事務手数料")
+        print('作成', '契約時事務手数料は作成しました。')
+    if Payment.objects.public_filter(timing='11').count() == 0:
+        Payment.objects.create(timing='11', name="契約開始月末日までの日割賃料")
+        print('作成', '契約時事務手数料は作成しました')
+    if Payment.objects.public_filter(timing='30').count() == 0:
+        Payment.objects.create(timing='30', name="翌月分の賃料")
+        print('作成', '契約時事務手数料は作成しました')
 
 
 def sync_car_models():
@@ -376,6 +385,9 @@ def sync_config():
         ('email', 'email_password', '******'),
         ('email', 'email_smtp_host', 'smtp.e-business.co.jp'),
         ('email', 'email_smtp_port', '587'),
+        ('system', 'circle_radius', '2000'),
+        ('system', 'domain_name', 'http://ap.mopa.jp'),
+        ('system', 'page_size', '25'),
     ]
     for group, name, value in configs:
         Config.objects.create(group=group, name=name, value=value)

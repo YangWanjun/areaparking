@@ -3,82 +3,31 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, ParkingTimeLimit
+from parkinglot.models import ParkingLot, ParkingLotType, ParkingTimeLimit
 from employee.models import Member
-from utils import constants
 from utils.django_base import BaseModel
 
 
 # Create your models here.
-class WhiteBoard(BaseModel):
-    parking_code = models.IntegerField(verbose_name="物件番号")
+class WhiteBoard(models.Model):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    parking_lot_name = models.CharField(max_length=100, verbose_name="駐車場名称")
     staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
-    category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
+    category = models.ForeignKey(ParkingLotType, verbose_name="分類")
     address = models.CharField(max_length=255, blank=True, null=True, verbose_name="場所")
     lng = models.FloatField(blank=True, null=True, verbose_name="経度")
     lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
-    position_count = models.IntegerField(default=0, verbose_name="サブリース台数")
-    waiting_count = models.IntegerField(default=0, verbose_name="順番待ち")
-    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
-    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
-    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
+    position_count = models.IntegerField(default=0, verbose_name="車室数")
+    contract_count = models.IntegerField(default=0, verbose_name="契約数")
+    temp_contract_count = models.IntegerField(default=0, verbose_name="手続中")
+    waiting_count = models.IntegerField(default=0, verbose_name="待ち数")
+    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約")
+    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新ﾚﾅﾝﾄ")
+    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリー")
     parking_time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, verbose_name="時間制限")
-    # 車室情報
-    parking_position = models.ForeignKey(ParkingPosition, blank=True, null=True, verbose_name="車室")
-    contract_status = models.CharField(max_length=2, choices=constants.CHOICE_CONTRACT_STATUS, verbose_name="空き")
-    contract_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")
-    # 賃料
-    price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
-    price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税抜）")
-    price_homepage = models.IntegerField(blank=True, null=True, verbose_name="ホームページ価格（税込）")
-    price_homepage_no_tax = models.IntegerField(blank=True, null=True, verbose_name="ホームページ価格（税別）")
-    price_handbill = models.IntegerField(blank=True, null=True, verbose_name="チラシ価格（税込）")
-    price_handbill_no_tax = models.IntegerField(blank=True, null=True, verbose_name="チラシ価格（税別）")
-    # サイズ
-    length = models.IntegerField(blank=True, null=True, verbose_name="全長")
-    width = models.IntegerField(blank=True, null=True, verbose_name="全幅")
-    height = models.IntegerField(blank=True, null=True, verbose_name="全高")
-    weight = models.IntegerField(blank=True, null=True, verbose_name="重量")
-    tyre_width = models.IntegerField(blank=True, null=True, verbose_name="ﾒｰｶｰのタイヤ幅")
-    tyre_width_ap = models.IntegerField(blank=True, null=True, verbose_name="AP計測のタイヤ幅")
-    min_height = models.IntegerField(blank=True, null=True, verbose_name="ﾒｰｶｰの地上最低高")
-    min_height_ap = models.IntegerField(blank=True, null=True, verbose_name="AP計測の地上最低高")
-    f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
-    r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
-    position_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
         managed = False
         db_table = 'v_whiteboard'
-        verbose_name = "駐車場"
-        verbose_name_plural = "駐車場一覧"
-
-    def __str__(self):
-        return self.parking_lot_name
-
-
-class VMapBoard(BaseModel):
-    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    parking_lot_name = models.CharField(max_length=100, verbose_name="駐車場名称")
-    staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
-    staff_name = models.CharField(max_length=60, blank=True, null=True, verbose_name="担当者名前")
-    address = models.CharField(max_length=255, blank=True, null=True, verbose_name="場所")
-    lng = models.FloatField(blank=True, null=True, verbose_name="経度")
-    lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
-    position_count = models.IntegerField(default=0, verbose_name="サブリース台数")
-    waiting_count = models.IntegerField(default=0, verbose_name="順番待ち")
-    contract_count = models.IntegerField(default=0, verbose_name="契約数")
-    temp_contract_count = models.IntegerField(default=0, verbose_name="契約中数")
-    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
-    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
-    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
-    parking_time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, verbose_name="時間制限")
-
-    class Meta:
-        managed = False
-        db_table = 'v_map_board'
         verbose_name = "駐車場"
         verbose_name_plural = "駐車場一覧"
 

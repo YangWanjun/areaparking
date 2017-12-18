@@ -73,6 +73,7 @@ urlpatterns = [
     url(r'^api/', include(master_router.urls)),
     url(r'^api/', include(whiteboard_router.urls)),
     url(r'^api/task/(?P<pk>[0-9]+)/finish.html$', contract_api.task_finish, name='task_finish'),
+    url(r'^api/task/(?P<pk>[0-9]+)/skip.html$', contract_api.task_skip, name='task_skip'),
 ]
 
 handler500 = 'areaparking.views.handler_500'

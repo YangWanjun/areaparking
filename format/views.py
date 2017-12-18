@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 
 from . import biz, models
-from contract.models import Task, TempContractor
+from contract.models import Task
 from parkinglot.models import ParkingLot
 from utils import constants, common
 from utils.django_base import BaseView, BaseTemplateView

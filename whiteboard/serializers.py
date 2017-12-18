@@ -5,11 +5,11 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySe
 from . import models
 
 
-class MapBoardSerializer(GeoFeatureModelSerializer):
+class WhiteBoardSerializer(GeoFeatureModelSerializer):
     point = GeometrySerializerMethodField()
 
     class Meta:
-        model = models.VMapBoard
+        model = models.WhiteBoard
         fields = '__all__'
         geo_field = 'point'
 

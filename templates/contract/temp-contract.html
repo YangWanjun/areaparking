@@ -130,110 +130,112 @@ function select_subscription(obj) {
                         </span>
                         {{ task }}
                         {% if task.status == '01' %}
+                            <!-- 未実施 -->
                             <span class="new badge red" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
-                        {% endif %}
-                        {% if task.status == '99' %}
+                        {% elif task.status == '10' %}
+                            <!-- スキップ -->
+                            <span class="new badge grey" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% elif task.status == '99' %}
                             <span class="new badge grey" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
                         {% endif %}
                     </div>
                     <div class="collapsible-body">
                         {% if task.category == "010" %}
-                        <!-- 申込書送付 -->
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s6">
-                                <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
-                                       data-task-url="{% url 'format:report_subscription_confirm' task.pk subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
-                                <label for="chkSubscriptionConfirm">申込確認書</label>
+                            <!-- 申込書送付 -->
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s6">
+                                    <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
+                                           data-task-url="{% url 'format:report_subscription_confirm' task.pk subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
+                                    <label for="chkSubscriptionConfirm">申込確認書</label>
+                                </div>
+                                <div class="col s4">
+                                    <a target="_blank" href="{% url 'format:report_subscription_confirm' task.pk subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
+                                </div>
+                                <div class="col s2">
+                                    <a target="_blank" href="{% url 'format:download_report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
+                                </div>
                             </div>
-                            <div class="col s4">
-                                <a target="_blank" href="{% url 'format:report_subscription_confirm' task.pk subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s6">
+                                    <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked"
+                                           data-task-url="{% url 'format:report_subscription' task.pk subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
+                                    <label for="chkSubscription">申込書</label>
+                                </div>
+                                <div class="col s4">
+                                    <a target="_blank" href="{% url 'format:report_subscription' task.pk subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
+                                </div>
+                                <div class="col s2">
+                                    <a target="_blank" href="{% url 'format:download_report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
+                                </div>
                             </div>
-                            <div class="col s2">
-                                <a target="_blank" href="{% url 'format:download_report_subscription_confirm' subscription_confirm_template.pk temp_contract.parking_lot.pk contractor.pk %}"><i class="material-icons">file_download</i></a>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s6">
-                                <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked"
-                                       data-task-url="{% url 'format:report_subscription' task.pk subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}" />
-                                <label for="chkSubscription">申込書</label>
-                            </div>
-                            <div class="col s4">
-                                <a target="_blank" href="{% url 'format:report_subscription' task.pk subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}">プレイビュー</a>
-                            </div>
-                            <div class="col s2">
-                                <a target="_blank" href="{% url 'format:download_report_subscription' subscription_template.pk temp_contract.parking_lot.pk contractor.pk %}"><i class="material-icons">file_download</i></a>
-                            </div>
-                        </div>
-                        {% if task.mail_sent_datetime %}
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s6">
-                                <span style="font-weight: bold;">前回送信日時：</span>{{ task.mail_sent_datetime }}<br/>
-                            </div>
-                            <div class="col s6">
-                                <span style="font-weight: bold;">送信者：</span>{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}
-                            </div>
-                        </div>
-                        {% endif %}
-                        <!-- 申込時メール送信の確認ボックス -->
-                        <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
-                            <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendSubscriptionMail">
-                                {{ formset.management_form }}
-                                <input type="hidden" id="hidSubscriptionUrl" name="subscription_url"/>
-                            <div class="modal-content">
-                                <h4>申込書の送付</h4>
-                                <div class="row">
-                                    <div class="col s12">
+                            {% if task.mail_sent_datetime %}
+                                <div class="row" style="margin-bottom: 5px;">
+                                    <div class="col s6">
+                                        <span style="font-weight: bold;">前回送信日時：</span>{{ task.mail_sent_datetime }}<br/>
+                                    </div>
+                                    <div class="col s6">
+                                        <span style="font-weight: bold;">送信者：</span>{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <!-- 申込時メール送信の確認ボックス -->
+                            <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
+                                <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendSubscriptionMail">
+                                    {{ formset.management_form }}
+                                    <input type="hidden" id="hidSubscriptionUrl" name="subscription_url"/>
+                                    <div class="modal-content">
+                                        <h4>申込書の送付</h4>
                                         <div class="row">
-                                            <div class="input-field col s12">
-                                                <input readonly value="{{ group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
-                                                <label for="txtSubscriptionSender">差出人</label>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <input value="{{ contractor.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
-                                                <label for="txtSubscriptionTo">宛先</label>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
-                                                <label for="txtSubscriptionCC">ＣＣ</label>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
-                                                <label for="txtSubscriptionBCC">ＢＣＣ</label>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <input value="{{ template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
-                                                <label for="txtSubscriptionTitle">件名</label>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea" style="min-height: 300px;">{{ template.body|safe }}</textarea>
-                                                <label for="txtSubscriptionContent">メール本文</label>
+                                            <div class="col s12">
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input readonly value="{{ group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
+                                                        <label for="txtSubscriptionSender">差出人</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{{ contractor.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
+                                                        <label for="txtSubscriptionTo">宛先</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
+                                                        <label for="txtSubscriptionCC">ＣＣ</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
+                                                        <label for="txtSubscriptionBCC">ＢＣＣ</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{{ template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
+                                                        <label for="txtSubscriptionTitle">件名</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                                                        <label for="txtSubscriptionContent">メール本文</label>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="modal-footer">
+                                        <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
+                                            <i class="material-icons right">send</i>
+                                        </button>
+                                        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="modal-footer">
-                                <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
-                                    <i class="material-icons right">send</i>
-                                </button>
-                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
-                            </div>
-                            </form>
-                        </div>
-                        {% endif %}
-                        {% if task.category == "011" %}
-                        <!-- 申込書確認 -->
+                        {% elif task.category == "011" %}
+                            <!-- 申込書確認 -->
                             {% for report_file in task.get_report_list %}
                                 <div class="row" style="margin-bottom: 5px;">
                                     <div class="col s12">
@@ -241,60 +243,59 @@ function select_subscription(obj) {
                                     </div>
                                 </div>
                             {% endfor %}
-                        {% endif %}
-                        {% if task.category == "100" %}
-                        <!-- 契約書類送付 -->
-                        <table>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkContract" checked="checked" />
-                                    <label for="chkContract">契約時送付状</label>
-                                </td>
-                                <td>プレイビュー</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkContract2" checked="checked" />
-                                    <label for="chkContract2">契約書×２</label>
-                                </td>
-                                <td>プレイビュー</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkContract3" checked="checked" />
-                                    <label for="chkContract3">契約金計算書</label>
-                                </td>
-                                <td>プレイビュー</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkContract4" checked="checked" />
-                                    <label for="chkContract4">操作説明書</label>
-                                </td>
-                                <td>プレイビュー</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkContract5" checked="checked" />
-                                    <label for="chkContract5">配置図</label>
-                                </td>
-                                <td>プレイビュー</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkContract6" checked="checked" />
-                                    <label for="chkContract6">パズル式駐車場注意事項</label>
-                                </td>
-                                <td>プレイビュー</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="filled-in" id="chkContract7" checked="checked" />
-                                    <label for="chkContract7">契約時アンケート</label>
-                                </td>
-                                <td>プレイビュー</td>
-                            </tr>
-                        </table>
+                        {% elif task.category == "100" %}
+                            <!-- 契約書類送付 -->
+                            <table>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract" checked="checked" />
+                                        <label for="chkContract">契約時送付状</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract2" checked="checked" />
+                                        <label for="chkContract2">契約書×２</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract3" checked="checked" />
+                                        <label for="chkContract3">契約金計算書</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract4" checked="checked" />
+                                        <label for="chkContract4">操作説明書</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract5" checked="checked" />
+                                        <label for="chkContract5">配置図</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract6" checked="checked" />
+                                        <label for="chkContract6">パズル式駐車場注意事項</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract7" checked="checked" />
+                                        <label for="chkContract7">契約時アンケート</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                            </table>
                         {% endif %}
                         <div>
                             <div class="col s12 right-align">
@@ -313,11 +314,12 @@ function select_subscription(obj) {
                                 </a>
                                 {% endif %}
                                 <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします。"
-                                   class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}">
+                                   class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                   onclick="ebjs.material.task_skip(this, '{% url 'task_skip' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">call_missed_outgoing</i></a>
                                 <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。"
                                    class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
-                                    onclick="ebjs.material.task_finish(this, '{% url 'task_finish' task.pk %}', '{{ task }}')">
+                                   onclick="ebjs.material.task_finish(this, '{% url 'task_finish' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">done</i></a>
                             </div>
                         </div>

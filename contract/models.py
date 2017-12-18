@@ -19,7 +19,11 @@ from utils.app_base import get_total_context, get_user_subscription_url
 
 
 # Create your models here.
-class BaseContractor(BaseModel):
+class Contractor(BaseModel):
+    code = models.IntegerField(
+        primary_key=True, verbose_name="契約者No.",
+        validators=(RegexValidator(regex=r'^\d{1,8}$'),)
+    )
     category = models.CharField(max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE, verbose_name="契約者分類")
     name = models.CharField(max_length=15, verbose_name="名前")
     kana = models.CharField(max_length=15, blank=True, null=True, verbose_name="カナ")
@@ -84,15 +88,21 @@ class BaseContractor(BaseModel):
     guarantor_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"保証人ファックス")
     guarantor_relation = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人との間柄")
     guarantor_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+    # 仮契約であるかどうかのステータス
+    status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_CONTRACT_STATUS, editable=False,
+                              verbose_name="ステータス")
 
     class Meta:
-        abstract = True
+        db_table = 'ap_contractor'
+        ordering = ['name']
+        verbose_name = "契約者"
+        verbose_name_plural = "契約者一覧"
 
     def __str__(self):
         return self.name
 
 
-class BaseContract(BaseModel):
+class Contract(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
     contractor = models.ForeignKey('Contractor', on_delete=models.PROTECT, verbose_name="契約者")
@@ -122,28 +132,9 @@ class BaseContract(BaseModel):
     car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
     car_no = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
     car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
-
-
-class Contractor(BaseContractor):
-    code = models.IntegerField(
-        primary_key=True, verbose_name="契約者No.",
-        validators=(RegexValidator(regex=r'^\d{1,8}$'),)
-    )
-
-    class Meta:
-        db_table = 'ap_contractor'
-        ordering = ['name']
-        verbose_name = "契約者"
-        verbose_name_plural = "契約者一覧"
-
-
-class Contract(BaseContract):
+    # 仮契約であるかどうかのステータス
+    status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_CONTRACT_STATUS, editable=False,
+                              verbose_name="ステータス")
 
     class Meta:
         db_table = 'ap_contract'
@@ -151,10 +142,23 @@ class Contract(BaseContract):
         verbose_name = "契約情報"
         verbose_name_plural = "契約情報一覧"
 
+    def __str__(self):
+        return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        is_new = True if self.pk is None else False
+        super(Contract, self).save(force_insert, force_update, using, update_fields)
+        if is_new:
+            # 進捗のプロセス作成
+            process = ContractProcess.objects.create(contract=self)
+            for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
+                Task.objects.create(process=process, order=i, category=category[0], name=category[1])
+
 
 class ContractPayment(BaseModel):
     contract = models.ForeignKey(Contract, on_delete=models.PROTECT, verbose_name="契約情報")
-    pay_timing = models.CharField(max_length=2, choices=constants.CHOICE_PAY_TIMING, verbose_name="タイミング")
+    timing = models.CharField(max_length=2, choices=constants.CHOICE_PAY_TIMING, verbose_name="タイミング")
     payment = models.ForeignKey(Payment, verbose_name="入金項目")
     amount = models.IntegerField(verbose_name="請求額")
     consumption_tax = models.IntegerField(verbose_name="消費税")
@@ -162,7 +166,7 @@ class ContractPayment(BaseModel):
 
     class Meta:
         db_table = 'ap_contract_payment'
-        ordering = ['contract', 'pay_timing']
+        ordering = ['contract', 'timing']
         verbose_name = "入金項目"
         verbose_name_plural = "入金項目一覧"
 
@@ -170,67 +174,12 @@ class ContractPayment(BaseModel):
         return '%s：%s' % (str(self.contract), self.payment)
 
 
-class TempContractor(BaseContractor):
-
-    class Meta:
-        db_table = 'ap_temp_contractor'
-        ordering = ['name']
-        verbose_name = "仮契約者"
-        verbose_name_plural = "仮契約者一覧"
-
-
-class TempContract(BaseContract):
-    contractor = models.ForeignKey(TempContractor, on_delete=models.PROTECT, verbose_name="仮契約者")
-    # 基本情報
-    contract_no = models.CharField(blank=True, null=True, max_length=20, verbose_name="契約番号")
-    contract_date = models.DateField(blank=True, null=True, verbose_name="契約日")
-    start_date = models.DateField(blank=True, null=True, verbose_name="契約開始日")
-    end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")
-    pay_date = models.DateField(blank=True, null=True, verbose_name="賃料発生日",
-                                help_text="未入力の場合、契約期間の開始日が賃料発生日として扱われます")
-    notify_start_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知開始日")
-    notify_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知終了日")
-    staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
-    mediation = models.ForeignKey(Mediation, blank=True, null=True, verbose_name="仲介業者")
-    staff_assistant1 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant1_set',
-                                         verbose_name="アシスタント１")
-    staff_assistant2 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant2_set',
-                                         verbose_name="アシスタント２")
-    staff_assistant3 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant3_set',
-                                         verbose_name="アシスタント３")
-    # 口座情報
-    payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.PROTECT,
-                                           verbose_name="振込先口座")
-    # 車情報
-    car_maker = models.ForeignKey(CarMaker, blank=True, null=True, verbose_name="車メーカー")
-    car_model = models.CharField(max_length=100, blank=True, null=True, verbose_name="車種")
-    car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
-    car_no_plate = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
-    car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
-
-    class Meta:
-        db_table = 'ap_temp_contract'
-        ordering = ['contractor', 'start_date']
-        verbose_name = "仮契約情報"
-        verbose_name_plural = "仮契約情報一覧"
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        is_new = True if self.pk is None else False
-        super(TempContract, self).save(force_insert, force_update, using, update_fields)
-        if is_new:
-            # 進捗のプロセス作成
-            process = ContractProcess.objects.create(temp_contract=self)
-            for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
-                Task.objects.create(process=process, order=i, category=category[0], name=category[1])
-
-
 class ContractProcess(BaseModel):
-    temp_contract = models.OneToOneField(TempContract, related_name='process', verbose_name="仮契約")
+    contract = models.OneToOneField(Contract, related_name='process', verbose_name="仮契約")
 
     class Meta:
         db_table = 'ap_contract_process'
-        ordering = ['temp_contract']
+        ordering = ['contract']
         verbose_name = "契約進捗"
         verbose_name_plural = "契約進捗一覧"
 
@@ -280,8 +229,8 @@ class Task(BaseModel):
             t_password = Template(group.template.password) if group.template.password else None
             comment = group.template.comment or ''
             context = Context(get_total_context(
-                parking_lot=self.process.temp_contract.parking_lot,
-                contractor=self.process.temp_contract.contractor,
+                parking_lot=self.process.contract.parking_lot,
+                contractor=self.process.contract.contractor,
             ))
             context.update(get_user_subscription_url(self))
 
@@ -334,18 +283,3 @@ class Task(BaseModel):
         :return:
         """
         return self.status == '20'
-
-
-# class VTempContract(models.Model):
-#     temp_contract = models.ForeignKey(TempContract, verbose_name="仮契約")
-#     parking_lot = models.ForeignKey(ParkingLot, blank=True, null=True, verbose_name="駐車場")
-#     contractor = models.ForeignKey(TempContractor, verbose_name="仮契約者")
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'v_temp_contract'
-#         verbose_name = "仮契約ビュー"
-#         verbose_name_plural = "仮契約ビュー一覧"
-#
-#     def __str__(self):
-#         return str(self.temp_contract)

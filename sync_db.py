@@ -6,12 +6,14 @@ import MySQLdb
 import django
 from django.core.management import call_command
 
-from contract import migrations as contract_migrations
-from master import migrations as master_migrations
-from parkinglot import migrations as parkinglot_migrations
-from revolution import migrations as revolution_migrations
-from turnover import migrations as turnover_migrations
-from whiteboard import migrations as whiteboard_migrations
+# from contract import migrations as contract_migrations
+# from employee import migrations as employee_migrations
+# from format import migrations as format_migrations
+# from master import migrations as master_migrations
+# from parkinglot import migrations as parkinglot_migrations
+# from revolution import migrations as revolution_migrations
+# from turnover import migrations as turnover_migrations
+# from whiteboard import migrations as whiteboard_migrations
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "areaparking.settings")
@@ -60,20 +62,15 @@ def del_migration_records():
 
 
 def del_migration_files():
-    path_list = list()
-    path_list.append(os.path.dirname(contract_migrations.__file__))
-    path_list.append(os.path.dirname(master_migrations.__file__))
-    path_list.append(os.path.dirname(parkinglot_migrations.__file__))
-    path_list.append(os.path.dirname(revolution_migrations.__file__))
-    path_list.append(os.path.dirname(turnover_migrations.__file__))
-    path_list.append(os.path.dirname(whiteboard_migrations.__file__))
-
-    for path in path_list:
-        for filename in os.listdir(path):
-            if filename not in ('__init__.py', '__init__.pyc'):
-                file_path = os.path.join(path, filename)
-                os.remove(file_path)
-                print('DEL: %s' % file_path)
+    root_path = os.path.dirname(os.path.realpath(__file__))
+    for root, dirs, files in os.walk(root_path):
+        for filename in files:
+            if filename in ('__init__.py', '__init__.pyc'):
+                continue
+            if os.path.basename(root) == 'migrations':
+                path = os.path.join(root, filename)
+                os.remove(path)
+                print('DEL: %s' % path)
 
 
 if __name__ == '__main__':

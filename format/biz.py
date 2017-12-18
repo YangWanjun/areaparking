@@ -7,7 +7,7 @@ from django.template.context_processors import csrf
 
 from . import models
 from parkinglot.models import ParkingLot
-from contract.models import TempContractor
+from contract.models import Contractor
 from utils import common
 from utils.app_base import get_total_context
 
@@ -15,12 +15,13 @@ from utils.app_base import get_total_context
 def get_subscription_confirm_html(request, **kwargs):
     """申込確認書のHTMLを取得する。
 
+    :param request:
     :param kwargs:
     :return:
     """
     report = get_object_or_404(models.ReportSubscriptionConfirm, pk=kwargs.get('report_id'))
     parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
-    contractor = get_object_or_404(TempContractor, pk=kwargs.get('contractor_id'))
+    contractor = get_object_or_404(Contractor, pk=kwargs.get('contractor_id'))
     t = Template(report.content)
     ctx = Context(kwargs)
     ctx.update(get_total_context(
@@ -35,12 +36,13 @@ def get_subscription_confirm_html(request, **kwargs):
 def get_subscription_html(request, **kwargs):
     """申込書のHTMLを取得する。
 
+    :param request:
     :param kwargs:
     :return:
     """
     report = get_object_or_404(models.ReportSubscription, pk=kwargs.get('report_id'))
     parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
-    contractor = get_object_or_404(TempContractor, pk=kwargs.get('contractor_id'))
+    contractor = get_object_or_404(Contractor, pk=kwargs.get('contractor_id'))
     t = Template(report.content)
     ctx = Context(kwargs)
     ctx.update(get_total_context(

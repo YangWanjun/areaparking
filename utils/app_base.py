@@ -76,3 +76,7 @@ def get_user_subscription_url(task):
     url = reverse('format:user_subscription', kwargs={'task_id': task.pk})
     domain_name = Config.get_domain_name()
     return {'user_subscription_url': urljoin(domain_name, url)}
+
+
+def get_contracting_payment(contract):
+    pass

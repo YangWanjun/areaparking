@@ -8,9 +8,9 @@ from rest_framework import serializers
 from . import models
 
 
-class TempContractorSerializer(serializers.ModelSerializer):
+class ContractorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.TempContractor
+        model = models.Contractor
         fields = '__all__'
 
     # def validate_name(self, value):
@@ -32,9 +32,9 @@ class TempContractorSerializer(serializers.ModelSerializer):
     #     return value
 
 
-class TempContractSerializer(serializers.ModelSerializer):
+class ContractSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.TempContract
+        model = models.Contract
         fields = '__all__'
 
 
