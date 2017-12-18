@@ -4,6 +4,7 @@ import operator
 
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.db.models import Q
 from django.middleware.csrf import get_token
@@ -38,8 +39,18 @@ class WhiteBoardListView(BaseTemplateView):
         request = kwargs.get('request')
         queryset = models.WhiteBoard.objects.all()[:25]
 
+        paginator = Paginator(queryset, Config.get_page_size())
+        page = request.GET.get('page')
+        try:
+            object_list = paginator.page(page)
+        except PageNotAnInteger:
+            object_list = paginator.page(1)
+        except EmptyPage:
+            object_list = paginator.page(paginator.num_pages)
+
         context.update({
-            'queryset': queryset,
+            'queryset': object_list,
+            'paginator': paginator,
         })
         return context
 

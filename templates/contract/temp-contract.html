@@ -37,8 +37,30 @@ $(document).ready(function(){
     $('.tooltipped').tooltip({delay: 50});
     ebjs.material.popup_anchor();
     // 申込書の送信イベント
-    ebjs.material.send_subscription_mail("frmSendSubscriptionMail");
+    ebjs.material.send_subscription_mail(
+        "frmSendSubscriptionMail",
+        subscription_sent_success_fn,
+        subscription_sent_failure_fn,
+        subscription_sent_always_fn
+    );
 });
+
+function subscription_sent_success_fn(result) {
+    if (result.error) {
+        alert(result.message);
+    } else {
+        Materialize.toast('メール送信しました!', 10000);
+        $('#send_subscription').modal('close');
+    }
+}
+
+function subscription_sent_failure_fn(result) {
+    // debugger;
+}
+
+function subscription_sent_always_fn(result) {
+    // debugger;
+}
 
 function select_subscription(obj) {
 
@@ -93,7 +115,7 @@ function select_subscription(obj) {
     <div class="card">
         <div class="card-content">
             <div class="card-title">進捗情報</div>
-            <div>進捗：{{ temp_contract.process.get_percent }} %</div>
+            <div>進捗：<span class="percentage">{{ temp_contract.process.get_percent }}</span> %</div>
             <div class="progress" style="height: 14px;">
                 <div class="determinate" style="width: {{ temp_contract.process.get_percent }}%"></div>
             </div>
@@ -290,7 +312,13 @@ function select_subscription(obj) {
                                     <i class="tiny material-icons">send</i>
                                 </a>
                                 {% endif %}
-                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。" class="waves-effect waves-light btn-floating tooltipped"><i class="tiny material-icons">done</i></a>
+                                <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします。"
+                                   class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}">
+                                    <i class="tiny material-icons">call_missed_outgoing</i></a>
+                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。"
+                                   class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                    onclick="ebjs.material.task_finish(this, '{% url 'task_finish' task.pk %}', '{{ task }}')">
+                                    <i class="tiny material-icons">done</i></a>
                             </div>
                         </div>
                     </div>

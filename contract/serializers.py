@@ -36,3 +36,9 @@ class TempContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TempContract
         fields = '__all__'
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Task
+        fields = '__all__'

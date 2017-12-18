@@ -308,7 +308,32 @@ class Task(BaseModel):
             return None
 
     def get_report_list(self):
+        """このタスクで作成した帳票一覧を取得する。
+
+        :return:
+        """
         return ReportFile.objects.public_filter(subscriptions__pk=self.pk)
+
+    def is_finished(self):
+        """タスクが成功完了
+
+        :return:
+        """
+        return self.status == '99'
+
+    def is_skipped(self):
+        """タスクはスキップした
+
+        :return:
+        """
+        return self.status == '10'
+
+    def is_failure(self):
+        """タスクが通らない
+
+        :return:
+        """
+        return self.status == '20'
 
 
 # class VTempContract(models.Model):

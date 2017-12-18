@@ -58,6 +58,15 @@ class Config(BaseModel):
                                   value=default)
             return default
 
+    @classmethod
+    def get_page_size(cls):
+        default = 25
+        try:
+            return Config.objects.get(name=constants.CONFIG_PAGE_SIZE).value
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_PAGE_SIZE, value=default)
+            return default
+
 
 class Company(BaseModel):
     name = models.CharField(unique=True, max_length=30, verbose_name=u"会社名")

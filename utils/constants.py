@@ -20,6 +20,7 @@ CONFIG_EMAIL_SMTP_PORT = 'email_smtp_port'
 CONFIG_EMAIL_PASSWORD = 'email_password'
 CONFIG_CIRCLE_RADIUS = 'circle_radius'
 CONFIG_DOMAIN_NAME = 'domain_name'
+CONFIG_PAGE_SIZE = 'page_size'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"

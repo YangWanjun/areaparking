@@ -26,6 +26,7 @@ from material import frontend
 from material.frontend.apps import ModuleMixin
 from material.frontend.registry import modules
 
+from contract import views_api as contract_api
 from contract.urls import router as contract_router
 from parkinglot.urls import router as parkintlot_router
 from master.urls import router as master_router
@@ -71,6 +72,7 @@ urlpatterns = [
     url(r'^api/', include(parkintlot_router.urls)),
     url(r'^api/', include(master_router.urls)),
     url(r'^api/', include(whiteboard_router.urls)),
+    url(r'^api/task/(?P<pk>[0-9]+)/finish.html$', contract_api.task_finish, name='task_finish'),
 ]
 
 handler500 = 'areaparking.views.handler_500'
