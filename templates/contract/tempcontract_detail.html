@@ -1,0 +1,326 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object }}</a>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            {% block card %}
+            <div class="card-title">{{ view.model|verbose_name|title }}: {{ object }}</div>
+            <table class="table bordered">
+                {% for field_name, value in object_data %}
+                <tr>
+                    <th>{{ field_name }}</th>
+                    {% if value.get_absolute_url %}
+                    <td><a href="{{ value.get_absolute_url }}">{{ value }}</a></td>
+                    {% else %}
+                    <td>{{ value }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% endblock %}
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% block actions_row %}
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% endblock actions_row %}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">進捗情報</div>
+            <div>進捗：<span class="percentage">{{ object.contract.process.get_percent }}</span> %</div>
+            <div class="progress" style="height: 14px;">
+                <div class="determinate" style="width: {{ object.contract.process.get_percent }}%"></div>
+            </div>
+            <ul class="collapsible" data-collapsible="expandable">
+                {% for task in object.contract.process.task_set.all %}
+                {% with group=task.get_mail_group template=task.get_mail_template %}
+                <li>
+                    <div class="collapsible-header">
+                        <span class="icon-stack">
+                             <i class="icon-sign-blank icon-stack-base"></i>
+                             <span class="icon-fixed-width icon-light char-overlay">{{ forloop.counter }}</span>
+                        </span>
+                        {{ task }}
+                        {% if task.status == '01' %}
+                            <!-- 未実施 -->
+                            <span class="new badge red" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% elif task.status == '10' %}
+                            <!-- スキップ -->
+                            <span class="new badge grey" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% elif task.status == '99' %}
+                            <span class="new badge grey" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% endif %}
+                    </div>
+                    <div class="collapsible-body">
+                        {% if task.category == "010" %}
+                            <!-- 申込書送付 -->
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s6">
+                                    <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
+                                           data-task-url="{% url 'format:report_subscription_confirm' task.pk subscription_confirm_template.pk %}" />
+                                    <label for="chkSubscriptionConfirm">申込確認書</label>
+                                </div>
+                                <div class="col s4">
+                                    <a target="_blank" href="{% url 'format:report_subscription_confirm' task.pk subscription_confirm_template.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
+                                </div>
+                                <div class="col s2">
+                                    <a target="_blank" href="{% url 'format:download_report_subscription_confirm' task.pk subscription_confirm_template.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s6">
+                                    <input type="checkbox" class="filled-in" id="chkSubscription" checked="checked"
+                                           data-task-url="{% url 'format:report_subscription' task.pk subscription_template.pk %}" />
+                                    <label for="chkSubscription">申込書</label>
+                                </div>
+                                <div class="col s4">
+                                    <a target="_blank" href="{% url 'format:report_subscription' task.pk subscription_template.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
+                                </div>
+                                <div class="col s2">
+                                    <a target="_blank" href="{% url 'format:download_report_subscription' task.pk subscription_template.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s6">
+                                    <span style="font-weight: bold;">前回送信日時：</span><span class="mail_sent_datetime">{{ task.mail_sent_datetime|default:'' }}</span><br/>
+                                </div>
+                                <div class="col s6">
+                                    <span style="font-weight: bold;">送信者：</span><span class="mail_sender_user">{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}</span>
+                                </div>
+                            </div>
+                            <!-- 申込時メール送信の確認ボックス -->
+                            <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
+                                <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendSubscriptionMail">
+                                    {{ formset.management_form }}
+                                    <input type="hidden" id="hidSubscriptionUrl" name="subscription_url"/>
+                                    <div class="modal-content">
+                                        <h4>申込書の送付</h4>
+                                        <div class="row">
+                                            <div class="col s12">
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input readonly value="{{ group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
+                                                        <label for="txtSubscriptionSender">差出人</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{{ object.contractor.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
+                                                        <label for="txtSubscriptionTo">宛先</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
+                                                        <label for="txtSubscriptionCC">ＣＣ</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
+                                                        <label for="txtSubscriptionBCC">ＢＣＣ</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{{ template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
+                                                        <label for="txtSubscriptionTitle">件名</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                                                        <label for="txtSubscriptionContent">メール本文</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
+                                            <i class="material-icons right">send</i>
+                                        </button>
+                                        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+                                    </div>
+                                </form>
+                            </div>
+                        {% elif task.category == "011" %}
+                            <!-- 申込書確認 -->
+                            {% for report_file in task.get_report_list %}
+                                <div class="row" style="margin-bottom: 5px;">
+                                    <div class="col s12">
+                                        <a target="_blank" href="{{ MEDIA_URL }}{{ report_file.path }}">{{ report_file.name }}</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% elif task.category == "100" %}
+                            <!-- 契約書類送付 -->
+                            <table>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract" checked="checked" />
+                                        <label for="chkContract">契約時送付状</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract2" checked="checked" />
+                                        <label for="chkContract2">契約書×２</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract3" checked="checked" />
+                                        <label for="chkContract3">契約金計算書</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract4" checked="checked" />
+                                        <label for="chkContract4">操作説明書</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract5" checked="checked" />
+                                        <label for="chkContract5">配置図</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract6" checked="checked" />
+                                        <label for="chkContract6">パズル式駐車場注意事項</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="filled-in" id="chkContract7" checked="checked" />
+                                        <label for="chkContract7">契約時アンケート</label>
+                                    </td>
+                                    <td>プレイビュー</td>
+                                </tr>
+                            </table>
+                        {% endif %}
+                        <div>
+                            <div class="col s12 right-align">
+                                {% if task.category == "010" %}
+                                    <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped" >
+                                        <i class="tiny material-icons">send</i>
+                                    </a>
+                                {% elif task.category == "100" %}
+                                    <a data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                       class="waves-effect waves-light btn-floating tooltipped" >
+                                        <i class="tiny material-icons">send</i>
+                                    </a>
+                                {% endif %}
+                                {% if task.is_end %}
+                                    <a data-position="left" data-delay="50" data-tooltip="契約をキャンセルします。"
+                                       class="waves-effect waves-light btn-floating red tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                       onclick="ebjs.material.task_cancel(this, '{% url 'task_cancel' task.pk %}', '{{ task }}')">
+                                        <i class="tiny material-icons">cancel</i></a>
+                                {% else %}
+                                    <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします。"
+                                       class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                       onclick="ebjs.material.task_skip(this, '{% url 'task_skip' task.pk %}', '{{ task }}')">
+                                        <i class="tiny material-icons">call_missed_outgoing</i></a>
+                                {% endif %}
+                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。"
+                                   class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                   onclick="ebjs.material.task_finish(this, '{% url 'task_finish' task.pk %}', '{{ task }}')">
+                                    <i class="tiny material-icons">done</i></a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endwith %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript" src="/static/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="/static/tinymce/tinymce.init.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+            var subscription_url = "";
+            if ($("#chkSubscriptionConfirm").prop("checked")) {
+                subscription_url += $("#chkSubscriptionConfirm").attr("data-task-url") + ",";
+            }
+            if ($("#chkSubscription").prop("checked")) {
+                subscription_url += $("#chkSubscription").attr("data-task-url") + ",";
+            }
+            $("#hidSubscriptionUrl").val(subscription_url);
+        },
+        complete: function(obj) {
+            //alert('Closed');
+        }
+    });
+
+    // 申込書の送信イベント
+    ebjs.material.send_subscription_mail(
+        "frmSendSubscriptionMail",
+        subscription_sent_success_fn,
+        subscription_sent_failure_fn,
+        subscription_sent_always_fn
+    );
+});
+
+function subscription_sent_success_fn(result) {
+    if (result.error) {
+        alert(result.message);
+    } else {
+        Materialize.toast('メール送信しました!', 10000);
+        $('#send_subscription').modal('close');
+        var obj = $("a[data-target=send_subscription]");
+        $(obj).next().addClass('disabled');
+        $(obj).next().next().addClass('disabled');
+        // 進捗更新
+        ebjs.material.update_task_info(obj, '99');
+        // 前回送信時間と送信者
+        obj.closest('li').find('span.mail_sent_datetime').text(result.mail_sent_datetime);
+        obj.closest('li').find('span.mail_sender_user').text(result.mail_sender_user);
+    }
+}
+
+function subscription_sent_failure_fn(result) {
+    // debugger;
+}
+
+function subscription_sent_always_fn(result) {
+    // debugger;
+}
+
+</script>
+{% endblock %}

@@ -11,79 +11,83 @@
     <div class="card">
         <div class="card-content">
             {% block card %}
-            <div class="card-title">{{ model|verbose_name|title }}: {{ whiteboard }}</div>
+            <div class="card-title">車室: {{ whiteboard_position }}</div>
             <table class="table bordered">
                 <tr>
-                    <th style="width: 20%;">車室名称：</th>
-                    <td>{{ whiteboard.parking_position }}</td>
-                    <th style="width: 20%;">空き：</th>
+                    <th style="width: 25%;">車室名称：</th>
+                    <td>{{ whiteboard_position }}</td>
+                    <th style="width: 30%;">空き状況：</th>
                     <td>
-                        <span class="new badge left {%if whiteboard.contract_status == '01'%}green{% else %}{%if whiteboard.contract_status == '02' %}deep-orange{%else%}grey{%endif%}{%endif%}"
-                              data-badge-caption="{{ whiteboard.get_contract_status_display }}"
+                        <span class="new badge left {%if whiteboard_position.position_status == '01'%}green{% else %}{%if whiteboard_position.position_status == '02' %}deep-orange{%else%}grey{%endif%}{%endif%}"
+                              data-badge-caption="{{ whiteboard_position.get_position_status_display }}"
                               style="margin-left: 0px;"></span>
                     </td>
                 </tr>
                 <tr>
+                    <th>駐車場名称：</th>
+                    <td colspan="3">{{ whiteboard_position.whiteboard }}</td>
+                </tr>
+                <tr>
                     <th>場所：</th>
-                    <td colspan="3">{{ whiteboard.address }}</td>
+                    <td colspan="3">{{ whiteboard_position.address }}</td>
                 </tr>
                 <tr>
                     <th>募集賃料（税込）：</th>
-                    <td>{{ whiteboard.price_recruitment|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.price_recruitment|default:''|intcomma }}</td>
                     <th>募集賃料（税抜）：</th>
-                    <td>{{ whiteboard.price_recruitment_no_tax|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.price_recruitment_no_tax|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>ホームページ（税込）：</th>
-                    <td>{{ whiteboard.price_homepage|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.price_homepage|default:''|intcomma }}</td>
                     <th>ホームページ（税別）：</th>
-                    <td>{{ whiteboard.price_homepage_no_tax|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.price_homepage_no_tax|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>チラシ価格（税込）：</th>
-                    <td>{{ whiteboard.price_handbill|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.price_handbill|default:''|intcomma }}</td>
                     <th>チラシ価格（税抜）：</th>
-                    <td>{{ whiteboard.price_handbill_no_tax|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.price_handbill_no_tax|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>全長：</th>
-                    <td>{{ whiteboard.length|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.length|default:''|intcomma }}</td>
                     <th>全幅：</th>
-                    <td>{{ whiteboard.width|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.width|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>全高：</th>
-                    <td>{{ whiteboard.height|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.height|default:''|intcomma }}</td>
                     <th>重量：</th>
-                    <td>{{ whiteboard.weight|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.weight|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>ﾒｰｶｰのタイヤ幅：</th>
-                    <td>{{ whiteboard.tyre_width|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.tyre_width|default:''|intcomma }}</td>
                     <th>AP計測のタイヤ幅：</th>
-                    <td>{{ whiteboard.tyre_width_ap|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.tyre_width_ap|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>ﾒｰｶｰの地上最低高：</th>
-                    <td>{{ whiteboard.min_height|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.min_height|default:''|intcomma }}</td>
                     <th>AP計測の地上最低高：</th>
-                    <td>{{ whiteboard.min_height_ap|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.min_height_ap|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>F値：</th>
-                    <td>{{ whiteboard.f_value|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.f_value|default:''|intcomma }}</td>
                     <th>R値：</th>
-                    <td>{{ whiteboard.r_value|default:''|intcomma }}</td>
+                    <td>{{ whiteboard_position.r_value|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>時間制限：</th>
-                    <td>{{ whiteboard.time_limit|default:'' }}</td>
+                    <td>{{ whiteboard_position.time_limit|default:'' }}</td>
                     <th></th>
                     <td></td>
                 </tr>
                 <tr>
                     <th>備考：</th>
-                    <td colspan="3">{{ whiteboard.position_comment|default:'' }}</td>
+                    <td colspan="3">{{ whiteboard_position.position_comment|default:'' }}</td>
                 </tr>
 
                 {% endblock %}
@@ -95,8 +99,8 @@
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
-                {% if whiteboard.contract_status != "01" %}
-                    <a class="waves-effect waves-light btn white-text popup" href="?parking_lot_id={{ whiteboard.parking_lot.pk }}&_popup=1">順番待ちへ</a>
+                {% if whiteboard_position.position_status != "01" %}
+                    <a class="waves-effect waves-light btn white-text popup">順番待ちへ</a>
                 {% else %}
                     <button data-target="start_temp_contract" class="btn modal-trigger">契約に進む</button>
                 {% endif %}
@@ -183,7 +187,7 @@
 
 {% block footer %}
 <script type="text/javascript">
-$(document).ready(function() {
+$(document).one("turbolinks:load", function() {
     ebjs.material.popup_anchor();
 
     $('.modal').modal({
@@ -211,10 +215,12 @@ $(document).ready(function() {
         ).done(function(result){
             ebjs.utils.ajax_post(
                 '/api/temp-contract/',
-                {contractor: result.id, parking_lot: {{ whiteboard.parking_lot.pk }}, parking_position: {{ whiteboard.parking_position.pk }}}
+                {contractor: result.code, staff: {{ whiteboard_position.whiteboard.staff.pk }}, parking_lot: {{ whiteboard_position.whiteboard.pk }}, parking_position: {{ whiteboard_position.parking_position.pk }}}
             ).done(function(result2){
-                window.location = '/contract/temp_contract/' + result2.id;
+                window.location = '/contract/temp_contract/' + result2.id + '/detail/';
                 $('#start_temp_contract').modal('close');
+            }).fail(function(result) {
+                console.log(result.responseJSON);
             });
         }).fail(function(result){
             ebjs.material.reflection_form_errors(form_obj, result.responseJSON);

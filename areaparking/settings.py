@@ -26,10 +26,11 @@ SECRET_KEY = 'vkycdut2t=c01f+su75#1d+87y)wn)(arx&^nu-^iw7dgl_izk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.99.100', 'localhost', '127.0.0.1', '*.e-business.co.jp']
+ALLOWED_HOSTS = ['192.168.99.100', 'localhost', '127.0.0.1']
 APPEND_SLASH = True
 NUMBER_GROUPING = 3
 CORS_ORIGIN_WHITELIST = (
+    'localhost',
     'localhost:8000',
     '127.0.0.1:8000'
 )
@@ -91,6 +92,7 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.static",
             ],
+            'debug': DEBUG,
         },
     },
 ]

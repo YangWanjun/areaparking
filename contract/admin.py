@@ -23,7 +23,7 @@ class ContractorAdmin(BaseAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                ('code', 'category'),
+                'category',
                 ('name', 'kana',),
                 'post_code',
                 ('address1', 'address2'),

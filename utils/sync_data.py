@@ -9,7 +9,7 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import common
-from master.models import CarModel, CarMaker, Config, Company, Payment
+from master.models import CarModel, CarMaker, Config, Company, Payment, MailTemplate, MailGroup
 from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaffHistory
 from employee.models import Department, Member, MemberShip
 
@@ -37,6 +37,22 @@ def sync_master():
     if Payment.objects.public_filter(timing='30').count() == 0:
         Payment.objects.create(timing='30', name="翌月分の賃料")
         print('作成', '契約時事務手数料は作成しました')
+    # 申込書送付のメールテンプレート
+    if MailGroup.objects.public_filter(code='001').count() == 0:
+        template = MailTemplate.objects.create(title='申込書送付', body="""<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>{{ user_name }} 様：&nbsp;</p>
+<p>いつもお世話になっております、<br />株式会社エリアパーキングです。</p>
+<p>このたび駐車場のご申込みいただき<br />誠にありがとうございます。</p>
+<p>下記のURLにて、お申込みください。</p>
+<p>■申込書<br /><a title="申込書" href="{{user_subscription_url}}" target="_blank" rel="noopener">{{user_subscription_url}}</a></p>
+</body>
+</html>""")
+        MailGroup.objects.create(code='001', name="申込書送付", sender='ap.test@e-business.co.jp', template=template)
+        print('作成', '申込書送付のメールグループ')
 
 
 def sync_car_models():

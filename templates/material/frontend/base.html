@@ -13,12 +13,24 @@
         {% block js %}{% include 'material/frontend/includes/material_js.html' %}{% endblock js %}
         {% block extrahead %}{% endblock %}
         {% endblock head %}
+        <style type="css/text">
+            @media only screen and (max-width : 992px) {
+                header, main, footer {
+                    margin-left: 0;
+                }
+            }
+            @media only screen and (min-width: 993px) {
+                footer, main {
+                    margin-left: 250px;
+                }
+            }
+        </style>
     </head>
     <body class="{%block bodyclass %}with-sidebar{% endblock %}">
         {% block body %}
         <header>
             {% block header %}
-            <ul id="slide-out" class="side-nav fixed" data-turbolinks-permanent>
+            <ul id="slide-out" class="side-nav fixed" style="width: 250px;" data-turbolinks-permanent>
                 {% block sidenav_header %}
                 <li>
                     <div class="userView">

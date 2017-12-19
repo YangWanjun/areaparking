@@ -1,5 +1,6 @@
 {% extends current_module.base_template %}
 {% load i18n material_form material_frontend %}
+{% load humanize %}
 
 {% block breadcrumbs_items %}
 <a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
@@ -36,13 +37,88 @@
             </div>
         </div>
     </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title" id="divPositionTitle">車室一覧</div>
+            <table id="tblPosition" class="table bordered mdl-data-table" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>車室</th>
+                        <th>空き</th>
+                        <!-- 賃料 -->
+                        <th>HP(込)</th>
+                        <th>HP(別)</th>
+                        <th>ﾁﾗｼ(込)</th>
+                        <th>ﾁﾗｼ(別)</th>
+                        <!-- サイズ -->
+                        <th>全長</th>
+                        <th>全幅</th>
+                        <th>全高</th>
+                        <th>重量</th>
+                        <!-- その他 -->
+                        <th>備考</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for position in object.whiteboardposition_set.all %}
+                        <tr>
+                            <td><a href="{% url 'whiteboard:whiteboard_position_detail' position.pk %}" data-turbolinks="false">{{ position }}</a></td>
+                            <td>{{ position.get_position_status_display }}</td>
+                            <td>{{ position.price_homepage|default:''|intcomma }}</td>
+                            <td>{{ position.price_homepage_no_tax|default:''|intcomma }}</td>
+                            <td>{{ position.price_handbill|default:''|intcomma }}</td>
+                            <td>{{ position.price_handbill_no_tax|default:''|intcomma }}</td>
+                            <td>{{ position.length|default:''|intcomma }}</td>
+                            <td>{{ position.width|default:''|intcomma }}</td>
+                            <td>{{ position.height|default:''|intcomma }}</td>
+                            <td>{{ position.weight|default:''|intcomma }}</td>
+                            <td title="{{ position.position_comment|default:'' }}">{{ position.position_comment|default:''|truncatechars:10 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock left-panel %}
 {% block right-panel %}{% endblock right-panel %}
 {% endblock %}
 
 {% block footer %}
+<link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.material.min.css" />
+<!--<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.1.0/material.min.css" />-->
 <script type="text/javascript">
     ebjs.material.popup_anchor();
+    $(document).one("turbolinks:load", function() {
+    if ( ! $.fn.DataTable.isDataTable( '#tblPosition' ) ) {
+        var datatable = $('#tblPosition').DataTable({
+            "searching": false,
+            "paging": true,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Japanese.json"
+            },
+            columnDefs: [
+                {
+                    targets: [ 0, 1, 2 ],
+                    className: 'mdl-data-table__cell--non-numeric'
+                }
+            ],
+            "initComplete": function(settings, json) {
+                // PageSizeのドロップダウンをタイトル欄に移動する。
+                $("#tblPosition_length").appendTo("#divPositionTitle");
+                $("#tblPosition_length").addClass("right");
+                $("#tblPosition_length select").addClass("browser-default");
+                $("#tblPosition_length select").css("width", "60px");
+                $("#tblPosition_length select").css("height", "25px");
+                $("#tblPosition_length select").css("display", "inherit");
+            }
+        });
+        new $.fn.dataTable.FixedHeader(datatable);
+
+        $(document).one("turbolinks:before-cache", function() {
+            datatable.destroy();
+        });
+    }
+  });
 </script>
 {% endblock %}

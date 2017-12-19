@@ -12,6 +12,8 @@ from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
 
+from material.frontend.views import ModelViewSet, DetailModelView, ListModelView
+
 
 class PublicManager(models.Manager):
 
@@ -154,3 +156,21 @@ class BaseTemplateView(TemplateResponseMixin, BaseView):
     def get_template_names(self):
         template_names = super(BaseTemplateView, self).get_template_names()
         return template_names
+
+
+class BaseModelViewSet(ModelViewSet):
+    pass
+
+
+class BaseListModelView(ListModelView):
+    pass
+
+
+class BaseDetailModelView(DetailModelView):
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseDetailModelView, self).get_context_data(**kwargs)
+        context.update({
+            'debug': True,
+        })
+        return context

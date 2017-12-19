@@ -7,13 +7,13 @@ from rest_framework.response import Response
 from . import models, serializers
 
 
-class ContractorViewSet(viewsets.ModelViewSet):
-    queryset = models.Contractor.objects.public_all()
+class TempContractorViewSet(viewsets.ModelViewSet):
+    queryset = models.Contractor.temp_objects.public_all()
     serializer_class = serializers.ContractorSerializer
 
 
-class ContractViewSet(viewsets.ModelViewSet):
-    queryset = models.Contract.objects.public_all()
+class TempContractViewSet(viewsets.ModelViewSet):
+    queryset = models.Contract.temp_objects.public_all()
     serializer_class = serializers.ContractSerializer
 
 
@@ -46,6 +46,23 @@ def task_skip(request, pk):
 
     if request.method == 'PUT':
         task.status = '10'
+        task.save()
+        serializer = serializers.TaskSerializer(task)
+        return Response(serializer.data)
+
+
+@api_view(['PUT'])
+def task_cancel(request, pk):
+    """タスクを完了するＡＰＩ
+
+    :param request:
+    :param pk:
+    :return:
+    """
+    task = get_object_or_404(models.Task, pk=pk)
+
+    if request.method == 'PUT' and task.is_end:
+        task.status = '91'
         task.save()
         serializer = serializers.TaskSerializer(task)
         return Response(serializer.data)

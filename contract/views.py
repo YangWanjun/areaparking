@@ -1,18 +1,61 @@
 import datetime
 
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
 from material.frontend.views import ModelViewSet
 
 from . import models
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
-from utils.django_base import BaseTemplateView, BaseView
+from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView
 from utils.mail import EbMail
 
 
 # Create your views here.
+class Index(BaseView):
+
+    def get(self, request, *args, **kwargs):
+        return redirect('contract:tempcontract_list')
+
+
+class TempContractDetailView(BaseDetailModelView):
+    def get_context_data(self, **kwargs):
+        context = super(TempContractDetailView, self).get_context_data(**kwargs)
+        context.update({
+            'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
+            'subscription_template': ReportSubscription.get_default_report(),
+        })
+        return context
+
+
+class TempContractListView(BaseListModelView):
+
+    def get_columns_def(self):
+        columns_def = super(TempContractListView, self).get_columns_def()
+        return columns_def
+
+    def get_datatable_config(self):
+        config = super(TempContractListView, self).get_datatable_config()
+        return config
+
+
+class TempContractVewSet(ModelViewSet):
+    model = models.TempContract
+    list_display = ('contractor', 'parking_lot', 'parking_position', 'percent', 'start_date', 'end_date')
+    detail_view_class = TempContractDetailView
+    list_view_class = TempContractListView
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 class ContractVewSet(ModelViewSet):
     model = models.Contract
     list_display = ('contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
@@ -21,41 +64,28 @@ class ContractVewSet(ModelViewSet):
         return False
 
 
-# Create your views here.
 class ContractorVewSet(ModelViewSet):
     model = models.Contractor
     list_display = ('code', 'get_category_display', 'name', 'tel', 'email', 'address1')
     list_display_links = ('code', 'name',)
 
 
-class TempContractListView(BaseTemplateView):
-    template_name = "./contract/index.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(TempContractListView, self).get_context_data(**kwargs)
-        queryset = models.TempContract.objects.public_all().order_by()
-        context.update({
-            'queryset': queryset,
-        })
-        return context
-
-
-class TempContractDetailView(BaseTemplateView):
-    template_name = './contract/temp-contract.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(TempContractDetailView, self).get_context_data(**kwargs)
-        temp_contract = get_object_or_404(models.TempContract, pk=kwargs.get('id'))
-        parkingposition = temp_contract.parking_position
-        contractor = temp_contract.contractor
-        context.update({
-            'temp_contract': temp_contract,
-            'contractor': contractor,
-            'parkingposition': parkingposition,
-            'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
-            'subscription_template': ReportSubscription.get_default_report(),
-        })
-        return context
+# class TempContractDetailView(BaseTemplateView):
+#     template_name = './contract/temp-contract.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(TempContractDetailView, self).get_context_data(**kwargs)
+#         temp_contract = get_object_or_404(models.Contract, pk=kwargs.get('id'))
+#         parkingposition = temp_contract.parking_position
+#         contractor = temp_contract.contractor
+#         context.update({
+#             'temp_contract': temp_contract,
+#             'contractor': contractor,
+#             'parkingposition': parkingposition,
+#             'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
+#             'subscription_template': ReportSubscription.get_default_report(),
+#         })
+#         return context
 
 
 class SendSubscriptionMail(BaseView):
@@ -84,6 +114,8 @@ class SendSubscriptionMail(BaseView):
             task.save()
             json = {
                 'error': False,
+                'mail_sent_datetime': datetime.datetime.now(),
+                'mail_sender_user': '%s %s' % (request.user.last_name, request.user.first_name),
             }
         except Exception as ex:
             json = {

@@ -7,8 +7,8 @@ from django.template.context_processors import csrf
 
 from . import models
 from parkinglot.models import ParkingLot
-from contract.models import Contractor
-from utils import common
+from contract.models import Contractor, Task
+from utils import common, constants
 from utils.app_base import get_total_context
 
 
@@ -19,18 +19,20 @@ def get_subscription_confirm_html(request, **kwargs):
     :param kwargs:
     :return:
     """
+    task = get_object_or_404(Task, pk=kwargs.get('task_id'))
     report = get_object_or_404(models.ReportSubscriptionConfirm, pk=kwargs.get('report_id'))
-    parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
-    contractor = get_object_or_404(Contractor, pk=kwargs.get('contractor_id'))
+    contract = task.process.contract
+    parking_lot = contract.parking_lot
     t = Template(report.content)
     ctx = Context(kwargs)
     ctx.update(get_total_context(
         parking_lot=parking_lot,
-        contractor=contractor,
+        contractor=contract.contractor,
     ))
     ctx.update(csrf(request))
     html = t.render(ctx)
-    return html
+    title = '{0}_{1}'.format(parking_lot.name, constants.REPORT_SUBSCRIPTION_CONFIRM)
+    return title, html
 
 
 def get_subscription_html(request, **kwargs):
@@ -40,18 +42,20 @@ def get_subscription_html(request, **kwargs):
     :param kwargs:
     :return:
     """
+    task = get_object_or_404(Task, pk=kwargs.get('task_id'))
     report = get_object_or_404(models.ReportSubscription, pk=kwargs.get('report_id'))
-    parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
-    contractor = get_object_or_404(Contractor, pk=kwargs.get('contractor_id'))
+    contract = task.process.contract
+    parking_lot = contract.parking_lot
     t = Template(report.content)
     ctx = Context(kwargs)
     ctx.update(get_total_context(
         parking_lot=parking_lot,
-        contractor=contractor,
+        contractor=contract.contractor,
     ))
     ctx.update(csrf(request))
     html = t.render(ctx)
-    return html
+    title = '{0}_{1}'.format(parking_lot.name, constants.REPORT_SUBSCRIPTION_CONFIRM)
+    return title, html
 
 
 def generate_report_pdf_binary(html):

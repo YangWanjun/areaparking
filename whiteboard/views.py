@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import sys
 
 from django.core.urlresolvers import reverse
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 
 from material.frontend.views.viewset import ModelViewSet, ListModelView, DetailModelView
 
 from contract.forms import ContractorForm
+from utils import errors
 from utils.django_base import BaseTemplateView, BaseView
 from master.models import Config
 from . import models
@@ -18,30 +17,6 @@ class Index(BaseView):
 
     def get(self, request, *args, **kwargs):
         return redirect('whiteboard:whiteboard_list')
-
-
-# class WhiteBoardListView(BaseTemplateView):
-#     template_name = 'whiteboard/whiteboard_list.html'
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(WhiteBoardListView, self).get_context_data(**kwargs)
-#         request = kwargs.get('request')
-#         queryset = models.WhiteBoard.objects.all()[:25]
-#
-#         paginator = Paginator(queryset, Config.get_page_size())
-#         page = request.GET.get('page')
-#         try:
-#             object_list = paginator.page(page)
-#         except PageNotAnInteger:
-#             object_list = paginator.page(1)
-#         except EmptyPage:
-#             object_list = paginator.page(paginator.num_pages)
-#
-#         context.update({
-#             'queryset': object_list,
-#             'paginator': paginator,
-#         })
-#         return context
 
 
 class WhiteBoardListView(ListModelView):
@@ -109,6 +84,20 @@ class WhiteBoardViewSet(ModelViewSet):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+class WhiteBoardPositionDetailView(BaseTemplateView):
+    template_name = './whiteboard/parking_position_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(WhiteBoardPositionDetailView, self).get_context_data(**kwargs)
+        whiteboard_position = get_object_or_404(models.WhiteBoardPosition, pk=kwargs.get('pk'))
+        contractor_form = ContractorForm()
+        context.update({
+            'whiteboard_position': whiteboard_position,
+            'temp_contractor_form': contractor_form,
+        })
+        return context
 
 
 # class WaitingListView(ListModelView):
@@ -227,3 +216,16 @@ class WhiteBoardMapView(BaseTemplateView):
 #             'contractor_form': contractor_form,
 #         })
 #         return context
+
+
+def handler500(request):
+    print('500 ERROR!!!')
+    cls, exception, traceback = sys.exc_info()
+    context = {
+        'request_path': request.path,
+    }
+    if isinstance(exception, errors.SettingException):
+        template = 'error_500.html'
+    else:
+        template = '500.html'
+    return render(request, template, context, status=500)

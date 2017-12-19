@@ -15,8 +15,8 @@ div.content {
     height: calc(100% - 110px);
 }
 main {
-    margin-left: 250px;
-    font-size: 13px;
+    margin-left: 250px !important;
+    font-size: 13px !important;
 }
 @media only screen and (max-width : 992px) {
     header, main, footer {
@@ -25,7 +25,7 @@ main {
 }
 /**************** サイドバー *****************/
 .side-nav.fixed .userView {
-    min-height: 100px;
+    min-height: 100px !important;
 }
 .side-nav div.userView {
     min-height: 100px;
@@ -39,7 +39,7 @@ main {
     width: 250px;
 }
 .side-nav li>a {
-    font-size: 13px;
+    font-size: 13px !important;
 }
 
 /**************** 複雑なテーブル *****************/

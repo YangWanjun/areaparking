@@ -3,18 +3,18 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-from parkinglot.models import ParkingLot, ParkingLotType, ParkingTimeLimit
+from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, ParkingTimeLimit
 from employee.models import Member
-from utils.django_base import BaseModel
+from utils import constants
 
 
 # Create your models here.
 class WhiteBoard(models.Model):
     code = models.IntegerField(primary_key=True, verbose_name="コード")
-    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
-    category = models.ForeignKey(ParkingLotType, verbose_name="分類")
-    address = models.CharField(max_length=255, blank=True, null=True, verbose_name="場所")
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
+    staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="担当者")
+    category = models.ForeignKey(ParkingLotType, on_delete=models.DO_NOTHING, verbose_name="分類")
+    address = models.CharField(max_length=255, blank=True, null=True, verbose_name="所在地")
     lng = models.FloatField(blank=True, null=True, verbose_name="経度")
     lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
     position_count = models.IntegerField(default=0, verbose_name="車室数")
@@ -24,7 +24,8 @@ class WhiteBoard(models.Model):
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新ﾚﾅﾝﾄ")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリー")
-    parking_time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, verbose_name="時間制限")
+    parking_time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, on_delete=models.DO_NOTHING,
+                                           verbose_name="時間制限")
 
     class Meta:
         managed = False
@@ -35,6 +36,42 @@ class WhiteBoard(models.Model):
     def __str__(self):
         return str(self.parking_lot)
 
+
+class WhiteBoardPosition(models.Model):
+    whiteboard = models.ForeignKey(WhiteBoard, on_delete=models.DO_NOTHING, verbose_name="ホワイトボード")
+    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室")
+    address = models.CharField(max_length=255, blank=True, null=True, verbose_name="所在地")
+    position_status = models.CharField(max_length=2, choices=constants.CHOICE_PARKING_STATUS, verbose_name="空き")
+    contract_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")
+    # 賃料
+    price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
+    price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税抜）")
+    price_homepage = models.IntegerField(blank=True, null=True, verbose_name="ホームページ価格（税込）")
+    price_homepage_no_tax = models.IntegerField(blank=True, null=True, verbose_name="ホームページ価格（税別）")
+    price_handbill = models.IntegerField(blank=True, null=True, verbose_name="チラシ価格（税込）")
+    price_handbill_no_tax = models.IntegerField(blank=True, null=True, verbose_name="チラシ価格（税別）")
+    # サイズ
+    length = models.IntegerField(blank=True, null=True, verbose_name="全長")
+    width = models.IntegerField(blank=True, null=True, verbose_name="全幅")
+    height = models.IntegerField(blank=True, null=True, verbose_name="全高")
+    weight = models.IntegerField(blank=True, null=True, verbose_name="重量")
+    tyre_width = models.IntegerField(blank=True, null=True, verbose_name="ﾒｰｶｰのタイヤ幅")
+    tyre_width_ap = models.IntegerField(blank=True, null=True, verbose_name="AP計測のタイヤ幅")
+    min_height = models.IntegerField(blank=True, null=True, verbose_name="ﾒｰｶｰの地上最低高")
+    min_height_ap = models.IntegerField(blank=True, null=True, verbose_name="AP計測の地上最低高")
+    f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
+    r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
+    position_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+
+    class Meta:
+        managed = False
+        db_table = 'v_whiteboard_position'
+        verbose_name = "車室"
+        verbose_name_plural = "車室一覧"
+
+
+    def __str__(self):
+        return str(self.parking_position)
 
 # class Waiting(BaseModel):
 #     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")

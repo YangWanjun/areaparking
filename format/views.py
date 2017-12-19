@@ -30,7 +30,7 @@ class UserOperationView(BaseTemplateView):
 class SubscriptionConfirmView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        html = biz.get_subscription_confirm_html(request, **kwargs)
+        title, html = biz.get_subscription_confirm_html(request, **kwargs)
         return HttpResponse(html)
 
     def post(self, request, *args, **kwargs):
@@ -39,7 +39,7 @@ class SubscriptionConfirmView(BaseView):
             return JsonResponse({'error': True, 'message': constants.ERROR_REQUEST_SIGNATURE})
         try:
             kwargs.update({'signature': signature})
-            html = biz.get_subscription_confirm_html(request, **kwargs)
+            title, html = biz.get_subscription_confirm_html(request, **kwargs)
             task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
             data = biz.generate_report_pdf_binary(html)
             # 申込書確認のタスクに作成したＰＤＦファイルを追加する。
@@ -57,7 +57,7 @@ class SubscriptionConfirmView(BaseView):
 class SubscriptionView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        html = biz.get_subscription_html(request, **kwargs)
+        title, html = biz.get_subscription_html(request, **kwargs)
         return HttpResponse(html)
 
     def post(self, request, *args, **kwargs):
@@ -137,20 +137,18 @@ class SubscriptionView(BaseView):
 class GenerateSubscriptionConfirmPdfView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
-        html = biz.get_subscription_confirm_html(request, **kwargs)
+        title, html = biz.get_subscription_confirm_html(request, **kwargs)
         data = biz.generate_report_pdf_binary(html)
         response = HttpResponse(data, content_type="application/pdf")
-        response['Content-Disposition'] = "filename=" + parking_lot.name
+        response['Content-Disposition'] = "filename=" + title
         return response
 
 
 class GenerateSubscriptionPdfView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        parking_lot = get_object_or_404(ParkingLot, pk=kwargs.get('lot_id'))
-        html = biz.get_subscription_html(request, **kwargs)
+        title, html = biz.get_subscription_html(request, **kwargs)
         data = biz.generate_report_pdf_binary(html)
         response = HttpResponse(data, content_type="application/pdf")
-        response['Content-Disposition'] = "filename=" + parking_lot.name
+        response['Content-Disposition'] = "filename=" + title
         return response

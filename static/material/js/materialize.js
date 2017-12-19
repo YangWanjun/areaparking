@@ -2174,7 +2174,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.isOpen = true;
         var body = document.body;
-        //body.style.overflow = 'hidden';
+        $('body').attr('scroll_top', $(document).scrollTop());
+        body.style.overflow = 'hidden';
         this.$el[0].classList.add('open');
         body.appendChild(this.$overlay[0]);
 
@@ -2205,6 +2206,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.isOpen = false;
         this.$el[0].classList.remove('open');
         document.body.style.overflow = '';
+        $(document).scrollTop($('body').attr('scroll_top'));
 
         if (this.options.dismissible) {
           document.removeEventListener('keydown', this.handleKeydownBound);
