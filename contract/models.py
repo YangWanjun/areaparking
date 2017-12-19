@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
@@ -133,6 +134,7 @@ class Contract(BaseModel):
     # 仮契約であるかどうかのステータス
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_CONTRACT_STATUS, editable=False,
                               verbose_name="ステータス")
+    processes = GenericRelation('Process', related_query_name='contracts')
 
     objects = PublicManager(is_deleted=False)
     temp_objects = PublicManager(is_deleted=False, status='01')
@@ -180,13 +182,15 @@ class ContractPayment(BaseModel):
 
 
 class Process(BaseModel):
-    contract = models.OneToOneField(Contract, related_name='process', verbose_name="仮契約")
+    # contract = models.OneToOneField(Contract, related_name='process', verbose_name="仮契約")
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
         db_table = 'ap_process'
-        ordering = ['contract']
-        verbose_name = "契約進捗"
-        verbose_name_plural = "契約進捗一覧"
+        verbose_name = "進捗"
+        verbose_name_plural = "進捗一覧"
 
     def get_percent(self):
         """進捗の完成度（%）を取得
@@ -235,8 +239,8 @@ class Task(BaseModel):
             t_password = Template(group.template.password) if group.template.password else None
             comment = group.template.comment or ''
             context = Context(get_total_context(
-                parking_lot=self.process.contract.parking_lot,
-                contractor=self.process.contract.contractor,
+                parking_lot=self.process.content_object.parking_lot,
+                contractor=self.process.content_object.contractor,
             ))
             context.update(get_user_subscription_url(self))
 

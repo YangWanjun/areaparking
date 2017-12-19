@@ -20,6 +20,7 @@ select c.id
      , c.car_no_plate
      , c.car_comment
   from ap_contract c
-  left join ap_process p on p.contract_id = c.id
+  join django_content_type ct on ct.app_label = 'contract' and ct.model = 'contract'
+  left join ap_process p on p.content_type_id = ct.id and p.object_id = c.id
  where c.is_deleted = 0
    and c.status = '01'		-- 仮契約

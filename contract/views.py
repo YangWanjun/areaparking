@@ -58,6 +58,7 @@ class TempContractVewSet(ModelViewSet):
 
 class ContractVewSet(ModelViewSet):
     model = models.Contract
+    queryset = models.Contract.real_objects.public_all()
     list_display = ('contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
 
     def has_delete_permission(self, request, obj=None):
@@ -66,26 +67,9 @@ class ContractVewSet(ModelViewSet):
 
 class ContractorVewSet(ModelViewSet):
     model = models.Contractor
+    queryset = models.Contractor.real_objects.public_all()
     list_display = ('code', 'get_category_display', 'name', 'tel', 'email', 'address1')
     list_display_links = ('code', 'name',)
-
-
-# class TempContractDetailView(BaseTemplateView):
-#     template_name = './contract/temp-contract.html'
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(TempContractDetailView, self).get_context_data(**kwargs)
-#         temp_contract = get_object_or_404(models.Contract, pk=kwargs.get('id'))
-#         parkingposition = temp_contract.parking_position
-#         contractor = temp_contract.contractor
-#         context.update({
-#             'temp_contract': temp_contract,
-#             'contractor': contractor,
-#             'parkingposition': parkingposition,
-#             'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
-#             'subscription_template': ReportSubscription.get_default_report(),
-#         })
-#         return context
 
 
 class SendSubscriptionMail(BaseView):

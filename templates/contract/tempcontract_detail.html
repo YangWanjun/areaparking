@@ -39,12 +39,12 @@
     <div class="card">
         <div class="card-content">
             <div class="card-title">進捗情報</div>
-            <div>進捗：<span class="percentage">{{ object.contract.process.get_percent }}</span> %</div>
+            <div>進捗：<span class="percentage">{{ object.percent }}</span> %</div>
             <div class="progress" style="height: 14px;">
-                <div class="determinate" style="width: {{ object.contract.process.get_percent }}%"></div>
+                <div class="determinate" style="width: {{ object.percent }}%"></div>
             </div>
             <ul class="collapsible" data-collapsible="expandable">
-                {% for task in object.contract.process.task_set.all %}
+                {% for task in object.contract.processes.first.task_set.all %}
                 {% with group=task.get_mail_group template=task.get_mail_template %}
                 <li>
                     <div class="collapsible-header">
@@ -235,7 +235,7 @@
                                 {% if task.is_end %}
                                     <a data-position="left" data-delay="50" data-tooltip="契約をキャンセルします。"
                                        class="waves-effect waves-light btn-floating red tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
-                                       onclick="ebjs.material.task_cancel(this, '{% url 'task_cancel' task.pk %}', '{{ task }}')">
+                                       onclick="ebjs.material.contract_cancel(this, '{% url 'task_cancel' task.pk %}')">
                                         <i class="tiny material-icons">cancel</i></a>
                                 {% else %}
                                     <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします。"
