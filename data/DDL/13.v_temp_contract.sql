@@ -14,11 +14,7 @@ select c.id
      , c.staff_assistant2_id
      , c.staff_assistant3_id
      , c.payee_bank_account_id
-     , c.car_maker_id
-     , c.car_model
-     , c.car_color
-     , c.car_no_plate
-     , c.car_comment
+     , c.car_id
   from ap_contract c
   join django_content_type ct on ct.app_label = 'contract' and ct.model = 'contract'
   left join ap_process p on p.content_type_id = ct.id and p.object_id = c.id

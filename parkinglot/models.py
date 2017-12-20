@@ -148,7 +148,8 @@ class ParkingLot(BaseModel):
                                  validators=(RegexValidator(regex=constants.REG_TEL),))
     admin_time = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員勤務時間帯")
     # その他の情報
-    default_contract_period = models.SmallIntegerField(default=1, verbose_name="契約期間初期値")
+    default_contract_months = models.SmallIntegerField(default=12, verbose_name="契約期間初期値",
+                                                       help_text='月単位です、１年の場合は１２を入力してください。')
     staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
     staff_start_date = models.DateField(blank=True, null=True, verbose_name="担当開始日")
 

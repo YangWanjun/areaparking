@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from . import models
+from . import models, forms
 from utils.django_base import BaseAdmin, BaseAdminEditor
 
 
@@ -15,6 +15,7 @@ class MailCcListInline(admin.TabularInline):
 
 @admin.register(models.Config)
 class ConfigAdmin(BaseAdmin):
+    form = forms.ConfigForm
     list_display = ('group', 'name', 'value')
     list_display_links = ('name',)
 
@@ -56,12 +57,12 @@ class BankAccountAdmin(BaseAdmin):
 
 @admin.register(models.TransmissionRoute)
 class TransmissionRouteAdmin(BaseAdmin):
-    pass
+    list_display = ('name', 'price_kbn')
 
 
 @admin.register(models.Payment)
 class PaymentAdmin(BaseAdmin):
-    list_display = ('name', 'timing', 'comment')
+    list_display = ('name', 'timing', 'amount', 'consumption_tax_kbn', 'is_active')
 
 
 @admin.register(models.Mediation)

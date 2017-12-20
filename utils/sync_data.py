@@ -9,7 +9,7 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import common
-from master.models import CarModel, CarMaker, Config, Company, Payment, MailTemplate, MailGroup
+from master.models import CarModel, CarMaker, Config, Company, Payment, MailTemplate, MailGroup, TransmissionRoute
 from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaffHistory
 from employee.models import Department, Member, MemberShip
 
@@ -29,7 +29,7 @@ def sync_master():
         print('作成', '自社情報は作成しました。')
     # 入金項目
     if Payment.objects.public_filter(timing='10').count() == 0:
-        Payment.objects.create(timing='10', name="契約時事務手数料")
+        Payment.objects.create(timing='10', name="契約時事務手数料", amount=10000)
         print('作成', '契約時事務手数料は作成しました。')
     if Payment.objects.public_filter(timing='11').count() == 0:
         Payment.objects.create(timing='11', name="契約開始月末日までの日割賃料")
@@ -53,6 +53,17 @@ def sync_master():
 </html>""")
         MailGroup.objects.create(code='001', name="申込書送付", sender='ap.test@e-business.co.jp', template=template)
         print('作成', '申込書送付のメールグループ')
+    # 媒体を作成
+    if TransmissionRoute.objects.public_all().count() == 0:
+        TransmissionRoute.objects.create(name='チラシ', price_kbn='01')
+        TransmissionRoute.objects.create(name='インターネット', price_kbn='02')
+        TransmissionRoute.objects.create(name='看板',)
+        TransmissionRoute.objects.create(name='新聞折込',)
+        TransmissionRoute.objects.create(name='不動産紹介',)
+        TransmissionRoute.objects.create(name='知人紹介',)
+        TransmissionRoute.objects.create(name='その他',)
+        print('作成', '媒体一覧')
+
 
 
 def sync_car_models():

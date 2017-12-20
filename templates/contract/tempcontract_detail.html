@@ -95,14 +95,6 @@
                                     <a target="_blank" href="{% url 'format:download_report_subscription' task.pk subscription_template.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
                                 </div>
                             </div>
-                            <div class="row" style="margin-bottom: 5px;">
-                                <div class="col s6">
-                                    <span style="font-weight: bold;">前回送信日時：</span><span class="mail_sent_datetime">{{ task.mail_sent_datetime|default:'' }}</span><br/>
-                                </div>
-                                <div class="col s6">
-                                    <span style="font-weight: bold;">送信者：</span><span class="mail_sender_user">{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}</span>
-                                </div>
-                            </div>
                             <!-- 申込時メール送信の確認ボックス -->
                             <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
                                 <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendSubscriptionMail">
@@ -161,10 +153,17 @@
                             </div>
                         {% elif task.category == "011" %}
                             <!-- 申込書確認 -->
-                            {% for report_file in task.get_report_list %}
+                            {% for report_file in task.reports.all %}
+                                <div class="row" style="margin-bottom: 5px;">
+                                    <div class="col s6">
+                                        <a target="_blank" href="{{ MEDIA_URL }}{{ report_file.path }}">{{ report_file.name }}</a>
+                                    </div>
+                                    <div class="col s6">申込み日時：{{ report_file.updated_date }} </div>
+                                </div>
+                            {% empty %}
                                 <div class="row" style="margin-bottom: 5px;">
                                     <div class="col s12">
-                                        <a target="_blank" href="{{ MEDIA_URL }}{{ report_file.path }}">{{ report_file.name }}</a>
+                                        <span class="red-text">ユーザーはまだ申込みされていません。</span>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -221,6 +220,16 @@
                                     <td>プレイビュー</td>
                                 </tr>
                             </table>
+                        {% endif %}
+                        {% if task.updated_user %}
+                            <div class="row updated_datetime" style="margin-bottom: 5px;">
+                                <div class="col s6">
+                                    <span style="font-weight: bold;">前回実施日時：</span><span class="updated_date">{{ task.updated_date|default:'' }}</span><br/>
+                                </div>
+                                <div class="col s6">
+                                    <span style="font-weight: bold;">実施者：</span><span class="updated_user">{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}</span>
+                                </div>
+                            </div>
                         {% endif %}
                         <div>
                             <div class="col s12 right-align">
@@ -314,8 +323,8 @@ function subscription_sent_success_fn(result) {
         // 進捗更新
         ebjs.material.update_task_info(obj, '99');
         // 前回送信時間と送信者
-        obj.closest('li').find('span.mail_sent_datetime').text(result.mail_sent_datetime);
-        obj.closest('li').find('span.mail_sender_user').text(result.mail_sender_user);
+        obj.closest('li').find('span.updated_date').text(result.updated_date);
+        obj.closest('li').find('span.updated_user').text(result.updated_user);
     }
 }
 

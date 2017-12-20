@@ -117,9 +117,9 @@
             <td colspan="7" style="font-size: 14px;padding-top:10px;padding-bottom:5px;">申込日: {{ current_date }}</td>
             <td colspan="12" style="font-size: 10px;">※ 保管証発行-車庫証明に必要な書類（発行手数料：消費税別{{payment_c_commission}}円）</td>
             <td colspan="4">
-                <input type="radio" name="rdo_receipt_yes" id="rdoReceipt1" />
+                <input type="radio" name="rdo_receipt" value="yes" id="rdoReceipt1" />
                 <label for="rdoReceipt1">必要</label>
-                <input type="radio" name="rdo_receipt_no" id="rdoReceipt2" />
+                <input type="radio" name="rdo_receipt" value="no" id="rdoReceipt2" />
                 <label for="rdoReceipt2">不要</label>
             </td>
         </tr>
@@ -184,13 +184,13 @@
             </td>
             <td rowspan="2" colspan="4" class="border-bottom border-right-dashed">希望契約期間<br/>&nbsp;<span style="font-size:11px;">チェックしてください→</span></td>
             <td colspan="8" class="border-bottom border-right" style="font-size: 13px;">
-                <input type="radio" id="rdoContractLong" name="rdo_contract_period_long"/>
+                <input type="radio" id="rdoContractLong" name="rdo_contract_period" value="long"/>
                 <label for="rdoContractLong">１年間（その後自動更新）</label>
             </td>
         </tr>
         <tr style="height: 44px;">
             <td colspan="8" class="border-bottom border-right" style="font-size: 13px;">
-                <input type="radio" id="rdoContractShort" name="rdo_contract_period_short"/>
+                <input type="radio" id="rdoContractShort" name="rdo_contract_period" value="short"/>
                 <label for="rdoContractShort">１・２ヶ月契約（　　月末日まで）<br/>&nbsp;&nbsp;&nbsp;※更新できませんのでご注意ください</label>
             </td>
         </tr>
@@ -555,9 +555,9 @@
         <tr style="height: 30px;font-size:15px;">
             <td colspan="17" class="bold" style="background-color: #000000; color: #ffffff;">申込書の到着時点で当駐車場が満車になっていた場合､順番待ちを希望しますか？⇒</td>
             <td colspan="6" class="center">
-                <input type="radio" name="rdo_waiting_yes" id="rdoWaitingYes" />
+                <input type="radio" name="rdo_waiting" value="yes" id="rdoWaitingYes" />
                 <label for="rdoWaitingYes" class="bold" style="font-size:15px;">はい</label>
-                <input type="radio" name="rdo_waiting_no" id="rdoWaitingNo" />
+                <input type="radio" name="rdo_waiting" value="no" id="rdoWaitingNo" />
                 <label for="rdoWaitingNo" class="bold" style="font-size:15px;">いいえ</label>
             </td>
         </tr>

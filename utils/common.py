@@ -6,6 +6,10 @@ import logging
 import pdfkit
 import datetime
 import random
+import math
+
+from calendar import monthrange
+
 from django.conf import settings
 
 
@@ -130,8 +134,8 @@ def get_report_path(self, filename):
     content_object = self.content_object
     if content_object.__class__.__name__ == 'Task':
         prefix = 'user_subscription/'
-        parking_lot = content_object.process.temp_contract.parking_lot
-        contractor = content_object.process.temp_contract.contractor
+        parking_lot = content_object.process.content_object.parking_lot
+        contractor = content_object.process.content_object.contractor
         ext = os.path.splitext(filename)[1]
         new_name = "{0}_{1}_{2}{3}".format(
             parking_lot.name,
@@ -151,3 +155,34 @@ def get_report_format(self, filename):
     """
     prefix = 'reports/{}/'.format(self.parking_lot.name)
     return prefix + filename
+
+
+def get_days_by_month(date):
+    """指定日付の月の日数を取得する。
+
+    :param date:
+    :return:
+    """
+    month, days = monthrange(date.year, date.month)
+    return days
+
+
+def get_integer(value, decimal_type):
+    """小数がある場あるの処理方法
+
+    :param value:
+    :param decimal_type:
+    :return:
+    """
+    if value:
+        if decimal_type == '0':
+            # 切り捨て
+            return math.floor(value)
+        elif decimal_type == '1':
+            # 四捨五入
+            return round(value)
+        elif decimal_type == '2':
+            # 切り上げ
+            return math.ceil(value)
+    else:
+        return 0

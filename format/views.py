@@ -35,7 +35,7 @@ class SubscriptionConfirmView(BaseView):
 
     def post(self, request, *args, **kwargs):
         signature = request.POST.get('hid_signature', None)
-        if not signature:
+        if not signature and 'hid_signature' in request.POST:
             return JsonResponse({'error': True, 'message': constants.ERROR_REQUEST_SIGNATURE})
         try:
             kwargs.update({'signature': signature})
@@ -43,10 +43,11 @@ class SubscriptionConfirmView(BaseView):
             task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
             data = biz.generate_report_pdf_binary(html)
             # 申込書確認のタスクに作成したＰＤＦファイルを追加する。
-            for report in task.get_report_list():
+            for report in task.reports.all():
                 report.delete()
             content_file = ContentFile(data.getvalue(), name='subscription.pdf')
-            report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION_CONFIRM, path=content_file)
+            report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION_CONFIRM,
+                                            path=content_file)
             report_file.save()
             return JsonResponse({'error': False, 'message': '成功しました。'})
         except Exception as ex:
@@ -61,9 +62,11 @@ class SubscriptionView(BaseView):
         return HttpResponse(html)
 
     def post(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, pk=kwargs.get('task_id'))
+        contractor = task.process.content_object.contractor
+        contract = task.process.content_object
         # 車庫証明
-        rdo_receipt_yes = request.POST.get('rdo_receipt_yes')
-        rdo_receipt_no = request.POST.get('rdo_receipt_no')
+        rdo_receipt = request.POST.get('rdo_receipt')
         # 駐車する車
         txt_car_maker = request.POST.get('txt_car_maker')
         txt_car_model = request.POST.get('txt_car_model')
@@ -75,8 +78,7 @@ class SubscriptionView(BaseView):
         # 希望契約開始日
         txt_contract_start_date = request.POST.get('txt_contract_start_date')
         # 希望契約期間
-        rdo_contract_period_long = request.POST.get('rdo_contract_period_long')
-        rdo_contract_period_short = request.POST.get('rdo_contract_period_short')
+        rdo_contract_period = request.POST.get('rdo_contract_period')
         # 法人連絡先
         txt_corporate_kana = request.POST.get('txt_corporate_kana')
         txt_corporate_name = request.POST.get('txt_corporate_name')
@@ -129,8 +131,8 @@ class SubscriptionView(BaseView):
         chk_route_other = request.POST.get('chk_route_other')
         txt_route_other = request.POST.get('txt_route_other')
         # 順番待ち
-        rdo_waiting_yes = request.POST.get('rdo_waiting_yes')
-        rdo_waiting_no = request.POST.get('rdo_waiting_no')
+        rdo_waiting = request.POST.get('rdo_waiting')
+
         return JsonResponse(dict())
 
 

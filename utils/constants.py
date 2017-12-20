@@ -14,6 +14,7 @@ MIME_TYPE_ZIP = 'application/zip'
 MIME_TYPE_HTML = 'text/html'
 
 CONFIG_GROUP_SYSTEM = 'system'
+CONFIG_GROUP_EMAIL = 'email'
 CONFIG_EMAIL_ADDRESS = 'email_address'
 CONFIG_EMAIL_SMTP_HOST = 'email_smtp_host'
 CONFIG_EMAIL_SMTP_PORT = 'email_smtp_port'
@@ -21,6 +22,8 @@ CONFIG_EMAIL_PASSWORD = 'email_password'
 CONFIG_CIRCLE_RADIUS = 'circle_radius'
 CONFIG_DOMAIN_NAME = 'domain_name'
 CONFIG_PAGE_SIZE = 'page_size'
+CONFIG_DECIMAL_TYPE = 'decimal_type'
+CONFIG_CONSUMPTION_TAX_RATE = 'consumption_tax_rate'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
@@ -80,7 +83,21 @@ CHOICE_PAY_TIMING = (
     ('10', '契約時'),
     ('11', '契約開始月'),
     ('20', '更新時'),
-    ('30', '毎月'),
+    ('30', '翌月以降'),
+    ('40', '一時'),
+)
+CHOICE_TAX_KBN = (
+    ('1', '税抜'),
+    ('2', '税込'),
+)
+CHOICE_DECIMAL_TYPE = (
+    ('0', '切り捨て'),
+    ('1', '四捨五入'),
+    ('2', '切り上げ'),
+)
+CHOICE_PRICE_KBN = (
+    ('01', 'チラシ価格'),
+    ('02', 'ホームページ価格'),
 )
 CHOICE_PARKING_STATUS = (
     ('01', '空き'),

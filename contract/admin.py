@@ -8,9 +8,14 @@ from utils.django_base import BaseAdmin
 
 
 # Register your models here.
+class ContractorCarInline(admin.TabularInline):
+    model = models.ContractorCar
+    extra = 0
+
+
 class ContractPaymentInline(admin.TabularInline):
     model = models.ContractPayment
-    extra = 1
+    extra = 0
 
 
 @admin.register(models.Contractor)
@@ -19,6 +24,7 @@ class ContractorAdmin(BaseAdmin):
     list_display = ('code', 'name', 'category', 'address1', 'address2')
     list_display_links = ('code', 'name')
     search_fields = ('code', 'name')
+    inlines = (ContractorCarInline,)
     form = forms.ContractorForm
     fieldsets = (
         (None, {

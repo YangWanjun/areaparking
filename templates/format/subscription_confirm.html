@@ -150,12 +150,14 @@
         <p style="margin: 10px 28px;font-size: 13.3px;">
             <span style="margin-right: 100px;">{{ current_date }}</span>
             <span style="color:red;font-size: 16px;">お客様（ご契約名義）ご署名：</span>
+            <!--
             <span style="position:relative;">
                 <img class="signature-pad" style="position:absolute; left: 0px; bottom: -10px;"
                      src="{%if signature%}{{signature}}{%else%}/static/img/do_signature.svg{%endif%}"
                      width="250px"/>
                 <input type="hidden" id="hid_signature" name="hid_signature" />
             </span>
+            -->
         </p>
     </div>
     {% csrf_token %}

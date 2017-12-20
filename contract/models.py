@@ -9,13 +9,13 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.template import Context, Template
 
+from utils import constants, common
 from utils.django_base import BaseModel, PublicManager
-from utils import constants
 
 from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
 from format.models import ReportFile
-from master.models import Mediation, BankAccount, CarMaker, Payment, MailGroup
+from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
 from utils.app_base import get_total_context, get_user_subscription_url
 
 
@@ -104,6 +104,31 @@ class Contractor(BaseModel):
         return self.name
 
 
+class ContractorCar(BaseModel):
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    car_maker = models.CharField(max_length=50, blank=True, null=True, verbose_name="車メーカー")
+    car_model = models.CharField(max_length=100, blank=True, null=True, verbose_name="車種")
+    car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
+    car_no_plate = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
+    car_length = models.IntegerField(blank=True, null=True, verbose_name="全長")
+    car_width = models.IntegerField(blank=True, null=True, verbose_name="全幅")
+    car_height = models.IntegerField(blank=True, null=True, verbose_name="全高")
+    car_weight = models.IntegerField(blank=True, null=True, verbose_name="重量")
+    car_min_height = models.IntegerField(blank=True, null=True, verbose_name="ﾒｰｶｰの地上最低高")
+    car_f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
+    car_r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
+    car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
+
+    class Meta:
+        db_table = 'ap_contractor_car'
+        ordering = ['contractor', 'car_maker', 'car_model']
+        verbose_name = "保有車"
+        verbose_name_plural = "保有車一覧"
+
+    def __str__(self):
+        return self.car_model
+
+
 class Contract(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
@@ -115,6 +140,7 @@ class Contract(BaseModel):
     notify_start_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知開始日")
     notify_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了通知終了日")
     staff = models.ForeignKey(Member, verbose_name="担当者")
+    transmission_route = models.ForeignKey(TransmissionRoute, blank=True, null=True, verbose_name="媒体")
     mediation = models.ForeignKey(Mediation, blank=True, null=True, verbose_name="仲介業者")
     staff_assistant1 = models.ForeignKey(Member, null=True, blank=True, related_name='contract_assistant1_set',
                                          verbose_name="アシスタント１")
@@ -126,11 +152,7 @@ class Contract(BaseModel):
     payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.PROTECT,
                                            verbose_name="振込先口座")
     # 車情報
-    car_maker = models.ForeignKey(CarMaker, blank=True, null=True, verbose_name="車メーカー")
-    car_model = models.CharField(max_length=100, blank=True, null=True, verbose_name="車種")
-    car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
-    car_no_plate = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
-    car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
+    car = models.ForeignKey(ContractorCar, blank=True, null=True, verbose_name="契約する車")
     # 仮契約であるかどうかのステータス
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_CONTRACT_STATUS, editable=False,
                               verbose_name="ステータス")
@@ -149,6 +171,32 @@ class Contract(BaseModel):
     def __str__(self):
         return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
 
+    def get_monthly_price(self):
+        """月分の賃料（税抜）を取得する。
+
+        デフォルトはホームページ価格
+
+        :return:
+        """
+        price = 0
+        if self.parking_position:
+            price = self.parking_position.price_homepage_no_tax or 0
+            if self.transmission_route and self.transmission_route.price_kbn == '01':
+                price = self.parking_position.price_handbill_no_tax or 0
+        return price
+
+    def get_current_month_price(self):
+        """契約開始月末日までの賃料
+
+        :return:
+        """
+        monthly_price = self.get_monthly_price()
+        if monthly_price and self.start_date and self.start_date.day != 1:
+            days = common.get_days_by_month(self.start_date) - self.start_date.day - 1
+            return common.get_integer(monthly_price / days, Config.get_decimal_type()) * days
+        else:
+            return 0
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         is_new = True if self.pk is None else False
@@ -161,6 +209,21 @@ class Contract(BaseModel):
                 if i == len(constants.CHOICE_TASK_CATEGORY):
                     task.is_end = True
                 task.save()
+            # 入金項目作成
+            payments = Payment.objects.public_filter(is_active=True)
+            consumption_tax_rate = Config.get_consumption_tax_rate()
+            decimal_type = Config.get_decimal_type()
+            for payment in payments:
+                contract_payment = ContractPayment(contract=self, timing=payment.timing, payment=payment)
+                contract_payment.amount = payment.amount or 0
+                if payment.timing == '11':
+                    # 契約開始月
+                    contract_payment.amount = self.get_current_month_price()
+                elif payment.timing == '30':
+                    contract_payment.amount = self.get_monthly_price()
+                contract_payment.consumption_tax = common.get_integer(contract_payment.amount * consumption_tax_rate,
+                                                                      decimal_type)
+                contract_payment.save()
 
 
 class ContractPayment(BaseModel):
@@ -206,7 +269,6 @@ class Task(BaseModel):
     category = models.CharField(max_length=3, choices=constants.CHOICE_TASK_CATEGORY, verbose_name="タスク名称")
     name = models.CharField(max_length=50, verbose_name="タスク名称")
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_TASK_STATUS, verbose_name='ステータス')
-    mail_sent_datetime = models.DateTimeField(blank=True, null=True, verbose_name="メール送信日時")
     updated_user = models.ForeignKey(User, blank=True, null=True, verbose_name="更新ユーザー")
     url_links = models.CharField(max_length=2000, blank=True, null=True, verbose_name="リンク")
     reports = GenericRelation(ReportFile, related_query_name='subscriptions')
@@ -280,13 +342,6 @@ class Task(BaseModel):
         else:
             return None
 
-    def get_report_list(self):
-        """このタスクで作成した帳票一覧を取得する。
-
-        :return:
-        """
-        return ReportFile.objects.public_filter(subscriptions__pk=self.pk)
-
     def is_finished(self):
         """タスクが成功完了
 
@@ -337,11 +392,7 @@ class TempContract(models.Model):
     payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.DO_NOTHING,
                                            verbose_name="振込先口座")
     # 車情報
-    car_maker = models.ForeignKey(CarMaker, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="車メーカー")
-    car_model = models.CharField(max_length=100, blank=True, null=True, verbose_name="車種")
-    car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
-    car_no_plate = models.CharField(max_length=20, blank=True, null=True, verbose_name="No.プレート")
-    car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
+    car = models.ForeignKey(ContractorCar, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="契約車")
 
     class Meta:
         managed = False

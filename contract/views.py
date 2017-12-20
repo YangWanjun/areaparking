@@ -92,7 +92,6 @@ class SendSubscriptionMail(BaseView):
             mail = EbMail(**mail_data)
             mail.send_email()
             task.status = '99'      # タスク完了
-            task.mail_sent_datetime = datetime.datetime.now()
             task.updated_user = request.user
             task.url_links = subscription_url
             task.save()
@@ -103,8 +102,8 @@ class SendSubscriptionMail(BaseView):
                 next_task.save()
             json = {
                 'error': False,
-                'mail_sent_datetime': datetime.datetime.now(),
-                'mail_sender_user': '%s %s' % (request.user.last_name, request.user.first_name),
+                'updated_date': datetime.datetime.now(),
+                'updated_user': '%s %s' % (request.user.last_name, request.user.first_name),
             }
         except Exception as ex:
             json = {

@@ -60,11 +60,53 @@ class Config(BaseModel):
 
     @classmethod
     def get_page_size(cls):
+        """
+
+        :return:
+        """
         default = 25
         try:
-            return Config.objects.get(name=constants.CONFIG_PAGE_SIZE).value
+            value = Config.objects.get(name=constants.CONFIG_PAGE_SIZE).value
+            try:
+                return int(value)
+            except Exception as ex:
+                logger.error(ex)
+                return default
         except ObjectDoesNotExist:
             Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_PAGE_SIZE, value=default)
+            return default
+
+    @classmethod
+    def get_decimal_type(cls):
+        """小数の処理区分を取得する。
+
+        :return:
+        """
+        default = '0'
+        try:
+            return Config.objects.get(name=constants.CONFIG_DECIMAL_TYPE).value
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_DECIMAL_TYPE,
+                                  value=default)
+            return default
+
+    @classmethod
+    def get_consumption_tax_rate(cls):
+        """消費税の税率を取得する。
+
+        :return:
+        """
+        default = 0.08
+        try:
+            value = Config.objects.get(name=constants.CONFIG_CONSUMPTION_TAX_RATE).value
+            try:
+                return float(value)
+            except Exception as ex:
+                logger.error(ex)
+                return default
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_CONSUMPTION_TAX_RATE,
+                                  value=default)
             return default
 
 
@@ -173,10 +215,12 @@ class BankAccount(BaseModel):
 
 class TransmissionRoute(BaseModel):
     name = models.CharField(max_length=50, unique=True, verbose_name="名称")
+    price_kbn = models.CharField(max_length=2, blank=True, null=True, verbose_name="金額区分",
+                                 choices=constants.CHOICE_PRICE_KBN)
 
     class Meta:
         db_table = 'mst_transmission_route'
-        ordering = ['name']
+        ordering = ['id']
         verbose_name = "媒体"
         verbose_name_plural = "媒体一覧"
 
@@ -200,6 +244,10 @@ class Mediation(BaseModel):
 class Payment(BaseModel):
     name = models.CharField(max_length=30, unique=True, verbose_name="入金項目")
     timing = models.CharField(max_length=2, choices=constants.CHOICE_PAY_TIMING, verbose_name="タイミング")
+    amount = models.IntegerField(blank=True, null=True, verbose_name="デフォールト金額")
+    consumption_tax_kbn = models.CharField(max_length=1, default=1, choices=constants.CHOICE_TAX_KBN,
+                                           verbose_name="消費税")
+    is_active = models.BooleanField(default=True, verbose_name="有効")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
