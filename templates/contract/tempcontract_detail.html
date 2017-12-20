@@ -234,10 +234,52 @@
                                 <div class="col s4">全高：</div>
                                 <div class="col s8">{{ object.car.car_height|default:''|intcomma }}</div>
                             </div>
-                            <div class="row" style="margin-bottom: 5px;">
+                            <div class="row">
                                 <div class="col s4">重量：</div>
                                 <div class="col s8">{{ object.car.car_weight|default:''|intcomma }}</div>
                             </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s1">判定結果</div>
+                                <div class="col s3">車室</div>
+                                <div class="col s2">全長</div>
+                                <div class="col s2">全幅</div>
+                                <div class="col s2">全高</div>
+                                <div class="col s2">重量</div>
+                            </div>
+                            {% for suitable_position in object.contract.get_suitable_positions %}
+                                {% if suitable_position %}
+                                    <div class="row {% if suitable_position.position.pk == object.parking_position.pk %}teal lighten-5{% endif %}" style="margin-bottom: 5px;">
+                                        <div class="col s1">{% if suitable_position.is_suitable %}<i class="tiny material-icons">done</i>{% else %}<i class="tiny material-icons red-text">close</i>{% endif %}</div>
+                                        <div class="col s3">
+                                            <span>{{ suitable_position.position }}</span>
+                                        </div>
+                                        <div class="col s2">
+                                            <span class="{% if not suitable_position.length_suitable %}red-text{% endif %}">
+                                                {{ suitable_position.position.length }}
+                                                {% if suitable_position.adjust_length > 0 %}(+{{ suitable_position.adjust_length }}){% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="col s2">
+                                            <span class="{% if not suitable_position.width_suitable %}red-text{% endif %}">
+                                                {{ suitable_position.position.width }}
+                                                {% if suitable_position.adjust_width > 0 %}(+{{ suitable_position.adjust_width }}){% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="col s2">
+                                            <span class="{% if not suitable_position.height_suitable %}red-text{% endif %}">
+                                                {{ suitable_position.position.height }}
+                                                {% if suitable_position.adjust_height > 0 %}(+{{ suitable_position.adjust_height }}){% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="col s2">
+                                            <span class="{% if not suitable_position.weight_suitable %}red-text{% endif %}">
+                                                {{ suitable_position.position.weight }}
+                                                {% if suitable_position.adjust_weight > 0 %}(+{{ suitable_position.adjust_weight }}){% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         {% elif task.category == "100" %}
                             <!-- 契約書類送付 -->
                             <table>

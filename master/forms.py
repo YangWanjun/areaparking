@@ -12,5 +12,5 @@ class ConfigForm(forms.ModelForm):
         super(ConfigForm, self).__init__(*args, **kwargs)
         instance = kwargs.get('instance', None)
         if instance and isinstance(instance, models.Config):
-            if instance.name == 'theme':
+            if instance.name == constants.CONFIG_DECIMAL_TYPE:
                 self.fields['value'] = forms.ChoiceField(constants.CHOICE_DECIMAL_TYPE, required=True, label=u"設定値")

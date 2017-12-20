@@ -109,6 +109,82 @@ class Config(BaseModel):
                                   value=default)
             return default
 
+    @classmethod
+    def get_car_length_adjust(cls):
+        """車全長の調整値。
+
+        :return:
+        """
+        default = 0
+        try:
+            value = Config.objects.get(name=constants.CONFIG_CAR_LENGTH_ADJUST).value
+            try:
+                return int(value)
+            except Exception as ex:
+                logger.error(ex)
+                return default
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_ADJUST_SIZE, name=constants.CONFIG_CAR_LENGTH_ADJUST,
+                                  value=default)
+            return default
+
+    @classmethod
+    def get_car_width_adjust(cls):
+        """車全幅の調整値。
+
+        :return:
+        """
+        default = 0
+        try:
+            value = Config.objects.get(name=constants.CONFIG_CAR_WIDTH_ADJUST).value
+            try:
+                return int(value)
+            except Exception as ex:
+                logger.error(ex)
+                return default
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_ADJUST_SIZE, name=constants.CONFIG_CAR_WIDTH_ADJUST,
+                                  value=default)
+            return default
+
+    @classmethod
+    def get_car_height_adjust(cls):
+        """車全高の調整値。
+
+        :return:
+        """
+        default = 0
+        try:
+            value = Config.objects.get(name=constants.CONFIG_CAR_HEIGHT_ADJUST).value
+            try:
+                return int(value)
+            except Exception as ex:
+                logger.error(ex)
+                return default
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_ADJUST_SIZE, name=constants.CONFIG_CAR_HEIGHT_ADJUST,
+                                  value=default)
+            return default
+
+    @classmethod
+    def get_car_weight_adjust(cls):
+        """車重量の調整値。
+
+        :return:
+        """
+        default = 0
+        try:
+            value = Config.objects.get(name=constants.CONFIG_CAR_WEIGHT_ADJUST).value
+            try:
+                return int(value)
+            except Exception as ex:
+                logger.error(ex)
+                return default
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_ADJUST_SIZE, name=constants.CONFIG_CAR_WEIGHT_ADJUST,
+                                  value=default)
+            return default
+
 
 class Company(BaseModel):
     name = models.CharField(unique=True, max_length=30, verbose_name=u"会社名")

@@ -16,8 +16,14 @@ class MailCcListInline(admin.TabularInline):
 @admin.register(models.Config)
 class ConfigAdmin(BaseAdmin):
     form = forms.ConfigForm
-    list_display = ('group', 'name', 'value')
+    list_display = ('group', 'name', 'value', 'comment')
     list_display_links = ('name',)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(models.Company)

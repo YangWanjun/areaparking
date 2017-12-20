@@ -36,6 +36,19 @@ class WhiteBoard(models.Model):
     def __str__(self):
         return str(self.parking_lot)
 
+    def is_empty(self):
+        if self.position_count == self.contract_count:
+            # 空無
+            return '03'
+        elif self.position_count == (self.contract_count + self.temp_contract_count):
+            # 手続中
+            return '02'
+        else:
+            # 空き
+            return '01'
+
+    is_empty.short_description = '空き'
+
 
 class WhiteBoardPosition(models.Model):
     whiteboard = models.ForeignKey(WhiteBoard, on_delete=models.DO_NOTHING, verbose_name="ホワイトボード")

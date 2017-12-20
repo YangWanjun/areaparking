@@ -201,6 +201,12 @@ class Contract(BaseModel):
         else:
             return 0
 
+    def get_suitable_positions(self):
+        positions = self.parking_lot.get_suitable_positions(self.car.car_length, self.car.car_width,
+                                                            self.car.car_height,
+                                                            self.car.car_weight)
+        return positions
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         is_new = True if self.pk is None else False

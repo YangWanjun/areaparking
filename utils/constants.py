@@ -15,6 +15,7 @@ MIME_TYPE_HTML = 'text/html'
 
 CONFIG_GROUP_SYSTEM = 'system'
 CONFIG_GROUP_EMAIL = 'email'
+CONFIG_GROUP_ADJUST_SIZE = 'size'
 CONFIG_EMAIL_ADDRESS = 'email_address'
 CONFIG_EMAIL_SMTP_HOST = 'email_smtp_host'
 CONFIG_EMAIL_SMTP_PORT = 'email_smtp_port'
@@ -24,6 +25,10 @@ CONFIG_DOMAIN_NAME = 'domain_name'
 CONFIG_PAGE_SIZE = 'page_size'
 CONFIG_DECIMAL_TYPE = 'decimal_type'
 CONFIG_CONSUMPTION_TAX_RATE = 'consumption_tax_rate'
+CONFIG_CAR_LENGTH_ADJUST = 'car_length_adjust'
+CONFIG_CAR_WIDTH_ADJUST = 'car_width_adjust'
+CONFIG_CAR_HEIGHT_ADJUST = 'car_height_adjust'
+CONFIG_CAR_WEIGHT_ADJUST = 'car_weight_adjust'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"

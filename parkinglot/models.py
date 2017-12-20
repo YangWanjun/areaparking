@@ -6,6 +6,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 from employee.models import Member
+from master.models import Config
 from utils.django_base import BaseModel
 from utils import constants, common
 
@@ -166,6 +167,52 @@ class ParkingLot(BaseModel):
         return "{}{}{}{}{}".format(
             self.pref_name, self.city_name, self.town_name or '', self.aza_name or '', self.other_name or ''
         )
+
+    def get_suitable_positions(self, length, width, height, weight):
+        """指定した車のサイズによって、該当する車室リストを取得する。
+
+        :param length:
+        :param width:
+        :param height:
+        :param weight:
+        :return:
+        """
+        if not length or not width or not height or not weight:
+            return [None]
+        positions = ParkingPosition.objects.public_filter(parking_lot=self)
+        suitable_list = []
+        adjust_length = Config.get_car_length_adjust()
+        adjust_width = Config.get_car_width_adjust()
+        adjust_height = Config.get_car_height_adjust()
+        adjust_weight = Config.get_car_weight_adjust()
+        for position in positions:
+            is_suitable = True
+            length_suitable = True
+            width_suitable = True
+            height_suitable = True
+            weight_suitable = True
+            if position.length + adjust_length < length:
+                is_suitable = length_suitable = False
+            if position.width + adjust_width < width:
+                is_suitable = width_suitable = False
+            if position.height + adjust_height < height:
+                is_suitable = height_suitable = False
+            if position.weight + adjust_weight < weight:
+                is_suitable = weight_suitable = False
+
+            suitable_list.append({
+                'is_suitable': is_suitable,
+                'position': position,
+                'length_suitable': length_suitable,
+                'width_suitable': width_suitable,
+                'height_suitable': height_suitable,
+                'weight_suitable': weight_suitable,
+                'adjust_length': adjust_length,
+                'adjust_width': adjust_width,
+                'adjust_height': adjust_height,
+                'adjust_weight': adjust_weight,
+            })
+        return suitable_list
 
 
 class ParkingLotStaffHistory(BaseModel):
