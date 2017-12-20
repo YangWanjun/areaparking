@@ -21,7 +21,7 @@ def get_subscription_confirm_html(request, **kwargs):
     """
     task = get_object_or_404(Task, pk=kwargs.get('task_id'))
     report = get_object_or_404(models.ReportSubscriptionConfirm, pk=kwargs.get('report_id'))
-    contract = task.process.contract
+    contract = task.process.content_object
     parking_lot = contract.parking_lot
     t = Template(report.content)
     ctx = Context(kwargs)
@@ -44,7 +44,7 @@ def get_subscription_html(request, **kwargs):
     """
     task = get_object_or_404(Task, pk=kwargs.get('task_id'))
     report = get_object_or_404(models.ReportSubscription, pk=kwargs.get('report_id'))
-    contract = task.process.contract
+    contract = task.process.content_object
     parking_lot = contract.parking_lot
     t = Template(report.content)
     ctx = Context(kwargs)

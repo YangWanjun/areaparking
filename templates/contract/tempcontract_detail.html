@@ -56,6 +56,9 @@
                         {% if task.status == '01' %}
                             <!-- 未実施 -->
                             <span class="new badge red" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% elif task.status == '02' %}
+                            <!-- 実施中 -->
+                            <span class="new badge purple" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
                         {% elif task.status == '10' %}
                             <!-- スキップ -->
                             <span class="new badge grey" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
@@ -306,6 +309,8 @@ function subscription_sent_success_fn(result) {
         var obj = $("a[data-target=send_subscription]");
         $(obj).next().addClass('disabled');
         $(obj).next().next().addClass('disabled');
+        // 次のタスクを実施中にする
+        ebjs.material.set_task_status($(obj).closest('li').next(), '02');
         // 進捗更新
         ebjs.material.update_task_info(obj, '99');
         // 前回送信時間と送信者

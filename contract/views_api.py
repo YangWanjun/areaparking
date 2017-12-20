@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from . import models, serializers
+from utils import constants
 
 
 class TempContractorViewSet(viewsets.ModelViewSet):
@@ -26,12 +27,16 @@ def task_finish(request, pk):
     :return:
     """
     task = get_object_or_404(models.Task, pk=pk)
+    prev_task = task.get_prev_task()
 
     if request.method == 'PUT':
-        task.status = '99'
-        task.save()
-        serializer = serializers.TaskSerializer(task)
-        return Response(serializer.data)
+        if prev_task is None or prev_task.can_continue():
+            task.status = '99'
+            task.save()
+            serializer = serializers.TaskSerializer(task)
+            return Response(serializer.data)
+        else:
+            return Response({'detail': constants.ERROR_PREV_TASK_UNFINISHED}, status=400)
 
 
 @api_view(['PUT'])
@@ -43,12 +48,16 @@ def task_skip(request, pk):
     :return:
     """
     task = get_object_or_404(models.Task, pk=pk)
+    prev_task = task.get_prev_task()
 
     if request.method == 'PUT':
-        task.status = '10'
-        task.save()
-        serializer = serializers.TaskSerializer(task)
-        return Response(serializer.data)
+        if prev_task is None or prev_task.can_continue():
+            task.status = '10'
+            task.save()
+            serializer = serializers.TaskSerializer(task)
+            return Response(serializer.data)
+        else:
+            return Response({'detail': constants.ERROR_PREV_TASK_UNFINISHED}, status=400)
 
 
 @api_view(['PUT'])

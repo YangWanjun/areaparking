@@ -155,7 +155,7 @@ class Contract(BaseModel):
         super(Contract, self).save(force_insert, force_update, using, update_fields)
         if is_new:
             # 進捗のプロセス作成
-            process = Process.objects.create(contract=self)
+            process = Process.objects.create(content_object=self)
             for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
                 task = Task(process=process, order=i, category=category[0], name=category[1])
                 if i == len(constants.CHOICE_TASK_CATEGORY):
@@ -182,7 +182,6 @@ class ContractPayment(BaseModel):
 
 
 class Process(BaseModel):
-    # contract = models.OneToOneField(Contract, related_name='process', verbose_name="仮契約")
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
