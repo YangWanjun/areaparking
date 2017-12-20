@@ -42,9 +42,13 @@ class Contractor(BaseModel):
     corporate_web_site = models.URLField(blank=True, null=True, verbose_name="ホームページ")
     corporate_president = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"代表者名")
     corporate_staff_name = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"担当者名")
+    corporate_staff_kana = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"担当者カナ")
+    # corporate_staff_email = models.EmailField(blank=True, null=True, verbose_name="担当者Email")
+    # corporate_staff_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者電話番号")
+    # corporate_staff_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者ファックス")
+    corporate_staff_phone = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者携帯電話")
     corporate_staff_department = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者所属")
     corporate_staff_position = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者役職")
-    corporate_extension = models.CharField(max_length=10, blank=True, null=True, verbose_name="内線番号")
     corporate_capital = models.IntegerField(blank=True, null=True, verbose_name="資本金")
     corporate_turnover = models.IntegerField(blank=True, null=True, verbose_name="年収／年商")
     # 勤務先
@@ -114,7 +118,7 @@ class ContractorCar(BaseModel):
     car_width = models.IntegerField(blank=True, null=True, verbose_name="全幅")
     car_height = models.IntegerField(blank=True, null=True, verbose_name="全高")
     car_weight = models.IntegerField(blank=True, null=True, verbose_name="重量")
-    car_min_height = models.IntegerField(blank=True, null=True, verbose_name="ﾒｰｶｰの地上最低高")
+    car_min_height = models.IntegerField(blank=True, null=True, verbose_name="地上最低高")
     car_f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
     car_r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
     car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
@@ -227,7 +231,7 @@ class Contract(BaseModel):
 
 
 class ContractPayment(BaseModel):
-    contract = models.ForeignKey(Contract, on_delete=models.PROTECT, verbose_name="契約情報")
+    contract = models.ForeignKey(Contract, verbose_name="契約情報")
     timing = models.CharField(max_length=2, choices=constants.CHOICE_PAY_TIMING, verbose_name="タイミング")
     payment = models.ForeignKey(Payment, verbose_name="入金項目")
     amount = models.IntegerField(verbose_name="請求額")

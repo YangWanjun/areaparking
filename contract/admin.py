@@ -49,8 +49,7 @@ class ContractorAdmin(BaseAdmin):
             'fields': (
                 ('corporate_business_type', ),
                 ('corporate_president', 'corporate_web_site'),
-                ('corporate_staff_name', 'corporate_staff_department', 'corporate_staff_position',
-                 'corporate_extension'),
+                ('corporate_staff_name', 'corporate_staff_department', 'corporate_staff_position'),
                 ('corporate_capital', 'corporate_turnover'),
             )
         }),

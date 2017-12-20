@@ -1,5 +1,6 @@
 {% extends current_module.base_template %}
 {% load i18n material_form material_frontend %}
+{% load humanize %}
 
 {% block breadcrumbs_items %}
 <a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
@@ -155,10 +156,10 @@
                             <!-- 申込書確認 -->
                             {% for report_file in task.reports.all %}
                                 <div class="row" style="margin-bottom: 5px;">
-                                    <div class="col s6">
+                                    <div class="col s4">
                                         <a target="_blank" href="{{ MEDIA_URL }}{{ report_file.path }}">{{ report_file.name }}</a>
                                     </div>
-                                    <div class="col s6">申込み日時：{{ report_file.updated_date }} </div>
+                                    <div class="col s8">申込み日時：{{ report_file.updated_date }} </div>
                                 </div>
                             {% empty %}
                                 <div class="row" style="margin-bottom: 5px;">
@@ -167,6 +168,76 @@
                                     </div>
                                 </div>
                             {% endfor %}
+                        {% elif task.category == '030' %}
+                            <!-- 住所・電話番号 審査・確認 -->
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">住所：</div>
+                                <div class="col s8">{{ object.contractor.address1|default:'' }}{{ object.contractor.address2|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">電話番号：</div>
+                                <div class="col s8">{{ object.contractor.tel|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">ファックス：</div>
+                                <div class="col s8">{{ object.contractor.fax|default:'' }}</div>
+                            </div>
+                        {% elif task.category == '031' %}
+                            <!-- 勤め先審査 -->
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">勤務先名称：</div>
+                                <div class="col s8">{{ object.contractor.workplace_name|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">勤務先郵便番号：</div>
+                                <div class="col s8">{{ object.contractor.workplace_post_code|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">勤務先住所：</div>
+                                <div class="col s8">{{ object.contractor.workplace_address1|default:'' }}{{ object.contractor.workplace_address2|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">勤務先電話番号：</div>
+                                <div class="col s8">{{ object.contractor.workplace_tel|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">勤務先ファックス：</div>
+                                <div class="col s8">{{ object.contractor.workplace_fax|default:'' }}</div>
+                            </div>
+                        {% elif task.category == '032' and object.car %}
+                            <!-- 車両サイズ審査 -->
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">車メーカー：</div>
+                                <div class="col s8">{{ object.car.car_maker|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">車種：</div>
+                                <div class="col s8">{{ object.car.car_model|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">色：</div>
+                                <div class="col s8">{{ object.car.car_color|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">No.プレート：</div>
+                                <div class="col s8">{{ object.car.car_no_plate|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">全長：</div>
+                                <div class="col s8">{{ object.car.car_length|default:''|intcomma }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">全幅：</div>
+                                <div class="col s8">{{ object.car.car_width|default:''|intcomma }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">全高：</div>
+                                <div class="col s8">{{ object.car.car_height|default:''|intcomma }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">重量：</div>
+                                <div class="col s8">{{ object.car.car_weight|default:''|intcomma }}</div>
+                            </div>
                         {% elif task.category == "100" %}
                             <!-- 契約書類送付 -->
                             <table>
