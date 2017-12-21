@@ -1,11 +1,11 @@
 import sys
 
-from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from material.frontend.views.viewset import ModelViewSet, ListModelView, DetailModelView
 
 from contract.forms import ContractorForm
+from parkinglot.forms import ParkingLotForm
 from utils import errors
 from utils.django_base import BaseTemplateView, BaseView
 from master.models import Config
@@ -21,6 +21,16 @@ class Index(BaseView):
 
 class WhiteBoardListView(ListModelView):
     # paginate_by = 25
+
+    def get_headers_data(self):
+        """Readable column titles."""
+        for field_name in self.get_list_display():
+            attr = self.get_data_attr(field_name)
+            if field_name == 'free_end_date':
+                label = 'フリー'
+            else:
+                label = attr.label
+            yield field_name, label
 
     def get_queryset(self, *args, **kwargs):
         queryset = super(WhiteBoardListView, self).get_queryset()
@@ -62,22 +72,23 @@ class WhiteBoardDetailView(DetailModelView):
 
     def get_context_data(self, **kwargs):
         context = super(WhiteBoardDetailView, self).get_context_data(**kwargs)
-        context.update({
-            'change_url': reverse('admin:parkinglot_parkinglot_change', args=(self.object.pk,)) + '?_popup=1',
-        })
+        # context.update({
+        #     'change_url': reverse('admin:parkinglot_parkinglot_change', args=(self.object.pk,)) + '?_popup=1',
+        # })
         return context
 
 
 class WhiteBoardViewSet(ModelViewSet):
     model = models.WhiteBoard
     list_display = (
-        'code', 'parking_lot', 'staff', 'category', 'address', 'is_empty', 'position_count',
+        'code', 'parking_lot', 'staff', 'category', 'address', 'is_empty', 'position_count', 'contract_count',
         'temp_contract_count', 'waiting_count', 'is_existed_contractor_allowed', 'is_new_contractor_allowed',
         'free_end_date',
     )
     list_display_links = ('id', 'parking_lot')
     list_view_class = WhiteBoardListView
     detail_view_class = WhiteBoardDetailView
+    form_class = ParkingLotForm
 
     def has_add_permission(self, request):
         return False
@@ -178,44 +189,6 @@ class WhiteBoardMapView(BaseTemplateView):
             'circle_radius': Config.get_circle_radius(),
         })
         return context
-
-
-# class ParkingPositionListView(BaseTemplateView):
-#     template_name = "./whiteboard/index.html"
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(ParkingPositionListView, self).get_context_data(**kwargs)
-#         queryset = parkinglot_model.ParkingPosition.objects.public_all().order_by()[:100]
-#         context.update({
-#             'queryset': queryset,
-#         })
-#         return context
-
-
-# class ParkingLotDetail(BaseTemplateView):
-#     template_name = "./whiteboard/parkinglot.html"
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(ParkingLotDetail, self).get_context_data(**kwargs)
-#         parkinglot = get_object_or_404(parkinglot_model.ParkingLot, pk=kwargs.get('id'))
-#         context.update({
-#             'parkinglot': parkinglot,
-#         })
-#         return context
-#
-#
-# class ParkingPositionDetail(BaseTemplateView):
-#     template_name = "./whiteboard/parkingposition.html"
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(ParkingPositionDetail, self).get_context_data(**kwargs)
-#         parkingposition = get_object_or_404(parkinglot_model.ParkingPosition, pk=kwargs.get('id'))
-#         contractor_form = ContractorForm()
-#         context.update({
-#             'parkingposition': parkingposition,
-#             'contractor_form': contractor_form,
-#         })
-#         return context
 
 
 def handler500(request):

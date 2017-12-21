@@ -32,7 +32,7 @@
             <div class="right-align">
                 {% block actions_row %}
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
-                {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
             </div>
         </div>
@@ -88,7 +88,7 @@
 <link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.material.min.css" />
 <!--<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.1.0/material.min.css" />-->
 <script type="text/javascript">
-    ebjs.material.popup_anchor();
+    //ebjs.material.popup_anchor();
     $(document).one("turbolinks:load", function() {
     if ( ! $.fn.DataTable.isDataTable( '#tblPosition' ) ) {
         var datatable = $('#tblPosition').DataTable({

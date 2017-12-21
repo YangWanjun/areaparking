@@ -21,9 +21,9 @@ class WhiteBoard(models.Model):
     contract_count = models.IntegerField(default=0, verbose_name="契約数")
     temp_contract_count = models.IntegerField(default=0, verbose_name="手続中")
     waiting_count = models.IntegerField(default=0, verbose_name="待ち数")
-    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約")
-    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新ﾚﾅﾝﾄ")
-    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリー")
+    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
+    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
+    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
     parking_time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, on_delete=models.DO_NOTHING,
                                            verbose_name="時間制限")
 
@@ -46,6 +46,10 @@ class WhiteBoard(models.Model):
         else:
             # 空き
             return '01'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        pass
 
     is_empty.short_description = '空き'
 
