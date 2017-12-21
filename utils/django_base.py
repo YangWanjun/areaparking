@@ -12,7 +12,7 @@ from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
 
-from material.frontend.views import ModelViewSet, DetailModelView, ListModelView
+from material.frontend.views import ModelViewSet, DetailModelView, ListModelView, UpdateModelView
 
 
 class PublicManager(models.Manager):
@@ -170,6 +170,15 @@ class BaseDetailModelView(DetailModelView):
 
     def get_context_data(self, **kwargs):
         context = super(BaseDetailModelView, self).get_context_data(**kwargs)
+        context.update({
+            'debug': True,
+        })
+        return context
+
+
+class BaseUpdateModelView(UpdateModelView):
+    def get_context_data(self, **kwargs):
+        context = super(BaseUpdateModelView, self).get_context_data(**kwargs)
         context.update({
             'debug': True,
         })

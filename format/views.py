@@ -64,7 +64,8 @@ class SubscriptionView(BaseView):
         task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
         contractor = task.process.content_object.contractor
         contract = task.process.content_object
-        json = {'error': False}
+        message_list = []
+        json = {'error': False, 'message_list': message_list}
         # 車庫証明
         rdo_receipt = request.POST.get('rdo_receipt')
         # 駐車する車
@@ -87,7 +88,14 @@ class SubscriptionView(BaseView):
         # 希望契約開始日
         txt_contract_start_date = request.POST.get('txt_contract_start_date') or None
         if txt_contract_start_date:
-            contract.start_date = txt_contract_start_date
+            try:
+                contract.start_date = datetime.datetime.strptime(txt_contract_start_date, '%Y-%m-%d').date()
+            except Exception as ex:
+                json.update({
+                    'error': True,
+                    'txt_contract_start_date': ['不正の日付が入力されています。']
+                })
+                message_list.append(str(ex))
         else:
             json.update({
                 'error': True,
@@ -96,7 +104,8 @@ class SubscriptionView(BaseView):
         # 希望契約期間
         rdo_contract_period = request.POST.get('rdo_contract_period')
         if rdo_contract_period:
-            pass
+            if rdo_contract_period == 'long':
+                contract.end_date = contract.get_contract_end_date()
         else:
             json.update({
                 'error': True,

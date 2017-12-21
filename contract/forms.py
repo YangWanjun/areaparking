@@ -29,3 +29,12 @@ class ContractorForm(BaseForm):
     #         if not corporate_staff_name:
     #             self.add_error('staff_name', "法人の場合、担当者名を入力してください。")
     #     return cleaned_data
+
+
+class TempContractorForm(BaseForm):
+    class Meta:
+        model = models.TempContract
+        fields = '__all__'
+
+    def save(self, commit=True):
+        return super(TempContractorForm, self).save(commit)

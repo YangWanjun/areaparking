@@ -17,4 +17,7 @@ urlpatterns = [
         views.GenerateSubscriptionConfirmPdfView.as_view(), name='download_report_subscription_confirm'),
     url('^download/pdf/subscription/(?P<task_id>\d+)/(?P<report_id>\d+)/$',
         views.GenerateSubscriptionPdfView.as_view(), name='download_report_subscription'),
+
+    # url(r'^user_subscription/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+    #     views.UserOperationView.as_view(), name='activate_account'),
 ]

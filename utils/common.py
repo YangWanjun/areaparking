@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import os
 import re
+import calendar
 import logging
 import pdfkit
 import datetime
@@ -186,3 +187,46 @@ def get_integer(value, decimal_type):
             return math.ceil(value)
     else:
         return 0
+
+
+def add_days(source_date, days=1):
+    """指定日数後の日付を取得する。
+
+    :param source_date:
+    :param days:
+    :return:
+    """
+    return source_date + datetime.timedelta(days=days)
+
+
+def add_months(source_date, months=1):
+    """指定月数後の日付を取得する
+
+    :param source_date:
+    :param months:
+    :return:
+    """
+    month = source_date.month - 1 + months
+    year = int(source_date.year + month / 12)
+    month = month % 12 + 1
+    day = min(source_date.day, calendar.monthrange(year, month)[1])
+    return datetime.date(year, month, day)
+
+
+def get_first_day_by_month(source_date):
+    """指定日付の初日を取得する
+
+    :param source_date:
+    :return:
+    """
+    return datetime.date(source_date.year, source_date.month, 1)
+
+
+def get_last_day_by_month(source_date):
+    """指定日付の末尾を取得する
+
+    :param source_date:
+    :return:
+    """
+    next_month = add_months(source_date, 1)
+    return next_month + datetime.timedelta(days=-next_month.day)

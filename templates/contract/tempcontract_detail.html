@@ -357,17 +357,10 @@
                                         <i class="tiny material-icons">send</i>
                                     </a>
                                 {% endif %}
-                                {% if task.is_end %}
-                                    <a data-position="left" data-delay="50" data-tooltip="契約をキャンセルします。"
-                                       class="waves-effect waves-light btn-floating red tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
-                                       onclick="ebjs.material.contract_cancel(this, '{% url 'task_cancel' task.pk %}')">
-                                        <i class="tiny material-icons">cancel</i></a>
-                                {% else %}
-                                    <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします。"
-                                       class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
-                                       onclick="ebjs.material.task_skip(this, '{% url 'task_skip' task.pk %}', '{{ task }}')">
-                                        <i class="tiny material-icons">call_missed_outgoing</i></a>
-                                {% endif %}
+                                <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします。"
+                                   class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                   onclick="ebjs.material.task_skip(this, '{% url 'task_skip' task.pk %}', '{{ task }}')">
+                                    <i class="tiny material-icons">call_missed_outgoing</i></a>
                                 <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。"
                                    class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
                                    onclick="ebjs.material.task_finish(this, '{% url 'task_finish' task.pk %}', '{{ task }}')">
@@ -379,6 +372,12 @@
                 {% endwith %}
                 {% endfor %}
             </ul>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <a class="waves-effect waves-light btn red white-text" href="{% url 'contract:temp_contract_destroy' object.pk %}">破棄</a>
+                <a class="waves-effect waves-light btn white-text" href="{% url 'contract:temp_contract_finish' object.pk %}">契約完了</a>
+            </div>
         </div>
     </div>
 </div>

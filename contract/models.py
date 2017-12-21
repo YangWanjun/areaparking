@@ -175,6 +175,19 @@ class Contract(BaseModel):
     def __str__(self):
         return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
 
+    def get_contract_end_date(self):
+        """長期契約の場合の契約更新日を自動設置
+
+        :return:
+        """
+        # 駐車場の既定の契約期間を設置
+        default_period = self.parking_lot.default_contract_months
+        if self.start_date.day == 1:
+            default_period -= 1
+
+        date = common.add_months(self.start_date, default_period)
+        return common.get_last_day_by_month(date)
+
     def get_monthly_price(self):
         """月分の賃料（税抜）を取得する。
 
@@ -202,6 +215,10 @@ class Contract(BaseModel):
             return 0
 
     def get_suitable_positions(self):
+        """駐車可能の車室を取得する
+
+        :return:
+        """
         positions = self.parking_lot.get_suitable_positions(self.car.car_length, self.car.car_width,
                                                             self.car.car_height,
                                                             self.car.car_weight)
@@ -413,3 +430,12 @@ class TempContract(models.Model):
 
     def __str__(self):
         return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        return super(TempContract, self).save(force_insert, force_update, using, update_fields)
+
+
+class Cancellation(BaseModel):
+    contract = models.ForeignKey(Contract, on_delete=models.DO_NOTHING, verbose_name="契約情報")
+

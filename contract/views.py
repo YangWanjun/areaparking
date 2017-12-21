@@ -1,14 +1,14 @@
 import datetime
 
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, reverse
 
 from material.frontend.views import ModelViewSet
 
-from . import models
+from . import models, forms
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
-from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView
+from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseUpdateModelView
 from utils.mail import EbMail
 
 
@@ -25,19 +25,13 @@ class TempContractDetailView(BaseDetailModelView):
         context.update({
             'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
             'subscription_template': ReportSubscription.get_default_report(),
+            # 'change_url': reverse('contract:contract_change', args=(self.object.pk,))
         })
         return context
 
 
 class TempContractListView(BaseListModelView):
-
-    def get_columns_def(self):
-        columns_def = super(TempContractListView, self).get_columns_def()
-        return columns_def
-
-    def get_datatable_config(self):
-        config = super(TempContractListView, self).get_datatable_config()
-        return config
+    pass
 
 
 class TempContractVewSet(ModelViewSet):
@@ -52,14 +46,34 @@ class TempContractVewSet(ModelViewSet):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    # def has_change_permission(self, request, obj=None):
+    #     return False
+
+
+class TempContractFinish(BaseView):
+    def get(self, request, *args, **kwargs):
+        contract = get_object_or_404(models.Contract, pk=kwargs.get('pk'))
+        contract.status = '11'
+        contract.contractor.status = '11'
+        contract.save()
+        contract.contractor.save()
+        return redirect('contract:tempcontract_list')
+
+
+class TempContractDestroy(BaseView):
+    def get(self, request, *args, **kwargs):
+        contract = get_object_or_404(models.Contract, pk=kwargs.get('pk'))
+        contract.status = '21'
+        contract.contractor.status = '21'
+        contract.save()
+        contract.contractor.save()
+        return redirect('contract:tempcontract_list')
 
 
 class ContractVewSet(ModelViewSet):
     model = models.Contract
     queryset = models.Contract.real_objects.public_all()
-    list_display = ('contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
+    list_display = ('id', 'contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
 
     def has_delete_permission(self, request, obj=None):
         return False
