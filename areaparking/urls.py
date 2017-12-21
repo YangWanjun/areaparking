@@ -22,15 +22,28 @@ from django.contrib.auth.decorators import login_required
 from django.views import generic
 from django.views.static import serve
 
+from rest_framework import routers
+
 from material import frontend
 from material.frontend.apps import ModuleMixin
 from material.frontend.registry import modules
 
 from contract import views_api as contract_api
-from contract.urls import router as contract_router
-from parkinglot.urls import router as parkintlot_router
-from master.urls import router as master_router
-from whiteboard.urls import router as whiteboard_router
+from parkinglot import views_api as parking_lot_api
+from master import views_api as master_api
+from whiteboard import views_api as whiteboard_api
+
+
+router = routers.DefaultRouter()
+router.register(r'temp-contractor', contract_api.TempContractorViewSet)
+router.register(r'temp-contract', contract_api.TempContractViewSet)
+
+router.register(r'parking-lot', parking_lot_api.ParkingLotViewSet)
+
+router.register(r'car-maker', master_api.CarMakerViewSet)
+router.register(r'car-model', master_api.CarModelViewSet)
+
+router.register(r'whiteboard', whiteboard_api.WhiteBoardViewSet)
 
 
 class Home(ModuleMixin):
@@ -68,10 +81,7 @@ urlpatterns = [
 
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 
-    url(r'^api/', include(contract_router.urls)),
-    url(r'^api/', include(parkintlot_router.urls)),
-    url(r'^api/', include(master_router.urls)),
-    url(r'^api/', include(whiteboard_router.urls)),
+    url(r'^api/', include(router.urls)),
     url(r'^api/task/(?P<pk>[0-9]+)/finish.html$', contract_api.task_finish, name='task_finish'),
     url(r'^api/task/(?P<pk>[0-9]+)/skip.html$', contract_api.task_skip, name='task_skip'),
     url(r'^api/task/(?P<pk>[0-9]+)/cancel.html$', contract_api.task_cancel, name='task_cancel'),
