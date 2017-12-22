@@ -105,3 +105,4 @@ ENV/
 # images/
 migrations/
 user_subscription/
+docs/

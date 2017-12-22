@@ -31,10 +31,15 @@ class ContractorForm(BaseForm):
     #     return cleaned_data
 
 
-class TempContractorForm(BaseForm):
+class ContractForm(BaseForm):
     class Meta:
-        model = models.TempContract
+        model = models.Contract
         fields = '__all__'
 
-    def save(self, commit=True):
-        return super(TempContractorForm, self).save(commit)
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['contractor'].queryset = models.Contractor.objects.filter(pk=self.instance.contractor.pk)
+            self.fields['parking_lot'].queryset = models.ParkingLot.objects.filter(pk=self.instance.parking_lot.pk)
+            self.fields['parking_position'].queryset = models.ParkingPosition.objects.filter(
+                parking_lot=self.instance.parking_lot)

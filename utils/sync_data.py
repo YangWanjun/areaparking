@@ -408,14 +408,15 @@ def sync_coordinate(url):
 
 def sync_config():
     configs = [
-        ('email', 'email_address', 'ebprint@e-business.co.jp'),
-        ('email', 'email_password', '******'),
-        ('email', 'email_smtp_host', 'smtp.e-business.co.jp'),
-        ('email', 'email_smtp_port', '587'),
-        ('system', 'circle_radius', '2000'),
-        ('system', 'domain_name', 'http://ap.mopa.jp'),
-        ('system', 'page_size', '25'),
+        ('email', 'email_address', 'ebprint@e-business.co.jp', None),
+        ('email', 'email_password', '******', None),
+        ('email', 'email_smtp_host', 'smtp.e-business.co.jp', None),
+        ('email', 'email_smtp_port', '587', None),
+        ('system', 'circle_radius', '2000', None),
+        ('system', 'domain_name', 'http://ap.mopa.jp', None),
+        ('system', 'page_size', '25', None),
+        ('system', 'url_timeout', '24', "ＵＲＬのタイムアウト時間（単位：時間）"),
     ]
-    for group, name, value in configs:
+    for group, name, value, comment in configs:
         if Config.objects.public_filter(name=name).count() == 0:
-            Config.objects.create(group=group, name=name, value=value)
+            Config.objects.create(group=group, name=name, value=value, comment=comment)

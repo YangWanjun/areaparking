@@ -185,6 +185,26 @@ class Config(BaseModel):
                                   value=default)
             return default
 
+    @classmethod
+    def get_url_timeout(cls):
+        """ＵＲＬのタイムアウト時間を取得する
+
+        設定値の単位は時間ですけど、秒の値を戻す。
+
+        :return:
+        """
+        default = 3600 * 24
+        try:
+            value = Config.objects.get(name=constants.CONFIG_URL_TIMEOUT).value
+            try:
+                return int(value) * 3600
+            except Exception as ex:
+                logger.error(ex)
+                return default
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_URL_TIMEOUT, value=24)
+            return default
+
 
 class Company(BaseModel):
     name = models.CharField(unique=True, max_length=30, verbose_name=u"会社名")

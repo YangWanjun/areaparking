@@ -75,6 +75,29 @@ class ReportSubscription(BaseReport):
             return report
 
 
+class ReportContract(BaseReport):
+
+    class Meta:
+        db_table = 'mst_report_contract'
+        ordering = ['name']
+        verbose_name = "契約書"
+        verbose_name_plural = u"契約書一覧"
+
+    @classmethod
+    def get_default_report(cls):
+        """デフォルトの契約書テンプレートを取得する。
+
+        :return:
+        """
+        try:
+            return ReportSubscription.objects.get(is_default=True)
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            report = ReportSubscription.objects.public_all().first()
+            if report is None:
+                raise errors.SettingException(constants.ERROR_SETTING_NO_SUBSCRIPTION)
+            return report
+
+
 class ReportFile(BaseModel):
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()

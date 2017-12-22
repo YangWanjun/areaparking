@@ -6,21 +6,22 @@ from django.db import models
 from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, ParkingTimeLimit
 from employee.models import Member
 from utils import constants
+from utils.django_base import BaseViewModel
 
 
 # Create your models here.
-class WhiteBoard(models.Model):
+class WhiteBoard(BaseViewModel):
     code = models.IntegerField(primary_key=True, verbose_name="コード")
-    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
-    staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="担当者")
+    name = models.CharField(max_length=100, verbose_name="駐車場名称")
     category = models.ForeignKey(ParkingLotType, on_delete=models.DO_NOTHING, verbose_name="分類")
-    address = models.CharField(max_length=255, blank=True, null=True, verbose_name="所在地")
+    staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="担当者")
+    address = models.CharField(max_length=255, blank=True, null=True, editable=False, verbose_name="所在地")
     lng = models.FloatField(blank=True, null=True, verbose_name="経度")
     lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
-    position_count = models.IntegerField(default=0, verbose_name="車室数")
-    contract_count = models.IntegerField(default=0, verbose_name="契約数")
-    temp_contract_count = models.IntegerField(default=0, verbose_name="手続中")
-    waiting_count = models.IntegerField(default=0, verbose_name="待ち数")
+    position_count = models.IntegerField(default=0, editable=False, verbose_name="車室数")
+    contract_count = models.IntegerField(default=0, editable=False, verbose_name="契約数")
+    temp_contract_count = models.IntegerField(default=0, editable=False, verbose_name="手続中")
+    waiting_count = models.IntegerField(default=0, editable=False, verbose_name="待ち数")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
@@ -34,7 +35,7 @@ class WhiteBoard(models.Model):
         verbose_name_plural = "駐車場一覧"
 
     def __str__(self):
-        return str(self.parking_lot)
+        return self.name
 
     def is_empty(self):
         if self.position_count == self.contract_count:
@@ -47,14 +48,10 @@ class WhiteBoard(models.Model):
             # 空き
             return '01'
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        pass
-
     is_empty.short_description = '空き'
 
 
-class WhiteBoardPosition(models.Model):
+class WhiteBoardPosition(BaseViewModel):
     whiteboard = models.ForeignKey(WhiteBoard, on_delete=models.DO_NOTHING, verbose_name="ホワイトボード")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室")
     address = models.CharField(max_length=255, blank=True, null=True, verbose_name="所在地")
@@ -85,7 +82,6 @@ class WhiteBoardPosition(models.Model):
         db_table = 'v_whiteboard_position'
         verbose_name = "車室"
         verbose_name_plural = "車室一覧"
-
 
     def __str__(self):
         return str(self.parking_position)

@@ -12,18 +12,23 @@ class ParkingLotForm(BaseForm):
         model = models.ParkingLot
         fields = '__all__'
 
-    # def __init__(self, *args, **kwargs):
-    #     forms.ModelForm.__init__(self, *args, **kwargs)
-    #     if self.instance and self.instance.pk:
-    #         self.fields['buken'].queryset = BkMst.objects.filter(pk=self.instance.buken.pk)
-
 
 class ParkingPositionForm(BaseForm):
     class Meta:
         model = models.ParkingPosition
         fields = '__all__'
 
-    # def __init__(self, *args, **kwargs):
-    #     forms.ModelForm.__init__(self, *args, **kwargs)
-    #     if self.instance and self.instance.pk:
-    #         self.fields['parking_lot'].queryset = models.ParkingLot.objects.filter(pk=self.instance.parking_lot.pk)
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['parking_lot'].queryset = models.ParkingLot.objects.filter(pk=self.instance.parking_lot.pk)
+
+
+class ParkingLotDocForm(BaseForm):
+    class Meta:
+        model = models.ParkingLotDoc
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        self.fields['path'].widget.attrs.update({'class': "change_comment"})

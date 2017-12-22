@@ -1,6 +1,7 @@
 import datetime
 from urllib.parse import urljoin
 
+from django.core.signing import TimestampSigner
 from django.urls import reverse
 
 from master.models import Company, Config
@@ -80,3 +81,13 @@ def get_user_subscription_url(task):
 
 def get_contracting_payment(contract):
     pass
+
+
+def get_onetime_url_token(url):
+    """ワンタームＵＲＬを取得する。
+
+    :param url:
+    :return:
+    """
+    signer = TimestampSigner()
+    return signer.sign(url)

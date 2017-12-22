@@ -1,11 +1,10 @@
 import sys
 
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from material.frontend.views.viewset import ModelViewSet, ListModelView, DetailModelView
 
 from contract.forms import ContractorForm
-from parkinglot.forms import ParkingLotForm
 from utils import errors
 from utils.django_base import BaseTemplateView, BaseView
 from master.models import Config
@@ -72,23 +71,22 @@ class WhiteBoardDetailView(DetailModelView):
 
     def get_context_data(self, **kwargs):
         context = super(WhiteBoardDetailView, self).get_context_data(**kwargs)
-        # context.update({
-        #     'change_url': reverse('admin:parkinglot_parkinglot_change', args=(self.object.pk,)) + '?_popup=1',
-        # })
+        context.update({
+            'change_url': reverse('admin:parkinglot_parkinglot_change', args=(self.object.pk,)) + '?_popup=1',
+        })
         return context
 
 
 class WhiteBoardViewSet(ModelViewSet):
     model = models.WhiteBoard
     list_display = (
-        'code', 'parking_lot', 'staff', 'category', 'address', 'is_empty', 'position_count', 'contract_count',
+        'code', 'name', 'staff', 'category', 'address', 'is_empty', 'position_count', 'contract_count',
         'temp_contract_count', 'waiting_count', 'is_existed_contractor_allowed', 'is_new_contractor_allowed',
         'free_end_date',
     )
-    list_display_links = ('id', 'parking_lot')
+    list_display_links = ('id', 'name')
     list_view_class = WhiteBoardListView
     detail_view_class = WhiteBoardDetailView
-    form_class = ParkingLotForm
 
     def has_add_permission(self, request):
         return False

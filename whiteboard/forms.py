@@ -7,7 +7,22 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from . import models
+from parkinglot.models import ParkingLot
 from utils.django_base import BaseForm, DynamicListWidget
+
+
+# class ParkingLotForm(BaseForm):
+#     class Meta:
+#         model = ParkingLot
+#         fields = '__all__'
+#
+#     def __init__(self, *args, **kwargs):
+#         instance = kwargs.get('instance', None)
+#         if instance and isinstance(instance, models.WhiteBoard):
+#             kwargs.update({'instance', instance.parking_lot})
+#         forms.ModelForm.__init__(self, *args, **kwargs)
+#         if self.instance and self.instance.pk:
+#             pass
 
 
 # class WaitingAddForm(BaseForm):

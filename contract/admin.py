@@ -103,3 +103,4 @@ class ContractAdmin(BaseAdmin):
     list_display = ('contractor', 'parking_lot', 'parking_position', 'contract_date', 'start_date', 'end_date')
     list_display_links = ('contractor',)
     inlines = (ContractPaymentInline,)
+    form = forms.ContractForm

@@ -148,6 +148,18 @@ class ParkingLot(BaseModel):
     admin_tel = models.CharField(max_length=15, blank=True, null=True, verbose_name="管理員電話番号",
                                  validators=(RegexValidator(regex=constants.REG_TEL),))
     admin_time = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員勤務時間帯")
+    # 物件管理情報
+    management_type = models.CharField(max_length=2, default='02', choices=constants.CHOICE_MANAGEMENT_TYPE,
+                                       verbose_name="管理形態")
+    start_date = models.DateField(blank=True, null=True, verbose_name="契約開始日")
+    end_date = models.DateField(blank=True, null=True, default=constants.END_DATE, verbose_name="契約終了日")
+    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
+    lease_count = models.SmallIntegerField(default=0, verbose_name="サブリース台数")
+    has_tenant_sign = models.BooleanField(default=False, verbose_name="ＡＰ募集看板の設置")
+    has_call_center = models.BooleanField(default=False, verbose_name="コールセンターの設置")
+    try_putting_operator = models.ForeignKey(TryPuttingOperator, blank=True, null=True, verbose_name="試入れの対応者")
+    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
+    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
     # その他の情報
     default_contract_months = models.SmallIntegerField(default=12, verbose_name="契約期間初期値",
                                                        help_text='月単位です、１年の場合は１２を入力してください。')
@@ -247,14 +259,12 @@ class ParkingLotComment(BaseModel):
 
 
 class ParkingLotDoc(BaseModel):
-    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    parking_lot = models.ForeignKey(ParkingLot, related_name='docs', verbose_name="駐車場")
     path = models.FileField(upload_to=common.get_parking_lot_doc_path)
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
-    order = models.SmallIntegerField(editable=False, verbose_name="並び順")
 
     class Meta:
         db_table = 'ap_parking_lot_doc'
-        ordering = ['order']
         verbose_name = "駐車場書類"
         verbose_name_plural = "駐車場書類一式"
 
@@ -330,28 +340,17 @@ class ParkingPositionKey(BaseModel):
         return self.category
 
 
-class ParkingLotManagement(BaseModel):
-    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    management_type = models.CharField(max_length=2, default='02', choices=constants.CHOICE_MANAGEMENT_TYPE,
-                                       verbose_name="管理形態")
-    start_date = models.DateField(verbose_name="契約開始日")
-    end_date = models.DateField(default=constants.END_DATE, verbose_name="契約終了日")
-    free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
-    lease_count = models.SmallIntegerField(default=0, verbose_name="サブリース台数")
-    has_tenant_sign = models.BooleanField(default=False, verbose_name="ＡＰ募集看板の設置")
-    has_call_center = models.BooleanField(default=False, verbose_name="コールセンターの設置")
-    try_putting_operator = models.ForeignKey(TryPuttingOperator, blank=True, null=True, verbose_name="試入れの対応者")
-    is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
-    is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
-
-    class Meta:
-        db_table = 'ap_parking_lot_management'
-        ordering = ['parking_lot', 'start_date', 'end_date']
-        verbose_name = "駐車場管理情報"
-        verbose_name_plural = "駐車場管理一覧"
-
-    def __str__(self):
-        return "{}（{}～{}）".format(str(self.parking_lot), self.start_date, self.end_date)
+# class ParkingLotManagement(BaseModel):
+#     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+#
+#     class Meta:
+#         db_table = 'ap_parking_lot_management'
+#         ordering = ['parking_lot', 'start_date', 'end_date']
+#         verbose_name = "駐車場管理情報"
+#         verbose_name_plural = "駐車場管理一覧"
+#
+#     def __str__(self):
+#         return "{}（{}～{}）".format(str(self.parking_lot), self.start_date, self.end_date)
 
 
 # class VParkingLotSummary(BaseModel):

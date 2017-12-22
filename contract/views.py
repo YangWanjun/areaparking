@@ -3,12 +3,11 @@ import datetime
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 
-from material.frontend.views import ModelViewSet
-
 from . import models, forms
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
-from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseUpdateModelView
+from utils.app_base import get_onetime_url_token
+from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseModelViewSet
 from utils.mail import EbMail
 
 
@@ -25,7 +24,8 @@ class TempContractDetailView(BaseDetailModelView):
         context.update({
             'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
             'subscription_template': ReportSubscription.get_default_report(),
-            # 'change_url': reverse('contract:contract_change', args=(self.object.pk,))
+            'token': get_onetime_url_token(self.object.contract.get_user_subscription_url()),
+            'change_url': reverse('admin:contract_contract_change', args=(self.object.pk,)) + '?_popup=1',
         })
         return context
 
@@ -34,17 +34,12 @@ class TempContractListView(BaseListModelView):
     pass
 
 
-class TempContractVewSet(ModelViewSet):
+class TempContractVewSet(BaseModelViewSet):
     model = models.TempContract
     list_display = ('contractor', 'parking_lot', 'parking_position', 'percent', 'start_date', 'end_date')
     detail_view_class = TempContractDetailView
     list_view_class = TempContractListView
 
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
 
     # def has_change_permission(self, request, obj=None):
     #     return False
@@ -70,16 +65,13 @@ class TempContractDestroy(BaseView):
         return redirect('contract:tempcontract_list')
 
 
-class ContractVewSet(ModelViewSet):
+class ContractVewSet(BaseModelViewSet):
     model = models.Contract
     queryset = models.Contract.real_objects.public_all()
     list_display = ('id', 'contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
 
-    def has_delete_permission(self, request, obj=None):
-        return False
 
-
-class ContractorVewSet(ModelViewSet):
+class ContractorVewSet(BaseModelViewSet):
     model = models.Contractor
     queryset = models.Contractor.real_objects.public_all()
     list_display = ('code', 'get_category_display', 'name', 'tel', 'email', 'address1')

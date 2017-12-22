@@ -29,6 +29,7 @@ CONFIG_CAR_LENGTH_ADJUST = 'car_length_adjust'
 CONFIG_CAR_WIDTH_ADJUST = 'car_width_adjust'
 CONFIG_CAR_HEIGHT_ADJUST = 'car_height_adjust'
 CONFIG_CAR_WEIGHT_ADJUST = 'car_weight_adjust'
+CONFIG_URL_TIMEOUT = 'url_timeout'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
@@ -125,14 +126,8 @@ CHOICE_REPORT_KBN = (
     # ('01', '申込書'),
     # ('01', '申込書'),
 )
-CHOICE_CONTRACT_PROCESS = (
-    ('01', '申込み'),
-    ('02', '住所・電話番号 審査・確認'),
-    ('01', '勤め先審査'),
-    ('01', '申込み'),
-    ('01', '申込み'),
-    ('01', '申込み'),
-    ('01', '申込み'),
+CHOICE_PROCESS = (
+    ('01', '申込みから成約まで'),
 )
 CHOICE_TASK_CATEGORY = (
     # 01 申込

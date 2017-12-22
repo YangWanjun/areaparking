@@ -23,7 +23,7 @@ class ConfigAdmin(BaseAdmin):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return request.user.username == "admin"
 
 
 @admin.register(models.Company)

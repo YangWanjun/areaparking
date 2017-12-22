@@ -51,7 +51,25 @@ class BaseModel(models.Model):
     #     self.save()
 
 
+class BaseViewModel(models.Model):
+    objects = models.Manager()
+
+    class Meta:
+        abstract = True
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        pass
+
+    def delete(self, using=None, keep_parents=False):
+        pass
+
+
 class BaseAdmin(admin.ModelAdmin):
+    class Media:
+        js = (
+            '/static/js/bundle.js',
+        )
 
     def get_actions(self, request):
         actions = super(BaseAdmin, self).get_actions(request)
@@ -159,7 +177,12 @@ class BaseTemplateView(TemplateResponseMixin, BaseView):
 
 
 class BaseModelViewSet(ModelViewSet):
-    pass
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class BaseListModelView(ListModelView):

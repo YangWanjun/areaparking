@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
 from django.template import Context, Template
+from django.urls import reverse
 
 from utils import constants, common
 from utils.django_base import BaseModel, PublicManager
@@ -224,6 +225,22 @@ class Contract(BaseModel):
                                                             self.car.car_weight)
         return positions
 
+    def get_contract_process(self):
+        """ユーザー申込みから成約までのプロセスを取得する。
+
+        :return:
+        """
+        return self.processes.filter(name='01').first()
+
+    def get_user_subscription_url(self):
+        """ユーザー申込み時のＵＲＬを取得する。
+
+        :return:
+        """
+        process = self.get_contract_process()
+        task = process.task_set.filter(category='010').first()
+        return get_user_subscription_url(task).get('user_subscription_url')
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         is_new = True if self.pk is None else False
@@ -272,12 +289,14 @@ class ContractPayment(BaseModel):
 
 
 class Process(BaseModel):
+    name = models.CharField(max_length=2, choices=constants.CHOICE_PROCESS)
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
         db_table = 'ap_process'
+        unique_together = ['name', 'content_type', 'object_id']
         verbose_name = "進捗"
         verbose_name_plural = "進捗一覧"
 
