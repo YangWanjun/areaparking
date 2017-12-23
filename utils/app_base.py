@@ -74,7 +74,7 @@ def get_contractor_context(contractor):
 
 
 def get_user_subscription_url(task):
-    url = reverse('format:user_subscription', kwargs={'task_id': task.pk})
+    url = reverse('format:user_subscription', kwargs={'signature': task.get_signed_pk()})
     domain_name = Config.get_domain_name()
     return {'user_subscription_url': urljoin(domain_name, url)}
 
@@ -83,11 +83,24 @@ def get_contracting_payment(contract):
     pass
 
 
-def get_onetime_url_token(url):
-    """ワンタームＵＲＬを取得する。
+def get_signed_value(key, salt=None):
+    """
 
-    :param url:
+    :param key:
+    :param salt:
     :return:
     """
-    signer = TimestampSigner()
-    return signer.sign(url)
+    signer = TimestampSigner(salt=salt)
+    return signer.sign(key)
+
+
+def get_unsigned_value(signature, salt=None):
+    """
+
+    :param signature:
+    :param salt:
+    :return:
+    """
+    signer = TimestampSigner(salt=salt)
+    timeout = Config.get_url_timeout()
+    return signer.unsign(signature, max_age=datetime.timedelta(seconds=timeout))

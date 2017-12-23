@@ -8,7 +8,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
 from django.template import Context, Template
-from django.urls import reverse
 
 from utils import constants, common
 from utils.django_base import BaseModel, PublicManager
@@ -17,7 +16,7 @@ from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
 from format.models import ReportFile
 from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
-from utils.app_base import get_total_context, get_user_subscription_url
+from utils.app_base import get_total_context, get_user_subscription_url, get_signed_value
 
 
 # Create your models here.
@@ -232,15 +231,6 @@ class Contract(BaseModel):
         """
         return self.processes.filter(name='01').first()
 
-    def get_user_subscription_url(self):
-        """ユーザー申込み時のＵＲＬを取得する。
-
-        :return:
-        """
-        process = self.get_contract_process()
-        task = process.task_set.filter(category='010').first()
-        return get_user_subscription_url(task).get('user_subscription_url')
-
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         is_new = True if self.pk is None else False
@@ -387,6 +377,9 @@ class Task(BaseModel):
                 return None
         else:
             return None
+
+    def get_signed_pk(self):
+        return get_signed_value(self.pk)
 
     def is_finished(self):
         """タスクが成功完了

@@ -197,7 +197,7 @@ class Config(BaseModel):
         try:
             value = Config.objects.get(name=constants.CONFIG_URL_TIMEOUT).value
             try:
-                return int(value) * 3600
+                return int(float(value) * 3600)
             except Exception as ex:
                 logger.error(ex)
                 return default

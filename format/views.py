@@ -1,29 +1,39 @@
-import os
 import datetime
 
+from django.core import signing
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
 from . import biz, models
 from contract.models import Task, ContractorCar
 from utils import constants, common
-from utils.django_base import BaseView, BaseTemplateView
+from utils.app_base import get_unsigned_value
+from utils.django_base import BaseView, BaseTemplateView, BaseTemplateViewWithoutLogin
 
 logger = common.get_ap_logger()
 
 
 # Create your views here.
-class UserOperationView(BaseTemplateView):
+class UserOperationView(BaseTemplateViewWithoutLogin):
     template_name = 'format/format_base.html'
 
     def get_context_data(self, **kwargs):
         context = super(UserOperationView, self).get_context_data(**kwargs)
-        task = get_object_or_404(Task, pk=kwargs.get('task_id'))
+        signature = kwargs.get('signature')
+        task_id = get_unsigned_value(signature)
+        task = get_object_or_404(Task, pk=task_id)
         if task.url_links:
             urls = [url for url in task.url_links.split(',') if url]
             context.update({'urls': urls})
         return context
+
+    def get(self, request, *args, **kwargs):
+        try:
+            response = super(UserOperationView, self).get(request, *args, **kwargs)
+            return response
+        except signing.BadSignature:
+            return redirect('format:url_timeout')
 
 
 class SubscriptionConfirmView(BaseView):
@@ -268,3 +278,7 @@ class GenerateSubscriptionPdfView(BaseView):
         response = HttpResponse(data, content_type="application/pdf")
         response['Content-Disposition'] = "filename=" + title
         return response
+
+
+class UrlTimeoutView(BaseTemplateView):
+    template_name = 'format/url_timeout.html'

@@ -3,10 +3,9 @@ import datetime
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 
-from . import models, forms
+from . import models
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
-from utils.app_base import get_onetime_url_token
 from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseModelViewSet
 from utils.mail import EbMail
 
@@ -24,7 +23,6 @@ class TempContractDetailView(BaseDetailModelView):
         context.update({
             'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
             'subscription_template': ReportSubscription.get_default_report(),
-            'token': get_onetime_url_token(self.object.contract.get_user_subscription_url()),
             'change_url': reverse('admin:contract_contract_change', args=(self.object.pk,)) + '?_popup=1',
         })
         return context

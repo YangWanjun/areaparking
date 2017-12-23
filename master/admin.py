@@ -18,6 +18,7 @@ class ConfigAdmin(BaseAdmin):
     form = forms.ConfigForm
     list_display = ('group', 'name', 'value', 'comment')
     list_display_links = ('name',)
+    readonly_fields = ('group', 'name')
 
     def has_add_permission(self, request):
         return False

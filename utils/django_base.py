@@ -176,6 +176,31 @@ class BaseTemplateView(TemplateResponseMixin, BaseView):
         return template_names
 
 
+class BaseViewWithoutLogin(View, ContextMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseViewWithoutLogin, self).get_context_data(**kwargs)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        kwargs.update({
+            'request': request,
+            'debug': True,
+        })
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+class BaseTemplateViewWithoutLogin(TemplateResponseMixin, BaseViewWithoutLogin):
+
+    def get_template_names(self):
+        template_names = super(BaseTemplateViewWithoutLogin, self).get_template_names()
+        return template_names
+
+
 class BaseModelViewSet(ModelViewSet):
 
     def has_add_permission(self, request):
