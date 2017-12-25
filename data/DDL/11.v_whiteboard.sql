@@ -20,8 +20,5 @@ select lot.code as code
      , lot.is_existed_contractor_allowed        -- 既契約者
      , lot.is_new_contractor_allowed            -- 新テナント
      , lot.free_end_date                        -- フリーレント終了日
-     , ptl.id as parking_time_limit_id          -- 時間制限
   from ap_parking_lot lot
-  left join ap_parking_time_limit ptl on ptl.id = lot.time_limit_id 
-                                     and ptl.is_deleted = 0
  where lot.is_deleted = 0

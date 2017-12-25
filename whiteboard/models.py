@@ -25,8 +25,6 @@ class WhiteBoard(BaseViewModel):
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
-    parking_time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, on_delete=models.DO_NOTHING,
-                                           verbose_name="時間制限")
 
     class Meta:
         managed = False

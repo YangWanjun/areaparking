@@ -237,7 +237,7 @@ class Contract(BaseModel):
         super(Contract, self).save(force_insert, force_update, using, update_fields)
         if is_new:
             # 進捗のプロセス作成
-            process = Process.objects.create(content_object=self)
+            process = Process.objects.create(name='01', content_object=self)
             for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
                 task = Task(process=process, order=i, category=category[0], name=category[1])
                 if i == len(constants.CHOICE_TASK_CATEGORY):
