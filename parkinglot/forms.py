@@ -12,6 +12,11 @@ class ParkingLotForm(BaseForm):
         model = models.ParkingLot
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        self.fields['time_limit_comment'].widget = forms.Textarea()
+        self.fields['transit_pass_comment'].widget = forms.Textarea()
+
 
 class ParkingPositionForm(BaseForm):
     class Meta:

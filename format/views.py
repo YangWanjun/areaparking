@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from . import biz, models
 from contract.models import Task, ContractorCar
 from utils import constants, common
-from utils.app_base import get_unsigned_value
+from utils.app_base import get_unsigned_value, get_company_context
 from utils.django_base import BaseView, BaseTemplateView, BaseTemplateViewWithoutLogin
 
 logger = common.get_ap_logger()
@@ -16,16 +16,25 @@ logger = common.get_ap_logger()
 
 # Create your views here.
 class UserOperationView(BaseTemplateViewWithoutLogin):
-    template_name = 'format/format_base.html'
+    template_name = 'format/user_subscription.html'
 
     def get_context_data(self, **kwargs):
         context = super(UserOperationView, self).get_context_data(**kwargs)
         signature = kwargs.get('signature')
         task_id = get_unsigned_value(signature)
         task = get_object_or_404(Task, pk=task_id)
-        if task.url_links:
-            urls = [url for url in task.url_links.split(',') if url]
-            context.update({'urls': urls})
+        contract = task.process.content_object
+        parking_lot = contract.parking_lot
+        parking_position = contract.parking_position
+        # if task.url_links:
+        #     urls = [url for url in task.url_links.split(',') if url]
+        #     context.update({'urls': urls})
+        context.update(get_company_context())
+        context.update({
+            'contract': contract,
+            'parking_lot': parking_lot,
+            'parking_position': parking_position,
+        })
         return context
 
     def get(self, request, *args, **kwargs):

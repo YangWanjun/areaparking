@@ -90,8 +90,8 @@ class ParkingPosition(BaseAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                ('parking_lot',),
-                'name',
+                'parking_lot',
+                'name', 'category',
             )
         }),
         ("賃料", {
@@ -117,6 +117,7 @@ class ParkingPosition(BaseAdmin):
         }),
     )
     inlines = (ParkingPositionKeyInline,)
+    save_as = True
 
 
 admin.site.site_header = constants.SYSTEM_NAME

@@ -142,7 +142,6 @@ class ParkingLot(BaseModel):
     entering_method = models.CharField(max_length=30, blank=True, null=True, verbose_name="入出庫方法")
     has_turntable = models.BooleanField(default=False, verbose_name="ターンテーブルの有無")
     has_palette = models.BooleanField(default=False, verbose_name="専用パレット")
-    time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, verbose_name="時間制限")
     admin_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員氏名")
     admin_kana = models.CharField(max_length=30, blank=True, null=True, verbose_name="管理員カナ")
     admin_tel = models.CharField(max_length=15, blank=True, null=True, verbose_name="管理員電話番号",
@@ -165,6 +164,10 @@ class ParkingLot(BaseModel):
                                                        help_text='月単位です、１年の場合は１２を入力してください。')
     staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
     staff_start_date = models.DateField(blank=True, null=True, verbose_name="担当開始日")
+    # time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, verbose_name="時間制限")
+    time_limit_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="利用時間帯について")
+    transit_pass_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="通行許可証について")
+
 
     class Meta:
         db_table = 'ap_parking_lot'
@@ -225,6 +228,16 @@ class ParkingLot(BaseModel):
                 'adjust_weight': adjust_weight,
             })
         return suitable_list
+
+    def get_size_grouped_position(self):
+        """駐車可能サイズを取得する。
+
+        :return:
+        """
+        queryset = ParkingPosition.objects.public_filter(parking_lot=self).values(
+            'length', 'width', 'height', 'weight', 'min_height'
+        ).annotate(position_count=models.Count('length'))
+        return queryset
 
 
 class ParkingLotStaffHistory(BaseModel):
@@ -291,6 +304,7 @@ class ParkingLotImage(BaseModel):
 class ParkingPosition(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     name = models.CharField(max_length=30, verbose_name="車室名称")
+    category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
     # 賃料
     price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
     price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税抜）")

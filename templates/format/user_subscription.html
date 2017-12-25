@@ -1,0 +1,98 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div id="step1">
+    <div class="row">
+        <div class="card-title">車室情報</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field">駐車場名称</th>
+                <td class="form-field">{{ parking_lot }}</td>
+            </tr>
+            <tr>
+                <th class="form-field">所在地</th>
+                <td class="form-field">
+                    {{ parking_lot.address }}
+                    {% if parking_lot.address %}
+                        <br/><a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{parking_lot.address}}" style="font-size:11px;">Googleマップで表示</a>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field">収容可能サイズ</th>
+                <td class="form-field">
+                    {% for position in parking_lot.get_size_grouped_position %}
+                        {% if position.position_count %}
+                        <div>
+                            <span style="margin-right: 5px;">全長:{{ position.length|default:''|intcomma }}mm</span>
+                            <span style="margin-right: 5px;">全幅:{{ position.width|default:''|intcomma }}mm</span>
+                            <span style="margin-right: 5px;">全高:{{ position.height|default:''|intcomma }}mm</span>
+                            <span style="margin-right: 5px;">重量:{{ position.weight|default:''|intcomma }}kg</span>
+                            <span>{% if position.min_height %}地上最低高:{{ position.min_height|default:''|intcomma }}mm{% endif %}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field">駐車番号(No.)</th>
+                <td class="form-field">
+                    {% if parking_position %}
+                        {{ parking_position }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% if parking_lot.time_limit_comment %}
+            <tr>
+                <th class="red-text form-field">※利用時間帯について</th>
+                <td class="form-field"><pre>{{ parking_lot.time_limit_comment }}</pre></td>
+            </tr>
+            {% endif %}
+            {% if parking_lot.transit_pass_comment %}
+            <tr>
+                <th class="red-text form-field">※通行許可証について</th>
+                <td class="form-field"><pre>{{ parking_lot.transit_pass_comment }}</pre></td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    <div class="row">
+        <div class="card-title">車情報入力</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="txt_car_maker">メーカー<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_car_maker" name="txt_car_maker" required placeholder="例）トヨタ"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_car_model">車種<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_car_model" name="txt_car_model" required placeholder="例）プリウス"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_no_plate">車両登録番号(ﾅﾝﾊﾞｰﾌﾟﾚｰﾄ)<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_no_plate" name="txt_no_plate" required placeholder="例）練馬 502 ワ 1234"/></td>
+            </tr>
+            <tr>
+                <th class="form-field">車体の大きさ<span class="new badge red" data-badge-caption="必須"></span></th>
+                <td class="form-field">
+                    <label for="txt_car_length" style="margin-right: 15px;">全長</label>
+                    <input type="text" id="txt_car_length" name="txt_car_length" required placeholder="例）5000" style="width: 50%;" />mm
+                    <br/>
+                    <label for="txt_car_width" style="margin-right: 15px;">全幅</label>
+                    <input type="text" id="txt_car_width" name="txt_car_width" required placeholder="例）1750" style="width: 50%;" />mm
+                    <br/>
+                    <label for="txt_car_height" style="margin-right: 15px;">全高</label>
+                    <input type="text" id="txt_car_height" name="txt_car_height" required placeholder="例）1600" style="width: 50%;" />mm
+                    <br/>
+                    <label for="txt_car_weight" style="margin-right: 15px;">重量</label>
+                    <input type="text" id="txt_car_weight" name="txt_car_weight" required placeholder="例）1600" style="width: 50%;" />kg
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_contract_start_date">希望契約開始日<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" class="datepicker" id="txt_contract_start_date" name="txt_contract_start_date" required placeholder="例）2018-01-01"/></td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}
