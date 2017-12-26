@@ -230,3 +230,16 @@ def get_last_day_by_month(source_date):
     """
     next_month = add_months(source_date, 1)
     return next_month + datetime.timedelta(days=-next_month.day)
+
+
+def date_handler(obj):
+    """JSON serializable Support for date
+
+    :param obj:
+    :return:
+    """
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
+
+def json_default(o):
+    return o.__dict__

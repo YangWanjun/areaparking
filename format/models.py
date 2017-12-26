@@ -11,6 +11,32 @@ from utils.django_base import BaseModel
 
 
 # Create your models here.
+class Step(object):
+
+    def __init__(self, step, name, prev_step=None, next_step=None):
+        self.step = step
+        self.name = name
+        self.prev_step = prev_step
+        self.next_step = next_step
+        self.is_finished = False
+
+    def to_json(self, level=0):
+        return {
+            'full_name': self.full_name(),
+            'step': self.step,
+            'name': self.name,
+            'prev_step': self.prev_step.to_json(1) if self.prev_step and level == 0 else None,
+            'next_step': self.next_step.to_json(1) if self.next_step and level == 0 else None,
+            'is_finished': self.is_finished,
+        }
+
+    def full_name(self):
+        return '%s %s' % (self.step, self.name)
+
+    def __str__(self):
+        return self.name
+
+
 class ReportFileStorage(FileSystemStorage):
 
     def get_available_name(self, name, max_length=None):

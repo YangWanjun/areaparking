@@ -6,7 +6,14 @@ from . import views
 
 urlpatterns = [
     url('^$', generic.View.as_view(), name="index"),
-    url('^user_subscription/(?P<signature>[^/]+)\.html$', views.UserOperationView.as_view(), name="user_subscription"),
+    url('^user_subscription/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep1View.as_view(),
+        name="user_subscription"),
+    url('^user_subscription_step2/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep2View.as_view(),
+        name="user_subscription_step2"),
+    url('^user_subscription_step3/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep3View.as_view(),
+        name="user_subscription_step3"),
+    url('^user_subscription_step4/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep4View.as_view(),
+        name="user_subscription_step4"),
     url('^subscription_confirm/(?P<task_id>\d+)/(?P<report_id>\d+)/$',
         views.SubscriptionConfirmView.as_view(), name="report_subscription_confirm"),
     url('^subscription/(?P<task_id>\d+)/(?P<report_id>\d+)/$',
@@ -18,7 +25,4 @@ urlpatterns = [
         views.GenerateSubscriptionConfirmPdfView.as_view(), name='download_report_subscription_confirm'),
     url('^download/pdf/subscription/(?P<task_id>\d+)/(?P<report_id>\d+)/$',
         views.GenerateSubscriptionPdfView.as_view(), name='download_report_subscription'),
-
-    # url(r'^user_subscription/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-    #     views.UserOperationView.as_view(), name='activate_account'),
 ]

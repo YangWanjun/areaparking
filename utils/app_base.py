@@ -1,10 +1,11 @@
 import datetime
 from urllib.parse import urljoin
 
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.signing import TimestampSigner
 from django.urls import reverse
 
-from master.models import Company, Config
+from master.models import Company, Config, Payment
 
 
 def get_total_context(parking_lot=None, contractor=None):
@@ -17,6 +18,12 @@ def get_total_context(parking_lot=None, contractor=None):
     context.update({
         'current_date': datetime.date.today(),
     })
+    payment = get_receipt_payment()
+    if payment:
+        context.update({
+            'receipt_amount': payment.amount,
+            'receipt_without_consumption': payment.consumption_tax_kbn == '1',
+        })
     return context
 
 
@@ -79,8 +86,16 @@ def get_user_subscription_url(task):
     return {'user_subscription_url': urljoin(domain_name, url)}
 
 
-def get_contracting_payment(contract):
-    pass
+def get_receipt_payment():
+    """保管場所承諾証明書発行手数料
+
+    :param contract:
+    :return:
+    """
+    try:
+        return Payment.objects.get(timing=41)
+    except (ObjectDoesNotExist, MultipleObjectsReturned):
+        return None
 
 
 def get_signed_value(key, salt=None):

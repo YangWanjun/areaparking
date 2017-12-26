@@ -355,6 +355,20 @@ class Payment(BaseModel):
     def __str__(self):
         return self.name
 
+    def get_consumption_tax(self):
+        """消費税を取得する。
+
+        :return:
+        """
+        if not self.amount:
+            return 0
+        rate = Config.get_consumption_tax_rate()
+        if self.consumption_tax_kbn == '1':
+            # 税抜の場合
+            return common.get_integer(self.amount * rate, Config.get_decimal_type())
+        else:
+            return 0
+
 
 class ReportFormat(BaseModel):
     path = models.FileField(upload_to=common.get_parking_lot_doc_path)

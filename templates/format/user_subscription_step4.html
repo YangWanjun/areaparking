@@ -1,0 +1,191 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="row">
+    <div class="card-title">駐車場情報</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">駐車場名称</th>
+            <td class="form-field">{{ parking_lot }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">所在地</th>
+            <td class="form-field">
+                {{ parking_lot.address }}
+                {% if parking_lot.address %}
+                    <br/><a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{parking_lot.address}}" style="font-size:11px;">Googleマップで表示</a>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">収容可能サイズ</th>
+            <td class="form-field">
+                {% for position in parking_lot.get_size_grouped_position %}
+                    {% if position.position_count %}
+                    <div>
+                        <span style="margin-right: 5px;">全長:{{ position.length|default:''|intcomma }}mm</span>
+                        <span style="margin-right: 5px;">全幅:{{ position.width|default:''|intcomma }}mm</span>
+                        <span style="margin-right: 5px;">全高:{{ position.height|default:''|intcomma }}mm</span>
+                        <span style="margin-right: 5px;">重量:{{ position.weight|default:''|intcomma }}kg</span>
+                        <span>{% if position.min_height %}地上最低高:{{ position.min_height|default:''|intcomma }}mm{% endif %}</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">駐車番号(No.)</th>
+            <td class="form-field">
+                {% if parking_position %}
+                    {{ parking_position }}
+                {% endif %}
+            </td>
+        </tr>
+        {% if parking_lot.time_limit_comment %}
+        <tr>
+            <th class="red-text form-field">※利用時間帯について</th>
+            <td class="form-field"><pre>{{ parking_lot.time_limit_comment }}</pre></td>
+        </tr>
+        {% endif %}
+        {% if parking_lot.transit_pass_comment %}
+        <tr>
+            <th class="red-text form-field">※通行許可証について</th>
+            <td class="form-field"><pre>{{ parking_lot.transit_pass_comment }}</pre></td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+<div class="row">
+    <div class="card-title">申込者分類</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">分類</th>
+            <td class="form-field">
+                {% if user_subscription.contractor_category == "corporate" %}
+                    法人
+                {% elif user_subscription.contractor_category == "personal" %}
+                    個人
+                {% else %}
+                    未記入
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="row">
+    <div class="card-title">法人連絡先</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">フリガナ</th>
+            <td class="form-field">{{ user_subscription.contractor.kana|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">法人名</th>
+            <td class="form-field">{{ user_subscription.contractor.name|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">代表者</th>
+            <td class="form-field">{{ user_subscription.contractor.corporate_president|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">所在地</th>
+            <td class="form-field">
+                〒 {{ user_subscription.contractor.post_code|default:'未記入' }}<br/>
+                {{ user_subscription.contractor.address1|default:'未記入' }}<br/>
+                {{ user_subscription.contractor.address2|default:'未記入' }}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">TEL</th>
+            <td class="form-field">{{ user_subscription.contractor.tel|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">FAX</th>
+            <td class="form-field">{{ user_subscription.contractor.fax|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">会社業種</th>
+            <td class="form-field">{{ user_subscription.contractor.corporate_business_type|default:'未記入' }}</td>
+        </tr>
+    </table>
+</div>
+<div class="row">
+    <div class="card-title">契約担当者</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">フリガナ</th>
+            <td class="form-field">{{ user_subscription.contractor.corporate_staff_kana|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">氏名</th>
+            <td class="form-field">{{ user_subscription.contractor.corporate_staff_name|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">Ｅ-ｍａｉｌ</th>
+            <td class="form-field">{{ user_subscription.contractor.email|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">TEL</th>
+            <td class="form-field">{{ user_subscription.contractor.tel|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">FAX</th>
+            <td class="form-field">{{ user_subscription.contractor.fax|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">携帯電話</th>
+            <td class="form-field">{{ user_subscription.contractor.corporate_staff_phone|default:'未記入' }}</td>
+        </tr>
+    </table>
+</div>
+<div class="row">
+    <div class="card-title">緊急連絡先（※ご本人、勤務先以外）</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">電話番号</th>
+            <td class="form-field">{{ user_subscription.contractor.contact_tel|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">氏名</th>
+            <td class="form-field">{{ user_subscription.contractor.contact_name|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">契約者との関係</th>
+            <td class="form-field">{{ user_subscription.contractor.contact_relation|default:'未記入' }}</td>
+        </tr>
+    </table>
+</div>
+<div class="row">
+    <div class="card-title">使用者・使用者所在地</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">フリガナ</th>
+            <td class="form-field">{{ user_subscription.contractor.corporate_user_kana|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">氏名</th>
+            <td class="form-field">{{ user_subscription.contractor.corporate_user_name|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">携帯電話</th>
+            <td class="form-field">{{ user_subscription.contractor.corporate_user_tel|default:'未記入' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">所在地</th>
+            <td class="form-field">
+                {% if corporate_user_post_code %}
+                〒 {{ user_subscription.contractor.corporate_user_post_code|default:'未記入' }}<br/>
+                {% endif %}
+                {{ user_subscription.contractor.corporate_user_address1|default:'未記入' }}
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+
+$('form').submit(function() {
+    return true;
+});
+</script>
+{% endblock %}

@@ -1,4 +1,5 @@
 import os
+import json
 from io import BytesIO
 
 from django.shortcuts import get_object_or_404
@@ -6,8 +7,7 @@ from django.template import Context, Template
 from django.template.context_processors import csrf
 
 from . import models
-from parkinglot.models import ParkingLot
-from contract.models import Contractor, Task
+from contract.models import Task
 from utils import common, constants
 from utils.app_base import get_total_context
 
@@ -70,3 +70,20 @@ def generate_report_pdf_binary(html):
     finally:
         if os.path.exists(temp_file):
             os.remove(temp_file)
+
+
+def get_user_subscription_steps():
+    """ユーザー申込みのステップ数
+
+    :return:
+    """
+    step1 = models.Step(step="①", name="申込み基本情報")
+    step2 = models.Step(step="②", name="申込者分類選択", prev_step=step1)
+    step3 = models.Step(step="③", name="申込者情報入力", prev_step=step2)
+    step4 = models.Step(step="④", name="申込み確認", prev_step=step3)
+    step5 = models.Step(step="⑤", name="申込み完了", prev_step=step4)
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step4
+    step4.next_step = step5
+    return [step1.to_json(), step2.to_json(), step3.to_json(), step4.to_json(), step5.to_json(),]

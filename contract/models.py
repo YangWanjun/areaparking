@@ -277,6 +277,11 @@ class ContractPayment(BaseModel):
     def __str__(self):
         return '%s：%s' % (str(self.contract), self.payment)
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.consumption_tax = self.payment.get_consumption_tax()
+        super(ContractPayment, self).save(force_insert, force_update, using, update_fields)
+
 
 class Process(BaseModel):
     name = models.CharField(max_length=2, choices=constants.CHOICE_PROCESS)

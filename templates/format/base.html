@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
+    <title>{{ title }} - エリア・パーキング</title>
     <script type="text/javascript" src="/static/js/bundle.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
     <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.scrollfire/1.4.0/jquery.scrollfire.js"></script>-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="/static/subscription/css/base.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="http://materializecss.com/css/ghpages-materialize.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -17,13 +19,15 @@
                 weekdaysFull: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
                 weekdaysShort:  ["日", "月", "火", "水", "木", "金", "土"],
                 weekdaysLetter: ["日", "月", "火", "水", "木", "金", "土"],
+                selectMonths: true,
+                selectYears: 15,
                 labelMonthNext: "翌月",
                 labelMonthPrev: "前月",
                 labelMonthSelect: "月を選択",
                 labelYearSelect: "年を選択",
                 today: "今日",
                 clear: "クリア",
-                close: "OK",
+                close: "閉じる",
                 format: "yyyy-mm-dd",
             });
         });
@@ -37,19 +41,26 @@
         </div>
         <div class="nav-content" style="position:relative;">
             <ul class="tabs tabs-transparent">
-                <li class="tab"><a class="active" href="#step1">① 車情報入力</a></li>
-                <li class="tab disabled"><a href="#step2">② 契約者分類選択</a></li>
-                <li class="tab disabled"><a href="#step3">③ 契約者情報入力</a></li>
-                <li class="tab disabled"><a href="#step4">④ 申込み確認</a></li>
-                <li class="tab disabled"><a href="#step4">⑤ 申込み完了</a></li>
+                {% for step in steps %}
+                    <li class="tab {% if step != current_step %}disabled{% endif %}"><a class="{% if step == current_step %}active{% endif %}" href="javascript:void(0)">{{ step.full_name }}</a></li>
+                {% endfor %}
             </ul>
         </div>
     </nav>
 </header>
 <main>
     <div class="main">
-        {% block content %}
-        {% endblock %}
+        <form method="post" action="?">
+            {% block content %}
+            {% endblock %}
+            <div class="row center" style="margin-top: 100px;">
+                {% if current_step.prev_step %}
+                    <a class="left" href="javascript:void(0)" style="margin-top: 30px;">前：{{ current_step.prev_step.name }}へ</a>
+                {% endif %}
+                <button class="button" style="vertical-align:middle;"><span>次：{{ current_step.next_step.name }}へ </span></button>
+                {% csrf_token %}
+            </div>
+        </form>
     </div>
 </main>
 <footer class="page-footer">

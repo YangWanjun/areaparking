@@ -2,8 +2,17 @@
 
 body {
     background-color: #f7f3ee;
-    font-size: 13px;
+    font-size: 14px;
     font-family: メイリオ, Meiryo, "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "ＭＳ Ｐゴシック", "MS PGothic", Verdana, Arial, sans-serif;
+}
+
+pre {
+    font-size: 14px !important;
+    font-family: メイリオ, Meiryo, "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "ＭＳ Ｐゴシック", "MS PGothic", Verdana, Arial, sans-serif !important;
+}
+
+header, main, footer {
+    padding-left: 0 !important;
 }
 
 .container {
@@ -102,4 +111,44 @@ main table.step-info td pre {
 main table.step-info td input[type=text] {
     margin-bottom: 0px;
     font-size: 18px;
+}
+
+/********************** Submit ボタン ***************************/
+.button {
+  display: inline-block;
+  border-radius: 4px;
+  background-color: #07925d;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 28px;
+  padding: 15px 30px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
 }

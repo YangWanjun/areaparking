@@ -150,32 +150,6 @@ class DynamicListWidget(widgets.Widget):
         return mark_safe('\n'.join(output))
 
 
-@method_decorator(login_required, name='dispatch')
-class BaseView(View, ContextMixin):
-
-    def get_context_data(self, **kwargs):
-        context = super(BaseView, self).get_context_data(**kwargs)
-        return context
-
-    def get(self, request, *args, **kwargs):
-        kwargs.update({
-            'request': request,
-            'debug': True,
-        })
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        pass
-
-
-class BaseTemplateView(TemplateResponseMixin, BaseView):
-
-    def get_template_names(self):
-        template_names = super(BaseTemplateView, self).get_template_names()
-        return template_names
-
-
 class BaseViewWithoutLogin(View, ContextMixin):
 
     def get_context_data(self, **kwargs):
@@ -199,6 +173,16 @@ class BaseTemplateViewWithoutLogin(TemplateResponseMixin, BaseViewWithoutLogin):
     def get_template_names(self):
         template_names = super(BaseTemplateViewWithoutLogin, self).get_template_names()
         return template_names
+
+
+@method_decorator(login_required, name='dispatch')
+class BaseView(BaseViewWithoutLogin):
+    pass
+
+
+@method_decorator(login_required, name='dispatch')
+class BaseTemplateView(BaseTemplateViewWithoutLogin):
+    pass
 
 
 class BaseModelViewSet(ModelViewSet):

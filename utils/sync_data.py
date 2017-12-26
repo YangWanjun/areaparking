@@ -37,6 +37,9 @@ def sync_master():
     if Payment.objects.public_filter(timing='30').count() == 0:
         Payment.objects.create(timing='30', name="翌月分の賃料")
         print('作成', '契約時事務手数料は作成しました')
+    if Payment.objects.public_filter(timing='41').count() == 0:
+        Payment.objects.create(timing='41', name="保管場所承諾証明書発行手数料", amount=10000)
+        print('作成', '保管場所承諾証明書発行手数料は作成しました')
     # 申込書送付のメールテンプレート
     if MailGroup.objects.public_filter(code='001').count() == 0:
         template = MailTemplate.objects.create(title='申込書送付', body="""<!DOCTYPE html>
