@@ -5,6 +5,7 @@ select c.id
      , c.parking_position_id
      , get_process_percent(p.id) as percent		-- 完成度
      , c.contractor_id
+     , c.subscription_id
      , c.contract_date
      , c.start_date
      , c.end_date

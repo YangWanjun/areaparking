@@ -110,63 +110,63 @@
             <div class="modal-content">
                 <h4>仮契約登録</h4>
                 <div class="row">
-                    <form method="post" action="/api/temp-contractor/" id="new_temp_ontractor_form" class="col s12">
+                    <form method="post" action="/api/subscription/" id="new_subscription_form" class="col s12">
                         <div class="row">
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">call_split</i>
-                                {{ temp_contractor_form.category }}
-                                {{ temp_contractor_form.category.label_tag }}
+                                {{ subscription_form.category }}
+                                {{ subscription_form.category.label_tag }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">account_circle</i>
-                                {{ temp_contractor_form.name }}
-                                {{ temp_contractor_form.name.label_tag }}
+                                {{ subscription_form.name }}
+                                {{ subscription_form.name.label_tag }}
                             </div>
                             <div class="input-field col s6">
-                                {{ temp_contractor_form.kana }}
-                                {{ temp_contractor_form.kana.label_tag }}
+                                {{ subscription_form.kana }}
+                                {{ subscription_form.kana.label_tag }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">email</i>
-                                {{ temp_contractor_form.email }}
-                                {{ temp_contractor_form.email.label_tag }}
+                                {{ subscription_form.email }}
+                                {{ subscription_form.email.label_tag }}
                             </div>
                             <div class="input-field col s6">
-                                {{ temp_contractor_form.post_code }}
-                                {{ temp_contractor_form.post_code.label_tag }}
+                                {{ subscription_form.post_code }}
+                                {{ subscription_form.post_code.label_tag }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">add_location</i>
-                                {{ temp_contractor_form.address1 }}
-                                {{ temp_contractor_form.address1.label_tag }}
+                                {{ subscription_form.address1 }}
+                                {{ subscription_form.address1.label_tag }}
                             </div>
                             <div class="input-field col s6">
-                                {{ temp_contractor_form.address2 }}
-                                {{ temp_contractor_form.address2.label_tag }}
+                                {{ subscription_form.address2 }}
+                                {{ subscription_form.address2.label_tag }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">phone</i>
-                                {{ temp_contractor_form.tel }}
-                                {{ temp_contractor_form.tel.label_tag }}
+                                {{ subscription_form.tel }}
+                                {{ subscription_form.tel.label_tag }}
                             </div>
                             <div class="input-field col s6">
-                                {{ temp_contractor_form.fax }}
-                                {{ temp_contractor_form.fax.label_tag }}
+                                {{ subscription_form.fax }}
+                                {{ subscription_form.fax.label_tag }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">comment</i>
-                                {{ temp_contractor_form.comment }}
-                                {{ temp_contractor_form.comment.label_tag }}
+                                {{ subscription_form.comment }}
+                                {{ subscription_form.comment.label_tag }}
                             </div>
                         </div>
                     </form>
@@ -189,6 +189,7 @@
 <script type="text/javascript">
 $(document).one("turbolinks:load", function() {
     ebjs.material.popup_anchor();
+    ebjs.material.required_field();
 
     $('.modal').modal({
         dismissible: true, // Modal can be dismissed by clicking outside of the modal
@@ -206,7 +207,7 @@ $(document).one("turbolinks:load", function() {
         } // Callback for Modal close
     });
 
-    var form_obj = $("#new_temp_ontractor_form")
+    var form_obj = $("#new_subscription_form")
     form_obj.submit(function(){
         ebjs.utils.ajax_request(
             $(this).attr('action'),
@@ -215,7 +216,7 @@ $(document).one("turbolinks:load", function() {
         ).done(function(result){
             ebjs.utils.ajax_post(
                 '/api/temp-contract/',
-                {contractor: result.code, staff: {{ whiteboard_position.whiteboard.staff.pk }}, parking_lot: {{ whiteboard_position.whiteboard.pk }}, parking_position: {{ whiteboard_position.parking_position.pk }}}
+                {subscription: result.code, staff: {{ whiteboard_position.whiteboard.staff.pk }}, parking_lot: {{ whiteboard_position.whiteboard.pk }}, parking_position: {{ whiteboard_position.parking_position.pk }}}
             ).done(function(result2){
                 window.location = '/contract/temp_contract/' + result2.id + '/detail/';
                 $('#start_temp_contract').modal('close');
@@ -231,7 +232,7 @@ $(document).one("turbolinks:load", function() {
 });
 
 function save_temp_contractor(obj) {
-    var form_obj = $("#new_temp_ontractor_form")
+    var form_obj = $("#new_subscription_form")
     form_obj.submit();
 }
 </script>

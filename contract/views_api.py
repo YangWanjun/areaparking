@@ -8,9 +8,9 @@ from . import models, serializers
 from utils import constants
 
 
-class TempContractorViewSet(viewsets.ModelViewSet):
-    queryset = models.Contractor.temp_objects.public_all()
-    serializer_class = serializers.ContractorSerializer
+class SubscriptionViewSet(viewsets.ModelViewSet):
+    queryset = models.Subscription.objects.public_all()
+    serializer_class = serializers.SubscriptionSerializer
 
 
 class TempContractViewSet(viewsets.ModelViewSet):

@@ -32,6 +32,12 @@ class ContractorSerializer(serializers.ModelSerializer):
     #     return value
 
 
+class SubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Subscription
+        fields = '__all__'
+
+
 class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Contract

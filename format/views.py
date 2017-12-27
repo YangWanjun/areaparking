@@ -10,7 +10,7 @@ from . import biz, models
 from contract.models import Task, ContractorCar
 from master.models import TransmissionRoute
 from utils import constants, common
-from utils.app_base import get_unsigned_value, get_total_context
+from utils.app_base import get_unsigned_value, get_total_context, push_notification
 from utils.django_base import BaseView, BaseTemplateViewWithoutLogin
 
 logger = common.get_ap_logger()
@@ -363,9 +363,19 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
         })
         return context
 
+    def post(self, request, *args, **kwargs):
+        from django.contrib.auth.models import User
+        push_notification(User.objects.filter(username='admin'), '申込み完了', '申込みは完了しました。')
+        signature = kwargs.get('signature')
+        return redirect('format:user_subscription_step5', signature=signature)
+
 
 class UserSubscriptionStep5View(BaseUserSubscriptionView):
     template_name = 'format/user_subscription_step5.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserSubscriptionStep5View, self).get_context_data(**kwargs)
+        return context
 
 
 class SubscriptionConfirmView(BaseView):

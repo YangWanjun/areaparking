@@ -31,6 +31,12 @@ class ContractorForm(BaseForm):
     #     return cleaned_data
 
 
+class SubscriptionForm(BaseForm):
+    class Meta:
+        model = models.Subscription
+        fields = '__all__'
+
+
 class ContractForm(BaseForm):
     class Meta:
         model = models.Contract
@@ -39,7 +45,10 @@ class ContractForm(BaseForm):
     def __init__(self, *args, **kwargs):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance and self.instance.pk:
-            self.fields['contractor'].queryset = models.Contractor.objects.filter(pk=self.instance.contractor.pk)
+            if self.instance.contractor:
+                self.fields['contractor'].queryset = models.Contractor.objects.filter(pk=self.instance.contractor.pk)
+            else:
+                self.fields['subscription'].queryset = models.Subscription.objects.filter(pk=self.instance.subscription.pk)
             self.fields['parking_lot'].queryset = models.ParkingLot.objects.filter(pk=self.instance.parking_lot.pk)
             self.fields['parking_position'].queryset = models.ParkingPosition.objects.filter(
                 parking_lot=self.instance.parking_lot)

@@ -22,9 +22,10 @@ from utils.app_base import get_total_context, get_user_subscription_url, get_sig
 # Create your models here.
 class AbstractUser(BaseModel):
     code = models.AutoField(primary_key=True, verbose_name="契約者No.")
-    category = models.CharField(max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE, verbose_name="契約者分類")
+    category = models.CharField(blank=True, null=True, max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE,
+                                verbose_name="契約者分類")
     name = models.CharField(max_length=15, verbose_name="名前")
-    kana = models.CharField(max_length=15, blank=True, null=True, verbose_name="カナ")
+    kana = models.CharField(blank=True, null=True, max_length=15, verbose_name="カナ")
     post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="郵便番号",
                                  validators=(RegexValidator(regex=constants.REG_POST_CODE),))
     address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所１")
@@ -32,28 +33,28 @@ class AbstractUser(BaseModel):
     tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
     fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"ファックス")
     email = models.EmailField(blank=True, null=True, verbose_name="メールアドレス")
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+    comment = models.CharField(blank=True, null=True, max_length=255, verbose_name="備考")
     # 個人情報
     personal_phone = models.CharField(blank=True, null=True, max_length=15, verbose_name="携帯電話")
     personal_gender = models.CharField(max_length=1, blank=True, null=True, choices=constants.CHOICE_GENDER,
                                        verbose_name="性別")
     personal_birthday = models.DateField(blank=True, null=True, verbose_name="生年月日")
     # 法人情報
-    corporate_business_type = models.CharField(max_length=50, blank=True, null=True, verbose_name="業種／事業")
+    corporate_business_type = models.CharField(blank=True, null=True, max_length=50, verbose_name="業種／事業")
     corporate_web_site = models.URLField(blank=True, null=True, verbose_name="ホームページ")
-    corporate_president = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"代表者名")
-    corporate_staff_name = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"担当者名")
-    corporate_staff_kana = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"担当者カナ")
+    corporate_president = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"代表者名")
+    corporate_staff_name = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"担当者名")
+    corporate_staff_kana = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"担当者カナ")
     corporate_staff_email = models.EmailField(blank=True, null=True, verbose_name="担当者Email")
     corporate_staff_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者電話番号")
     corporate_staff_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者ファックス")
     corporate_staff_phone = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者携帯電話")
-    corporate_staff_department = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者所属")
-    corporate_staff_position = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者役職")
+    corporate_staff_department = models.CharField(blank=True, null=True, max_length=30, verbose_name="担当者所属")
+    corporate_staff_position = models.CharField(blank=True, null=True, max_length=30, verbose_name="担当者役職")
     corporate_capital = models.IntegerField(blank=True, null=True, verbose_name="資本金")
     corporate_turnover = models.IntegerField(blank=True, null=True, verbose_name="年収／年商")
     # 勤務先
-    workplace_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="勤務先名称")
+    workplace_name = models.CharField(blank=True, null=True, max_length=100, verbose_name="勤務先名称")
     workplace_post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name=u"勤務先郵便番号")
     workplace_address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"勤務先住所１")
     workplace_address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"勤務先住所２")
@@ -62,44 +63,42 @@ class AbstractUser(BaseModel):
     workplace_comment = models.CharField(blank=True, null=True, max_length=255, verbose_name=u"備考",
                                          help_text='勤務先のない方は、ご家族の勤務先と、その方のお名前・関係性をお知らせください。')
     # 連絡先
-    contact_name = models.CharField(max_length=15, blank=True, null=True, verbose_name="連絡先名称")
-    contact_kana = models.CharField(max_length=15, blank=True, null=True, verbose_name="連絡先カナ")
+    contact_name = models.CharField(blank=True, null=True, max_length=15, verbose_name="連絡先名称")
+    contact_kana = models.CharField(blank=True, null=True, max_length=15, verbose_name="連絡先カナ")
     contact_post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name=u"連絡先郵便番号")
     contact_address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"連絡先住所１")
     contact_address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"連絡先住所２")
     contact_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"連絡先電話番号")
     contact_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"連絡先ファックス")
-    contact_relation = models.CharField(max_length=20, blank=True, null=True, verbose_name="連絡先との間柄")
+    contact_relation = models.CharField(blank=True, null=True, max_length=20, verbose_name="連絡先との間柄")
     # 書類送付先
-    delivery_type = models.CharField(max_length=2, blank=True, null=True,
+    delivery_type = models.CharField(blank=True, null=True, max_length=2,
                                      choices=constants.CHOICE_PAPER_DELIVERY_TYPE, verbose_name="書類送付先区分")
     delivery_honorific = models.CharField(max_length=1, blank=True, null=True,
                                           choices=constants.CHOICE_HONORIFIC, verbose_name="宛名敬称")
-    delivery_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="送付先名称")
-    delivery_kana = models.CharField(max_length=30, blank=True, null=True, verbose_name="送付先カナ")
+    delivery_name = models.CharField(blank=True, null=True, max_length=30, verbose_name="送付先名称")
+    delivery_kana = models.CharField(blank=True, null=True, max_length=30, verbose_name="送付先カナ")
     delivery_post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name=u"送付先郵便番号")
     delivery_address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"送付先住所１")
     delivery_address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"送付先住所２")
     delivery_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"送付先電話番号")
     delivery_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"送付先ファックス")
     # 保証人
-    guarantor_name = models.CharField(max_length=15, blank=True, null=True, verbose_name="保証人名称")
-    guarantor_kana = models.CharField(max_length=15, blank=True, null=True, verbose_name="保証人カナ")
+    guarantor_name = models.CharField(blank=True, null=True, max_length=15, verbose_name="保証人名称")
+    guarantor_kana = models.CharField(blank=True, null=True, max_length=15, verbose_name="保証人カナ")
     guarantor_birthday = models.DateField(blank=True, null=True, verbose_name="保証人生年月日")
     guarantor_post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name=u"保証人郵便番号")
     guarantor_address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"保証人住所１")
     guarantor_address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"保証人住所２")
     guarantor_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"保証人電話番号")
     guarantor_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"保証人ファックス")
-    guarantor_relation = models.CharField(max_length=20, blank=True, null=True, verbose_name="保証人との間柄")
-    guarantor_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+    guarantor_relation = models.CharField(blank=True, null=True, max_length=20, verbose_name="保証人との間柄")
+    guarantor_comment = models.CharField(blank=True, null=True, max_length=255, verbose_name="備考")
     # 仮契約であるかどうかのステータス
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_CONTRACT_STATUS, editable=False,
                               verbose_name="ステータス")
 
     objects = PublicManager(is_deleted=False)
-    temp_objects = PublicManager(is_deleted=False, status='01')
-    real_objects = PublicManager(is_deleted=False, status='11')
 
     class Meta:
         abstract = True
@@ -108,26 +107,7 @@ class AbstractUser(BaseModel):
         return self.name
 
 
-class Contractor(AbstractUser):
-
-    class Meta:
-        db_table = 'ap_contractor'
-        ordering = ['name']
-        verbose_name = "契約者"
-        verbose_name_plural = "契約者一覧"
-
-
-class Subscription(AbstractUser):
-
-    class Meta:
-        db_table = 'ap_subscription'
-        ordering = ['name']
-        verbose_name = "ユーザー申込"
-        verbose_name_plural = "ユーザー申込一覧"
-
-
-class ContractorCar(BaseModel):
-    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+class AbstractCar(BaseModel):
     car_maker = models.CharField(max_length=50, blank=True, null=True, verbose_name="車メーカー")
     car_model = models.CharField(max_length=100, blank=True, null=True, verbose_name="車種")
     car_color = models.CharField(max_length=10, blank=True, null=True, verbose_name="色")
@@ -142,19 +122,54 @@ class ContractorCar(BaseModel):
     car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
 
     class Meta:
-        db_table = 'ap_contractor_car'
-        ordering = ['contractor', 'car_maker', 'car_model']
-        verbose_name = "保有車"
-        verbose_name_plural = "保有車一覧"
+        abstract = True
 
     def __str__(self):
         return self.car_model
 
 
+class Contractor(AbstractUser):
+    temp_objects = PublicManager(is_deleted=False, status='01')
+    real_objects = PublicManager(is_deleted=False, status='11')
+
+    class Meta:
+        db_table = 'ap_contractor'
+        ordering = ['name']
+        verbose_name = "契約者"
+        verbose_name_plural = "契約者一覧"
+
+
+class Subscription(AbstractUser, AbstractCar):
+    # 仮契約であるかどうかのステータス
+    status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_SUBSCRIPTION_STATUS, editable=False,
+                              verbose_name="ステータス")
+    created_date = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=u"作成日時")
+    updated_date = models.DateTimeField(auto_now=True, editable=False, verbose_name=u"更新日時")
+    is_deleted = models.BooleanField(default=False, editable=False, verbose_name=u"削除フラグ")
+    deleted_date = models.DateTimeField(blank=True, null=True, editable=False, verbose_name=u"削除年月日")
+
+    class Meta:
+        db_table = 'ap_subscription'
+        ordering = ['name']
+        verbose_name = "ユーザー申込"
+        verbose_name_plural = "ユーザー申込一覧"
+
+
+class ContractorCar(AbstractCar):
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+
+    class Meta:
+        db_table = 'ap_contractor_car'
+        ordering = ['contractor', 'car_maker', 'car_model']
+        verbose_name = "保有車"
+        verbose_name_plural = "保有車一覧"
+
+
 class Contract(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
-    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    contractor = models.ForeignKey(Contractor, blank=True, null=True, on_delete=models.PROTECT, verbose_name="契約者")
+    subscription = models.ForeignKey(Subscription, blank=True, null=True, on_delete=models.PROTECT, verbose_name="申込者")
     # 基本情報
     contract_date = models.DateField(blank=True, null=True, verbose_name="契約日")
     start_date = models.DateField(blank=True, null=True, verbose_name="契約開始日")
@@ -191,7 +206,11 @@ class Contract(BaseModel):
         verbose_name_plural = "契約情報一覧"
 
     def __str__(self):
-        return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
+        if self.contractor:
+            name = str(self.contractor)
+        else:
+            name = str(self.subscription)
+        return '%s（%s～%s）' % (name, self.start_date, self.end_date)
 
     def get_contract_end_date(self):
         """長期契約の場合の契約更新日を自動設置
@@ -361,6 +380,7 @@ class Task(BaseModel):
             context = Context(get_total_context(
                 parking_lot=self.process.content_object.parking_lot,
                 contractor=self.process.content_object.contractor,
+                subscription=self.process.content_object.subscription,
             ))
             context.update(get_user_subscription_url(self))
 
@@ -436,7 +456,9 @@ class TempContract(models.Model):
     contract = models.ForeignKey(Contract, on_delete=models.DO_NOTHING, verbose_name="契約情報")
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室番号")
-    contractor = models.ForeignKey(Contractor, on_delete=models.DO_NOTHING, verbose_name="契約者")
+    contractor = models.ForeignKey(Contractor, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="契約者")
+    subscription = models.ForeignKey(Subscription, blank=True, null=True, on_delete=models.DO_NOTHING,
+                                     verbose_name="申込者")
     percent = models.DecimalField(max_digits=4, decimal_places=1, editable=False, verbose_name="進捗")
     # 基本情報
     contract_date = models.DateField(blank=True, null=True, verbose_name="契約日")
@@ -463,8 +485,16 @@ class TempContract(models.Model):
         verbose_name = "仮契約情報"
         verbose_name_plural = "仮契約情報一覧"
 
+    @property
+    def name(self):
+        if self.contractor:
+            name = str(self.contractor)
+        else:
+            name = str(self.subscription)
+        return name
+
     def __str__(self):
-        return '%s（%s～%s）' % (str(self.contractor), self.start_date, self.end_date)
+        return '%s（%s～%s）' % (self.name, self.start_date, self.end_date)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

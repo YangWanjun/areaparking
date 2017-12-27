@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import os
 
+from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -203,6 +204,24 @@ class Config(BaseModel):
                 return default
         except ObjectDoesNotExist:
             Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_URL_TIMEOUT, value=24)
+            return default
+
+    @classmethod
+    def get_gcm_url(cls):
+        default = 'https://fcm.googleapis.com/fcm/send'
+        try:
+            return Config.objects.get(name=constants.CONFIG_GCM_URL).value
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_GCM_URL, value=default)
+            return default
+
+    @classmethod
+    def get_firebase_serverkey(cls):
+        default = ''
+        try:
+            return Config.objects.get(name=constants.CONFIG_FIREBASE_SERVERKEY).value
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_FIREBASE_SERVERKEY, value=default)
             return default
 
 
@@ -454,3 +473,20 @@ class MailCcList(BaseModel):
 
     def __str__(self):
         return self.email
+
+
+class PushNotification(BaseModel):
+    user = models.ForeignKey(User, verbose_name=u"ユーザー")
+    registration_id = models.CharField(max_length=1000, verbose_name=u"デバイスの登録ＩＤ")
+    key_auth = models.CharField(max_length=100)
+    key_p256dh = models.CharField(max_length=256)
+    title = models.CharField(blank=True, null=True, max_length=100)
+    message = models.CharField(blank=True, null=True, max_length=256)
+
+    class Meta:
+        db_table = 'ap_push_notification'
+        verbose_name = "通知デバイス"
+        verbose_name_plural = "通知デバイス一覧"
+
+    def __str__(self):
+        return self.registration_id

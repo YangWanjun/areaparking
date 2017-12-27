@@ -11,6 +11,7 @@ pycrypto==2.6.1
 pdfkit==0.6.1
 googlemaps==2.5.1
 GDAL=2.2.3
+requests==2.18.4
 ########## Windows上インストール時の注意事項 ##########
 # ■pycryptoインストール失敗の場合
 # ./areaparking/data/pycrypto-2.6.1-cp36-cp36m-win_amd64.whl をインストールしてください。

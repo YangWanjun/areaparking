@@ -1,19 +1,23 @@
 import datetime
+import json
+import requests
 from urllib.parse import urljoin
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.signing import TimestampSigner
 from django.urls import reverse
 
-from master.models import Company, Config, Payment
+from master.models import Company, Config, Payment, PushNotification
 
 
-def get_total_context(parking_lot=None, contractor=None):
+def get_total_context(parking_lot=None, contractor=None, subscription=None):
     context = get_company_context()
     if parking_lot:
         context.update(get_parking_lot_context(parking_lot))
     if contractor:
         context.update(get_contractor_context(contractor))
+    if subscription:
+        context.update(get_subscription_context(subscription))
 
     context.update({
         'current_date': datetime.date.today(),
@@ -80,6 +84,25 @@ def get_contractor_context(contractor):
         return dict()
 
 
+def get_subscription_context(subscription):
+    """テンプレートに出力する契約者の情報
+
+    :param contractor:
+    :return:
+    """
+    if subscription:
+        return {
+            'user_name': subscription.name,
+            'user_tel': subscription.tel,
+            'user_fax': subscription.fax,
+            'user_email': subscription.email,
+            'user_address1': subscription.address1,
+            'user_address2': subscription.address2,
+        }
+    else:
+        return dict()
+
+
 def get_user_subscription_url(task):
     url = reverse('format:user_subscription_step1', kwargs={'signature': task.get_signed_pk()})
     domain_name = Config.get_domain_name()
@@ -119,3 +142,42 @@ def get_unsigned_value(signature, salt=None):
     signer = TimestampSigner(salt=salt)
     timeout = Config.get_url_timeout()
     return signer.unsign(signature, max_age=datetime.timedelta(seconds=timeout))
+
+
+def push_notification(users, title, message, gcm_url=None):
+    """プッシュ通知を各端末に送信する。
+
+    :param users:
+    :param title:
+    :param message:
+    :param gcm_url:
+    :return:
+    """
+    if not gcm_url:
+        gcm_url = Config.get_gcm_url()
+
+    queryset = PushNotification.objects.public_filter(user__in=users)
+    queryset.update(title=title, message=message)
+    for notification in queryset:
+        headers = {
+            'content-type': 'application/json',
+            'Authorization': "key=" + Config.get_firebase_serverkey(),
+            'Encryption': 'salt=' + notification.key_auth,
+            'Crypto-Key': 'dh=' + notification.key_p256dh,
+            'Content-Encoding': 'aesgcm'
+        }
+        # 渡すデータは適当です。
+        # dictのkeyはAndroidのextrasのkeyと合わせましょう
+        params = {
+            'to': notification.registration_id,
+            "data": {
+                "title": u"メッセージタイトル",
+                "body": u"メッセージ本文"
+            },
+            "notification": {
+                "title": u"メッセージタイトル",
+                "body": u"メッセージ本文"
+            },
+        }
+
+        requests.post(gcm_url, data=json.dumps(params), headers=headers)

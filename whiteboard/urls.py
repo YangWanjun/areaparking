@@ -16,4 +16,7 @@ urlpatterns = [
         name='whiteboard_position_detail'),
     # url('^waiting/', include(views.WaitingListViewSet().urls)),
     url('^map.html$', views.WhiteBoardMapView.as_view(), name='whiteboard_map'),
+
+    url('^update_subscription$', views.UpdateSubscription.as_view(), name='update_subscription'),
+    url(r'notification_data/\.json', views.GetNotificationData.as_view()),
 ]

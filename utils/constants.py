@@ -30,6 +30,8 @@ CONFIG_CAR_WIDTH_ADJUST = 'car_width_adjust'
 CONFIG_CAR_HEIGHT_ADJUST = 'car_height_adjust'
 CONFIG_CAR_WEIGHT_ADJUST = 'car_weight_adjust'
 CONFIG_URL_TIMEOUT = 'url_timeout'
+CONFIG_GCM_URL = 'gcm_url'
+CONFIG_FIREBASE_SERVERKEY = 'firebase_serverkey'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
@@ -156,6 +158,13 @@ CHOICE_CONTRACT_STATUS = (
     ('01', '仮契約'),
     ('11', '本契約'),
     ('21', '破棄'),
+)
+CHOICE_SUBSCRIPTION_STATUS = (
+    ('01', '新規申込'),
+    ('02', '受付中'),
+    ('03', '契約手続中'),
+    ('11', '成約'),
+    ('12', '破棄'),
 )
 
 ERROR_SETTING_NO_SUBSCRIPTION = "申込書の出力書式が設定されていません、管理サイトで「出力書式」->「申込書一覧」にて設定してください。"

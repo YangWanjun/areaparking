@@ -34,10 +34,9 @@ class TempContractListView(BaseListModelView):
 
 class TempContractVewSet(BaseModelViewSet):
     model = models.TempContract
-    list_display = ('contractor', 'parking_lot', 'parking_position', 'percent', 'start_date', 'end_date')
+    list_display = ('name', 'parking_lot', 'parking_position', 'percent', 'start_date', 'end_date')
     detail_view_class = TempContractDetailView
     list_view_class = TempContractListView
-
 
     # def has_change_permission(self, request, obj=None):
     #     return False

@@ -18,6 +18,11 @@ class ContractPaymentInline(admin.TabularInline):
     extra = 0
 
 
+@admin.register(models.Subscription)
+class SubscriptionAdmin(BaseAdmin):
+    icon = '<i class="material-icons">nature_people</i>'
+
+
 @admin.register(models.Contractor)
 class ContractorAdmin(BaseAdmin):
     icon = '<i class="material-icons">nature_people</i>'

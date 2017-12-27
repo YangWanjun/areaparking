@@ -1,0 +1,14 @@
+{
+  "name": "eb_sales",
+  "short_name": "sales",
+  "start_url": "http://localhost:8000/",
+  "display": "standalone",
+  "gcm_sender_id": "896469911322",
+  "gcm_user_visible_only": true,
+  "permissions": [
+    "gcm",
+    "storage",
+    "pushMessaging",
+    "notifications"
+  ]
+}

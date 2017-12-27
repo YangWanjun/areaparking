@@ -1,13 +1,16 @@
 import sys
+import json
 
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from material.frontend.views.viewset import ModelViewSet, ListModelView, DetailModelView
 
-from contract.forms import ContractorForm
+from contract.forms import SubscriptionForm
 from utils import errors
-from utils.django_base import BaseTemplateView, BaseView
-from master.models import Config
+from utils.django_base import BaseTemplateView, BaseView, BaseViewWithoutLogin
+from master.models import Config, PushNotification
 from . import models
 
 
@@ -101,10 +104,10 @@ class WhiteBoardPositionDetailView(BaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super(WhiteBoardPositionDetailView, self).get_context_data(**kwargs)
         whiteboard_position = get_object_or_404(models.WhiteBoardPosition, pk=kwargs.get('pk'))
-        contractor_form = ContractorForm()
+        subscription_form = SubscriptionForm()
         context.update({
             'whiteboard_position': whiteboard_position,
-            'temp_contractor_form': contractor_form,
+            'subscription_form': subscription_form,
         })
         return context
 
@@ -187,6 +190,51 @@ class WhiteBoardMapView(BaseTemplateView):
             'circle_radius': Config.get_circle_radius(),
         })
         return context
+
+
+class UpdateSubscription(BaseView):
+
+    def post(self, request, *args, **kwargs):
+        result = {}
+        subscription = request.POST.get('subscription', None)
+        if subscription:
+            subscription = json.loads(subscription)
+            endpoint = subscription.get('endpoint')
+            registration_id = endpoint.split('/')[-1]
+            if PushNotification.objects.filter(registration_id=registration_id).count() == 0:
+                notification = PushNotification(
+                    user=request.user,
+                    registration_id=registration_id,
+                    key_auth=subscription.get('keys').get('auth'),
+                    key_p256dh=subscription.get('keys').get('p256dh')
+                )
+                notification.save()
+            result['error'] = 0
+        else:
+            result['error'] = 1
+        return JsonResponse(result)
+
+
+class GetNotificationData(BaseViewWithoutLogin):
+
+    def get(self, request, *args, **kwargs):
+        registration_id = request.GET.get('registration_id', None)
+        data = {}
+        if registration_id:
+            try:
+                notification = PushNotification.objects.get(registration_id=registration_id)
+                title = notification.title
+                message = notification.message
+            except (ObjectDoesNotExist, MultipleObjectsReturned):
+                title = ''
+                message = ''
+            data = {
+                'title': title,
+                'message': message,
+            }
+        else:
+            data['error'] = 1
+        return JsonResponse(data)
 
 
 def handler500(request):

@@ -35,7 +35,7 @@ from whiteboard import views_api as whiteboard_api
 
 
 router = routers.DefaultRouter()
-router.register(r'temp-contractor', contract_api.TempContractorViewSet)
+router.register(r'subscription', contract_api.SubscriptionViewSet)
 router.register(r'temp-contract', contract_api.TempContractViewSet)
 
 router.register(r'parking-lot', parking_lot_api.ParkingLotViewSet)
