@@ -9,7 +9,7 @@
         <div class="center promo promo-example">
             <i class="material-icons">group</i>
             <p class="promo-caption center">
-                <input type="radio" name="contractor_category" class="with-gap" required id="contractor_corporate" value="corporate">
+                <input type="radio" name="contractor_category" class="with-gap" required id="contractor_corporate" value="corporate" {% if user_subscription.contractor_category == 'corporate' %}checked{% endif %}>
                 <label for="contractor_corporate" style="font-size: 21px;color:inherit;">法人</label>
             </p>
             <p class="light center">法人申込の方は、こちらにご選択下さい.</p>
@@ -18,9 +18,9 @@
     <div class="col s6">
         <!-- Promo Content 2 goes here -->
         <div class="center promo promo-example">
-            <i class="material-icons">settings</i>
+            <i class="material-icons">person</i>
             <p class="promo-caption center">
-                <input type="radio" name="contractor_category" class="with-gap" required id="contractor_personal" value="personal">
+                <input type="radio" name="contractor_category" class="with-gap" required id="contractor_personal" value="personal" {% if user_subscription.contractor_category == 'personal' %}checked{% endif %}>
                 <label for="contractor_personal" style="font-size: 21px;color:inherit;">個人</label>
             </p>
             <p class="light center">個人申込の方は、こちらにご選択下さい.</p>

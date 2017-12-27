@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 
 from . import biz, models
 from contract.models import Task, ContractorCar
+from master.models import TransmissionRoute
 from utils import constants, common
 from utils.app_base import get_unsigned_value, get_total_context
 from utils.django_base import BaseView, BaseTemplateViewWithoutLogin
@@ -27,7 +28,7 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
         # if 'steps' in request.session:
         #     steps = request.session['steps']
         # else:
-        steps = self.get_steps()
+        steps = self.get_steps(signature)
         self.request.session['steps'] = steps
         context.update({
             'task': task,
@@ -44,8 +45,21 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
         except signing.BadSignature:
             return redirect('format:url_timeout')
 
-    def get_steps(self):
+    def get_steps(self, signature=None):
         pass
+
+
+class BaseUserSubscriptionView(BaseUserOperationView):
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseUserSubscriptionView, self).get_context_data(**kwargs)
+        context.update({
+            'user_subscription': self.get_user_subscription(),
+        })
+        return context
+
+    def get_steps(self, signature=None):
+        return biz.get_user_subscription_steps(signature)
 
     def get_user_subscription(self):
         """ユーザー申込み情報を取得する。
@@ -56,7 +70,11 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
             user_subscription = json.loads(self.request.session['user_subscription'])
             return user_subscription
         else:
-            return None
+            user_subscription = {
+                'car': dict(),
+                'contract': dict(),
+            }
+            return user_subscription
 
     def set_user_subscription(self, user_subscription):
         """ユーザー申込み情報をセッションに保存する
@@ -65,11 +83,6 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
         :return:
         """
         self.request.session['user_subscription'] = json.dumps(user_subscription, default=common.date_handler)
-
-
-class BaseUserSubscriptionView(BaseUserOperationView):
-    def get_steps(self):
-        return biz.get_user_subscription_steps()
 
 
 class UserSubscriptionStep1View(BaseUserSubscriptionView):
@@ -82,6 +95,7 @@ class UserSubscriptionStep1View(BaseUserSubscriptionView):
         contract = task.process.content_object
         parking_lot = contract.parking_lot
         parking_position = contract.parking_position
+        transmission_routes = TransmissionRoute.objects.public_all()
         current_step = steps[0]
         context.update({
             'title': current_step.get('name'),
@@ -89,6 +103,7 @@ class UserSubscriptionStep1View(BaseUserSubscriptionView):
             'parking_lot': parking_lot,
             'parking_position': parking_position,
             'current_step': current_step,
+            'transmission_routes': transmission_routes,
         })
         return context
 
@@ -98,14 +113,9 @@ class UserSubscriptionStep1View(BaseUserSubscriptionView):
         })
         context = self.get_context_data(**kwargs)
         errors = dict()
-        car = dict()
-        contract = dict()
-        # 車庫証明
-        rdo_receipt = request.POST.get('rdo_receipt')
-        if rdo_receipt == 'yes':
-            contract['receipt_payment'] = True
-        else:
-            contract['receipt_payment'] = False
+        user_subscription = self.get_user_subscription()
+        car = user_subscription.get('car')
+        contract = user_subscription.get('contract')
         # 駐車する車
         txt_car_maker = request.POST.get('txt_car_maker') or None
         txt_car_model = request.POST.get('txt_car_model') or None
@@ -121,34 +131,38 @@ class UserSubscriptionStep1View(BaseUserSubscriptionView):
         car['car_width'] = txt_car_width
         car['car_height'] = txt_car_height
         car['car_weight'] = txt_car_weight
+        # 任意保険の加入
+        rdo_insurance = request.POST.get('rdo_insurance')
+        txt_insurance_limit_amount = request.POST.get('txt_insurance_limit_amount')
+        txt_insurance_expiration = request.POST.get('txt_insurance_expiration')
+        car['rdo_insurance'] = rdo_insurance
+        car['insurance_limit_amount'] = txt_insurance_limit_amount
+        car['insurance_expiration'] = txt_insurance_expiration
         # 希望契約開始日
         txt_contract_start_date = request.POST.get('txt_contract_start_date') or None
-        if txt_contract_start_date:
-            try:
-                contract['start_date'] = datetime.datetime.strptime(txt_contract_start_date, '%Y-%m-%d').date()
-            except Exception as ex:
-                errors.update({
-                    'txt_contract_start_date': ['不正の日付が入力されています。']
-                })
-        else:
-            errors.update({
-                'txt_contract_start_date': ['希望契約開始日は必須項目です。']
-            })
+        contract['start_date'] = txt_contract_start_date
         # 希望契約期間
         rdo_contract_period = request.POST.get('rdo_contract_period')
-        if rdo_contract_period:
-            contract['contract_period'] = rdo_contract_period
-        else:
-            errors.update({
-                'txt_contract_start_date': ['希望契約期間は必須項目です。']
-            })
+        txt_contract_end_month = request.POST.get('txt_contract_end_month')
+        contract['contract_period'] = rdo_contract_period
+        contract['contract_end_month'] = txt_contract_end_month
+        # 車庫証明
+        rdo_receipt = request.POST.get('rdo_receipt')
+        contract['rdo_receipt'] = rdo_receipt
+        # 順番待ち
+        rdo_waiting = request.POST.get('rdo_waiting')
+        contract['rdo_waiting'] = rdo_waiting
+        # アンケート
+        user_subscription['transmission_routes'] = transmission_routes = []
+        for route in context.get('transmission_routes'):
+            name = 'chk_route_%s' % route.pk
+            if request.POST.get(name) == 'on':
+                transmission_routes.append(name)
+        txt_route_other = request.POST.get('txt_route_other')
+        user_subscription['transmission_other'] = txt_route_other
 
         if not errors:
             # ユーザーが記入した情報を一時的にセッションに保存
-            user_subscription = {
-                'car': car,
-                'contract': contract,
-            }
             self.set_user_subscription(user_subscription)
             signature = context.get('signature')
             current_step = context.get('current_step')
@@ -222,27 +236,35 @@ class UserSubscriptionStep3View(BaseUserSubscriptionView):
             txt_personal_address1 = request.POST.get('txt_personal_address1') or None
             txt_personal_address2 = request.POST.get('txt_personal_address2') or None
             txt_personal_tel = request.POST.get('txt_personal_tel') or None
+            txt_personal_phone = request.POST.get('txt_personal_phone') or None
             txt_personal_email = request.POST.get('txt_personal_email') or None
             contractor['kana'] = txt_personal_kana
             contractor['name'] = txt_personal_name
             contractor['personal_birthday'] = txt_personal_birthday
-            if txt_personal_post1 and txt_personal_post2:
-                contractor['post_code'] = '%s-%s' % (txt_personal_post1, txt_personal_post2)
+            contractor['post_code1'] = txt_personal_post1
+            contractor['post_code2'] = txt_personal_post2
             contractor['address1'] = txt_personal_address1
             contractor['address2'] = txt_personal_address2
             contractor['tel'] = txt_personal_tel
+            contractor['personal_phone'] = txt_personal_phone
             contractor['email'] = txt_personal_email
             # 個人（勤務先）
             txt_workplace_name = request.POST.get('txt_workplace_name') or None
+            txt_workplace_post1 = request.POST.get('txt_workplace_post1') or None
+            txt_workplace_post2 = request.POST.get('txt_workplace_post2') or None
             txt_workplace_address1 = request.POST.get('txt_workplace_address1') or None
             txt_workplace_address2 = request.POST.get('txt_workplace_address2') or None
             txt_workplace_tel = request.POST.get('txt_workplace_tel') or None
             txt_workplace_fax = request.POST.get('txt_workplace_fax') or None
+            txt_workplace_comment = request.POST.get('txt_workplace_comment') or None
             contractor['workplace_name'] = txt_workplace_name
+            contractor['workplace_post_code1'] = txt_workplace_post1
+            contractor['workplace_post_code2'] = txt_workplace_post2
             contractor['workplace_address1'] = txt_workplace_address1
             contractor['workplace_address2'] = txt_workplace_address2
             contractor['workplace_tel'] = txt_workplace_tel
             contractor['workplace_fax'] = txt_workplace_fax
+            contractor['workplace_comment'] = txt_workplace_comment
             # 個人（緊急連絡先）
             txt_personal_contact_tel = request.POST.get('txt_personal_contact_tel') or None
             txt_personal_contact_name = request.POST.get('txt_personal_contact_name') or None
@@ -266,8 +288,8 @@ class UserSubscriptionStep3View(BaseUserSubscriptionView):
             contractor['kana'] = txt_corporate_kana
             contractor['name'] = txt_corporate_name
             contractor['corporate_president'] = txt_corporate_president
-            if txt_corporate_post1 and txt_corporate_post2:
-                contractor['post_code'] = '%s-%s' % (txt_corporate_post1, txt_corporate_post2)
+            contractor['post_code1'] = txt_corporate_post1
+            contractor['post_code2'] = txt_corporate_post2
             contractor['address1'] = txt_corporate_address1
             contractor['address2'] = txt_corporate_address2
             contractor['tel'] = txt_corporate_tel
@@ -282,9 +304,9 @@ class UserSubscriptionStep3View(BaseUserSubscriptionView):
             txt_corporate_staff_phone = request.POST.get('txt_corporate_staff_phone') or None
             contractor['corporate_staff_kana'] = txt_corporate_staff_kana
             contractor['corporate_staff_name'] = txt_corporate_staff_name
-            contractor['email'] = txt_corporate_staff_email
-            contractor['tel'] = txt_corporate_staff_tel
-            contractor['fax'] = txt_corporate_staff_fax
+            contractor['corporate_staff_email'] = txt_corporate_staff_email
+            contractor['corporate_staff_tel'] = txt_corporate_staff_tel
+            contractor['corporate_staff_fax'] = txt_corporate_staff_fax
             contractor['corporate_staff_phone'] = txt_corporate_staff_phone
             # 法人（緊急連絡先）
             txt_corporate_contact_tel = request.POST.get('txt_corporate_contact_tel') or None
@@ -303,7 +325,8 @@ class UserSubscriptionStep3View(BaseUserSubscriptionView):
             contractor['corporate_user_kana'] = txt_corporate_user_kana
             contractor['corporate_user_name'] = txt_corporate_user_name
             contractor['corporate_user_tel'] = txt_corporate_user_tel
-            contractor['corporate_user_post_code'] = '%s-%s' % (txt_corporate_user_post1, txt_corporate_user_post2)
+            contractor['corporate_user_post_code1'] = txt_corporate_user_post1
+            contractor['corporate_user_post_code2'] = txt_corporate_user_post2
             contractor['corporate_user_address1'] = txt_corporate_user_address1
         if not errors:
             # ユーザーが記入した情報を一時的にセッションに保存
@@ -320,6 +343,7 @@ class UserSubscriptionStep3View(BaseUserSubscriptionView):
             context.update(errors)
             return self.render_to_response(context)
 
+
 class UserSubscriptionStep4View(BaseUserSubscriptionView):
     template_name = 'format/user_subscription_step4.html'
 
@@ -330,16 +354,18 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
         contract = task.process.content_object
         parking_lot = contract.parking_lot
         parking_position = contract.parking_position
-        user_subscription = self.get_user_subscription()
         current_step = steps[3]
         context.update({
             'title': current_step.get('name'),
             'current_step': current_step,
-            'user_subscription': user_subscription,
             'parking_lot': parking_lot,
             'parking_position': parking_position,
         })
         return context
+
+
+class UserSubscriptionStep5View(BaseUserSubscriptionView):
+    template_name = 'format/user_subscription_step5.html'
 
 
 class SubscriptionConfirmView(BaseView):

@@ -20,7 +20,7 @@ from utils.app_base import get_total_context, get_user_subscription_url, get_sig
 
 
 # Create your models here.
-class Contractor(BaseModel):
+class AbstractUser(BaseModel):
     code = models.AutoField(primary_key=True, verbose_name="契約者No.")
     category = models.CharField(max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE, verbose_name="契約者分類")
     name = models.CharField(max_length=15, verbose_name="名前")
@@ -34,6 +34,7 @@ class Contractor(BaseModel):
     email = models.EmailField(blank=True, null=True, verbose_name="メールアドレス")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
     # 個人情報
+    personal_phone = models.CharField(blank=True, null=True, max_length=15, verbose_name="携帯電話")
     personal_gender = models.CharField(max_length=1, blank=True, null=True, choices=constants.CHOICE_GENDER,
                                        verbose_name="性別")
     personal_birthday = models.DateField(blank=True, null=True, verbose_name="生年月日")
@@ -43,9 +44,9 @@ class Contractor(BaseModel):
     corporate_president = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"代表者名")
     corporate_staff_name = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"担当者名")
     corporate_staff_kana = models.CharField(max_length=30, blank=True, null=True, verbose_name=u"担当者カナ")
-    # corporate_staff_email = models.EmailField(blank=True, null=True, verbose_name="担当者Email")
-    # corporate_staff_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者電話番号")
-    # corporate_staff_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者ファックス")
+    corporate_staff_email = models.EmailField(blank=True, null=True, verbose_name="担当者Email")
+    corporate_staff_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者電話番号")
+    corporate_staff_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者ファックス")
     corporate_staff_phone = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"担当者携帯電話")
     corporate_staff_department = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者所属")
     corporate_staff_position = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者役職")
@@ -58,6 +59,8 @@ class Contractor(BaseModel):
     workplace_address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"勤務先住所２")
     workplace_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"勤務先電話番号")
     workplace_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"勤務先ファックス")
+    workplace_comment = models.CharField(blank=True, null=True, max_length=255, verbose_name=u"備考",
+                                         help_text='勤務先のない方は、ご家族の勤務先と、その方のお名前・関係性をお知らせください。')
     # 連絡先
     contact_name = models.CharField(max_length=15, blank=True, null=True, verbose_name="連絡先名称")
     contact_kana = models.CharField(max_length=15, blank=True, null=True, verbose_name="連絡先カナ")
@@ -99,13 +102,28 @@ class Contractor(BaseModel):
     real_objects = PublicManager(is_deleted=False, status='11')
 
     class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+
+class Contractor(AbstractUser):
+
+    class Meta:
         db_table = 'ap_contractor'
         ordering = ['name']
         verbose_name = "契約者"
         verbose_name_plural = "契約者一覧"
 
-    def __str__(self):
-        return self.name
+
+class Subscription(AbstractUser):
+
+    class Meta:
+        db_table = 'ap_subscription'
+        ordering = ['name']
+        verbose_name = "ユーザー申込"
+        verbose_name_plural = "ユーザー申込一覧"
 
 
 class ContractorCar(BaseModel):

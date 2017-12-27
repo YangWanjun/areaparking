@@ -6,14 +6,16 @@ from . import views
 
 urlpatterns = [
     url('^$', generic.View.as_view(), name="index"),
-    url('^user_subscription/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep1View.as_view(),
-        name="user_subscription"),
+    url('^user_subscription_step1/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep1View.as_view(),
+        name="user_subscription_step1"),
     url('^user_subscription_step2/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep2View.as_view(),
         name="user_subscription_step2"),
     url('^user_subscription_step3/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep3View.as_view(),
         name="user_subscription_step3"),
     url('^user_subscription_step4/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep4View.as_view(),
         name="user_subscription_step4"),
+    url('^user_subscription_step5/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep5View.as_view(),
+        name="user_subscription_step5"),
     url('^subscription_confirm/(?P<task_id>\d+)/(?P<report_id>\d+)/$',
         views.SubscriptionConfirmView.as_view(), name="report_subscription_confirm"),
     url('^subscription/(?P<task_id>\d+)/(?P<report_id>\d+)/$',

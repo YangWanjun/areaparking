@@ -61,47 +61,47 @@
     <table class="step-info">
         <tr>
             <th class="form-field"><label for="txt_car_maker">メーカー<span class="new badge red" data-badge-caption="必須"></span></label></th>
-            <td class="form-field"><input type="text" id="txt_car_maker" name="txt_car_maker" required placeholder="例）トヨタ" value="トヨタ"/></td>
+            <td class="form-field"><input type="text" id="txt_car_maker" name="txt_car_maker" required placeholder="例）トヨタ" value="{{ user_subscription.car.car_maker|default:'' }}"/></td>
         </tr>
         <tr>
             <th class="form-field"><label for="txt_car_model">車種<span class="new badge red" data-badge-caption="必須"></span></label></th>
-            <td class="form-field"><input type="text" id="txt_car_model" name="txt_car_model" required placeholder="例）プリウス" value="プリウス"/></td>
+            <td class="form-field"><input type="text" id="txt_car_model" name="txt_car_model" required placeholder="例）プリウス" value="{{ user_subscription.car.car_model|default:'' }}"/></td>
         </tr>
         <tr>
             <th class="form-field"><label for="txt_no_plate">車両登録番号<span class="new badge red" data-badge-caption="必須"></span><br/>(ﾅﾝﾊﾞｰﾌﾟﾚｰﾄ)</label></th>
-            <td class="form-field"><input type="text" id="txt_no_plate" name="txt_no_plate" required placeholder="例）練馬 502 ワ 1234" value="1234"/></td>
+            <td class="form-field"><input type="text" id="txt_no_plate" name="txt_no_plate" required placeholder="例）練馬 502 ワ 1234" value="{{ user_subscription.car.car_no_plate|default:'' }}"/></td>
         </tr>
         <tr>
             <th class="form-field">車体の大きさ<span class="new badge red" data-badge-caption="必須"></span></th>
             <td class="form-field">
                 <label for="txt_car_length" style="margin-right: 15px;">全長</label>
-                <input type="text" id="txt_car_length" name="txt_car_length" required placeholder="例）5000" style="width: 50%;" value="5000" />mm
+                <input type="text" id="txt_car_length" name="txt_car_length" required placeholder="例）5000" style="width: 50%;" value="{{ user_subscription.car.car_length|default:'' }}" />mm
                 <br/>
                 <label for="txt_car_width" style="margin-right: 15px;">全幅</label>
-                <input type="text" id="txt_car_width" name="txt_car_width" required placeholder="例）1750" style="width: 50%;" value="1750" />mm
+                <input type="text" id="txt_car_width" name="txt_car_width" required placeholder="例）1750" style="width: 50%;" value="{{ user_subscription.car.car_width|default:'' }}" />mm
                 <br/>
                 <label for="txt_car_height" style="margin-right: 15px;">全高</label>
-                <input type="text" id="txt_car_height" name="txt_car_height" required placeholder="例）1600" style="width: 50%;" value="1600" />mm
+                <input type="text" id="txt_car_height" name="txt_car_height" required placeholder="例）1600" style="width: 50%;" value="{{ user_subscription.car.car_height|default:'' }}" />mm
                 <br/>
                 <label for="txt_car_weight" style="margin-right: 15px;">重量</label>
-                <input type="text" id="txt_car_weight" name="txt_car_weight" required placeholder="例）1600" style="width: 50%;" value="1600" />kg
+                <input type="text" id="txt_car_weight" name="txt_car_weight" required placeholder="例）1600" style="width: 50%;" value="{{ user_subscription.car.car_weight|default:'' }}" />kg
             </td>
         </tr>
         <tr>
             <th class="form-field"><label for="txt_contract_start_date" data-error="wrong" data-success="right" >希望契約開始日<span class="new badge red" data-badge-caption="必須"></span></label></th>
-            <td class="form-field"><input type="text" class="datepicker validate" id="txt_contract_start_date" name="txt_contract_start_date" required placeholder="例）2018-01-01"/></td>
+            <td class="form-field"><input type="text" class="datepicker validate" id="txt_contract_start_date" name="txt_contract_start_date" required placeholder="例）2018-01-01" value="{{ user_subscription.contract.start_date|default:'' }}"/></td>
         </tr>
         <tr>
             <th class="form-field">希望契約期間<span class="new badge red" data-badge-caption="必須"></span></th>
             <td class="form-field">
                 <p>
-                    <input name="rdo_contract_period" type="radio" id="id_contract_period_long" value="long" required />
+                    <input name="rdo_contract_period" type="radio" id="id_contract_period_long" value="long" required {% if user_subscription.contract.contract_period == 'long' %}checked{% endif %}/>
                     <label for="id_contract_period_long">１年間（その後自動更新）</label>
                 </p>
                 <p>
-                    <input name="rdo_contract_period" type="radio" id="id_contract_period_short" value="short" required />
+                    <input name="rdo_contract_period" type="radio" id="id_contract_period_short" value="short" required {% if user_subscription.contract.contract_period == 'short' %}checked{% endif %}/>
                     <label for="id_contract_period_short">１・２ヶ月契約</label>
-                    （<input type="text" id="txt_contract_end_month" name="txt_contract_end_month" maxlength="2" style="width: 30px; height: 20px;text-align: right;padding-right:5px;" /><label for="txt_contract_end_month">月末日まで</label>）
+                    （<input type="text" id="txt_contract_end_month" name="txt_contract_end_month" maxlength="2" value="{{ user_subscription.contract.contract_end_month|default:'' }}" {% if user_subscription.contract.contract_period == 'short' %}required{% endif %} style="width: 30px; height: 20px;text-align: right;padding-right:5px;" /><label for="txt_contract_end_month">月末日まで</label>）
                     ※更新できませんのでご注意ください
                 </p>
             </td>
@@ -110,37 +110,73 @@
             <th class="form-field"><label for="txt_contract_start_date">任意保険の加入<span class="new badge red" data-badge-caption="必須"></span><br/>(任意保険の加入必須)</label></th>
             <td class="form-field">
                 <p>
-                    <input name="rdo_insurance" type="radio" id="id_insurance_limit_with" value="within" required />
+                    <input name="rdo_insurance" type="radio" id="id_insurance_limit_with" value="within" required {% if user_subscription.car.rdo_insurance == 'within' %}checked{% endif %}/>
                     <label for="id_insurance_limit_with">制限あり</label>
-                    (<input type="text" id="txt_insurance_limit_amount" name="txt_insurance_limit_amount" maxlength="10" style="width: 100px; height: 20px;text-align: right;padding-right:5px;" /><label for="txt_insurance_limit_amount">万円まで</label>)
+                    (<input type="text" id="txt_insurance_limit_amount" name="txt_insurance_limit_amount" maxlength="10" value="{{ user_subscription.car.insurance_limit_amount|default:'' }}" {% if user_subscription.car.rdo_insurance == 'within' %}required{% endif %} style="width: 100px; height: 20px;text-align: right;padding-right:5px;" /><label for="txt_insurance_limit_amount">万円まで</label>)
                 </p>
                 <p>
-                    <input name="rdo_insurance" type="radio" id="id_insurance_limit_without" value="without" required />
+                    <input name="rdo_insurance" type="radio" id="id_insurance_limit_without" value="without" required {% if user_subscription.car.rdo_insurance == 'without' %}checked{% endif %}/>
                     <label for="id_insurance_limit_without">無制限</label>
                 </p>
                 <p>
-                    <input name="rdo_insurance" type="radio" id="id_insurance_plans" value="plans" required />
+                    <input name="rdo_insurance" type="radio" id="id_insurance_plans" value="plans" required {% if user_subscription.car.rdo_insurance == 'plans' %}checked{% endif %}/>
                     <label for="id_insurance_plans">加入予定</label>
                 </p>
                 <p>
                     <label for="id_insurance_expiration">保険の有効期限</label>
-                    <input type="text" class="datepicker" id="id_insurance_expiration" name="txt_insurance_expiration" required placeholder="例）2020-01-01" style="width: 50%; height: 30px;"/>
+                    <input type="text" class="datepicker" id="id_insurance_expiration" name="txt_insurance_expiration" required placeholder="例）2020-01-01" value="{{ user_subscription.car.insurance_expiration|default:'' }}" style="width: 50%; height: 30px;"/>
                 </p>
                 <span class="red-text">※車検証、任意保険証書をご用意のうえ、ご記入ください。</span>
             </td>
         </tr>
         <tr>
-            <th class="form-field">保管証発行-車庫証明<span class="new badge red" data-badge-caption="必須"></span>に必要な書類</th>
+            <th class="form-field">保管証発行-車庫証明<span class="new badge red" data-badge-caption="必須"></span><br/>に必要な書類</th>
             <td class="form-field">
                 <p>
-                    <input name="rdo_receipt" type="radio" id="rdo_receipt_yes" value="yes" required />
+                    <input name="rdo_receipt" type="radio" id="rdo_receipt_yes" value="yes" required {% if user_subscription.contract.rdo_receipt == 'yes' %}checked{% endif %}/>
                     <label for="rdo_receipt_yes">必要</label>
                     （発行手数料：消費{% if receipt_without_consumption %}税別{% else %}税込{% endif %}{{ receipt_amount|intcomma }}円）
                 </p>
                 <p>
-                    <input name="rdo_receipt" type="radio" id="rdo_receipt_no" value="no" required />
+                    <input name="rdo_receipt" type="radio" id="rdo_receipt_no" value="no" required {% if user_subscription.contract.rdo_receipt == 'no' %}checked{% endif %}/>
                     <label for="rdo_receipt_no">不要</label>
                 </p>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="rdo_waiting_yes">順番待ち<span class="new badge red" data-badge-caption="必須"></span></label></th>
+            <td class="form-field">
+                <div>申込書の到着時点で当駐車場が満車になっていた場合､順番待ちを希望しますか？</div>
+                <div>
+                    <input name="rdo_waiting" type="radio" id="rdo_waiting_yes" value="yes" required {% if user_subscription.contract.rdo_waiting == 'yes' %}checked{% endif %}/>
+                    <label for="rdo_waiting_yes">はい</label>
+                </div>
+                <div>
+                    <input name="rdo_waiting" type="radio" id="rdo_waiting_no" value="no" required {% if user_subscription.contract.rdo_waiting == 'no' %}checked{% endif %}/>
+                    <label for="rdo_waiting_no">いいえ</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">アンケート</th>
+            <td class="form-field">
+                <div>どのようにして､この駐車場を知りましたか？</div>
+                {% for route in transmission_routes %}
+                    <p><input type="checkbox" class="filled-in questionnaire" id="chk_route_{{ route.pk }}" name="chk_route_{{ route.pk }}" /><label for="chk_route_{{ route.pk }}">{{ route }}</label>
+                        {% if route.name == 'その他' %}
+                            （<input type="text" id="txt_route_other" name="txt_route_other" value="{{ user_subscription.transmission_other|default:'' }}" style="width: 60%; height: 30px;"/>）
+                        {% endif %}
+                    </p>
+                {% endfor %}
+                <script type="text/javascript">
+                    {% for chk_id in user_subscription.transmission_routes %}
+                        $('#{{ chk_id }}').prop("checked", true);
+                        var label_text = $("label[for={{ chk_id }}]").text();
+                        if (label_text == "その他") {
+                            $("#txt_route_other").attr('required', 'required');
+                        }
+                    {% endfor %}
+                </script>
             </td>
         </tr>
     </table>
@@ -175,6 +211,18 @@ $('input[name=rdo_insurance]').change(function() {
         $("#txt_insurance_limit_amount").attr('required', 'required');
     } else {
         $("#txt_insurance_limit_amount").removeAttr('required');
+    }
+});
+
+// アンケート「その他」が選択された場合
+$('input.questionnaire').change(function() {
+    var label_text = $("label[for=" + this.id + "]").text();
+    if (label_text == "その他") {
+        if ($(this).is(':checked')) {
+            $("#txt_route_other").attr('required', 'required');
+        } else {
+            $("#txt_route_other").removeAttr('required');
+        }
     }
 });
 

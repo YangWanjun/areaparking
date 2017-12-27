@@ -55,7 +55,7 @@
             {% endblock %}
             <div class="row center" style="margin-top: 100px;">
                 {% if current_step.prev_step %}
-                    <a class="left" href="javascript:void(0)" style="margin-top: 30px;">前：{{ current_step.prev_step.name }}へ</a>
+                    <a class="left" href="{{ current_step.prev_step.url }}" style="margin-top: 30px;">前：{{ current_step.prev_step.name }}へ</a>
                 {% endif %}
                 <button class="button" style="vertical-align:middle;"><span>次：{{ current_step.next_step.name }}へ </span></button>
                 {% csrf_token %}

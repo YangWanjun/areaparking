@@ -81,7 +81,7 @@ def get_contractor_context(contractor):
 
 
 def get_user_subscription_url(task):
-    url = reverse('format:user_subscription', kwargs={'signature': task.get_signed_pk()})
+    url = reverse('format:user_subscription_step1', kwargs={'signature': task.get_signed_pk()})
     domain_name = Config.get_domain_name()
     return {'user_subscription_url': urljoin(domain_name, url)}
 

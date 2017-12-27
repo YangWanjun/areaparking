@@ -113,6 +113,14 @@ main table.step-info td input[type=text] {
     font-size: 18px;
 }
 
+div.card-comment .icon {
+    margin: 0px 20px;
+}
+
+div.card-comment li {
+    margin: 8px 0px;
+}
+
 /********************** Submit ボタン ***************************/
 .button {
   display: inline-block;

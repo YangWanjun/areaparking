@@ -72,16 +72,16 @@ def generate_report_pdf_binary(html):
             os.remove(temp_file)
 
 
-def get_user_subscription_steps():
+def get_user_subscription_steps(signature=None):
     """ユーザー申込みのステップ数
 
     :return:
     """
-    step1 = models.Step(step="①", name="申込み基本情報")
-    step2 = models.Step(step="②", name="申込者分類選択", prev_step=step1)
-    step3 = models.Step(step="③", name="申込者情報入力", prev_step=step2)
-    step4 = models.Step(step="④", name="申込み確認", prev_step=step3)
-    step5 = models.Step(step="⑤", name="申込み完了", prev_step=step4)
+    step1 = models.Step(step="①", name="申込み基本情報", signature=signature)
+    step2 = models.Step(step="②", name="申込者分類選択", prev_step=step1, signature=signature)
+    step3 = models.Step(step="③", name="申込者情報入力", prev_step=step2, signature=signature)
+    step4 = models.Step(step="④", name="申込み確認", prev_step=step3, signature=signature)
+    step5 = models.Step(step="⑤", name="申込み完了", prev_step=step4, signature=signature)
     step1.next_step = step2
     step2.next_step = step3
     step3.next_step = step4

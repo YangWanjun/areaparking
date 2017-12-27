@@ -3,48 +3,149 @@
 
 {% block content %}
 {% if is_personal %}
-
+    <div class="row">
+        <div class="card-title">申込人連絡先</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="txt_personal_kana">フリガナ<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_kana" name="txt_personal_kana" required placeholder="" value="{{ user_subscription.contractor.kana|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_name">氏名<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_name" name="txt_personal_name" required placeholder="" value="{{ user_subscription.contractor.name|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_birthday">生年月日<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" class="datepicker" id="txt_personal_birthday" name="txt_personal_birthday" required placeholder="例）1980-01-01" value="{{ user_subscription.contractor.personal_birthday|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_post1">住所<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <div>
+                        〒<input type="text" class="center" required id="txt_personal_post1" name="txt_personal_post1" maxlength="3" value="{{ user_subscription.contractor.post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" required id="txt_personal_post2" name="txt_personal_post2" maxlength="4" value="{{ user_subscription.contractor.post_code2|default:'' }}" style="width: 60px;height:20px;"/>
+                    </div>
+                    <input type="text" required id="txt_personal_address1" name="txt_personal_address1" value="{{ user_subscription.contractor.address1|default:'' }}" />
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_address2">建物名<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_address2" name="txt_personal_address2" required placeholder="例）○○ビル　１０階" value="{{ user_subscription.contractor.address2|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_tel">自宅TEL・FAX<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_tel" name="txt_personal_tel" required placeholder="例）03-1234-1234" value="{{ user_subscription.contractor.tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_phone">携帯電話<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_phone" name="txt_personal_phone" required placeholder="例）03-1234-1234" value="{{ user_subscription.contractor.personal_phone|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_email">E-mail<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_email" name="txt_personal_email" required placeholder="例）test@example.com" value="{{ user_subscription.contractor.email|default:'' }}"/></td>
+            </tr>
+        </table>
+    </div>
+    <div class="row">
+        <div class="card-title">申込人勤務先</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="txt_workplace_name">勤務先名<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_workplace_name" name="txt_workplace_name" required placeholder="" value="{{ user_subscription.contractor.workplace_name|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_workplace_comment" style="font-weight: normal;font-size:11px;">※勤務先のない方は、ご家族の勤務先と、その方のお名前・関係性をお知らせください。</label></th>
+                <td class="form-field"><input type="text" id="txt_workplace_comment" name="txt_workplace_comment" required placeholder="" value="{{ user_subscription.contractor.workplace_comment|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_workplace_post1">所在地<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <div>
+                        〒<input type="text" class="center" required id="txt_workplace_post1" name="txt_workplace_post1" maxlength="3" value="{{ user_subscription.contractor.workplace_post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" required id="txt_workplace_post2" name="txt_workplace_post2" maxlength="4" value="{{ user_subscription.contractor.workplace_post_code2|default:'' }}" style="width: 60px;height:20px;"/>
+                    </div>
+                    <input type="text" required id="txt_workplace_address1" name="txt_workplace_address1" value="{{ user_subscription.contractor.workplace_address1|default:'' }}" />
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_workplace_address2">建物名<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_workplace_address2" name="txt_workplace_address2" required placeholder="" value="{{ user_subscription.contractor.workplace_address2|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_workplace_tel">TEL<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_workplace_tel" name="txt_workplace_tel" required placeholder="例）03-1234-1234" value="{{ user_subscription.contractor.workplace_tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_workplace_fax">FAX<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_workplace_fax" name="txt_workplace_fax" required placeholder="例）03-1234-1234" value="{{ user_subscription.contractor.workplace_fax|default:'' }}"/></td>
+            </tr>
+        </table>
+        <div class="card-comment">
+            <span class="left icon"><i class="material-icons">event_note</i></span>
+            <ul>
+                <li>勤務先は必ずご記入ください。（勤務先に在籍確認の連絡をする場合があります。）</li>
+                <li>個人事業主は、申込時、登記簿等業務内容のわかる公的な資料の提出が必要です。</li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="card-title">緊急連絡先（※ご本人、勤務先以外）</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="txt_personal_contact_tel">電話番号<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_contact_tel" name="txt_personal_contact_tel" required placeholder="" value="{{ user_subscription.contractor.contact_tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_contact_name">氏名<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_contact_name" name="txt_personal_contact_name" required placeholder="" value="{{ user_subscription.contractor.contact_name|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_contact_relation">契約者との関係<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_contact_relation" name="txt_personal_contact_relation" required placeholder="例）父" value="{{ user_subscription.contractor.contact_relation|default:'' }}"/></td>
+            </tr>
+        </table>
+    </div>
 {% else %}
     <div class="row">
         <div class="card-title">法人連絡先</div>
         <table class="step-info">
             <tr>
                 <th class="form-field"><label for="txt_corporate_kana">フリガナ<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_kana" name="txt_corporate_kana" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_kana" name="txt_corporate_kana" required placeholder="" value="{{ user_subscription.contractor.kana|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_name">法人名<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_name" name="txt_corporate_name" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_name" name="txt_corporate_name" required placeholder="" value="{{ user_subscription.contractor.name|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_president">代表者<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_president" name="txt_corporate_president" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_president" name="txt_corporate_president" required placeholder="" value="{{ user_subscription.contractor.corporate_president|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_post1">所在地<span class="new badge red" data-badge-caption="必須"></span></label></th>
                 <td class="form-field">
                     <div>
-                        〒<input type="text" class="center" required id="txt_corporate_post1" name="txt_corporate_post1" maxlength="3" style="width: 40px;height:20px;"/>
-                        －<input type="text" class="center" required id="txt_corporate_post2" name="txt_corporate_post2" maxlength="4" style="width: 60px;height:20px;"/>
+                        〒<input type="text" class="center" required id="txt_corporate_post1" name="txt_corporate_post1" maxlength="3" value="{{ user_subscription.contractor.post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" required id="txt_corporate_post2" name="txt_corporate_post2" maxlength="4" value="{{ user_subscription.contractor.post_code2|default:'' }}" style="width: 60px;height:20px;"/>
                     </div>
-                    <input type="text" required id="txt_corporate_address1" name="txt_corporate_address1" />
+                    <input type="text" required id="txt_corporate_address1" name="txt_corporate_address1" value="{{ user_subscription.contractor.address1|default:'' }}" />
                 </td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_address2">建物名<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_address2" name="txt_corporate_address2" required placeholder="例）○○ビル　１０階" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_address2" name="txt_corporate_address2" required placeholder="例）○○ビル　１０階" value="{{ user_subscription.contractor.address2|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_tel">TEL<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_tel" name="txt_corporate_tel" required placeholder="例）03-1234-1234" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_tel" name="txt_corporate_tel" required placeholder="例）03-1234-1234" value="{{ user_subscription.contractor.tel|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_fax">FAX<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_fax" name="txt_corporate_fax" required placeholder="例）03-1234-1234" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_fax" name="txt_corporate_fax" required placeholder="例）03-1234-1234" value="{{ user_subscription.contractor.fax|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_business_type">会社業種<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_business_type" name="txt_corporate_business_type" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_business_type" name="txt_corporate_business_type" required placeholder="" value="{{ user_subscription.contractor.corporate_business_type|default:'' }}"/></td>
             </tr>
         </table>
     </div>
@@ -53,27 +154,27 @@
         <table class="step-info">
             <tr>
                 <th class="form-field"><label for="txt_corporate_staff_kana">フリガナ<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_kana" name="txt_corporate_staff_kana" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_kana" name="txt_corporate_staff_kana" required placeholder="" value="{{ user_subscription.contractor.corporate_staff_kana|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_staff_name">担当者氏名<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_name" name="txt_corporate_staff_name" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_name" name="txt_corporate_staff_name" required placeholder="" value="{{ user_subscription.contractor.corporate_staff_name|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_staff_email">E-mail<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_email" name="txt_corporate_staff_email" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_email" name="txt_corporate_staff_email" required placeholder="" value="{{ user_subscription.contractor.corporate_staff_email|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_staff_tel">TEL<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_tel" name="txt_corporate_staff_tel" required placeholder="例）03-1234-1234" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_tel" name="txt_corporate_staff_tel" required placeholder="例）03-1234-1234" value="{{ user_subscription.contractor.corporate_staff_tel|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_staff_fax">FAX<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_fax" name="txt_corporate_staff_fax" required placeholder="例）03-1234-1234" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_fax" name="txt_corporate_staff_fax" required placeholder="例）03-1234-1234" value="{{ user_subscription.contractor.corporate_staff_fax|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_staff_phone">携帯電話<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_phone" name="txt_corporate_staff_phone" required placeholder="例）080-1234-1234" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_phone" name="txt_corporate_staff_phone" required placeholder="例）080-1234-1234" value="{{ user_subscription.contractor.corporate_staff_phone|default:'' }}"/></td>
             </tr>
         </table>
     </div>
@@ -82,15 +183,15 @@
         <table class="step-info">
             <tr>
                 <th class="form-field"><label for="txt_corporate_contact_tel">電話番号<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_contact_tel" name="txt_corporate_contact_tel" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_contact_tel" name="txt_corporate_contact_tel" required placeholder="" value="{{ user_subscription.contractor.contact_tel|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_contact_name">氏名<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_contact_name" name="txt_corporate_contact_name" required placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_contact_name" name="txt_corporate_contact_name" required placeholder="" value="{{ user_subscription.contractor.contact_name|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_contact_relation">契約者との関係<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_contact_relation" name="txt_corporate_contact_relation" required placeholder="例）父" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_contact_relation" name="txt_corporate_contact_relation" required placeholder="例）父" value="{{ user_subscription.contractor.contact_relation|default:'' }}"/></td>
             </tr>
         </table>
     </div>
@@ -99,24 +200,24 @@
         <table class="step-info">
             <tr>
                 <th class="form-field"><label for="txt_corporate_user_kana">フリガナ</label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_user_kana" name="txt_corporate_user_kana" placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_user_kana" name="txt_corporate_user_kana" placeholder="" value="{{ user_subscription.contractor.corporate_user_kana|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_user_name">氏名</label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_user_name" name="txt_corporate_user_name" placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_user_name" name="txt_corporate_user_name" placeholder="" value="{{ user_subscription.contractor.corporate_user_name|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_user_tel">携帯電話</label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_user_tel" name="txt_corporate_user_tel" placeholder="" value=""/></td>
+                <td class="form-field"><input type="text" id="txt_corporate_user_tel" name="txt_corporate_user_tel" placeholder="" value="{{ user_subscription.contractor.corporate_user_tel|default:'' }}"/></td>
             </tr>
             <tr>
                 <th class="form-field"><label for="txt_corporate_user_post1">所在地</label></th>
                 <td class="form-field">
                     <div>
-                        〒<input type="text" class="center" id="txt_corporate_user_post1" name="txt_corporate_user_post1" maxlength="3" style="width: 40px;height:20px;"/>
-                        －<input type="text" class="center" id="txt_corporate_user_post2" name="txt_corporate_user_post2" maxlength="4" style="width: 60px;height:20px;"/>
+                        〒<input type="text" class="center" id="txt_corporate_user_post1" name="txt_corporate_user_post1" maxlength="3" value="{{ user_subscription.contractor.corporate_user_post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" id="txt_corporate_user_post2" name="txt_corporate_user_post2" maxlength="4" value="{{ user_subscription.contractor.corporate_user_post_code2|default:'' }}" style="width: 60px;height:20px;"/>
                     </div>
-                    <input type="text" id="txt_corporate_user_address1" name="txt_corporate_user_address1" />
+                    <input type="text" id="txt_corporate_user_address1" name="txt_corporate_user_address1" value="{{ user_subscription.contractor.corporate_user_address1|default:'' }}" />
                 </td>
             </tr>
         </table>

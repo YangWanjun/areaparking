@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.storage import FileSystemStorage
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import reverse
 
 from utils import errors, constants, common
 from utils.django_base import BaseModel
@@ -13,12 +14,15 @@ from utils.django_base import BaseModel
 # Create your models here.
 class Step(object):
 
-    def __init__(self, step, name, prev_step=None, next_step=None):
+    STEPS = {'①': 1, '②': 2, '③': 3, '④': 4, '⑤': 5, '⑥': 6, '⑦': 7, '⑧': 8}
+
+    def __init__(self, step, name, prev_step=None, next_step=None, signature=None):
         self.step = step
         self.name = name
         self.prev_step = prev_step
         self.next_step = next_step
         self.is_finished = False
+        self.signature = signature
 
     def to_json(self, level=0):
         return {
@@ -28,10 +32,15 @@ class Step(object):
             'prev_step': self.prev_step.to_json(1) if self.prev_step and level == 0 else None,
             'next_step': self.next_step.to_json(1) if self.next_step and level == 0 else None,
             'is_finished': self.is_finished,
+            'url': self.url(),
         }
 
     def full_name(self):
         return '%s %s' % (self.step, self.name)
+
+    def url(self):
+        url_name = 'format:user_subscription_step%s' % self.STEPS.get(self.step)
+        return reverse(url_name, args=(self.signature,))
 
     def __str__(self):
         return self.name

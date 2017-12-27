@@ -57,6 +57,85 @@
     </table>
 </div>
 <div class="row">
+    <div class="card-title">申込み基本情報</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">メーカー</th>
+            <td class="form-field">{{ user_subscription.car.car_maker|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">車種</th>
+            <td class="form-field">{{ user_subscription.car.car_model|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">車両登録番号</th>
+            <td class="form-field">{{ user_subscription.car.car_no_plate|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">車体の大きさ</th>
+            <td class="form-field">
+                全長：{{ user_subscription.car.car_length|default:''|intcomma }} mm<br/>
+                全幅：{{ user_subscription.car.car_width|default:''|intcomma }} mm<br/>
+                全高：{{ user_subscription.car.car_height|default:''|intcomma }} mm<br/>
+                重量：{{ user_subscription.car.car_weight|default:''|intcomma }} kg<br/>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">希望契約開始日</th>
+            <td class="form-field">{{ user_subscription.contract.start_date|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">希望契約期間</th>
+            <td class="form-field">
+                {% if user_subscription.contract.contract_period == 'long' %}
+                    １年間（その後自動更新）
+                {% elif user_subscription.contract.contract_period == 'short' %}
+                    １・２ヶ月契約（　{{ user_subscription.contract.contract_end_month|default:'' }}　月末日まで）
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">任意保険の加入</th>
+            <td class="form-field">
+                {% if user_subscription.car.rdo_insurance == 'within' %}
+                    制限あり（　{{ user_subscription.car.insurance_limit_amount|default:'' }}　万円まで）
+                {% elif user_subscription.car.rdo_insurance == 'without' %}
+                    無制限
+                {% elif user_subscription.car.rdo_insurance == 'plans' %}
+                    加入予定
+                {% endif %}
+                <br/>
+                {% if user_subscription.car.insurance_expiration %}
+                    保険の有効期限：{{ user_subscription.car.insurance_expiration|default:'' }}
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">保管証発行-車庫証明に必要な書類</th>
+            <td class="form-field">
+                {% if user_subscription.contract.rdo_receipt == 'yes' %}
+                    必要（発行手数料：消費{% if receipt_without_consumption %}税別{% else %}税込{% endif %}{{ receipt_amount|intcomma }}円）
+                {% else %}
+                    不要
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">順番待ち</th>
+            <td class="form-field">
+                申込書の到着時点で当駐車場が満車になっていた場合､順番待ちを希望
+                <span class="red-text" style="font-weight: bold;">{% if user_subscription.contract.rdo_waiting == 'yes' %}
+                    します
+                {% else %}
+                    しません
+                {% endif %}
+                。
+                </span>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="row">
     <div class="card-title">申込者分類</div>
     <table class="step-info">
         <tr>
@@ -73,6 +152,8 @@
         </tr>
     </table>
 </div>
+{% if user_subscription.contractor_category == "corporate" %}
+<!-- 法人 -->
 <div class="row">
     <div class="card-title">法人連絡先</div>
     <table class="step-info">
@@ -182,6 +263,94 @@
         </tr>
     </table>
 </div>
+{% else %}
+<!-- 個人 -->
+<div class="row">
+    <div class="card-title">申込人連絡先</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">フリガナ</th>
+            <td class="form-field">{{ user_subscription.contractor.kana|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">氏名</th>
+            <td class="form-field">{{ user_subscription.contractor.name|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">生年月日</th>
+            <td class="form-field">{{ user_subscription.contractor.personal_birthday|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">住所</th>
+            <td class="form-field">
+                〒 {{ user_subscription.contractor.post_code1|default:'' }}-{{ user_subscription.contractor.post_code2|default:'' }}<br/>
+                {{ user_subscription.contractor.address1|default:'' }}<br/>
+                {{ user_subscription.contractor.address2|default:'' }}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">自宅TEL・FAX</th>
+            <td class="form-field">{{ user_subscription.contractor.tel|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">携帯電話</th>
+            <td class="form-field">{{ user_subscription.contractor.personal_phone|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">E-mail</th>
+            <td class="form-field">{{ user_subscription.contractor.email|default:'' }}</td>
+        </tr>
+    </table>
+</div>
+<div class="row">
+    <div class="card-title">申込人勤務先</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">勤務先名</th>
+            <td class="form-field">{{ user_subscription.contractor.workplace_name|default:'' }}</td>
+        </tr>
+        {% if user_subscription.contractor.workplace_comment %}
+        <tr>
+            <th class="form-field" style="font-weight: normal;font-size:11px;">※勤務先のない方は、ご家族の勤務先と、その方のお名前・関係性をお知らせください。</th>
+            <td class="form-field">{{ user_subscription.contractor.workplace_comment|default:'' }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <th class="form-field">所在地</th>
+            <td class="form-field">
+                〒 {{ user_subscription.contractor.workplace_post_code1|default:'' }}-{{ user_subscription.contractor.workplace_post_code2|default:'' }}<br/>
+                {{ user_subscription.contractor.workplace_address1|default:'' }}<br/>
+                {{ user_subscription.contractor.workplace_address2|default:'' }}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">TEL</th>
+            <td class="form-field">{{ user_subscription.contractor.workplace_tel|default:'' }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">FAX</th>
+            <td class="form-field">{{ user_subscription.contractor.workplace_fax|default:'' }}</td>
+        </tr>
+    </table>
+</div>
+<div class="row">
+        <div class="card-title">緊急連絡先（※ご本人、勤務先以外）</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field">電話番号</th>
+                <td class="form-field">{{ user_subscription.contractor.contact_tel|default:'' }}</td>
+            </tr>
+            <tr>
+                <th class="form-field">氏名</th>
+                <td class="form-field">{{ user_subscription.contractor.contact_name|default:'' }}</td>
+            </tr>
+            <tr>
+                <th class="form-field">契約者との関係</th>
+                <td class="form-field">{{ user_subscription.contractor.contact_relation|default:'' }}</td>
+            </tr>
+        </table>
+    </div>
+{% endif %}
 <script type="text/javascript">
 
 $('form').submit(function() {
