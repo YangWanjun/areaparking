@@ -115,6 +115,7 @@ CHOICE_PARKING_STATUS = (
 )
 CHOICE_MAIL_GROUP = (
     ('001', '申込書送付'),
+    ('002', '申込完了'),
     ('011', '契約書送付'),
 )
 CHOICE_REPORT_KBN = (
@@ -165,6 +166,19 @@ CHOICE_SUBSCRIPTION_STATUS = (
     ('03', '契約手続中'),
     ('11', '成約'),
     ('12', '破棄'),
+)
+CHOICE_INSURANCE_TYPE = (
+    ('within', '制限あり'),
+    ('without', '無制限'),
+    ('plans', '加入予定'),
+)
+CHOICE_CONTRACT_PERIOD = (
+    ('long', '１年間（その後自動更新）'),
+    ('short', '１・２ヶ月契約'),
+)
+CHOICE_IS_REQUIRED = (
+    ('yes', '必要'),
+    ('no', '不要'),
 )
 
 ERROR_SETTING_NO_SUBSCRIPTION = "申込書の出力書式が設定されていません、管理サイトで「出力書式」->「申込書一覧」にて設定してください。"

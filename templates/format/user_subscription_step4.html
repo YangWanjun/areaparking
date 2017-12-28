@@ -61,59 +61,53 @@
     <table class="step-info">
         <tr>
             <th class="form-field">メーカー</th>
-            <td class="form-field">{{ user_subscription.car.car_maker|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.car_maker|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">車種</th>
-            <td class="form-field">{{ user_subscription.car.car_model|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.car_model|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">車両登録番号</th>
-            <td class="form-field">{{ user_subscription.car.car_no_plate|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.car_no_plate|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">車体の大きさ</th>
             <td class="form-field">
-                全長：{{ user_subscription.car.car_length|default:''|intcomma }} mm<br/>
-                全幅：{{ user_subscription.car.car_width|default:''|intcomma }} mm<br/>
-                全高：{{ user_subscription.car.car_height|default:''|intcomma }} mm<br/>
-                重量：{{ user_subscription.car.car_weight|default:''|intcomma }} kg<br/>
+                全長：{{ user_subscription.car_length|default:''|intcomma }} mm<br/>
+                全幅：{{ user_subscription.car_width|default:''|intcomma }} mm<br/>
+                全高：{{ user_subscription.car_height|default:''|intcomma }} mm<br/>
+                重量：{{ user_subscription.car_weight|default:''|intcomma }} kg<br/>
             </td>
         </tr>
         <tr>
             <th class="form-field">希望契約開始日</th>
-            <td class="form-field">{{ user_subscription.contract.start_date|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.contract_start_date|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">希望契約期間</th>
-            <td class="form-field">
-                {% if user_subscription.contract.contract_period == 'long' %}
-                    １年間（その後自動更新）
-                {% elif user_subscription.contract.contract_period == 'short' %}
-                    １・２ヶ月契約（　{{ user_subscription.contract.contract_end_month|default:'' }}　月末日まで）
+            <td class="form-field">{{ user_subscription.get_contract_period_display|default:'' }}
+                {% if user_subscription.contract_end_month %}
+                （　{{ user_subscription.contract_end_month|default:'' }}　月末日まで）
                 {% endif %}
             </td>
         </tr>
         <tr>
             <th class="form-field">任意保険の加入</th>
-            <td class="form-field">
-                {% if user_subscription.car.rdo_insurance == 'within' %}
-                    制限あり（　{{ user_subscription.car.insurance_limit_amount|default:'' }}　万円まで）
-                {% elif user_subscription.car.rdo_insurance == 'without' %}
-                    無制限
-                {% elif user_subscription.car.rdo_insurance == 'plans' %}
-                    加入予定
+            <td class="form-field"> {{ user_subscription.get_insurance_limit_type_display|default:'' }}
+                {% if user_subscription.insurance_limit_amount %}
+                （　{{ user_subscription.insurance_limit_amount|default:'' }}　万円まで）
                 {% endif %}
                 <br/>
-                {% if user_subscription.car.insurance_expiration %}
-                    保険の有効期限：{{ user_subscription.car.insurance_expiration|default:'' }}
+                {% if user_subscription.insurance_expire_date %}
+                    保険の有効期限：{{ user_subscription.insurance_expire_date|default:'' }}
                 {% endif %}
             </td>
         </tr>
         <tr>
             <th class="form-field">保管証発行-車庫証明に必要な書類</th>
             <td class="form-field">
-                {% if user_subscription.contract.rdo_receipt == 'yes' %}
+                {% if user_subscription.require_receipt == 'yes' %}
                     必要（発行手数料：消費{% if receipt_without_consumption %}税別{% else %}税込{% endif %}{{ receipt_amount|intcomma }}円）
                 {% else %}
                     不要
@@ -124,7 +118,7 @@
             <th class="form-field">順番待ち</th>
             <td class="form-field">
                 申込書の到着時点で当駐車場が満車になっていた場合､順番待ちを希望
-                <span class="red-text" style="font-weight: bold;">{% if user_subscription.contract.rdo_waiting == 'yes' %}
+                <span class="red-text" style="font-weight: bold;">{% if user_subscription.require_waiting == 'yes' %}
                     します
                 {% else %}
                     しません
@@ -140,54 +134,46 @@
     <table class="step-info">
         <tr>
             <th class="form-field">分類</th>
-            <td class="form-field">
-                {% if user_subscription.contractor_category == "corporate" %}
-                    法人
-                {% elif user_subscription.contractor_category == "personal" %}
-                    個人
-                {% else %}
-                    未記入
-                {% endif %}
-            </td>
+            <td class="form-field"> {{ user_subscription.get_category_display|default:'未記入' }}</td>
         </tr>
     </table>
 </div>
-{% if user_subscription.contractor_category == "corporate" %}
+{% if user_subscription.category == "2" %}
 <!-- 法人 -->
 <div class="row">
     <div class="card-title">法人連絡先</div>
     <table class="step-info">
         <tr>
             <th class="form-field">フリガナ</th>
-            <td class="form-field">{{ user_subscription.contractor.kana|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.kana|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">法人名</th>
-            <td class="form-field">{{ user_subscription.contractor.name|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.name|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">代表者</th>
-            <td class="form-field">{{ user_subscription.contractor.corporate_president|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.corporate_president|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">所在地</th>
             <td class="form-field">
-                〒 {{ user_subscription.contractor.post_code|default:'未記入' }}<br/>
-                {{ user_subscription.contractor.address1|default:'未記入' }}<br/>
-                {{ user_subscription.contractor.address2|default:'未記入' }}
+                〒 {{ user_subscription.post_code1|default:'' }}-{{ user_subscription.post_code2|default:'' }}<br/>
+                {{ user_subscription.address1|default:'未記入' }}<br/>
+                {{ user_subscription.address2|default:'未記入' }}
             </td>
         </tr>
         <tr>
             <th class="form-field">TEL</th>
-            <td class="form-field">{{ user_subscription.contractor.tel|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.tel|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">FAX</th>
-            <td class="form-field">{{ user_subscription.contractor.fax|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.fax|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">会社業種</th>
-            <td class="form-field">{{ user_subscription.contractor.corporate_business_type|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.corporate_business_type|default:'未記入' }}</td>
         </tr>
     </table>
 </div>
@@ -196,27 +182,27 @@
     <table class="step-info">
         <tr>
             <th class="form-field">フリガナ</th>
-            <td class="form-field">{{ user_subscription.contractor.corporate_staff_kana|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.corporate_staff_kana|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">氏名</th>
-            <td class="form-field">{{ user_subscription.contractor.corporate_staff_name|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.corporate_staff_name|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">Ｅ-ｍａｉｌ</th>
-            <td class="form-field">{{ user_subscription.contractor.email|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.email|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">TEL</th>
-            <td class="form-field">{{ user_subscription.contractor.tel|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.tel|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">FAX</th>
-            <td class="form-field">{{ user_subscription.contractor.fax|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.fax|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">携帯電話</th>
-            <td class="form-field">{{ user_subscription.contractor.corporate_staff_phone|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.corporate_staff_phone|default:'未記入' }}</td>
         </tr>
     </table>
 </div>
@@ -225,15 +211,15 @@
     <table class="step-info">
         <tr>
             <th class="form-field">電話番号</th>
-            <td class="form-field">{{ user_subscription.contractor.contact_tel|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.contact_tel|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">氏名</th>
-            <td class="form-field">{{ user_subscription.contractor.contact_name|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.contact_name|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">契約者との関係</th>
-            <td class="form-field">{{ user_subscription.contractor.contact_relation|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.contact_relation|default:'未記入' }}</td>
         </tr>
     </table>
 </div>
@@ -242,23 +228,23 @@
     <table class="step-info">
         <tr>
             <th class="form-field">フリガナ</th>
-            <td class="form-field">{{ user_subscription.contractor.corporate_user_kana|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.corporate_user_kana|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">氏名</th>
-            <td class="form-field">{{ user_subscription.contractor.corporate_user_name|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.corporate_user_name|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">携帯電話</th>
-            <td class="form-field">{{ user_subscription.contractor.corporate_user_tel|default:'未記入' }}</td>
+            <td class="form-field">{{ user_subscription.corporate_user_tel|default:'未記入' }}</td>
         </tr>
         <tr>
             <th class="form-field">所在地</th>
             <td class="form-field">
                 {% if corporate_user_post_code %}
-                〒 {{ user_subscription.contractor.corporate_user_post_code|default:'未記入' }}<br/>
+                〒 {{ user_subscription.corporate_user_post_code|default:'未記入' }}<br/>
                 {% endif %}
-                {{ user_subscription.contractor.corporate_user_address1|default:'未記入' }}
+                {{ user_subscription.corporate_user_address1|default:'未記入' }}
             </td>
         </tr>
     </table>
@@ -270,35 +256,35 @@
     <table class="step-info">
         <tr>
             <th class="form-field">フリガナ</th>
-            <td class="form-field">{{ user_subscription.contractor.kana|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.kana|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">氏名</th>
-            <td class="form-field">{{ user_subscription.contractor.name|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.name|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">生年月日</th>
-            <td class="form-field">{{ user_subscription.contractor.personal_birthday|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.personal_birthday|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">住所</th>
             <td class="form-field">
-                〒 {{ user_subscription.contractor.post_code1|default:'' }}-{{ user_subscription.contractor.post_code2|default:'' }}<br/>
-                {{ user_subscription.contractor.address1|default:'' }}<br/>
-                {{ user_subscription.contractor.address2|default:'' }}
+                〒 {{ user_subscription.post_code1|default:'' }}-{{ user_subscription.post_code2|default:'' }}<br/>
+                {{ user_subscription.address1|default:'' }}<br/>
+                {{ user_subscription.address2|default:'' }}
             </td>
         </tr>
         <tr>
             <th class="form-field">自宅TEL・FAX</th>
-            <td class="form-field">{{ user_subscription.contractor.tel|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.tel|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">携帯電話</th>
-            <td class="form-field">{{ user_subscription.contractor.personal_phone|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.personal_phone|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">E-mail</th>
-            <td class="form-field">{{ user_subscription.contractor.email|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.email|default:'' }}</td>
         </tr>
     </table>
 </div>
@@ -307,29 +293,29 @@
     <table class="step-info">
         <tr>
             <th class="form-field">勤務先名</th>
-            <td class="form-field">{{ user_subscription.contractor.workplace_name|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.workplace_name|default:'' }}</td>
         </tr>
-        {% if user_subscription.contractor.workplace_comment %}
+        {% if user_subscription.workplace_comment %}
         <tr>
             <th class="form-field" style="font-weight: normal;font-size:11px;">※勤務先のない方は、ご家族の勤務先と、その方のお名前・関係性をお知らせください。</th>
-            <td class="form-field">{{ user_subscription.contractor.workplace_comment|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.workplace_comment|default:'' }}</td>
         </tr>
         {% endif %}
         <tr>
             <th class="form-field">所在地</th>
             <td class="form-field">
-                〒 {{ user_subscription.contractor.workplace_post_code1|default:'' }}-{{ user_subscription.contractor.workplace_post_code2|default:'' }}<br/>
-                {{ user_subscription.contractor.workplace_address1|default:'' }}<br/>
-                {{ user_subscription.contractor.workplace_address2|default:'' }}
+                〒 {{ user_subscription.workplace_post_code1|default:'' }}-{{ user_subscription.workplace_post_code2|default:'' }}<br/>
+                {{ user_subscription.workplace_address1|default:'' }}<br/>
+                {{ user_subscription.workplace_address2|default:'' }}
             </td>
         </tr>
         <tr>
             <th class="form-field">TEL</th>
-            <td class="form-field">{{ user_subscription.contractor.workplace_tel|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.workplace_tel|default:'' }}</td>
         </tr>
         <tr>
             <th class="form-field">FAX</th>
-            <td class="form-field">{{ user_subscription.contractor.workplace_fax|default:'' }}</td>
+            <td class="form-field">{{ user_subscription.workplace_fax|default:'' }}</td>
         </tr>
     </table>
 </div>
@@ -338,15 +324,15 @@
         <table class="step-info">
             <tr>
                 <th class="form-field">電話番号</th>
-                <td class="form-field">{{ user_subscription.contractor.contact_tel|default:'' }}</td>
+                <td class="form-field">{{ user_subscription.contact_tel|default:'' }}</td>
             </tr>
             <tr>
                 <th class="form-field">氏名</th>
-                <td class="form-field">{{ user_subscription.contractor.contact_name|default:'' }}</td>
+                <td class="form-field">{{ user_subscription.contact_name|default:'' }}</td>
             </tr>
             <tr>
                 <th class="form-field">契約者との関係</th>
-                <td class="form-field">{{ user_subscription.contractor.contact_relation|default:'' }}</td>
+                <td class="form-field">{{ user_subscription.contact_relation|default:'' }}</td>
             </tr>
         </table>
     </div>

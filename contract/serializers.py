@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.core.exceptions import ValidationError
-
 from rest_framework import serializers
 
 from . import models
@@ -33,6 +31,7 @@ class ContractorSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = models.Subscription
         fields = '__all__'

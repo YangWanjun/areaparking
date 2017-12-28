@@ -144,7 +144,7 @@ def get_unsigned_value(signature, salt=None):
     return signer.unsign(signature, max_age=datetime.timedelta(seconds=timeout))
 
 
-def push_notification(users, title, message, gcm_url=None):
+def push_notification(users, title, message, url=None, gcm_url=None):
     """プッシュ通知を各端末に送信する。
 
     :param users:
@@ -156,8 +156,11 @@ def push_notification(users, title, message, gcm_url=None):
     if not gcm_url:
         gcm_url = Config.get_gcm_url()
 
-    queryset = PushNotification.objects.public_filter(user__in=users)
-    queryset.update(title=title, message=message)
+    if users:
+        queryset = PushNotification.objects.public_filter(user__in=users)
+    else:
+        queryset = PushNotification.objects.public_all()
+    queryset.update(title=title, message=message, url=url)
     for notification in queryset:
         headers = {
             'content-type': 'application/json',

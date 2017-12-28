@@ -6,9 +6,11 @@ from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.template import Context, Template
 
-from utils.django_base import BaseModel
 from utils import constants, common
+from utils.django_base import BaseModel
+from utils.mail import EbMail
 
 logger = common.get_ap_logger()
 
@@ -424,8 +426,7 @@ class MailGroup(BaseModel):
     code = models.CharField(max_length=3, primary_key=True, choices=constants.CHOICE_MAIL_GROUP, verbose_name=u"コード")
     name = models.CharField(max_length=50, blank=False, null=True, verbose_name=u"名称")
     sender = models.EmailField(verbose_name=u"メール差出人")
-    template = models.ForeignKey(MailTemplate, on_delete=models.PROTECT,
-                                 verbose_name=u"メールテンプレート")
+    template = models.ForeignKey(MailTemplate, on_delete=models.PROTECT, verbose_name=u"メールテンプレート")
 
     class Meta:
         db_table = 'mst_mail_group'
@@ -450,7 +451,7 @@ class MailGroup(BaseModel):
         return MailCcList.objects.public_filter(group=self, is_bcc=True)
 
     @classmethod
-    def get_subscription_mail_info(cls):
+    def get_subscription_send_group(cls):
         """ユーザー申込み時のメール送信に関する情報を取得する。
 
         :return:
@@ -459,6 +460,54 @@ class MailGroup(BaseModel):
             return MailGroup.objects.get(code='001')
         except ObjectDoesNotExist:
             return None
+
+    @classmethod
+    def get_subscription_completed_group(cls):
+        """ユーザー申込み完了時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='002')
+        except ObjectDoesNotExist:
+            return None
+
+    def get_template_content(self, context):
+        """メールテンプレートの内容を取得する。
+
+        :param context:
+        :return:
+        """
+        t_title = Template(self.template.title)
+        t_body = Template(self.template.body)
+        t_password = Template(self.template.password) if self.template.password else None
+        comment = self.template.comment or ''
+        ctx = Context(context)
+        return {
+            'title': t_title.render(ctx),
+            'body': t_body.render(ctx),
+            'password': t_password.render(ctx) if t_password else '',
+            'comment': comment,
+        }
+
+    def send_main(self, recipient_list, context):
+        """メール送信する
+
+        :param context:
+        :return:
+        """
+        content = self.get_template_content(context)
+        mail_data = {
+            'sender': self.sender,
+            'recipient_list': recipient_list,
+            'cc_list': [cc.email for cc in self.get_cc_list()],
+            'bcc_list': [bcc.email for bcc in self.get_bcc_list()],
+            'mail_title': content.get('title'),
+            'mail_body': content.get('body'),
+        }
+
+        mail = EbMail(**mail_data)
+        mail.send_email()
 
 
 class MailCcList(BaseModel):
@@ -482,6 +531,7 @@ class PushNotification(BaseModel):
     key_p256dh = models.CharField(max_length=256)
     title = models.CharField(blank=True, null=True, max_length=100)
     message = models.CharField(blank=True, null=True, max_length=256)
+    url = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = 'ap_push_notification'

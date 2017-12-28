@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.db import models
 from django.template import Context, Template
 
@@ -53,6 +53,12 @@ class AbstractUser(BaseModel):
     corporate_staff_position = models.CharField(blank=True, null=True, max_length=30, verbose_name="担当者役職")
     corporate_capital = models.IntegerField(blank=True, null=True, verbose_name="資本金")
     corporate_turnover = models.IntegerField(blank=True, null=True, verbose_name="年収／年商")
+    corporate_user_name = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"使用者名")
+    corporate_user_kana = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"使用者カナ")
+    corporate_user_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"使用者携帯電話")
+    corporate_user_post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="使用者所在地郵便番号",
+                                 validators=(RegexValidator(regex=constants.REG_POST_CODE),))
+    corporate_user_address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"使用者所在地１")
     # 勤務先
     workplace_name = models.CharField(blank=True, null=True, max_length=100, verbose_name="勤務先名称")
     workplace_post_code = models.CharField(blank=True, null=True, max_length=7, verbose_name=u"勤務先郵便番号")
@@ -120,6 +126,10 @@ class AbstractCar(BaseModel):
     car_f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
     car_r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
     car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
+    insurance_limit_type = models.CharField(blank=True, null=True, max_length=10,
+                                            choices=constants.CHOICE_INSURANCE_TYPE, verbose_name="保険制限")
+    insurance_limit_amount = models.IntegerField(blank=True, null=True, verbose_name="対物限度額")
+    insurance_expire_date = models.DateField(blank=True, null=True, verbose_name='保険の有効期限')
 
     class Meta:
         abstract = True
@@ -140,7 +150,25 @@ class Contractor(AbstractUser):
 
 
 class Subscription(AbstractUser, AbstractCar):
-    # 仮契約であるかどうかのステータス
+    post_code1 = models.CharField(blank=True, null=True, max_length=3, verbose_name="郵便番号１")
+    post_code2 = models.CharField(blank=True, null=True, max_length=4, verbose_name="郵便番号２")
+    workplace_post_code1 = models.CharField(blank=True, null=True, max_length=3, verbose_name=u"勤務先郵便番号１")
+    workplace_post_code2 = models.CharField(blank=True, null=True, max_length=4, verbose_name=u"勤務先郵便番号２")
+    corporate_user_post_code1 = models.CharField(blank=True, null=True, max_length=3, verbose_name=u"使用者所在地郵便番号１")
+    corporate_user_post_code2 = models.CharField(blank=True, null=True, max_length=4, verbose_name=u"使用者所在地郵便番号２")
+    contract_start_date = models.DateField(blank=True, null=True, verbose_name='希望契約開始日')
+    contract_period = models.CharField(blank=True, null=True, max_length=5, choices=constants.CHOICE_CONTRACT_PERIOD,
+                                       verbose_name="希望契約期間")
+    contract_end_month = models.IntegerField(blank=True, null=True, verbose_name="短期契約の終了月")
+    require_receipt = models.CharField(blank=True, null=True, max_length=3, choices=constants.CHOICE_IS_REQUIRED,
+                                       verbose_name="保管証発行-車庫証明")
+    require_waiting = models.CharField(blank=True, null=True, max_length=3, choices=constants.CHOICE_IS_REQUIRED,
+                                       verbose_name="順番待ち", help_text='申込書の到着時点で当駐車場が満車になっていた場合､順番待ちを希望しますか？')
+    transmission_routes = models.CharField(blank=True, null=True, max_length=20, verbose_name="媒体",
+                                           validators=[validate_comma_separated_integer_list],
+                                           help_text='どのようにして､この駐車場を知りましたか？')
+    transmission_other_route = models.CharField(blank=True, null=True, max_length=50, verbose_name="その他の媒体")
+    # 申込みのステータス
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_SUBSCRIPTION_STATUS, editable=False,
                               verbose_name="ステータス")
     created_date = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=u"作成日時")
@@ -153,6 +181,27 @@ class Subscription(AbstractUser, AbstractCar):
         ordering = ['name']
         verbose_name = "ユーザー申込"
         verbose_name_plural = "ユーザー申込一覧"
+
+    def get_subscription_completed_email(self):
+        """申込み完了時のメール宛先アドレス
+
+        :return:
+        """
+        if self.category == '1':
+            # 個人
+            return self.email
+        else:
+            return self.corporate_staff_email
+
+    def get_subscription_completed_addressee(self):
+        """申込み完了時、メール送信の宛名と敬称
+
+        :return:
+        """
+        return {
+            'user_name': self.name,
+            'user_honorific': '様' if self.category == '1' else '御中'
+        }
 
 
 class ContractorCar(AbstractCar):
@@ -366,30 +415,21 @@ class Task(BaseModel):
     def get_mail_group(self):
         if self.category == '010':
             # 申込書送付
-            group = MailGroup.get_subscription_mail_info()
+            group = MailGroup.get_subscription_send_group()
             return group
         return None
 
     def get_mail_template(self):
         group = self.get_mail_group()
         if group:
-            t_title = Template(group.template.title)
-            t_body = Template(group.template.body)
-            t_password = Template(group.template.password) if group.template.password else None
-            comment = group.template.comment or ''
-            context = Context(get_total_context(
+            data = get_total_context(
                 parking_lot=self.process.content_object.parking_lot,
                 contractor=self.process.content_object.contractor,
                 subscription=self.process.content_object.subscription,
-            ))
-            context.update(get_user_subscription_url(self))
+            )
+            data.update(get_user_subscription_url(self))
 
-            return {
-                'title': t_title.render(context),
-                'body': t_body.render(context),
-                'password': t_password.render(context) if t_password else '',
-                'comment': comment,
-            }
+            return group.get_template_content(data)
         else:
             return dict()
 

@@ -225,12 +225,15 @@ class GetNotificationData(BaseViewWithoutLogin):
                 notification = PushNotification.objects.get(registration_id=registration_id)
                 title = notification.title
                 message = notification.message
+                url = notification.url
             except (ObjectDoesNotExist, MultipleObjectsReturned):
                 title = ''
                 message = ''
+                url = ''
             data = {
                 'title': title,
                 'message': message,
+                'url': url,
             }
         else:
             data['error'] = 1

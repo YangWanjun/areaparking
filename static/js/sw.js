@@ -30,7 +30,11 @@ self.addEventListener("push", function(event) {
                     throw new Error('The API returned an error. Status Code: ' + response.status);
                 }
                 return response.json().then(function(notifications) {
-                    self.registration.showNotification(notifications.title, {body: notifications.message, icon: icon});
+                    self.registration.showNotification(notifications.title, {
+                        body: notifications.message,
+                        icon: icon,
+                        data: { url: notifications.url },
+                    });
                 });
             }).catch(function(err) {
                 console.error('Unable to retrieve notifications.', err);
@@ -39,3 +43,10 @@ self.addEventListener("push", function(event) {
         })
     );
 });
+
+if (typeof window === "undefined") {
+    self.addEventListener('notificationclick', function(event) {
+        event.notification.close();
+        clients.openWindow(event.notification.data.url);
+    }, false);
+}
