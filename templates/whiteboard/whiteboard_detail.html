@@ -33,6 +33,11 @@
                 {% block actions_row %}
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% if object.is_empty != "01" %}
+                    <a class="waves-effect waves-light btn white-text popup">順番待ちへ</a>
+                {% else %}
+                    <button data-target="start_temp_contract" class="btn modal-trigger">契約に進む</button>
+                {% endif %}
                 {% endblock actions_row %}
             </div>
         </div>

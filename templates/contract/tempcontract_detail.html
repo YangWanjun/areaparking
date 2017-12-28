@@ -327,7 +327,7 @@
                             <div class="col s12 right-align">
                                 {% if task.category == "010" %}
                                     <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
-                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped" >
+                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped {% if object.contract.subscription and object.contract.subscription.status != '01' %}disabled{%endif%}" >
                                         <i class="tiny material-icons">send</i>
                                     </a>
                                 {% elif task.category == "100" %}

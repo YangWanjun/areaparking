@@ -25,15 +25,13 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
         task_id = get_unsigned_value(signature)
         task = get_object_or_404(Task, pk=task_id)
 
-        # if 'steps' in request.session:
-        #     steps = request.session['steps']
-        # else:
         steps = self.get_steps(signature)
         self.request.session['steps'] = steps
         context.update({
             'task': task,
             'signature': signature,
             'steps': steps,
+            'is_finished': False
         })
         context.update(get_total_context())
         return context
@@ -52,10 +50,18 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
 class BaseUserSubscriptionView(BaseUserOperationView):
 
     def get(self, request, *args, **kwargs):
-        if request.GET.get('is_new') is not None:
-            del request.session['user_subscription']
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
+        try:
+            if request.GET.get('is_new') is not None:
+                del request.session['user_subscription']
+            context = self.get_context_data(**kwargs)
+            # ステータスが「新規申込み」でない場合は申込み完了に飛ばす
+            user_subscription = context.get('user_subscription')
+            if user_subscription.status != '01' and context.get('is_finished') is False:
+                signature = kwargs.get('signature')
+                return redirect('format:user_subscription_step5', signature=signature)
+            return self.render_to_response(context)
+        except signing.BadSignature:
+            return redirect('format:url_timeout')
 
     def get_context_data(self, **kwargs):
         context = super(BaseUserSubscriptionView, self).get_context_data(**kwargs)
@@ -64,7 +70,7 @@ class BaseUserSubscriptionView(BaseUserOperationView):
         parking_lot = contract.parking_lot
         parking_position = contract.parking_position
         context.update({
-            'user_subscription': self.get_user_subscription(),
+            'user_subscription': self.get_user_subscription(contract),
             'contract': contract,
             'parking_lot': parking_lot,
             'parking_position': parking_position,
@@ -74,18 +80,16 @@ class BaseUserSubscriptionView(BaseUserOperationView):
     def get_steps(self, signature=None):
         return biz.get_user_subscription_steps(signature)
 
-    def get_user_subscription(self):
+    def get_user_subscription(self, contract):
         """ユーザー申込み情報を取得する。
 
         :return:
         """
         if 'user_subscription' in self.request.session:
             data = self.request.session['user_subscription']
-            return Subscription(**data)
         else:
-            user_subscription = Subscription()
-            self.set_user_subscription(user_subscription)
-            return user_subscription
+            data = self.set_user_subscription(contract.subscription)
+        return Subscription(**data)
 
     def set_user_subscription(self, user_subscription):
         """ユーザー申込み情報をセッションに保存する
@@ -95,6 +99,7 @@ class BaseUserSubscriptionView(BaseUserOperationView):
         """
         serializer = SubscriptionSerializer(user_subscription)
         self.request.session['user_subscription'] = serializer.data
+        return serializer.data
 
 
 class UserSubscriptionStep1View(BaseUserSubscriptionView):
@@ -358,6 +363,11 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
         task = context.get('task')
         contract = task.process.content_object
         user_subscription = context.get('user_subscription')
+        # 申込みデータをＤＢに保存
+        user_subscription.status = '02'     # 申込み完了
+        user_subscription.save()
+        self.set_user_subscription(user_subscription)
+        # 通知（メールとプッシュ）
         parking_lot = context.get('parking_lot')
         mail_group = MailGroup.get_subscription_completed_group()
         data = user_subscription.get_subscription_completed_addressee()
@@ -377,6 +387,13 @@ class UserSubscriptionStep5View(BaseUserSubscriptionView):
 
     def get_context_data(self, **kwargs):
         context = super(UserSubscriptionStep5View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[4]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+            'is_finished': True
+        })
         return context
 
 

@@ -23,6 +23,10 @@ main {
         margin-left: 0 !important;
     }
 }
+/*************** Fixed Header ****************/
+table.fixedHeader-floating th {
+    font-size: 13px;
+}
 /**************** サイドバー *****************/
 .side-nav.fixed .userView {
     min-height: 100px !important;

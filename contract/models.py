@@ -205,7 +205,7 @@ class Subscription(AbstractUser, AbstractCar):
 
 
 class ContractorCar(AbstractCar):
-    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, verbose_name="契約者")
 
     class Meta:
         db_table = 'ap_contractor_car'

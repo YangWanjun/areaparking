@@ -30,7 +30,7 @@ self.addEventListener("push", function(event) {
                     throw new Error('The API returned an error. Status Code: ' + response.status);
                 }
                 return response.json().then(function(notifications) {
-                    self.registration.showNotification(notifications.title, {
+                    return self.registration.showNotification(notifications.title, {
                         body: notifications.message,
                         icon: icon,
                         data: { url: notifications.url },
