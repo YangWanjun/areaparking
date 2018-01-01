@@ -386,6 +386,7 @@ $(document).ready(function(){
                 subscription_url += $("#chkSubscription").attr("data-task-url") + ",";
             }
             $("#hidSubscriptionUrl").val(subscription_url);
+            ebjs.material.reset_mce_data_href();
         },
         complete: function(obj) {
             //alert('Closed');

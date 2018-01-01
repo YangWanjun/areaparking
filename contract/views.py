@@ -98,11 +98,11 @@ class SendSubscriptionMail(BaseView):
             task.updated_user = request.user
             task.url_links = subscription_url
             task.save()
-            # 申込書確認のタスクを実施中とする
-            next_task = task.get_next_task()
-            if next_task:
-                next_task.status = '02'
-                next_task.save()
+            # # 申込書確認のタスクを実施中とする
+            # next_task = task.get_next_task()
+            # if next_task:
+            #     next_task.status = '02'
+            #     next_task.save()
             json = {
                 'error': False,
                 'updated_date': datetime.datetime.now(),

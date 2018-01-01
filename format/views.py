@@ -51,12 +51,11 @@ class BaseUserSubscriptionView(BaseUserOperationView):
 
     def get(self, request, *args, **kwargs):
         try:
-            if request.GET.get('is_new') is not None:
-                del request.session['user_subscription']
             context = self.get_context_data(**kwargs)
             # ステータスが「新規申込み」でない場合は申込み完了に飛ばす
-            user_subscription = context.get('user_subscription')
-            if user_subscription.status != '01' and context.get('is_finished') is False:
+            task = context.get('task')
+            subscription = task.process.content_object.subscription
+            if subscription.status != '01':
                 signature = kwargs.get('signature')
                 return redirect('format:user_subscription_step5', signature=signature)
             return self.render_to_response(context)
