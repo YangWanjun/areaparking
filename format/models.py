@@ -16,13 +16,13 @@ class Step(object):
 
     STEPS = {'①': 1, '②': 2, '③': 3, '④': 4, '⑤': 5, '⑥': 6, '⑦': 7, '⑧': 8}
 
-    def __init__(self, step, name, prev_step=None, next_step=None, signature=None):
+    def __init__(self, step, name, prev_step=None, next_step=None, url_kwargs=None):
         self.step = step
         self.name = name
         self.prev_step = prev_step
         self.next_step = next_step
         self.is_finished = False
-        self.signature = signature
+        self.url_kwargs = url_kwargs
 
     def to_json(self, level=0):
         return {
@@ -40,7 +40,7 @@ class Step(object):
 
     def url(self):
         url_name = 'format:user_subscription_step%s' % self.STEPS.get(self.step)
-        return reverse(url_name, args=(self.signature,))
+        return reverse(url_name, kwargs=self.url_kwargs)
 
     def __str__(self):
         return self.name

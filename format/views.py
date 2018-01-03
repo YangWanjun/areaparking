@@ -1,15 +1,12 @@
-import datetime
-
 from django.core import signing
-from django.core.files.base import ContentFile
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 
-from . import biz, models
+from . import biz
 from contract.serializers import SubscriptionSerializer
-from contract.models import Task, ContractorCar, Subscription
+from contract.models import Task, Subscription
 from master.models import TransmissionRoute, MailGroup
-from utils import constants, common
+from utils import common
 from utils.app_base import get_unsigned_value, get_total_context, push_notification
 from utils.django_base import BaseView, BaseTemplateViewWithoutLogin
 
@@ -22,13 +19,15 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
     def get_context_data(self, **kwargs):
         context = super(BaseUserOperationView, self).get_context_data(**kwargs)
         signature = kwargs.get('signature')
+        pk = kwargs.get('pk')
         task_id = get_unsigned_value(signature)
         task = get_object_or_404(Task, pk=task_id)
 
-        steps = self.get_steps(signature)
+        steps = self.get_steps(signature, pk)
         self.request.session['steps'] = steps
         context.update({
             'task': task,
+            'pk': pk,
             'signature': signature,
             'steps': steps,
             'is_finished': False
@@ -43,7 +42,7 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
         except signing.BadSignature:
             return redirect('format:url_timeout')
 
-    def get_steps(self, signature=None):
+    def get_steps(self, signature=None, pk=None):
         pass
 
 
@@ -55,9 +54,9 @@ class BaseUserSubscriptionView(BaseUserOperationView):
             # ステータスが「新規申込み」でない場合は申込み完了に飛ばす
             task = context.get('task')
             subscription = task.process.content_object.subscription
-            if subscription.status != '01':
+            if subscription.status != '01' and context.get('is_finished') is False:
                 signature = kwargs.get('signature')
-                return redirect('format:user_subscription_step5', signature=signature)
+                return redirect('format:user_subscription_step5', signature=signature, pk=context.get('pk'))
             return self.render_to_response(context)
         except signing.BadSignature:
             return redirect('format:url_timeout')
@@ -69,25 +68,28 @@ class BaseUserSubscriptionView(BaseUserOperationView):
         parking_lot = contract.parking_lot
         parking_position = contract.parking_position
         context.update({
-            'user_subscription': self.get_user_subscription(contract),
+            'user_subscription': self.get_user_subscription(context.get('pk')),
             'contract': contract,
             'parking_lot': parking_lot,
             'parking_position': parking_position,
         })
         return context
 
-    def get_steps(self, signature=None):
-        return biz.get_user_subscription_steps(signature)
+    def get_steps(self, signature=None, subscription_pk=None):
+        return biz.get_user_subscription_steps(signature, pk=subscription_pk)
 
-    def get_user_subscription(self, contract):
+    def get_user_subscription(self, subscription_id):
         """ユーザー申込み情報を取得する。
 
         :return:
         """
+        subscription = get_object_or_404(Subscription, pk=subscription_id)
         if 'user_subscription' in self.request.session:
             data = self.request.session['user_subscription']
+            if str(data.get('code', 0)) != str(subscription_id):
+                data = self.set_user_subscription(subscription)
         else:
-            data = self.set_user_subscription(contract.subscription)
+            data = self.set_user_subscription(subscription)
         return Subscription(**data)
 
     def set_user_subscription(self, user_subscription):
@@ -173,7 +175,7 @@ class UserSubscriptionStep1View(BaseUserSubscriptionView):
             signature = context.get('signature')
             current_step = context.get('current_step')
             current_step.update({'is_finished': True})
-            return redirect('format:user_subscription_step2', signature=signature)
+            return redirect('format:user_subscription_step2', signature=signature, pk=context.get('pk'))
         else:
             context.update(errors)
             return self.render_to_response(context)
@@ -200,9 +202,9 @@ class UserSubscriptionStep2View(BaseUserSubscriptionView):
         user_subscription.category = contractor_category
         self.set_user_subscription(user_subscription)
         if contractor_category == '2':
-            return redirect('format:user_subscription_step3', signature=signature)
+            return redirect('format:user_subscription_step3', signature=signature, pk=context.get('pk'))
         elif contractor_category == '1':
-            return redirect('format:user_subscription_step3', signature=signature)
+            return redirect('format:user_subscription_step3', signature=signature, pk=context.get('pk'))
         else:
             context.update({
                 'contractor_corporate': ['法人か個人かをご選択してください。']
@@ -332,7 +334,7 @@ class UserSubscriptionStep3View(BaseUserSubscriptionView):
             # ユーザーが記入した情報を一時的にセッションに保存
             self.set_user_subscription(user_subscription)
             signature = context.get('signature')
-            return redirect('format:user_subscription_step4', signature=signature)
+            return redirect('format:user_subscription_step4', signature=signature, pk=context.get('pk'))
         else:
             context.update(errors)
             return self.render_to_response(context)
@@ -362,6 +364,8 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
         task = context.get('task')
         contract = task.process.content_object
         user_subscription = context.get('user_subscription')
+        # 申込PDF作成
+        biz.generate_subscription_pdf(request, **kwargs)
         # 申込みデータをＤＢに保存
         user_subscription.status = '02'     # 申込み完了
         user_subscription.save()
@@ -378,7 +382,7 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
             url=reverse('contract:tempcontract_detail', args=(contract.pk,)),
         )
         signature = kwargs.get('signature')
-        return redirect('format:user_subscription_step5', signature=signature)
+        return redirect('format:user_subscription_step5', signature=signature, pk=context.get('pk'))
 
 
 class UserSubscriptionStep5View(BaseUserSubscriptionView):
@@ -402,26 +406,26 @@ class SubscriptionConfirmView(BaseView):
         title, html = biz.get_subscription_confirm_html(request, **kwargs)
         return HttpResponse(html)
 
-    def post(self, request, *args, **kwargs):
-        signature = request.POST.get('hid_signature', None)
-        if not signature and 'hid_signature' in request.POST:
-            return JsonResponse({'error': True, 'message': constants.ERROR_REQUEST_SIGNATURE})
-        try:
-            kwargs.update({'signature': signature})
-            title, html = biz.get_subscription_confirm_html(request, **kwargs)
-            task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
-            data = biz.generate_report_pdf_binary(html)
-            # 申込書確認のタスクに作成したＰＤＦファイルを追加する。
-            for report in task.reports.filter(name=constants.REPORT_SUBSCRIPTION_CONFIRM):
-                report.delete()
-            content_file = ContentFile(data.getvalue(), name='subscription.pdf')
-            report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION_CONFIRM,
-                                            path=content_file)
-            report_file.save()
-            return JsonResponse({'error': False, 'message': '成功しました。'})
-        except Exception as ex:
-            logger.error(ex)
-            return JsonResponse({'error': True, 'message': str(ex)})
+    # def post(self, request, *args, **kwargs):
+    #     signature = request.POST.get('hid_signature', None)
+    #     if not signature and 'hid_signature' in request.POST:
+    #         return JsonResponse({'error': True, 'message': constants.ERROR_REQUEST_SIGNATURE})
+    #     try:
+    #         kwargs.update({'signature': signature})
+    #         title, html = biz.get_subscription_confirm_html(request, **kwargs)
+    #         task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
+    #         data = biz.generate_report_pdf_binary(html)
+    #         # 申込書確認のタスクに作成したＰＤＦファイルを追加する。
+    #         for report in task.reports.filter(name=constants.REPORT_SUBSCRIPTION_CONFIRM):
+    #             report.delete()
+    #         content_file = ContentFile(data.getvalue(), name='subscription.pdf')
+    #         report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION_CONFIRM,
+    #                                         path=content_file)
+    #         report_file.save()
+    #         return JsonResponse({'error': False, 'message': '成功しました。'})
+    #     except Exception as ex:
+    #         logger.error(ex)
+    #         return JsonResponse({'error': True, 'message': str(ex)})
 
 
 class SubscriptionView(BaseView):
@@ -430,194 +434,194 @@ class SubscriptionView(BaseView):
         title, html = biz.get_subscription_html(request, **kwargs)
         return HttpResponse(html)
 
-    def post(self, request, *args, **kwargs):
-        task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
-        contractor = task.process.content_object.contractor
-        contract = task.process.content_object
-        message_list = []
-        errors = {'error': False, 'message_list': message_list}
-        # 車庫証明
-        rdo_receipt = request.POST.get('rdo_receipt')
-        # 駐車する車
-        txt_car_maker = request.POST.get('txt_car_maker') or None
-        txt_car_model = request.POST.get('txt_car_model') or None
-        txt_no_plate = request.POST.get('txt_no_plate') or None
-        txt_car_length = request.POST.get('txt_car_length') or None
-        txt_car_width = request.POST.get('txt_car_width') or None
-        txt_car_height = request.POST.get('txt_car_height') or None
-        txt_car_weight = request.POST.get('txt_car_weight') or None
-        if txt_car_maker or txt_car_model:
-            car = ContractorCar(contractor=contractor, car_maker=txt_car_maker, car_model=txt_car_model)
-            car.car_no_plate = txt_no_plate
-            car.car_length = txt_car_length
-            car.car_width = txt_car_width
-            car.car_height = txt_car_height
-            car.car_weight = txt_car_weight
-        else:
-            car = None
-        # 希望契約開始日
-        txt_contract_start_date = request.POST.get('txt_contract_start_date') or None
-        if txt_contract_start_date:
-            try:
-                contract.start_date = datetime.datetime.strptime(txt_contract_start_date, '%Y-%m-%d').date()
-            except Exception as ex:
-                errors.update({
-                    'error': True,
-                    'txt_contract_start_date': ['不正の日付が入力されています。']
-                })
-                message_list.append(str(ex))
-        else:
-            errors.update({
-                'error': True,
-                'txt_contract_start_date': ['希望契約開始日は必須項目です。']
-            })
-        # 希望契約期間
-        rdo_contract_period = request.POST.get('rdo_contract_period')
-        if rdo_contract_period:
-            if rdo_contract_period == 'long':
-                contract.end_date = contract.get_contract_end_date()
-        else:
-            errors.update({
-                'error': True,
-                'txt_contract_start_date': ['希望契約期間は必須項目です。']
-            })
-        rdo_contractor_type = request.POST.get('rdo_contractor_type')
-        if rdo_contractor_type == '2':
-            # 法人連絡先
-            txt_corporate_kana = request.POST.get('txt_corporate_kana') or None
-            txt_corporate_name = request.POST.get('txt_corporate_name') or None
-            txt_corporate_president = request.POST.get('txt_corporate_president') or None
-            txt_corporate_post1 = request.POST.get('txt_corporate_post1') or None
-            txt_corporate_post2 = request.POST.get('txt_corporate_post2') or None
-            txt_corporate_address1 = request.POST.get('txt_corporate_address1') or None
-            txt_corporate_address2 = request.POST.get('txt_corporate_address2') or None
-            txt_corporate_tel = request.POST.get('txt_corporate_tel') or None
-            txt_corporate_fax = request.POST.get('txt_corporate_fax') or None
-            txt_corporate_business_type = request.POST.get('txt_corporate_business_type') or None
-            contractor.kana = txt_corporate_kana
-            if txt_corporate_name:
-                contractor.name = txt_corporate_name
-            else:
-                errors.update({
-                    'error': True,
-                    'txt_corporate_name': ['法人名は必須項目です。']
-                })
-            contractor.corporate_president = txt_corporate_president
-            if txt_corporate_post1 and txt_corporate_post2:
-                contractor.post_code = '%s-%s' % (txt_corporate_post1, txt_corporate_post2)
-            contractor.address1 = txt_corporate_address1
-            contractor.address2 = txt_corporate_address2
-            contractor.tel = txt_corporate_tel
-            contractor.fax = txt_corporate_fax
-            contractor.corporate_business_type = txt_corporate_business_type
-            # 法人（契約担当者）
-            txt_corporate_staff_kana = request.POST.get('txt_corporate_staff_kana') or None
-            txt_corporate_staff_name = request.POST.get('txt_corporate_staff_name') or None
-            txt_corporate_staff_email = request.POST.get('txt_corporate_staff_email') or None
-            txt_corporate_staff_tel = request.POST.get('txt_corporate_staff_tel') or None
-            txt_corporate_staff_fax = request.POST.get('txt_corporate_staff_fax') or None
-            txt_corporate_staff_phone = request.POST.get('txt_corporate_staff_phone') or None
-            contractor.corporate_staff_kana = txt_corporate_staff_kana
-            contractor.corporate_staff_name = txt_corporate_staff_name
-            contractor.email = txt_corporate_staff_email
-            contractor.tel = txt_corporate_staff_tel
-            contractor.fax = txt_corporate_staff_fax
-            contractor.corporate_staff_phone = txt_corporate_staff_phone
-            # 法人（緊急連絡先）
-            txt_corporate_contact_tel = request.POST.get('txt_corporate_contact_tel') or None
-            txt_corporate_contact_name = request.POST.get('txt_corporate_contact_name') or None
-            txt_corporate_contact_relation = request.POST.get('txt_corporate_contact_relation') or None
-            contractor.contact_name = txt_corporate_contact_name
-            contractor.contact_tel = txt_corporate_contact_tel
-            contractor.contact_relation = txt_corporate_contact_relation
-        elif rdo_contractor_type == '1':
-            # 個人連絡先
-            txt_personal_kana = request.POST.get('txt_personal_kana') or None
-            txt_personal_name = request.POST.get('txt_personal_name') or None
-            txt_personal_birthday = request.POST.get('txt_personal_birthday') or None
-            txt_personal_post1 = request.POST.get('txt_personal_post1') or None
-            txt_personal_post2 = request.POST.get('txt_personal_post2') or None
-            txt_personal_address1 = request.POST.get('txt_personal_address1') or None
-            txt_personal_address2 = request.POST.get('txt_personal_address2') or None
-            txt_personal_tel = request.POST.get('txt_personal_tel') or None
-            txt_personal_email = request.POST.get('txt_personal_email') or None
-            contractor.kana = txt_personal_kana
-            if txt_personal_name:
-                contractor.name = txt_personal_name
-            else:
-                errors.update({
-                    'error': True,
-                    'txt_personal_name': ['氏名は必須項目です。']
-                })
-            contractor.personal_birthday = txt_personal_birthday
-            if txt_personal_post1 and txt_personal_post2:
-                contractor.post_code = '%s-%s' % (txt_personal_post1, txt_personal_post2)
-            contractor.address1 = txt_personal_address1
-            contractor.address2 = txt_personal_address2
-            contractor.tel = txt_personal_tel
-            contractor.email = txt_personal_email
-            # 個人（勤務先）
-            txt_workplace_name = request.POST.get('txt_workplace_name') or None
-            txt_workplace_address1 = request.POST.get('txt_workplace_address1') or None
-            txt_workplace_address2 = request.POST.get('txt_workplace_address2') or None
-            txt_workplace_tel = request.POST.get('txt_workplace_tel') or None
-            txt_workplace_fax = request.POST.get('txt_workplace_fax') or None
-            contractor.workplace_name = txt_workplace_name
-            contractor.workplace_address1 = txt_workplace_address1
-            contractor.workplace_address2 = txt_workplace_address2
-            contractor.workplace_tel = txt_workplace_tel
-            contractor.workplace_fax = txt_workplace_fax
-            # 個人（緊急連絡先）
-            txt_personal_contact_tel = request.POST.get('txt_personal_contact_tel') or None
-            txt_personal_contact_name = request.POST.get('txt_personal_contact_name') or None
-            txt_personal_contact_relation = request.POST.get('txt_personal_contact_relation') or None
-            contractor.contact_name = txt_personal_contact_name
-            contractor.contact_tel = txt_personal_contact_tel
-            contractor.contact_relation = txt_personal_contact_relation
-        else:
-            errors.update({
-                'error': True,
-                'rdo_contractor_type': ['法人か個人か選択してください。']
-            })
-        # 媒介
-        chk_route_flier = request.POST.get('chk_route_flier')
-        chk_route_internet = request.POST.get('chk_route_internet')
-        chk_route_board = request.POST.get('chk_route_board')
-        chk_route_news = request.POST.get('chk_route_news')
-        chk_route_estate = request.POST.get('chk_route_estate')
-        chk_route_introduced = request.POST.get('chk_route_introduced')
-        chk_route_other = request.POST.get('chk_route_other')
-        txt_route_other = request.POST.get('txt_route_other')
-        # 順番待ち
-        rdo_waiting = request.POST.get('rdo_waiting')
-        if rdo_waiting == 'yes':
-            pass
-        elif rdo_waiting == 'no':
-            pass
-
-        if errors.get('error') is False:
-            try:
-                if car:
-                    car.save()
-                    contract.car = car
-                contract.save()
-                contractor.save()
-                # PDF作成
-                kwargs.update({'contractor': contractor, 'contract': contract})
-                title, html = biz.get_subscription_html(request, **kwargs)
-                data = biz.generate_report_pdf_binary(html)
-                # 申込書確認のタスクに作成したＰＤＦファイルを追加する。
-                for report in task.reports.filter(name=constants.REPORT_SUBSCRIPTION):
-                    report.delete()
-                content_file = ContentFile(data.getvalue(), name='subscription.pdf')
-                report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION,
-                                                path=content_file)
-                report_file.save()
-                errors.update({'error': False, 'message': '成功しました。'})
-            except Exception as ex:
-                logger.error(ex)
-                errors.update({'error': True, 'message': str(ex)})
-        return JsonResponse(errors)
+    # def post(self, request, *args, **kwargs):
+    #     task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
+    #     contractor = task.process.content_object.contractor
+    #     contract = task.process.content_object
+    #     message_list = []
+    #     errors = {'error': False, 'message_list': message_list}
+    #     # 車庫証明
+    #     rdo_receipt = request.POST.get('rdo_receipt')
+    #     # 駐車する車
+    #     txt_car_maker = request.POST.get('txt_car_maker') or None
+    #     txt_car_model = request.POST.get('txt_car_model') or None
+    #     txt_no_plate = request.POST.get('txt_no_plate') or None
+    #     txt_car_length = request.POST.get('txt_car_length') or None
+    #     txt_car_width = request.POST.get('txt_car_width') or None
+    #     txt_car_height = request.POST.get('txt_car_height') or None
+    #     txt_car_weight = request.POST.get('txt_car_weight') or None
+    #     if txt_car_maker or txt_car_model:
+    #         car = ContractorCar(contractor=contractor, car_maker=txt_car_maker, car_model=txt_car_model)
+    #         car.car_no_plate = txt_no_plate
+    #         car.car_length = txt_car_length
+    #         car.car_width = txt_car_width
+    #         car.car_height = txt_car_height
+    #         car.car_weight = txt_car_weight
+    #     else:
+    #         car = None
+    #     # 希望契約開始日
+    #     txt_contract_start_date = request.POST.get('txt_contract_start_date') or None
+    #     if txt_contract_start_date:
+    #         try:
+    #             contract.start_date = datetime.datetime.strptime(txt_contract_start_date, '%Y-%m-%d').date()
+    #         except Exception as ex:
+    #             errors.update({
+    #                 'error': True,
+    #                 'txt_contract_start_date': ['不正の日付が入力されています。']
+    #             })
+    #             message_list.append(str(ex))
+    #     else:
+    #         errors.update({
+    #             'error': True,
+    #             'txt_contract_start_date': ['希望契約開始日は必須項目です。']
+    #         })
+    #     # 希望契約期間
+    #     rdo_contract_period = request.POST.get('rdo_contract_period')
+    #     if rdo_contract_period:
+    #         if rdo_contract_period == 'long':
+    #             contract.end_date = contract.get_contract_end_date()
+    #     else:
+    #         errors.update({
+    #             'error': True,
+    #             'txt_contract_start_date': ['希望契約期間は必須項目です。']
+    #         })
+    #     rdo_contractor_type = request.POST.get('rdo_contractor_type')
+    #     if rdo_contractor_type == '2':
+    #         # 法人連絡先
+    #         txt_corporate_kana = request.POST.get('txt_corporate_kana') or None
+    #         txt_corporate_name = request.POST.get('txt_corporate_name') or None
+    #         txt_corporate_president = request.POST.get('txt_corporate_president') or None
+    #         txt_corporate_post1 = request.POST.get('txt_corporate_post1') or None
+    #         txt_corporate_post2 = request.POST.get('txt_corporate_post2') or None
+    #         txt_corporate_address1 = request.POST.get('txt_corporate_address1') or None
+    #         txt_corporate_address2 = request.POST.get('txt_corporate_address2') or None
+    #         txt_corporate_tel = request.POST.get('txt_corporate_tel') or None
+    #         txt_corporate_fax = request.POST.get('txt_corporate_fax') or None
+    #         txt_corporate_business_type = request.POST.get('txt_corporate_business_type') or None
+    #         contractor.kana = txt_corporate_kana
+    #         if txt_corporate_name:
+    #             contractor.name = txt_corporate_name
+    #         else:
+    #             errors.update({
+    #                 'error': True,
+    #                 'txt_corporate_name': ['法人名は必須項目です。']
+    #             })
+    #         contractor.corporate_president = txt_corporate_president
+    #         if txt_corporate_post1 and txt_corporate_post2:
+    #             contractor.post_code = '%s-%s' % (txt_corporate_post1, txt_corporate_post2)
+    #         contractor.address1 = txt_corporate_address1
+    #         contractor.address2 = txt_corporate_address2
+    #         contractor.tel = txt_corporate_tel
+    #         contractor.fax = txt_corporate_fax
+    #         contractor.corporate_business_type = txt_corporate_business_type
+    #         # 法人（契約担当者）
+    #         txt_corporate_staff_kana = request.POST.get('txt_corporate_staff_kana') or None
+    #         txt_corporate_staff_name = request.POST.get('txt_corporate_staff_name') or None
+    #         txt_corporate_staff_email = request.POST.get('txt_corporate_staff_email') or None
+    #         txt_corporate_staff_tel = request.POST.get('txt_corporate_staff_tel') or None
+    #         txt_corporate_staff_fax = request.POST.get('txt_corporate_staff_fax') or None
+    #         txt_corporate_staff_phone = request.POST.get('txt_corporate_staff_phone') or None
+    #         contractor.corporate_staff_kana = txt_corporate_staff_kana
+    #         contractor.corporate_staff_name = txt_corporate_staff_name
+    #         contractor.email = txt_corporate_staff_email
+    #         contractor.tel = txt_corporate_staff_tel
+    #         contractor.fax = txt_corporate_staff_fax
+    #         contractor.corporate_staff_phone = txt_corporate_staff_phone
+    #         # 法人（緊急連絡先）
+    #         txt_corporate_contact_tel = request.POST.get('txt_corporate_contact_tel') or None
+    #         txt_corporate_contact_name = request.POST.get('txt_corporate_contact_name') or None
+    #         txt_corporate_contact_relation = request.POST.get('txt_corporate_contact_relation') or None
+    #         contractor.contact_name = txt_corporate_contact_name
+    #         contractor.contact_tel = txt_corporate_contact_tel
+    #         contractor.contact_relation = txt_corporate_contact_relation
+    #     elif rdo_contractor_type == '1':
+    #         # 個人連絡先
+    #         txt_personal_kana = request.POST.get('txt_personal_kana') or None
+    #         txt_personal_name = request.POST.get('txt_personal_name') or None
+    #         txt_personal_birthday = request.POST.get('txt_personal_birthday') or None
+    #         txt_personal_post1 = request.POST.get('txt_personal_post1') or None
+    #         txt_personal_post2 = request.POST.get('txt_personal_post2') or None
+    #         txt_personal_address1 = request.POST.get('txt_personal_address1') or None
+    #         txt_personal_address2 = request.POST.get('txt_personal_address2') or None
+    #         txt_personal_tel = request.POST.get('txt_personal_tel') or None
+    #         txt_personal_email = request.POST.get('txt_personal_email') or None
+    #         contractor.kana = txt_personal_kana
+    #         if txt_personal_name:
+    #             contractor.name = txt_personal_name
+    #         else:
+    #             errors.update({
+    #                 'error': True,
+    #                 'txt_personal_name': ['氏名は必須項目です。']
+    #             })
+    #         contractor.personal_birthday = txt_personal_birthday
+    #         if txt_personal_post1 and txt_personal_post2:
+    #             contractor.post_code = '%s-%s' % (txt_personal_post1, txt_personal_post2)
+    #         contractor.address1 = txt_personal_address1
+    #         contractor.address2 = txt_personal_address2
+    #         contractor.tel = txt_personal_tel
+    #         contractor.email = txt_personal_email
+    #         # 個人（勤務先）
+    #         txt_workplace_name = request.POST.get('txt_workplace_name') or None
+    #         txt_workplace_address1 = request.POST.get('txt_workplace_address1') or None
+    #         txt_workplace_address2 = request.POST.get('txt_workplace_address2') or None
+    #         txt_workplace_tel = request.POST.get('txt_workplace_tel') or None
+    #         txt_workplace_fax = request.POST.get('txt_workplace_fax') or None
+    #         contractor.workplace_name = txt_workplace_name
+    #         contractor.workplace_address1 = txt_workplace_address1
+    #         contractor.workplace_address2 = txt_workplace_address2
+    #         contractor.workplace_tel = txt_workplace_tel
+    #         contractor.workplace_fax = txt_workplace_fax
+    #         # 個人（緊急連絡先）
+    #         txt_personal_contact_tel = request.POST.get('txt_personal_contact_tel') or None
+    #         txt_personal_contact_name = request.POST.get('txt_personal_contact_name') or None
+    #         txt_personal_contact_relation = request.POST.get('txt_personal_contact_relation') or None
+    #         contractor.contact_name = txt_personal_contact_name
+    #         contractor.contact_tel = txt_personal_contact_tel
+    #         contractor.contact_relation = txt_personal_contact_relation
+    #     else:
+    #         errors.update({
+    #             'error': True,
+    #             'rdo_contractor_type': ['法人か個人か選択してください。']
+    #         })
+    #     # 媒介
+    #     chk_route_flier = request.POST.get('chk_route_flier')
+    #     chk_route_internet = request.POST.get('chk_route_internet')
+    #     chk_route_board = request.POST.get('chk_route_board')
+    #     chk_route_news = request.POST.get('chk_route_news')
+    #     chk_route_estate = request.POST.get('chk_route_estate')
+    #     chk_route_introduced = request.POST.get('chk_route_introduced')
+    #     chk_route_other = request.POST.get('chk_route_other')
+    #     txt_route_other = request.POST.get('txt_route_other')
+    #     # 順番待ち
+    #     rdo_waiting = request.POST.get('rdo_waiting')
+    #     if rdo_waiting == 'yes':
+    #         pass
+    #     elif rdo_waiting == 'no':
+    #         pass
+    #
+    #     if errors.get('error') is False:
+    #         try:
+    #             if car:
+    #                 car.save()
+    #                 contract.car = car
+    #             contract.save()
+    #             contractor.save()
+    #             # PDF作成
+    #             kwargs.update({'contractor': contractor, 'contract': contract})
+    #             title, html = biz.get_subscription_html(request, **kwargs)
+    #             data = biz.generate_report_pdf_binary(html)
+    #             # 申込書確認のタスクに作成したＰＤＦファイルを追加する。
+    #             for report in task.reports.filter(name=constants.REPORT_SUBSCRIPTION):
+    #                 report.delete()
+    #             content_file = ContentFile(data.getvalue(), name='subscription.pdf')
+    #             report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION,
+    #                                             path=content_file)
+    #             report_file.save()
+    #             errors.update({'error': False, 'message': '成功しました。'})
+    #         except Exception as ex:
+    #             logger.error(ex)
+    #             errors.update({'error': True, 'message': str(ex)})
+    #     return JsonResponse(errors)
 
 
 class GenerateSubscriptionConfirmPdfView(BaseView):

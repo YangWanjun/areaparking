@@ -20,7 +20,9 @@ class Index(BaseView):
 class TempContractDetailView(BaseDetailModelView):
     def get_context_data(self, **kwargs):
         context = super(TempContractDetailView, self).get_context_data(**kwargs)
+        subscription = self.object.subscription
         context.update({
+            'subscription': subscription,
             'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
             'subscription_template': ReportSubscription.get_default_report(),
             'change_url': reverse('admin:contract_contract_change', args=(self.object.pk,)) + '?_popup=1',

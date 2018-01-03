@@ -1,7 +1,7 @@
 import os
-import json
 from io import BytesIO
 
+from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from django.template import Context, Template
 from django.template.context_processors import csrf
@@ -72,18 +72,47 @@ def generate_report_pdf_binary(html):
             os.remove(temp_file)
 
 
-def get_user_subscription_steps(signature=None):
+def get_user_subscription_steps(signature=None, pk=None):
     """ユーザー申込みのステップ数
 
     :return:
     """
-    step1 = models.Step(step="①", name="申込み基本情報", signature=signature)
-    step2 = models.Step(step="②", name="申込者分類選択", prev_step=step1, signature=signature)
-    step3 = models.Step(step="③", name="申込者情報入力", prev_step=step2, signature=signature)
-    step4 = models.Step(step="④", name="申込み確認", prev_step=step3, signature=signature)
-    step5 = models.Step(step="⑤", name="申込み完了", prev_step=step4, signature=signature)
+    url_kwargs = {'signature': signature, 'pk': pk}
+    step1 = models.Step(step="①", name="申込み基本情報", url_kwargs=url_kwargs)
+    step2 = models.Step(step="②", name="申込者分類選択", prev_step=step1, url_kwargs=url_kwargs)
+    step3 = models.Step(step="③", name="申込者情報入力", prev_step=step2, url_kwargs=url_kwargs)
+    step4 = models.Step(step="④", name="申込み確認", prev_step=step3, url_kwargs=url_kwargs)
+    step5 = models.Step(step="⑤", name="申込み完了", prev_step=step4, url_kwargs=url_kwargs)
     step1.next_step = step2
     step2.next_step = step3
     step3.next_step = step4
     step4.next_step = step5
-    return [step1.to_json(), step2.to_json(), step3.to_json(), step4.to_json(), step5.to_json(),]
+    return [step1.to_json(), step2.to_json(), step3.to_json(), step4.to_json(), step5.to_json()]
+
+
+def generate_subscription_pdf(request, **kwargs):
+    """ユーザー申込完了時、申込確認書と申込書のPDFを作成する。
+
+    :param request:
+    :param kwargs:
+    :return:
+    """
+    # 申込確認書のＰＤＦファイルを追加する。
+    title, html = get_subscription_confirm_html(request, **kwargs)
+    task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
+    data = generate_report_pdf_binary(html)
+    for report in task.reports.filter(name=constants.REPORT_SUBSCRIPTION_CONFIRM):
+        report.delete()
+    content_file = ContentFile(data.getvalue(), name='subscription.pdf')
+    report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION_CONFIRM,
+                                    path=content_file)
+    report_file.save()
+    # 申込書のＰＤＦファイルを追加する。
+    title, html = get_subscription_html(request, **kwargs)
+    data = generate_report_pdf_binary(html)
+    for report in task.reports.filter(name=constants.REPORT_SUBSCRIPTION):
+        report.delete()
+    content_file = ContentFile(data.getvalue(), name='subscription.pdf')
+    report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION,
+                                    path=content_file)
+    report_file.save()

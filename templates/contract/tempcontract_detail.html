@@ -35,7 +35,7 @@
                 {% if object.contractor %}
                 <a class="waves-effect waves-light btn white-text popup" href="{% url 'admin:contract_contractor_change' object.contractor.pk %}?_popup=1">契約者変更</a>
                 {% else %}
-                <a class="waves-effect waves-light btn white-text popup" href="{% url 'admin:contract_subscription_change' object.subscription.pk %}?_popup=1">申込者変更</a>
+                <a class="waves-effect waves-light btn white-text popup" href="{% url 'admin:contract_subscription_change' subscription.pk %}?_popup=1">申込者変更</a>
                 {% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
@@ -159,20 +159,22 @@
                             </div>
                         {% elif task.category == "011" %}
                             <!-- 申込書確認 -->
-                            {% for report_file in task.reports.all %}
-                                <div class="row" style="margin-bottom: 5px;">
-                                    <div class="col s4">
-                                        <a target="_blank" href="{{ MEDIA_URL }}{{ report_file.path }}">{{ report_file.name }}</a>
-                                    </div>
-                                    <div class="col s8">申込み日時：{{ report_file.updated_date }} </div>
-                                </div>
-                            {% empty %}
+                            {% if subscription.status == '01' %}
                                 <div class="row" style="margin-bottom: 5px;">
                                     <div class="col s12">
                                         <span class="red-text">ユーザーはまだ申込みされていません。</span>
                                     </div>
                                 </div>
-                            {% endfor %}
+                            {% else %}
+                                {% for report_file in task.reports.all %}
+                                    <div class="row" style="margin-bottom: 5px;">
+                                        <div class="col s4">
+                                            <a target="_blank" href="{{ MEDIA_URL }}{{ report_file.path }}">{{ report_file.name }}</a>
+                                        </div>
+                                        <div class="col s8">申込み日時：{{ report_file.updated_date }} </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
                         {% elif task.category == '030' %}
                             <!-- 住所・電話番号 審査・確認 -->
                             <div class="row" style="margin-bottom: 5px;">
@@ -327,7 +329,7 @@
                             <div class="col s12 right-align">
                                 {% if task.category == "010" %}
                                     <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
-                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped {% if object.contract.subscription and object.contract.subscription.status != '01' %}disabled{%endif%}" >
+                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped {% if subscription and subscription.status != '01' %}disabled{%endif%}" >
                                         <i class="tiny material-icons">send</i>
                                     </a>
                                 {% elif task.category == "100" %}
@@ -412,7 +414,7 @@ function subscription_sent_success_fn(result) {
         $(obj).next().addClass('disabled');
         $(obj).next().next().addClass('disabled');
         // 次のタスクを実施中にする
-        ebjs.material.set_task_status($(obj).closest('li').next(), '02');
+        //ebjs.material.set_task_status($(obj).closest('li').next(), '02');
         // 進捗更新
         ebjs.material.update_task_info(obj, '99');
         // 前回送信時間と送信者

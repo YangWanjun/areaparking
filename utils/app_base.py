@@ -87,7 +87,7 @@ def get_contractor_context(contractor):
 def get_subscription_context(subscription):
     """テンプレートに出力する契約者の情報
 
-    :param contractor:
+    :param subscription:
     :return:
     """
     if subscription:
@@ -104,7 +104,17 @@ def get_subscription_context(subscription):
 
 
 def get_user_subscription_url(task):
-    url = reverse('format:user_subscription_step1', kwargs={'signature': task.get_signed_pk()}) + '?is_new=True'
+    """ユーザー申込時のURLを取得する。
+
+    :param task:
+    :return:
+    """
+    subscription = task.process.content_object.subscription
+    if subscription:
+        pk = subscription.pk
+    else:
+        pk = 0
+    url = reverse('format:user_subscription_step1', kwargs={'signature': task.get_signed_pk(), 'pk': pk})
     domain_name = Config.get_domain_name()
     return {'user_subscription_url': urljoin(domain_name, url)}
 
