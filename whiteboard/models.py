@@ -46,7 +46,11 @@ class WhiteBoard(BaseViewModel):
             # 空き
             return '01'
 
+    def operation(self):
+        return ''
+
     is_empty.short_description = '空き'
+    operation.short_description = ''
 
 
 class WhiteBoardPosition(BaseViewModel):

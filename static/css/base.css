@@ -125,3 +125,7 @@ div.loading .preloader-wrapper {
   font-weight: bold !important;
   padding: 0px !important;
 }
+/**************** Datatableのサーチボックス  *****************/
+.dataTables_filter {
+    display: none;
+}

@@ -1,7 +1,11 @@
 import sys
 import json
+import operator
+
+from functools import reduce
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
@@ -36,12 +40,12 @@ class WhiteBoardListView(ListModelView):
 
     def get_queryset(self, *args, **kwargs):
         queryset = super(WhiteBoardListView, self).get_queryset()
-        # q = self.request.POST.get('datatable-search[value]', None)
-        # if q:
-        #     orm_lookups = ['bk_no__icontains', 'bk_name__icontains', 'address__icontains', 'tanto_name__icontains']
-        #     for bit in q.split():
-        #         or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
-        #         queryset = queryset.filter(reduce(operator.or_, or_queries))
+        q = self.request.GET.get('datatable-search[value]', None)
+        if q:
+            orm_lookups = ['name__icontains', 'address__icontains', 'staff__first_name__icontains', 'staff__last_name__icontains']
+            for bit in q.split():
+                or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
         return queryset
 
     # def dispatch(self, request, *args, **kwargs):
@@ -59,14 +63,10 @@ class WhiteBoardListView(ListModelView):
     #         handler = self.http_method_not_allowed
     #     return handler(request, *args, **kwargs)
 
-    # def get_datatable_config(self):
-    #     config = super(WhiteBoardListView, self).get_datatable_config()
-    #     config['sServerMethod'] = 'POST'
-    #     headers = {'X-CSRFToken': get_token(self.request)}
-    #     config['ajax'].update({
-    #         'headers': headers,
-    #     })
-    #     return config
+    def get_datatable_config(self):
+        config = super(WhiteBoardListView, self).get_datatable_config()
+        config['searching'] = True
+        return config
 
 
 class WhiteBoardDetailView(DetailModelView):
@@ -85,7 +85,7 @@ class WhiteBoardViewSet(ModelViewSet):
     list_display = (
         'code', 'name', 'staff', 'category', 'address', 'is_empty', 'position_count', 'contract_count',
         'temp_contract_count', 'waiting_count', 'is_existed_contractor_allowed', 'is_new_contractor_allowed',
-        'free_end_date',
+        'free_end_date', 'operation',
     )
     list_display_links = ('id', 'name')
     list_view_class = WhiteBoardListView

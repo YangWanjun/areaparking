@@ -22,20 +22,24 @@
     request.setRequestHeader("datatable", true);
   };
   config['columnDefs'] = [{
-    "targets": 5,
+    "targets": [5, 13],
     "createdCell": function (td, cellData, rowData, row, col) {
       var html;
-      if (cellData === '01') {
-        html = '<span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>';
-      } else if (cellData === '02') {
-        html = '<span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>';
-      } else if (cellData === '03') {
-        html = '<span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span>';
-      } else {
-        html = cellData;
+      if (col == 5) {
+          if (cellData === '01') {
+            html = '<span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>';
+          } else if (cellData === '02') {
+            html = '<span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>';
+          } else if (cellData === '03') {
+            html = '<span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span>';
+          } else {
+            html = cellData;
+          }
+          $(td).html(html);
+          $(td).css("padding", "0px");
+      } else if (col == 13) {
+          ebjs.material.collapse_parking_lot(td, rowData.code);
       }
-      $(td).html(html);
-      $(td).css("padding", "0px");
     }
   }];
   $(document).one("turbolinks:load", function() {
@@ -45,6 +49,11 @@
 
       $(document).one("turbolinks:before-cache", function() {
         datatable.destroy();
+      });
+
+      $("#changelist-search-button").click(function() {
+        var txt = $("#searchbar").val();
+        datatable.search( txt ).draw();
       });
     }
   });
@@ -84,7 +93,12 @@
     </div>
 </div>
 {% endblock left-panel %}
-{% block right-panel %}{% endblock right-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/filter.html' %}
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
 {% block action_btn %}
 <div class="fixed-action-btn">
     {% if add_url %}
