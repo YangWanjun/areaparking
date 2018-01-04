@@ -36,6 +36,11 @@ class SubscriptionForm(BaseForm):
         model = models.Subscription
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        self.fields['parking_lot_id'].widget = forms.HiddenInput()
+        self.fields['parking_position_id'].widget = forms.HiddenInput()
+
 
 class ContractForm(BaseForm):
     class Meta:

@@ -104,7 +104,10 @@ class WhiteBoardPositionDetailView(BaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super(WhiteBoardPositionDetailView, self).get_context_data(**kwargs)
         whiteboard_position = get_object_or_404(models.WhiteBoardPosition, pk=kwargs.get('pk'))
-        subscription_form = SubscriptionForm()
+        subscription_form = SubscriptionForm(initial={
+            'parking_lot_id': whiteboard_position.parking_position.parking_lot.pk,
+            'parking_position_id': whiteboard_position.parking_position.pk,
+        })
         context.update({
             'whiteboard_position': whiteboard_position,
             'subscription_form': subscription_form,

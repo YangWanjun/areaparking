@@ -133,14 +133,13 @@ def get_report_path(self, filename):
     new_name = filename
     prefix = ''
     content_object = self.content_object
-    if content_object.__class__.__name__ == 'Task':
+    if content_object.__class__.__name__ == 'Subscription':
         prefix = 'user_subscription/'
-        parking_lot = content_object.process.content_object.parking_lot
-        contractor = content_object.process.content_object.contractor
+        parking_lot = content_object.parking_lot
         ext = os.path.splitext(filename)[1]
         new_name = "{0}_{1}_{2}{3}".format(
             parking_lot.name,
-            contractor.name,
+            content_object.name,
             datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'),
             ext
         )

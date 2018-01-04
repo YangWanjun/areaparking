@@ -7,14 +7,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.db import models
-from django.template import Context, Template
+from django.utils.functional import cached_property
 
 from utils import constants, common
 from utils.django_base import BaseModel, PublicManager
 
 from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
-from format.models import ReportFile
+from format.models import ReportFile, ReportSubscription, ReportSubscriptionConfirm
 from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
 from utils.app_base import get_total_context, get_user_subscription_url, get_signed_value
 
@@ -57,7 +57,7 @@ class AbstractUser(BaseModel):
     corporate_user_kana = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"使用者カナ")
     corporate_user_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"使用者携帯電話")
     corporate_user_post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="使用者所在地郵便番号",
-                                 validators=(RegexValidator(regex=constants.REG_POST_CODE),))
+                                                validators=(RegexValidator(regex=constants.REG_POST_CODE),))
     corporate_user_address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"使用者所在地１")
     # 勤務先
     workplace_name = models.CharField(blank=True, null=True, max_length=100, verbose_name="勤務先名称")
@@ -149,7 +149,19 @@ class Contractor(AbstractUser):
         verbose_name_plural = "契約者一覧"
 
 
+def get_default_subscription_format_id():
+    report = ReportSubscription.get_default_report()
+    return report.pk if report else None
+
+
+def get_default_subscription_confirm_format_id():
+    report = ReportSubscriptionConfirm.get_default_report()
+    return report.pk if report else None
+
+
 class Subscription(AbstractUser, AbstractCar):
+    parking_lot_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="申込みする駐車場")
+    parking_position_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="申込みする車室")
     post_code1 = models.CharField(blank=True, null=True, max_length=3, verbose_name="郵便番号１")
     post_code2 = models.CharField(blank=True, null=True, max_length=4, verbose_name="郵便番号２")
     workplace_post_code1 = models.CharField(blank=True, null=True, max_length=3, verbose_name=u"勤務先郵便番号１")
@@ -171,6 +183,13 @@ class Subscription(AbstractUser, AbstractCar):
     # 申込みのステータス
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_SUBSCRIPTION_STATUS, editable=False,
                               verbose_name="ステータス")
+    subscription_confirm_format_id = models.PositiveIntegerField(blank=True, null=True,
+                                                                 default=get_default_subscription_confirm_format_id,
+                                                                 verbose_name="申込確認書のフォーマットＩＤ")
+    subscription_format_id = models.PositiveIntegerField(blank=True, null=True,
+                                                         default=get_default_subscription_format_id,
+                                                         verbose_name="申込書のフォーマットＩＤ")
+    reports = GenericRelation(ReportFile, related_query_name='subscriptions')
     created_date = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=u"作成日時")
     updated_date = models.DateTimeField(auto_now=True, editable=False, verbose_name=u"更新日時")
     is_deleted = models.BooleanField(default=False, editable=False, verbose_name=u"削除フラグ")
@@ -181,6 +200,26 @@ class Subscription(AbstractUser, AbstractCar):
         ordering = ['name']
         verbose_name = "ユーザー申込"
         verbose_name_plural = "ユーザー申込一覧"
+
+    @cached_property
+    def parking_lot(self):
+        if self.parking_lot_id:
+            try:
+                return ParkingLot.objects.get(pk=self.parking_lot_id)
+            except ObjectDoesNotExist:
+                return None
+        else:
+            return None
+
+    @cached_property
+    def parking_position(self):
+        if self.parking_position_id:
+            try:
+                return ParkingPosition.objects.get(pk=self.parking_position_id)
+            except ObjectDoesNotExist:
+                return None
+        else:
+            return None
 
     def get_subscription_completed_email(self):
         """申込み完了時のメール宛先アドレス
@@ -398,7 +437,6 @@ class Task(BaseModel):
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_TASK_STATUS, verbose_name='ステータス')
     updated_user = models.ForeignKey(User, blank=True, null=True, verbose_name="更新ユーザー")
     url_links = models.CharField(max_length=2000, blank=True, null=True, verbose_name="リンク")
-    reports = GenericRelation(ReportFile, related_query_name='subscriptions')
     order = models.SmallIntegerField(verbose_name="並び順")
     is_end = models.BooleanField(default=False, verbose_name="終了タスク")
 
@@ -543,4 +581,3 @@ class TempContract(models.Model):
 
 class Cancellation(BaseModel):
     contract = models.ForeignKey(Contract, on_delete=models.DO_NOTHING, verbose_name="契約情報")
-

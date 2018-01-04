@@ -7,27 +7,27 @@ from django.template import Context, Template
 from django.template.context_processors import csrf
 
 from . import models
-from contract.models import Task
+from contract.models import Task, Subscription
 from utils import common, constants
 from utils.app_base import get_total_context
 
 
-def get_subscription_confirm_html(request, **kwargs):
+def get_subscription_confirm_html(request, subscription, **kwargs):
     """申込確認書のHTMLを取得する。
 
     :param request:
     :param kwargs:
     :return:
     """
-    task = get_object_or_404(Task, pk=kwargs.get('task_id'))
-    report = get_object_or_404(models.ReportSubscriptionConfirm, pk=kwargs.get('report_id'))
-    contract = task.process.content_object
-    parking_lot = contract.parking_lot
+    # task = get_object_or_404(Task, pk=kwargs.get('task_id'))
+    report = get_object_or_404(models.ReportSubscriptionConfirm, pk=subscription.subscription_confirm_format_id)
+    # contract = task.process.content_object
+    parking_lot = subscription.parking_lot
     t = Template(report.content)
     ctx = Context(kwargs)
     ctx.update(get_total_context(
         parking_lot=parking_lot,
-        contractor=contract.contractor,
+        # contractor=contract.contractor,
     ))
     ctx.update(csrf(request))
     html = t.render(ctx)
@@ -35,22 +35,22 @@ def get_subscription_confirm_html(request, **kwargs):
     return title, html
 
 
-def get_subscription_html(request, **kwargs):
+def get_subscription_html(request, subscription, **kwargs):
     """申込書のHTMLを取得する。
 
     :param request:
     :param kwargs:
     :return:
     """
-    task = get_object_or_404(Task, pk=kwargs.get('task_id'))
-    report = get_object_or_404(models.ReportSubscription, pk=kwargs.get('report_id'))
-    contract = task.process.content_object
-    parking_lot = contract.parking_lot
+    # task = get_object_or_404(Task, pk=kwargs.get('task_id'))
+    report = get_object_or_404(models.ReportSubscription, pk=subscription.subscription_format_id)
+    # contract = task.process.content_object
+    parking_lot = subscription.parking_lot
     t = Template(report.content)
     ctx = Context(kwargs)
     ctx.update(get_total_context(
         parking_lot=parking_lot,
-        contractor=contract.contractor,
+        # contractor=contract.contractor,
     ))
     ctx.update(csrf(request))
     html = t.render(ctx)
@@ -90,29 +90,30 @@ def get_user_subscription_steps(signature=None, pk=None):
     return [step1.to_json(), step2.to_json(), step3.to_json(), step4.to_json(), step5.to_json()]
 
 
-def generate_subscription_pdf(request, **kwargs):
+def generate_subscription_pdf(request, subscription, **kwargs):
     """ユーザー申込完了時、申込確認書と申込書のPDFを作成する。
 
     :param request:
+    :param subscription:
     :param kwargs:
     :return:
     """
     # 申込確認書のＰＤＦファイルを追加する。
-    title, html = get_subscription_confirm_html(request, **kwargs)
-    task = get_object_or_404(Task, pk=kwargs.get('task_id')).get_next_task()
+    title, html = get_subscription_confirm_html(request, subscription, **kwargs)
+    subscription = get_object_or_404(Subscription, pk=kwargs.get('pk'))
     data = generate_report_pdf_binary(html)
-    for report in task.reports.filter(name=constants.REPORT_SUBSCRIPTION_CONFIRM):
+    for report in subscription.reports.filter(name=constants.REPORT_SUBSCRIPTION_CONFIRM):
         report.delete()
     content_file = ContentFile(data.getvalue(), name='subscription.pdf')
-    report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION_CONFIRM,
+    report_file = models.ReportFile(content_object=subscription, name=constants.REPORT_SUBSCRIPTION_CONFIRM,
                                     path=content_file)
     report_file.save()
     # 申込書のＰＤＦファイルを追加する。
-    title, html = get_subscription_html(request, **kwargs)
+    title, html = get_subscription_html(request, subscription, **kwargs)
     data = generate_report_pdf_binary(html)
-    for report in task.reports.filter(name=constants.REPORT_SUBSCRIPTION):
+    for report in subscription.reports.filter(name=constants.REPORT_SUBSCRIPTION):
         report.delete()
     content_file = ContentFile(data.getvalue(), name='subscription.pdf')
-    report_file = models.ReportFile(content_object=task, name=constants.REPORT_SUBSCRIPTION,
+    report_file = models.ReportFile(content_object=subscription, name=constants.REPORT_SUBSCRIPTION,
                                     path=content_file)
     report_file.save()

@@ -365,7 +365,7 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
         contract = task.process.content_object
         user_subscription = context.get('user_subscription')
         # 申込PDF作成
-        biz.generate_subscription_pdf(request, **kwargs)
+        biz.generate_subscription_pdf(request, user_subscription, **kwargs)
         # 申込みデータをＤＢに保存
         user_subscription.status = '02'     # 申込み完了
         user_subscription.save()
@@ -403,7 +403,8 @@ class UserSubscriptionStep5View(BaseUserSubscriptionView):
 class SubscriptionConfirmView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        title, html = biz.get_subscription_confirm_html(request, **kwargs)
+        subscription = get_object_or_404(Subscription, pk=kwargs.get('subscription_id'))
+        title, html = biz.get_subscription_confirm_html(request, subscription, **kwargs)
         return HttpResponse(html)
 
     # def post(self, request, *args, **kwargs):
@@ -431,7 +432,8 @@ class SubscriptionConfirmView(BaseView):
 class SubscriptionView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        title, html = biz.get_subscription_html(request, **kwargs)
+        subscription = get_object_or_404(Subscription, pk=kwargs.get('subscription_id'))
+        title, html = biz.get_subscription_html(request, subscription, **kwargs)
         return HttpResponse(html)
 
     # def post(self, request, *args, **kwargs):
@@ -627,7 +629,8 @@ class SubscriptionView(BaseView):
 class GenerateSubscriptionConfirmPdfView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        title, html = biz.get_subscription_confirm_html(request, **kwargs)
+        subscription = get_object_or_404(Subscription, pk=kwargs.get('subscription_id'))
+        title, html = biz.get_subscription_confirm_html(request, subscription, **kwargs)
         data = biz.generate_report_pdf_binary(html)
         response = HttpResponse(data, content_type="application/pdf")
         response['Content-Disposition'] = "filename=" + title
@@ -637,7 +640,8 @@ class GenerateSubscriptionConfirmPdfView(BaseView):
 class GenerateSubscriptionPdfView(BaseView):
 
     def get(self, request, *args, **kwargs):
-        title, html = biz.get_subscription_html(request, **kwargs)
+        subscription = get_object_or_404(Subscription, pk=kwargs.get('subscription_id'))
+        title, html = biz.get_subscription_html(request, subscription, **kwargs)
         data = biz.generate_report_pdf_binary(html)
         response = HttpResponse(data, content_type="application/pdf")
         response['Content-Disposition'] = "filename=" + title

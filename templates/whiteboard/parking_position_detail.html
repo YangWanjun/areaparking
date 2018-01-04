@@ -105,6 +105,10 @@
                 <h4>仮契約登録</h4>
                 <div class="row">
                     <form method="post" action="/api/subscription/" id="new_subscription_form" class="col s12">
+                        <div class="row" style="visibility: hidden;">
+                            {{ subscription_form.parking_lot_id }}
+                            {{ subscription_form.parking_position_id }}
+                        </div>
                         <div class="row">
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">call_split</i>
@@ -167,7 +171,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="javascript:void(0)" onclick="save_temp_contractor(this)" class="modal-action waves-effect waves-green btn-flat ">次へ</a>
+                <a href="javascript:void(0)" onclick="save_subscription(this)" class="modal-action waves-effect waves-green btn-flat ">次へ</a>
                 <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
             </div>
         </div>
@@ -225,7 +229,7 @@ $(document).one("turbolinks:load", function() {
     });
 });
 
-function save_temp_contractor(obj) {
+function save_subscription(obj) {
     var form_obj = $("#new_subscription_form")
     form_obj.submit();
 }
