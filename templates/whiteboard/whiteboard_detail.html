@@ -92,7 +92,12 @@
     </div>
 </div>
 {% endblock left-panel %}
-{% block right-panel %}{% endblock right-panel %}
+
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
 {% endblock %}
 
 {% block footer %}
@@ -101,49 +106,51 @@
 <script type="text/javascript">
     ebjs.material.popup_anchor();
     $(document).one("turbolinks:load", function() {
-    if ( ! $.fn.DataTable.isDataTable( '#tblPosition' ) ) {
-        var datatable = $('#tblPosition').DataTable({
-            "searching": false,
-            "paging": true,
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Japanese.json"
-            },
-            columnDefs: [
-                {
-                    targets: 1,
-                    className: 'mdl-data-table__cell--non-numeric',
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        var html;
-                        if (cellData === '空き') {
-                            html = '<span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>';
-                        } else if (cellData === '手続中') {
-                            html = '<span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>';
-                        } else if (cellData === '空無') {
-                            html = '<span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span>';
-                        } else {
-                            html = cellData;
+        ebjs.material.load_user_info();
+        ebjs.material.save_user_info();
+        if ( ! $.fn.DataTable.isDataTable( '#tblPosition' ) ) {
+            var datatable = $('#tblPosition').DataTable({
+                "searching": false,
+                "paging": true,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Japanese.json"
+                },
+                columnDefs: [
+                    {
+                        targets: 1,
+                        className: 'mdl-data-table__cell--non-numeric',
+                        "createdCell": function (td, cellData, rowData, row, col) {
+                            var html;
+                            if (cellData === '空き') {
+                                html = '<span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>';
+                            } else if (cellData === '手続中') {
+                                html = '<span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>';
+                            } else if (cellData === '空無') {
+                                html = '<span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span>';
+                            } else {
+                                html = cellData;
+                            }
+                            $(td).html(html);
+                            $(td).css("padding", "0px");
                         }
-                        $(td).html(html);
-                        $(td).css("padding", "0px");
                     }
+                ],
+                "initComplete": function(settings, json) {
+                    // PageSizeのドロップダウンをタイトル欄に移動する。
+                    $("#tblPosition_length").appendTo("#divPositionTitle");
+                    $("#tblPosition_length").addClass("right");
+                    $("#tblPosition_length select").addClass("browser-default");
+                    $("#tblPosition_length select").css("width", "60px");
+                    $("#tblPosition_length select").css("height", "25px");
+                    $("#tblPosition_length select").css("display", "inherit");
                 }
-            ],
-            "initComplete": function(settings, json) {
-                // PageSizeのドロップダウンをタイトル欄に移動する。
-                $("#tblPosition_length").appendTo("#divPositionTitle");
-                $("#tblPosition_length").addClass("right");
-                $("#tblPosition_length select").addClass("browser-default");
-                $("#tblPosition_length select").css("width", "60px");
-                $("#tblPosition_length select").css("height", "25px");
-                $("#tblPosition_length select").css("display", "inherit");
-            }
-        });
-        new $.fn.dataTable.FixedHeader(datatable);
+            });
+            new $.fn.dataTable.FixedHeader(datatable);
 
-        $(document).one("turbolinks:before-cache", function() {
-            datatable.destroy();
-        });
-    }
-  });
+            $(document).one("turbolinks:before-cache", function() {
+                datatable.destroy();
+            });
+        }
+    });
 </script>
 {% endblock %}

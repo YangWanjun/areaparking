@@ -129,3 +129,29 @@ div.loading .preloader-wrapper {
 .dataTables_filter {
     display: none;
 }
+/**************** Right Panelのカード  *****************/
+.tight-card div.row {
+    margin-top: -10px;
+    margin-bottom: 0px;
+}
+.tight-card div.input-field {
+    padding: 0px;
+    margin: 0px;
+}
+.tight-card div.input-field label {
+    font-size: 13px;
+}
+.tight-card div.input-field.col label {
+    left: 0px;
+    width: 100%;
+}
+.tight-card [type=checkbox]+label {
+    padding-left: 25px;
+    line-height: 20px;
+}
+.tight-card .card-action {
+    padding: 8px 13px;
+}
+.tight-card a.btn {
+    padding: 0 10px;
+}

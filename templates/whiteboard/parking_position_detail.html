@@ -179,13 +179,17 @@
 </div>
 {% endblock left-panel %}
 {% block right-panel %}
-
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
 {% endblock right-panel %}
 {% endblock %}
 
 {% block footer %}
 <script type="text/javascript">
 $(document).one("turbolinks:load", function() {
+    ebjs.material.load_user_info();
+    ebjs.material.save_user_info();
     ebjs.material.popup_anchor();
     ebjs.material.required_field();
 
@@ -197,8 +201,13 @@ $(document).one("turbolinks:load", function() {
         startingTop: '4%', // Starting top style attribute
         endingTop: '10%', // Ending top style attribute
         ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
-            //alert("Ready");
-            //console.log(modal, trigger);
+            var user_info = ebjs.material.get_user_info();
+            if (user_info) {
+                $("#id_name").val(user_info.id_user_name || '');
+                $("#id_name").next().addClass('active');
+                $("#id_tel").val(user_info.id_user_tel || '');
+                $("#id_tel").next().addClass('active');
+            }
         },
         complete: function(obj) {
             //alert('Closed');

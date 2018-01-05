@@ -83,8 +83,8 @@ class WhiteBoardDetailView(DetailModelView):
 class WhiteBoardViewSet(ModelViewSet):
     model = models.WhiteBoard
     list_display = (
-        'code', 'name', 'staff', 'category', 'address', 'is_empty', 'position_count', 'contract_count',
-        'temp_contract_count', 'waiting_count', 'is_existed_contractor_allowed', 'is_new_contractor_allowed',
+        'code', 'name', 'staff', 'category', 'address', 'is_empty', 'position_count',
+        'waiting_count', 'is_existed_contractor_allowed', 'is_new_contractor_allowed',
         'free_end_date', 'operation',
     )
     list_display_links = ('id', 'name')

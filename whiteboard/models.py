@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
 
-from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, ParkingTimeLimit
+from parkinglot.models import ParkingPosition, ParkingLotType
 from employee.models import Member
 from utils import constants
-from utils.django_base import BaseViewModel
+from utils.django_base import BaseViewModel, BaseModel
 
 
 # Create your models here.
@@ -87,6 +88,39 @@ class WhiteBoardPosition(BaseViewModel):
 
     def __str__(self):
         return str(self.parking_position)
+
+
+class Inquiry(BaseModel):
+    user_name = models.CharField(blank=True, null=True, max_length=15, verbose_name="名前")
+    gender = models.CharField(blank=True, null=True, max_length=1, choices=constants.CHOICE_GENDER, verbose_name="性別")
+    tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
+    parking_lot_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="希望する駐車場コード")
+    parking_lot_name = models.CharField(blank=True, null=True, max_length=100, verbose_name="希望する駐車場名称")
+    area_code = models.CharField(blank=True, null=True, max_length=20, verbose_name="希望するエリアコード")
+    area_name = models.CharField(blank=True, null=True, max_length=50, verbose_name="希望するエリア名称")
+    transmission_routes = models.CharField(blank=True, null=True, max_length=20, verbose_name="媒体",
+                                           validators=[validate_comma_separated_integer_list],
+                                           help_text='どのようにして､この駐車場を知りましたか？')
+    transmission_handbill_price = models.IntegerField(blank=True, null=True, verbose_name="チラシ価格")
+    transmission_other_route = models.CharField(blank=True, null=True, max_length=50, verbose_name="その他の媒体")
+    car_maker = models.CharField(max_length=50, blank=True, null=True, verbose_name="車メーカー")
+    car_model = models.CharField(max_length=100, blank=True, null=True, verbose_name="車種")
+    car_length = models.IntegerField(blank=True, null=True, verbose_name="全長")
+    car_width = models.IntegerField(blank=True, null=True, verbose_name="全幅")
+    car_height = models.IntegerField(blank=True, null=True, verbose_name="全高")
+    car_weight = models.IntegerField(blank=True, null=True, verbose_name="重量")
+    car_min_height = models.IntegerField(blank=True, null=True, verbose_name="地上最低高")
+    car_f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
+    car_r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
+    comment = models.CharField(blank=True, null=True, max_length=255, verbose_name="備考")
+
+    class Meta:
+        db_table = 'ap_inquiry'
+        verbose_name = "ユーザー問い合わせ"
+        verbose_name_plural = "ユーザー問い合わせ"
+
+    def __str__(self):
+        return self.user_name
 
 # class Waiting(BaseModel):
 #     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
