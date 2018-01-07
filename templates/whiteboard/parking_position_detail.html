@@ -203,9 +203,9 @@ $(document).one("turbolinks:load", function() {
         ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
             var user_info = ebjs.material.get_user_info();
             if (user_info) {
-                $("#id_name").val(user_info.id_user_name || '');
+                $("#id_name").val(user_info.user_name || '');
                 $("#id_name").next().addClass('active');
-                $("#id_tel").val(user_info.id_user_tel || '');
+                $("#id_tel").val(user_info.tel || '');
                 $("#id_tel").next().addClass('active');
             }
         },

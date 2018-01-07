@@ -10,6 +10,9 @@ div.modal form td input {
     margin: 0px;
     height: 40px;
 }
+.eb-disabled {
+    color: gray !important;
+}
 /**************** サイドバー *****************/
 div.content {
     height: calc(100% - 110px);
@@ -154,4 +157,12 @@ div.loading .preloader-wrapper {
 }
 .tight-card a.btn {
     padding: 0 10px;
+}
+/***************** local-storage ***************/
+.local-storage select {
+    border: none;
+    border-bottom: 1px solid gray;
+}
+.local-storage select:focus {
+    outline-width: 0;
 }

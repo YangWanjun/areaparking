@@ -195,6 +195,16 @@ class WhiteBoardMapView(BaseTemplateView):
         return context
 
 
+class InquiryViewSet(ModelViewSet):
+    model = models.Inquiry
+    list_display = ('user_name', 'get_gender_display', 'tel', 'parking_lot_name', 'area_name', 'created_date')
+
+    def get_gender_display(self, obj):
+        return obj.get_gender_display()
+
+    get_gender_display.short_description = '性別'
+
+
 class UpdateSubscription(BaseView):
 
     def post(self, request, *args, **kwargs):

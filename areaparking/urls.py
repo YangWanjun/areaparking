@@ -45,6 +45,7 @@ router.register(r'car-maker', master_api.CarMakerViewSet)
 router.register(r'car-model', master_api.CarModelViewSet)
 
 router.register(r'whiteboard', whiteboard_api.WhiteBoardViewSet)
+router.register(r'inquiry', whiteboard_api.InquiryViewSet)
 
 
 class Home(ModuleMixin):

@@ -3,25 +3,29 @@
         <span class="card-title" style="font-size: 18px;">聞き取り</span>
         <div class="row" style="margin-top: 0px;">
             <div class="input-field col s6">
-                <input type="text" value="" id="id_user_name" name="user_name">
-                <label for="id_user_name">ユーザー名前</label>
+                <input type="text" value="" id="user_name" name="user_name">
+                <label for="user_name">ユーザー名前</label>
             </div>
             <div class="input-field col s6">
-                <input type="text" value="" id="id_gender" name="gender">
-                <label for="id_gender">性別</label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s6">
-                <input type="text" value="" id="id_user_tel" name="tel">
-                <label for="id_user_tel">ＴＥＬ</label>
+                <select id="gender" name="gender" class="browser-default">
+                    <option value="" selected>--------</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                </select>
+                <label for="gender" class="active">性別</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <input type="hidden" id="id_parking_lot_code"/>
-                <input type="text" value="" id="id_parking_lot" class="eb-autocomplete" eb-autocomplete-url="/api/parking-lot/" eb-autocomplete-target-id="id_parking_lot_code">
-                <label for="id_parking_lot">希望する駐車場</label>
+                <input type="text" value="" id="tel" name="tel">
+                <label for="tel">ＴＥＬ</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input type="hidden" id="parking_lot_id" name="parking_lot_id"/>
+                <input type="text" value="" id="parking_lot_name" name="parking_lot_name" class="eb-autocomplete" eb-autocomplete-url="/api/parking-lot/" eb-autocomplete-target-id="id_parking_lot_code">
+                <label for="parking_lot_name">希望する駐車場</label>
             </div>
         </div>
         <div class="row">
@@ -30,8 +34,8 @@
                 <label for="chk_route_1">チラシ</label>
             </div>
             <div class="input-field col s8">
-                <input type="text" value="" id="id_handbill_price" style="margin: 0px;height: 30px;">
-                <label for="id_handbill_price">チラシ価格</label>
+                <input type="text" value="" id="transmission_handbill_price" name="transmission_handbill_price" style="margin: 0px;height: 30px;">
+                <label for="transmission_handbill_price">チラシ価格</label>
             </div>
         </div>
         <div class="row">
@@ -66,49 +70,49 @@
                 <label for="chk_route_7" style="width: 95px;">その他</label>
             </div>
             <div class="input-field col s8">
-                <input type="text" id="txt_route_other" name="txt_route_other" value="" style="margin:0px;height:32px;"/>
+                <input type="text" id="transmission_other_route" name="transmission_other_route" value="" style="margin:0px;height:32px;"/>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s6">
-                <input type="text" value="" id="id_car_maker">
-                <label for="id_car_maker">車メーカー</label>
+                <input type="text" value="" id="car_maker" name="car_maker">
+                <label for="car_maker">車メーカー</label>
             </div>
             <div class="input-field col s6">
-                <input type="text" value="" id="id_car_model">
-                <label for="id_car_model">車種</label>
+                <input type="text" value="" id="car_model" name="car_model">
+                <label for="car_model">車種</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s3">
-                <input type="text" value="" id="id_car_length">
-                <label for="id_car_length">全長</label>
+                <input type="text" value="" id="car_length" name="car_length">
+                <label for="car_length">全長</label>
             </div>
             <div class="input-field col s3">
-                <input type="text" value="" id="id_car_width">
-                <label for="id_car_width">全幅</label>
+                <input type="text" value="" id="car_width" name="car_width">
+                <label for="car_width">全幅</label>
             </div>
             <div class="input-field col s3">
-                <input type="text" value="" id="id_car_height">
-                <label for="id_car_height">全高</label>
+                <input type="text" value="" id="car_height" name="car_height">
+                <label for="car_height">全高</label>
             </div>
             <div class="input-field col s3">
-                <input type="text" value="" id="id_car_weight">
-                <label for="id_car_weight">重量</label>
+                <input type="text" value="" id="car_weight" name="car_weight">
+                <label for="car_weight">重量</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <textarea id="id_inquiry_comment" class="materialize-textarea"></textarea>
-                <label for="id_inquiry_comment">備考</label>
+                <textarea id="comment" name="comment" class="materialize-textarea"></textarea>
+                <label for="comment">備考</label>
             </div>
         </div>
         <div class="clearfix"></div>
     </div>
     <div class="card-action">
         <div class="left">
-            <a href="javascript:void(0)" class="black-text" title="聞き取り情報を保存する。"><i class="material-icons">save</i></a>
-            <a href="javascript:void(0)" onclick="ebjs.material.clear_user_info()" class="red-text" title="入力した内容をクリアする"><i class="material-icons">clear</i></a>
+            <a href="javascript:void(0)" id="save_inquiry" onclick="ebjs.material.save_inquiry(this)" class="black-text" title="聞き取り情報を保存する。"><i class="material-icons">save</i></a>
+            <a href="javascript:void(0)" id="clear_inquiry" onclick="ebjs.material.clear_user_info()" class="red-text" title="入力した内容をクリアする"><i class="material-icons">clear</i></a>
         </div>
         <div class="right-align">
             <a href="javascript:void(0)" class="deep-orange-text" title="空きがない場合は順番待ちする"><i class="material-icons">timer</i></a>
