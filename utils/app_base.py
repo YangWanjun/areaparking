@@ -3,6 +3,7 @@ import json
 import requests
 from urllib.parse import urljoin
 
+from django.contrib.humanize.templatetags import humanize
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.signing import TimestampSigner
 from django.urls import reverse
@@ -85,20 +86,82 @@ def get_contractor_context(contractor):
 
 
 def get_subscription_context(subscription):
-    """テンプレートに出力する契約者の情報
+    """テンプレートに出力する申込者の情報
 
     :param subscription:
     :return:
     """
     if subscription:
-        return {
-            'user_name': subscription.name,
-            'user_tel': subscription.tel,
-            'user_fax': subscription.fax,
-            'user_email': subscription.email,
-            'user_address1': subscription.address1,
-            'user_address2': subscription.address2,
+        data = {
+            'user_name': subscription.name or '',
+            'user_kana': subscription.kana or '',
+            'user_tel': subscription.tel or '',
+            'user_fax': subscription.fax or '',
+            'user_email': subscription.email or '',
+            'user_address1': subscription.address1 or '',
+            'user_address2': subscription.address2 or '',
+            'car_maker': subscription.car_maker or '',
+            'car_model': subscription.car_model or '',
+            'car_no_plate': subscription.car_no_plate or '',
+            'car_length': humanize.intcomma(subscription.car_length) if subscription.car_length else '',
+            'car_width': humanize.intcomma(subscription.car_width) if subscription.car_width else '',
+            'car_height': humanize.intcomma(subscription.car_height) if subscription.car_height else '',
+            'car_weight': humanize.intcomma(subscription.car_weight) if subscription.car_weight else '',
+            'contract_start_date': subscription.contract_start_date or '',
+            'contract_end_month': subscription.contract_end_month or '',
         }
+        if subscription.category == '1':
+            # 個人の場合
+            data.update({
+                'personal_kana': subscription.kana or '',
+                'personal_name': subscription.name or '',
+                'personal_tel': subscription.tel or '',
+                'personal_birthday': subscription.personal_birthday or '',
+                'personal_post_code1': subscription.post_code1 or '',
+                'personal_post_code2': subscription.post_code2 or '',
+                'personal_address1': subscription.address1 or '',
+                'personal_address2': subscription.address2 or '',
+                'personal_phone': subscription.personal_phone or '',
+                'personal_email': subscription.email or '',
+                'workplace_name': subscription.workplace_name or '',
+                'workplace_post_code1': subscription.workplace_post_code1 or '',
+                'workplace_post_code2': subscription.workplace_post_code2 or '',
+                'workplace_address1': subscription.workplace_address1 or '',
+                'workplace_address2': subscription.workplace_address2 or '',
+                'workplace_tel': subscription.workplace_tel or '',
+                'workplace_fax': subscription.workplace_fax or '',
+                'personal_contact_name': subscription.contact_name or '',
+                'personal_contact_tel': subscription.contact_tel or '',
+                'personal_contact_relation': subscription.contact_relation or '',
+            })
+        else:
+            # 法人の場合
+            data.update({
+                'corporate_kana': subscription.kana or '',
+                'corporate_name': subscription.name or '',
+                'corporate_tel': subscription.tel or '',
+                'corporate_fax': subscription.fax or '',
+                'corporate_president': subscription.corporate_president or '',
+                'corporate_post_code1': subscription.post_code1 or '',
+                'corporate_post_code2': subscription.post_code2 or '',
+                'corporate_address1': subscription.address1 or '',
+                'corporate_address2': subscription.address2 or '',
+                'corporate_business_type': subscription.corporate_business_type or '',
+                'corporate_staff_kana': subscription.corporate_staff_kana or '',
+                'corporate_staff_name': subscription.corporate_staff_name or '',
+                'corporate_staff_email': subscription.corporate_staff_email or '',
+                'corporate_staff_tel': subscription.corporate_staff_tel or '',
+                'corporate_staff_fax': subscription.corporate_staff_fax or '',
+                'corporate_staff_phone': subscription.corporate_staff_phone or '',
+                'corporate_contact_name': subscription.contact_name or '',
+                'corporate_contact_tel': subscription.contact_tel or '',
+                'corporate_contact_relation': subscription.contact_relation or '',
+                'corporate_user_kana': subscription.corporate_user_kana or '',
+                'corporate_user_name': subscription.corporate_user_name or '',
+                'corporate_user_tel': subscription.corporate_user_tel or '',
+                'corporate_user_address1': subscription.corporate_user_address1 or '',
+            })
+        return data
     else:
         return dict()
 

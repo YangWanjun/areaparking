@@ -145,42 +145,42 @@
             <td rowspan="3"  class="border-left border-right center border-bottom" style="white-space: normal; font-size: 16px;">駐<br/>車<br/>す<br/>る<br/>車</td>
             <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 14px;">メーカー<span class="red">*</span></td>
             <td colspan="8" class="border-bottom">
-                <input type="text" class="box_text" id="txt_car_maker" name="txt_car_maker" style="font-size: 18px;height: 35px;" />
+                <input type="text" class="box_text" id="txt_car_maker" name="txt_car_maker" value="{{car_maker}}" style="font-size: 18px;height: 35px;" />
             </td>
             <td colspan="4" class="border-left border-bottom border-right-dashed">車種(プリウス等)</td>
             <td colspan="7" class="border-bottom border-right">
-                <input type="text" class="box_text" id="txt_car_model" name="txt_car_model" style="font-size: 18px;height: 35px;" />
+                <input type="text" class="box_text" id="txt_car_model" name="txt_car_model" value="{{car_model}}" style="font-size: 18px;height: 35px;" />
             </td>
         </tr>
         <tr style="height: 38px;">
             <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 14px;">車両登録番号<br/>(ﾅﾝﾊﾞｰﾌﾟﾚｰﾄ)</td>
             <td colspan="19" class="border-bottom border-right">
-                <input type="text" class="box_text" id="txt_no_plate" name="txt_no_plate" style="font-size: 18px;height: 35px;" />
+                <input type="text" class="box_text" id="txt_no_plate" name="txt_no_plate" value="{{car_no_plate}}" style="font-size: 18px;height: 35px;" />
             </td>
         </tr>
         <tr style="height: 38px;">
             <td colspan="3" class="border-right-dashed border-bottom" style="font-size: 14px">車体の大きさ</td>
             <td class="border-bottom">全長</td>
             <td colspan="4" class="border-bottom">
-                <input type="text" id="txt_car_length" name="txt_car_length" class="box_text" style="height: 35px;font-size: 16px;"/>
+                <input type="text" id="txt_car_length" name="txt_car_length" class="box_text" value="{{car_length}}" style="height: 35px;font-size: 16px;"/>
             </td>
             <td class="border-bottom">全幅</td>
             <td colspan="4" class="border-bottom">
-                <input type="text" id="txt_car_width" name="txt_car_width" class="box_text" style="height: 35px;font-size: 16px;"/>
+                <input type="text" id="txt_car_width" name="txt_car_width" class="box_text" value="{{car_width}}" style="height: 35px;font-size: 16px;"/>
             </td>
             <td class="border-bottom">全高</td>
             <td colspan="4" class="border-bottom">
-                <input type="text" id="txt_car_height" name="txt_car_height" class="box_text" style="height: 35px;font-size: 16px;"/>
+                <input type="text" id="txt_car_height" name="txt_car_height" class="box_text" value="{{car_height}}" style="height: 35px;font-size: 16px;"/>
             </td>
             <td class="border-bottom">重量</td>
             <td colspan="3" class="border-bottom border-right">
-                <input type="text" id="txt_car_weight" name="txt_car_weight" class="box_text" style="height: 35px;font-size: 16px;"/>
+                <input type="text" id="txt_car_weight" name="txt_car_weight" class="box_text" value="{{car_weight}}" style="height: 35px;font-size: 16px;"/>
             </td>
         </tr>
         <tr style="height: 27px;">
             <td rowspan="2" class="border-left border-bottom border-right-dashed" colspan="4" style="font-size: 14px">希望契約開始日</td>
             <td rowspan="2" class="border-bottom border-right" colspan="7">
-                <input type="text" id="txt_contract_start_date" name="txt_contract_start_date" class="box_text" style="height:60px;font-size: 16px;"/>
+                <input type="text" id="txt_contract_start_date" name="txt_contract_start_date" class="box_text" value="{{contract_start_date}}" style="height:60px;font-size: 16px;"/>
             </td>
             <td rowspan="2" colspan="4" class="border-bottom border-right-dashed">希望契約期間<br/>&nbsp;<span style="font-size:11px;">チェックしてください→</span></td>
             <td colspan="8" class="border-bottom border-right" style="font-size: 13px;">
@@ -191,7 +191,7 @@
         <tr style="height: 44px;">
             <td colspan="8" class="border-bottom border-right" style="font-size: 13px;">
                 <input type="radio" id="rdoContractShort" name="rdo_contract_period" value="short"/>
-                <label for="rdoContractShort">１・２ヶ月契約（　　月末日まで）<br/>&nbsp;&nbsp;&nbsp;※更新できませんのでご注意ください</label>
+                <label for="rdoContractShort">１・２ヶ月契約（<input type="text" class="box_text" value="{{contract_end_month}}" style="width: 30px; text-align:center;"/>月末日まで）<br/>&nbsp;&nbsp;&nbsp;※更新できませんのでご注意ください</label>
             </td>
         </tr>
         <tr>
@@ -258,7 +258,7 @@
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">フリガナ</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txtCorporateKana" name="txt_corporate_kana" />
+                <input type="text" class="box_text" id="txtCorporateKana" name="txt_corporate_kana" value="{{corporate_kana}}" />
             </td>
             <td rowspan="8" class="border-bottom border-left-3 border-right">
                 <div style="font-size:9px;float:left;">
@@ -288,85 +288,85 @@
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">フリガナ</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txt_personal_kana" name="txt_personal_kana" />
+                <input type="text" class="box_text" id="txt_personal_kana" name="txt_personal_kana" value="{{personal_kana}}" />
             </td>
         </tr>
         <tr style="height: 36px;">
             <td colspan="3" class="border-bottom border-right-dashed">法人名</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txtCorporateName" name="txt_corporate_name" />
+                <input type="text" class="box_text" id="txtCorporateName" name="txt_corporate_name" value="{{corporate_name}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">氏名</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txt_personal_name" name="txt_personal_name" />
+                <input type="text" class="box_text" id="txt_personal_name" name="txt_personal_name" value="{{personal_name}}" />
             </td>
         </tr>
         <tr style="height: 36px;">
             <td colspan="3" class="border-bottom border-right-dashed">代表者</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txtCorporatePresident" name="txt_corporate_president" />
+                <input type="text" class="box_text" id="txtCorporatePresident" name="txt_corporate_president" value="{{corporate_president}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">生年月日</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txt_personal_birthday" name="txt_personal_birthday" />
+                <input type="text" class="box_text" id="txt_personal_birthday" name="txt_personal_birthday" value="{{personal_birthday}}" />
             </td>
         </tr>
         <tr style="height: 61px;">
             <td colspan="3" class="border-bottom border-right-dashed">所在地</td>
             <td colspan="7" class="border-bottom" style="vertical-align: top;padding-top:3px;">
                 <div>
-                    〒<input type="text" class="box_text center" id="txt_corporate_post1" name="txt_corporate_post1" maxlength="3" style="width: 30px;"/>
-                    －<input type="text" class="box_text center" id="txt_corporate_post2" name="txt_corporate_post2" maxlength="4" style="width: 40px;"/>
+                    〒<input type="text" class="box_text center" id="txt_corporate_post1" name="txt_corporate_post1" value="{{corporate_post_code1}}" maxlength="3" style="width: 30px;"/>
+                    －<input type="text" class="box_text center" id="txt_corporate_post2" name="txt_corporate_post2" value="{{corporate_post_code2}}" maxlength="4" style="width: 40px;"/>
                 </div>
-                <input type="text" class="box_text" id="txt_corporate_address1" name="txt_corporate_address1" />
+                <input type="text" class="box_text" id="txt_corporate_address1" name="txt_corporate_address1" value="{{corporate_address1}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">住所</td>
             <td colspan="8" class="border-bottom border-right-3" style="vertical-align: top;padding-top:3px;">
                 <div>
-                    〒<input type="text" class="box_text center" id="txt_personal_post1" name="txt_personal_post1" maxlength="3" style="width: 30px;"/>
-                    －<input type="text" class="box_text center" id="txt_personal_post2" name="txt_personal_post2" maxlength="4" style="width: 40px;"/>
+                    〒<input type="text" class="box_text center" id="txt_personal_post1" name="txt_personal_post1" value="{{personal_post_code1}}" maxlength="3" style="width: 30px;"/>
+                    －<input type="text" class="box_text center" id="txt_personal_post2" name="txt_personal_post2" value="{{personal_post_code2}}" maxlength="4" style="width: 40px;"/>
                 </div>
-                <input type="text" class="box_text" id="txt_personal_address1" name="txt_personal_address1" />
+                <input type="text" class="box_text" id="txt_personal_address1" name="txt_personal_address1" value="{{personal_address1}}" />
             </td>
         </tr>
         <tr style="height: 36px;">
             <td colspan="3" class="border-bottom border-right-dashed">建物名</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_address2" name="txt_corporate_address2" />
+                <input type="text" class="box_text" id="txt_corporate_address2" name="txt_corporate_address2" value="{{corporate_address2}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">建物名</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txt_personal_address2" name="txt_personal_address2" />
+                <input type="text" class="box_text" id="txt_personal_address2" name="txt_personal_address2" value="{{personal_address2}}" />
             </td>
         </tr>
         <tr style="height: 30px;">
             <td colspan="3" class="border-bottom border-right-dashed">TEL</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_tel" name="txt_corporate_tel" />
+                <input type="text" class="box_text" id="txt_corporate_tel" name="txt_corporate_tel" value="{{corporate_tel}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">自宅TEL・FAX</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txtPersonalTel" name="txt_personal_tel" />
+                <input type="text" class="box_text" id="txtPersonalTel" name="txt_personal_tel" value="{{personal_tel}}" />
             </td>
         </tr>
         <tr style="height: 30px;">
             <td colspan="3" class="border-bottom border-right-dashed">FAX</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_fax" name="txt_corporate_fax" />
+                <input type="text" class="box_text" id="txt_corporate_fax" name="txt_corporate_fax" value="{{corporate_fax}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">携帯電話</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txt_personal_phone" name="txt_personal_phone" />
+                <input type="text" class="box_text" id="txt_personal_phone" name="txt_personal_phone" value="{{personal_phone}}" />
             </td>
         </tr>
         <tr style="height: 36px;">
             <td colspan="3" class="border-bottom border-right-dashed">会社業種</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_business_type" name="txt_corporate_business_type" />
+                <input type="text" class="box_text" id="txt_corporate_business_type" name="txt_corporate_business_type" value="{{corporate_business_type}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">E-mail</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txt_personal_email" name="txt_personal_email" />
+                <input type="text" class="box_text" id="txt_personal_email" name="txt_personal_email" value="{{personal_email}}" />
             </td>
         </tr>
         <tr style="height: 18px;">
@@ -397,7 +397,7 @@
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">フリガナ</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_staff_kana" name="txt_corporate_staff_kana" />
+                <input type="text" class="box_text" id="txt_corporate_staff_kana" name="txt_corporate_staff_kana" value="{{corporate_staff_kana}}" />
             </td>
             <td rowspan="7" class="border-bottom border-left-3 border-right">
                 <div style="font-size:9px;float:left;">
@@ -427,13 +427,13 @@
             </td>
             <td rowspan="2" colspan="3" class="border-bottom border-right-dashed">勤務先名</td>
             <td rowspan="2" colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txtWorkplaceName" name="txt_workplace_name" />
+                <input type="text" class="box_text" id="txtWorkplaceName" name="txt_workplace_name" value="{{workplace_name}}" />
             </td>
         </tr>
         <tr style="height: 18px;">
             <td rowspan="2" colspan="3" class="border-bottom border-right-dashed">氏名</td>
             <td rowspan="2" colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_staff_name" name="txt_corporate_staff_name" />
+                <input type="text" class="box_text" id="txt_corporate_staff_name" name="txt_corporate_staff_name" value="{{corporate_staff_name}}" />
             </td>
         </tr>
         <tr style="height: 18px">
@@ -447,43 +447,47 @@
                 </div>
             </td>
             <td rowspan="2" colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txtWorkplaceAddress1" name="txt_workplace_address1" />
+                <div>
+                    〒<input type="text" class="box_text center" id="workplace_post_code1" name="workplace_post_code1" value="{{workplace_post_code1}}" maxlength="3" style="width: 30px;"/>
+                    －<input type="text" class="box_text center" id="workplace_post_code2" name="workplace_post_code2" value="{{workplace_post_code2}}" maxlength="4" style="width: 40px;"/>
+                </div>
+                <input type="text" class="box_text" id="txtWorkplaceAddress1" name="txt_workplace_address1" value="{{workplace_address1}}" />
             </td>
         </tr>
         <tr style="height: 54px;">
             <td colspan="3" class="border-bottom border-right-dashed">E-mail</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_staff_email" name="txt_corporate_staff_email" />
+                <input type="text" class="box_text" id="txt_corporate_staff_email" name="txt_corporate_staff_email" value="{{corporate_staff_email}}" />
             </td>
         </tr>
         <tr style="height: 36px;">
             <td colspan="3" class="border-bottom border-right-dashed">TEL</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_staff_tel" name="txt_corporate_staff_tel" />
+                <input type="text" class="box_text" id="txt_corporate_staff_tel" name="txt_corporate_staff_tel" value="{{corporate_staff_tel}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">建物名</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txtWorkplaceAddress2" name="txt_workplace_address2" />
+                <input type="text" class="box_text" id="txtWorkplaceAddress2" name="txt_workplace_address2" value="{{workplace_address2}}" />
             </td>
         </tr>
         <tr style="height: 36px;">
             <td colspan="3" class="border-bottom border-right-dashed">FAX</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_staff_fax" name="txt_corporate_staff_fax" />
+                <input type="text" class="box_text" id="txt_corporate_staff_fax" name="txt_corporate_staff_fax" value="{{corporate_staff_fax}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">TEL</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txtWorkplaceTel" name="txt_workplace_tel" />
+                <input type="text" class="box_text" id="txtWorkplaceTel" name="txt_workplace_tel" value="{{workplace_tel}}" />
             </td>
         </tr>
         <tr style="height: 36px;">
             <td colspan="3" class="border-bottom border-right-dashed">携帯電話</td>
             <td colspan="7" class="border-bottom">
-                <input type="text" class="box_text" id="txt_corporate_staff_phone" name="txt_corporate_staff_phone" />
+                <input type="text" class="box_text" id="txt_corporate_staff_phone" name="txt_corporate_staff_phone" value="{{corporate_staff_phone}}" />
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">FAX</td>
             <td colspan="8" class="border-bottom border-right-3">
-                <input type="text" class="box_text" id="txtWorkplaceFax" name="txt_workplace_fax" />
+                <input type="text" class="box_text" id="txtWorkplaceFax" name="txt_workplace_fax" value="{{workplace_fax}}" />
             </td>
         </tr>
         <tr style="height: 46px;">
@@ -493,10 +497,10 @@
                 <div style="font-size:10px;">※必ずご記入ください</div>
             </td>
             <td colspan="7" class="border-bottom" style="font-size: 13px;line-height: 19px;">
-                電話番号：<input type="text" id="txt_corporate_contact_tel" name="txt_corporate_contact_tel" class="line_text" style="width: 130px;"/><br/>
+                電話番号：<input type="text" id="txt_corporate_contact_tel" name="txt_corporate_contact_tel" class="box_text" value="{{corporate_contact_tel}}" style="width: 130px;height:13px;"/><br/>
                 <span style="font-size:12px;">
-                    (氏名：<input type="text" id="txt_corporate_contact_name" name="txt_corporate_contact_name" class="line_text" style="width: 60px;"/>
-                    契約者との関係<input type="text" id="txt_corporate_contact_relation" name="txt_corporate_contact_relation" class="line_text" style="width: 40px;"/>)
+                    (氏名：<input type="text" id="txt_corporate_contact_name" name="txt_corporate_contact_name" class="box_text" value="{{corporate_contact_name}}" style="width: 60px;height:13px;"/>
+                    契約者との関係<input type="text" id="txt_corporate_contact_relation" name="txt_corporate_contact_relation" class="box_text" value="{{corporate_contact_relation}}" style="width: 40px;height:13px;"/>)
                 </span>
             </td>
             <td colspan="4" class="border-bottom" style="text-align: center; background-color: #000000; color: #ffffff;">
@@ -505,10 +509,10 @@
                 <div style="font-size:10px;">※必ずご記入ください</div>
             </td>
             <td colspan="8" class="border-bottom border-bottom-3 border-right-3" style="line-height: 19px;">
-                電話番号：<input type="text" id="txt_personal_contact_tel" name="txt_personal_contact_tel" class="line_text" style="width: 130px;"/><br/>
+                電話番号：<input type="text" id="txt_personal_contact_tel" name="txt_personal_contact_tel" class="box_text" value="{{personal_contact_tel}}" style="width: 130px;height:13px;"/><br/>
                 <span style="font-size:12px;">
-                    (氏名：<input type="text" id="txt_personal_contact_name" name="txt_personal_contact_name" class="line_text" style="width: 60px;"/>
-                    契約者との関係<input type="text" id="txt_personal_contact_relation" name="txt_personal_contact_relation" class="line_text" style="width: 40px;"/>)
+                    (氏名：<input type="text" id="txt_personal_contact_name" name="txt_personal_contact_name" class="box_text" value="{{personal_contact_name}}" style="width: 60px;height:13px;"/>
+                    契約者との関係<input type="text" id="txt_personal_contact_relation" name="txt_personal_contact_relation" class="box_text" value="{{personal_contact_relation}}" style="width: 40px;height:13px;"/>)
                 </span>
             </td>
         </tr>
@@ -526,7 +530,9 @@
                 地
             </td>
             <td colspan="3" class="border-bottom border-right-dashed">フリガナ</td>
-            <td colspan="7" class="border-bottom"></td>
+            <td colspan="7" class="border-bottom">
+                <input type="text" class="box_text" value="{{corporate_user_kana}}"/>
+            </td>
             <td rowspan="2" colspan="12" class="border-left-3 border-bottom border-right" style="font-size:9px;">
                 <span>&nbsp;★&nbsp;勤務先は必ずご記入ください。（勤務先に在籍確認の連絡をする場合があります。）</span><br/>
                 <span>&nbsp;★&nbsp;個人事業主は、申込時、登記簿等業務内容のわかる公的な資料の提出が必要です。</span>
@@ -534,18 +540,24 @@
         </tr>
         <tr style="height: 30px;">
             <td colspan="3" class="border-bottom border-right-dashed">氏名</td>
-            <td colspan="7" class="border-bottom"></td>
+            <td colspan="7" class="border-bottom">
+                <input type="text" class="box_text" value="{{corporate_user_name}}"/>
+            </td>
         </tr>
         <tr style="height: 24px;">
             <td colspan="3" class="border-bottom border-right-dashed">携帯電話</td>
-            <td colspan="7" class="border-bottom"></td>
+            <td colspan="7" class="border-bottom">
+                <input type="text" class="box_text" value="{{corporate_user_tel}}"/>
+            </td>
             <td colspan="12" class="border-left-3 border-right center">
                 <span style="font-weight:bold;">アンケート</span>　どのようにして､この駐車場を知りましたか？
             </td>
         </tr>
         <tr style="height: 61px;">
             <td colspan="3" class="border-bottom border-bottom-3 border-right-dashed">所在地</td>
-            <td colspan="7" class="border-bottom border-bottom-3"></td>
+            <td colspan="7" class="border-bottom border-bottom-3">
+                <input type="text" class="box_text" value="{{corporate_user_address1}}"/>
+            </td>
             <td colspan="12" class="border-left-3 border-bottom border-right" style="padding-left:5px;line-height: 25px;">
                 <input type="checkbox" id="chkRouteFlier" name="chk_route_flier" /><label for="chkRouteFlier">チラシ</label>
                 <input type="checkbox" id="chkRouteInternet" name="chk_route_internet" /><label for="chkRouteInternet">インターネット</label>

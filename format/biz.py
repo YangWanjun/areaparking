@@ -19,15 +19,13 @@ def get_subscription_confirm_html(request, subscription, **kwargs):
     :param kwargs:
     :return:
     """
-    # task = get_object_or_404(Task, pk=kwargs.get('task_id'))
     report = get_object_or_404(models.ReportSubscriptionConfirm, pk=subscription.subscription_confirm_format_id)
-    # contract = task.process.content_object
     parking_lot = subscription.parking_lot
     t = Template(report.content)
     ctx = Context(kwargs)
     ctx.update(get_total_context(
         parking_lot=parking_lot,
-        # contractor=contract.contractor,
+        subscription=subscription,
     ))
     ctx.update(csrf(request))
     html = t.render(ctx)
@@ -42,15 +40,13 @@ def get_subscription_html(request, subscription, **kwargs):
     :param kwargs:
     :return:
     """
-    # task = get_object_or_404(Task, pk=kwargs.get('task_id'))
     report = get_object_or_404(models.ReportSubscription, pk=subscription.subscription_format_id)
-    # contract = task.process.content_object
     parking_lot = subscription.parking_lot
     t = Template(report.content)
     ctx = Context(kwargs)
     ctx.update(get_total_context(
         parking_lot=parking_lot,
-        # contractor=contract.contractor,
+        subscription=subscription,
     ))
     ctx.update(csrf(request))
     html = t.render(ctx)

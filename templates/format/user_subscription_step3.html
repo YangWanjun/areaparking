@@ -223,6 +223,33 @@
         </table>
     </div>
 {% endif %}
+<div class="row">
+    <div class="card-title">添付書類</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field"><label for="file_driver_license">免許書の写し<span class="new badge red" data-badge-caption="必須"></span></label></th>
+            <td class="form-field"><input type="file" id="file_driver_license" name="file_driver_license" required placeholder="" /></td>
+        </tr>
+        <tr>
+            <th class="form-field"><label>車検書の写し<span class="new badge red" data-badge-caption="必須"></span></label></th>
+            <td class="form-field">
+                <div class="row">
+                    <input type="radio" name="rdo_car_inspection" id="rdo_car_inspection_exist" value="exist" required />
+                    <label for="rdo_car_inspection_exist"><input type="file" id="file_car_inspection" name="file_car_inspection" /></label>
+                </div>
+                <div>
+                    <input type="radio" name="rdo_car_inspection" id="rdo_car_inspection_new" value="new" required/>
+                    <label for="rdo_car_inspection_new">新車購入予定</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="file_car_insurance">自賠責保険証明と<span class="new badge red" data-badge-caption="必須"></span><br/>任意保険証の写し</label></th>
+            <td class="form-field"><input type="file" id="file_car_insurance" name="file_car_insurance" required placeholder="" /></td>
+        </tr>
+    </table>
+</div>
+
 <script type="text/javascript">
 
 $('form').submit(function() {
