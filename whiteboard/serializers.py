@@ -10,6 +10,7 @@ from employee.serializers import MemberSerializer
 class WhiteBoardSerializer(GeoFeatureModelSerializer):
     point = GeometrySerializerMethodField()
     staff = MemberSerializer()
+    empty_count = serializers.SerializerMethodField()
 
     class Meta:
         model = models.WhiteBoard
@@ -18,6 +19,14 @@ class WhiteBoardSerializer(GeoFeatureModelSerializer):
 
     def get_point(self, obj):
         return Point(obj.lng, obj.lat, srid=4326)
+
+    def get_empty_count(self, obj):
+        """空きの車室数を取得する。
+
+        :param obj:
+        :return:
+        """
+        return obj.position_count - obj.contract_count - obj.temp_contract_count
 
 
 class InquirySerializer(serializers.ModelSerializer):
