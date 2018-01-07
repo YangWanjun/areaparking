@@ -14,6 +14,37 @@ $(document).ready(function(){
     ebjs.material.load_user_info();
     ebjs.material.save_user_info();
     $("#match_parking_lot").css('display', '');
+
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+            var parking_lot_name = trigger.text();
+            var parking_lot_id = trigger.attr('code');
+            modal.find('h5').text(parking_lot_name);
+
+            ebjs.utils.ajax_get(
+                ebjs.config.setting.api_size_grouped_positions,
+                {code: parking_lot_id}
+            ).done(function(result) {
+                var tbl = ebjs.material.get_expanded_positions_html(result);
+                modal.find('div#div_positions').html('');
+                modal.find('div#div_positions').append(tbl);
+            }).fail(function(result) {
+                debugger;
+            }).always(function(result){
+                // debugger;
+            });
+
+        },
+        complete: function() {
+        } // Callback for Modal close
+    }
+  );
 });
 </script>
 <style type="text/css">
@@ -71,6 +102,15 @@ $(document).ready(function(){
         <div class="card-content" style="height: 100%; padding: 2px;">
             <input id="pac-input" class="controls" type="text" placeholder="住所検索">
             <div id="map" style="width: 100%; height: 100%;" ></div>
+        </div>
+    </div>
+    <div id="parking_details" class="modal bottom-sheet">
+        <div class="modal-content">
+            <h5></h5>
+            <div id="div_positions"></div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">閉じる</a>
         </div>
     </div>
 </div>
