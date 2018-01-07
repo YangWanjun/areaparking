@@ -4,10 +4,12 @@ from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySerializerMethodField
 
 from . import models
+from employee.serializers import MemberSerializer
 
 
 class WhiteBoardSerializer(GeoFeatureModelSerializer):
     point = GeometrySerializerMethodField()
+    staff = MemberSerializer()
 
     class Meta:
         model = models.WhiteBoard
