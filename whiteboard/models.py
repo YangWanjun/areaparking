@@ -94,10 +94,10 @@ class Inquiry(BaseModel):
     user_name = models.CharField(blank=True, null=True, max_length=15, verbose_name="名前")
     gender = models.CharField(blank=True, null=True, max_length=1, choices=constants.CHOICE_GENDER, verbose_name="性別")
     tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
-    parking_lot_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="希望する駐車場コード")
-    parking_lot_name = models.CharField(blank=True, null=True, max_length=100, verbose_name="希望する駐車場名称")
-    area_code = models.CharField(blank=True, null=True, max_length=20, verbose_name="希望するエリアコード")
-    area_name = models.CharField(blank=True, null=True, max_length=50, verbose_name="希望するエリア名称")
+    parking_lot_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="希望駐車場コード")
+    parking_lot_name = models.CharField(blank=True, null=True, max_length=100, verbose_name="希望駐車場")
+    area_code = models.CharField(blank=True, null=True, max_length=20, verbose_name="希望エリアコード")
+    area_name = models.CharField(blank=True, null=True, max_length=50, verbose_name="希望エリア")
     transmission_routes = models.CharField(blank=True, null=True, max_length=20, verbose_name="媒体",
                                            validators=[validate_comma_separated_integer_list],
                                            help_text='どのようにして､この駐車場を知りましたか？')

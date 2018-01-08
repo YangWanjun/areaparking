@@ -74,11 +74,11 @@ table > tbody > tr.row2:hover {
 .input-field input[type=search] {
     display: block;
     line-height: inherit;
-    padding-left: 0px;;
-    width: 100%;
+    padding-left: 0px !important;
+    width: 100% !important;
 }
 .input-field input[type=search]:focus {
-    border-bottom: 1px solid rgb(158, 158, 158);
+    border-bottom: 1px solid rgb(158, 158, 158) !important;
 }
 /**************** 検索フィルター *****************/
 div.nowrap {
@@ -142,7 +142,7 @@ div.loading .preloader-wrapper {
     margin: 0px;
 }
 .tight-card div.input-field label {
-    font-size: 13px;
+    font-size: 11px !important;
 }
 .tight-card div.input-field.col label {
     left: 0px;
@@ -151,12 +151,22 @@ div.loading .preloader-wrapper {
 .tight-card [type=checkbox]+label {
     padding-left: 25px;
     line-height: 20px;
+    height: 20px;
 }
 .tight-card .card-action {
     padding: 8px 13px;
 }
 .tight-card a.btn {
     padding: 0 10px;
+}
+.tight-card input[type=text],
+.tight-card textarea,
+.tight-card select {
+    height: 29px;
+    font-size: 12px;
+}
+.tight-card.card .card-content {
+    padding-bottom: 0px;
 }
 /***************** local-storage ***************/
 .local-storage select {
