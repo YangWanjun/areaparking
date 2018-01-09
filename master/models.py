@@ -223,7 +223,18 @@ class Config(BaseModel):
         try:
             return Config.objects.get(name=constants.CONFIG_FIREBASE_SERVERKEY).value
         except ObjectDoesNotExist:
-            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_FIREBASE_SERVERKEY, value=default)
+            Config.objects.create(group=constants.CONFIG_GROUP_SYSTEM, name=constants.CONFIG_FIREBASE_SERVERKEY,
+                                  value=default)
+            return default
+
+    @classmethod
+    def get_google_map_key(cls):
+        default = ''
+        try:
+            return Config.objects.get(name=constants.CONFIG_GOOGLE_MAP_KEY).value
+        except ObjectDoesNotExist:
+            Config.objects.create(group=constants.CONFIG_GROUP_GOOGLE, name=constants.CONFIG_GOOGLE_MAP_KEY,
+                                  value=default)
             return default
 
 

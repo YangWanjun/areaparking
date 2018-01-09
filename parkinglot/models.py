@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import os
+import requests
 
 from django.core.validators import RegexValidator
 from django.db import models
@@ -120,7 +121,7 @@ class ParkingLot(BaseModel):
     lng = models.FloatField(blank=True, null=True, verbose_name="経度")
     lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
     # 交通情報
-    traffic = models.CharField(max_length=200, blank=True, null=True, verbose_name="交通")
+    # traffic = models.CharField(max_length=200, blank=True, null=True, verbose_name="交通")
     nearest_station_line1 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅① 沿線名")
     nearest_station_name1 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅① 駅名")
     nearest_station_walk1 = models.SmallIntegerField(blank=True, null=True, verbose_name="最寄駅① 徒歩（分）")
@@ -259,7 +260,7 @@ class ParkingLotStaffHistory(BaseModel):
 class ParkingLotComment(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     comment = models.CharField(max_length=255, verbose_name="備考")
-    order = models.SmallIntegerField(editable=False, verbose_name="並び順")
+    order = models.SmallIntegerField(editable=False, blank=True, null=True, verbose_name="並び順")
 
     class Meta:
         db_table = 'ap_parking_lot_comment'

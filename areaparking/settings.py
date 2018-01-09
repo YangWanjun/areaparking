@@ -26,13 +26,14 @@ SECRET_KEY = 'vkycdut2t=c01f+su75#1d+87y)wn)(arx&^nu-^iw7dgl_izk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.99.100', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.99.100', 'localhost', '127.0.0.1', 'areaparking']
 APPEND_SLASH = True
 NUMBER_GROUPING = 3
 CORS_ORIGIN_WHITELIST = (
     'localhost',
     'localhost:8000',
-    '127.0.0.1:8000'
+    '127.0.0.1:8000',
+    'areaparking',
 )
 SESSION_COOKIE_AGE = 60 * 60 * 24
 
@@ -125,17 +126,17 @@ elif sys.platform == "darwin":
             'PORT': '3306',
         },
     }
-# elif sys.platform in ('linux2', 'linux'):
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.contrib.gis.db.backends.mysql',
-#             'NAME': 'areaparking',
-#             'USER': os.environ['MYSQL_USER'],
-#             'PASSWORD': os.environ['MYSQL_PASSWORD'],
-#             'HOST': os.environ['MYSQL_SERVER'],
-#             'PORT': '3306',
-#         },
-#     }
+elif sys.platform in ('linux2', 'linux'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.mysql',
+            'NAME': 'areaparking',
+            'USER': 'root',
+            'PASSWORD': os.environ['MYSQL_ENV_MYSQL_ROOT_PASSWORD'],
+            'HOST': os.environ['MYSQL_PORT_3306_TCP_ADDR'],
+            'PORT': os.environ['MYSQL_PORT_3306_TCP_PORT'],
+        },
+    }
 else:
     DATABASES = {
         'default': {

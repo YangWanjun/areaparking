@@ -27,6 +27,8 @@ class ParkingPositionForm(BaseForm):
         forms.ModelForm.__init__(self, *args, **kwargs)
         if self.instance and self.instance.pk:
             self.fields['parking_lot'].queryset = models.ParkingLot.objects.filter(pk=self.instance.parking_lot.pk)
+        else:
+            self.fields['parking_lot'].queryset = models.ParkingLot.objects.public_all().order_by('-created_date')
 
 
 class ParkingLotDocForm(BaseForm):

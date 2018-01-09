@@ -40,6 +40,7 @@ router.register(r'temp-contract', contract_api.TempContractViewSet)
 
 router.register(r'parking-lot', parking_lot_api.ParkingLotViewSet)
 router.register(r'parking-position-size-grouped', parking_lot_api.ParkingPositionSizeGrouped, base_name='size-grouped')
+router.register(r'geocode', parking_lot_api.GeocodeViewSet, base_name='geocode')
 
 router.register(r'car-maker', master_api.CarMakerViewSet)
 router.register(r'car-model', master_api.CarModelViewSet)

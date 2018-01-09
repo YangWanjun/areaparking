@@ -14,6 +14,7 @@ MIME_TYPE_ZIP = 'application/zip'
 MIME_TYPE_HTML = 'text/html'
 
 CONFIG_GROUP_SYSTEM = 'system'
+CONFIG_GROUP_GOOGLE = 'google'
 CONFIG_GROUP_EMAIL = 'email'
 CONFIG_GROUP_ADJUST_SIZE = 'size'
 CONFIG_EMAIL_ADDRESS = 'email_address'
@@ -32,6 +33,7 @@ CONFIG_CAR_WEIGHT_ADJUST = 'car_weight_adjust'
 CONFIG_URL_TIMEOUT = 'url_timeout'
 CONFIG_GCM_URL = 'gcm_url'
 CONFIG_FIREBASE_SERVERKEY = 'firebase_serverkey'
+CONFIG_GOOGLE_MAP_KEY = 'google_map_key'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
