@@ -125,6 +125,17 @@ elif sys.platform == "darwin":
             'PORT': '3306',
         },
     }
+elif sys.platform in ('linux2', 'linux'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.mysql',
+            'NAME': 'areaparking',
+            'USER': os.environ['MYSQL_USER'],
+            'PASSWORD': os.environ['MYSQL_PASSWORD'],
+            'HOST': os.environ['MYSQL_SERVER'],
+            'PORT': '3306',
+        },
+    }
 else:
     DATABASES = {
         'default': {
