@@ -172,12 +172,8 @@ def get_user_subscription_url(task):
     :param task:
     :return:
     """
-    subscription = task.process.content_object.subscription
-    if subscription:
-        pk = subscription.pk
-    else:
-        pk = 0
-    url = reverse('format:user_subscription_step1', kwargs={'signature': task.get_signed_pk(), 'pk': pk})
+    subscription = task.process.content_object
+    url = reverse('format:user_subscription_step1', kwargs={'signature': get_signed_value(subscription.pk)})
     domain_name = Config.get_domain_name()
     return {'user_subscription_url': urljoin(domain_name, url)}
 

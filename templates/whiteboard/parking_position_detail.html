@@ -225,17 +225,11 @@ $(document).one("turbolinks:load", function() {
             $(this).attr('method'),
             $(this).serialize()
         ).done(function(result){
-            ebjs.utils.ajax_post(
-                '/api/temp-contract/',
-                {subscription: result.code, staff: {{ whiteboard_position.whiteboard.staff.pk }}, parking_lot: {{ whiteboard_position.whiteboard.pk }}, parking_position: {{ whiteboard_position.parking_position.pk }}}
-            ).done(function(result2){
-                window.location = '/contract/temp_contract/' + result2.id + '/detail/';
-                $('#start_temp_contract').modal('close');
-            }).fail(function(result) {
-                console.log(result.responseJSON);
-            });
+            window.location = '/contract/subscription/' + result.code + '/detail/';
+            $('#start_temp_contract').modal('close');
         }).fail(function(result){
             ebjs.material.reflection_form_errors(form_obj, result.responseJSON);
+            alert("エラー発生しました。");
         }).always(function(result){
         });
         return false;

@@ -34,14 +34,6 @@
                 {% endfor %}
             </td>
         </tr>
-        <tr>
-            <th class="form-field">駐車番号(No.)</th>
-            <td class="form-field">
-                {% if parking_position %}
-                    {{ parking_position }}
-                {% endif %}
-            </td>
-        </tr>
         {% if parking_lot.time_limit_comment %}
         <tr>
             <th class="red-text form-field">※利用時間帯について</th>

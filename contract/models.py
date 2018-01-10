@@ -16,7 +16,7 @@ from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
 from format.models import ReportFile, ReportSubscription, ReportSubscriptionConfirm
 from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
-from utils.app_base import get_total_context, get_user_subscription_url, get_signed_value
+from utils.app_base import get_total_context, get_user_subscription_url
 
 
 # Create your models here.
@@ -221,6 +221,36 @@ class Subscription(AbstractUser, AbstractCar):
         else:
             return None
 
+    @cached_property
+    def process(self):
+        """申込みから成約までのプロセスを取得する
+
+        :return:
+        """
+        try:
+            subscription_type = ContentType.objects.get_for_model(self)
+            return Process.objects.get(content_type__pk=subscription_type.pk, object_id=self.pk)
+        except ObjectDoesNotExist:
+            return None
+
+    @cached_property
+    def tasks(self):
+        """タスクリストを取得する
+
+        :return:
+        """
+        return self.process.task_set.all()
+
+    @cached_property
+    def percent(self):
+        """完成度を取得する
+
+        :return:
+        """
+        task_count = Task.objects.public_filter(process=self.process).count()
+        finished_count = Task.objects.public_filter(process=self.process, status__in=['10', '99']).count()
+        return (finished_count / task_count) * 100
+
     def get_subscription_completed_email(self):
         """申込み完了時のメール宛先アドレス
 
@@ -241,6 +271,70 @@ class Subscription(AbstractUser, AbstractCar):
             'user_name': self.name,
             'user_honorific': '様' if self.category == '1' else '御中'
         }
+
+    def get_monthly_price(self):
+        """月分の賃料（税抜）を取得する。
+
+        デフォルトはホームページ価格
+
+        :return:
+        """
+        price = 0
+        if self.parking_position:
+            price = self.parking_position.price_homepage_no_tax or 0
+            if self.transmission_routes:
+                for route_id in self.transmission_routes.split(','):
+                    try:
+                        transmission_route = TransmissionRoute.objects.get(pk=route_id)
+                        if transmission_route.price_kbn == '01':
+                            price = self.parking_position.price_handbill_no_tax or 0
+                    except ObjectDoesNotExist:
+                        pass
+        return price
+
+    def get_current_month_price(self):
+        """契約開始月末日までの賃料
+
+        :return:
+        """
+        monthly_price = self.get_monthly_price()
+        if monthly_price and self.contract_start_date and self.contract_start_date.day != 1:
+            days = common.get_days_by_month(self.contract_start_date) - self.contract_start_date.day - 1
+            return common.get_integer(monthly_price / days, Config.get_decimal_type()) * days
+        else:
+            return 0
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        is_new = True if self.pk is None else False
+        super(Subscription, self).save(force_insert, force_update, using, update_fields)
+        if is_new:
+            # 進捗のプロセス作成
+            process = Process.objects.create(name='01', content_object=self)
+            for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
+                task = Task(process=process, order=i, category=category[0], name=category[1])
+                if i == len(constants.CHOICE_TASK_CATEGORY):
+                    task.is_end = True
+                task.save()
+            # 入金項目作成
+            payments = Payment.objects.public_filter(is_active=True)
+            consumption_tax_rate = Config.get_consumption_tax_rate()
+            decimal_type = Config.get_decimal_type()
+            for payment in payments:
+                contract_payment = ContractPayment(subscription=self, timing=payment.timing, payment=payment)
+                contract_payment.amount = payment.amount or 0
+                if payment.timing == '11':
+                    # 契約開始月
+                    contract_payment.amount = self.get_current_month_price()
+                elif payment.timing == '30':
+                    contract_payment.amount = self.get_monthly_price()
+                contract_payment.consumption_tax = common.get_integer(contract_payment.amount * consumption_tax_rate,
+                                                                      decimal_type)
+                contract_payment.save()
+
+    parking_lot.short_description = '駐車場'
+    parking_position.short_description = '車室'
+    percent.short_description = '進捗'
 
 
 class ContractorCar(AbstractCar):
@@ -386,7 +480,8 @@ class Contract(BaseModel):
 
 
 class ContractPayment(BaseModel):
-    contract = models.ForeignKey(Contract, verbose_name="契約情報")
+    subscription = models.ForeignKey(Subscription, verbose_name="申込情報")
+    contract = models.ForeignKey(Contract, blank=True, null=True, verbose_name="契約情報")
     timing = models.CharField(max_length=2, choices=constants.CHOICE_PAY_TIMING, verbose_name="タイミング")
     payment = models.ForeignKey(Payment, verbose_name="入金項目")
     amount = models.IntegerField(verbose_name="請求額")
@@ -395,12 +490,12 @@ class ContractPayment(BaseModel):
 
     class Meta:
         db_table = 'ap_contract_payment'
-        ordering = ['contract', 'timing']
+        ordering = ['timing']
         verbose_name = "入金項目"
         verbose_name_plural = "入金項目一覧"
 
     def __str__(self):
-        return '%s：%s' % (str(self.contract), self.payment)
+        return str(self.payment)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -462,8 +557,7 @@ class Task(BaseModel):
         if group:
             data = get_total_context(
                 parking_lot=self.process.content_object.parking_lot,
-                contractor=self.process.content_object.contractor,
-                subscription=self.process.content_object.subscription,
+                subscription=self.process.content_object,
             )
             data.update(get_user_subscription_url(self))
 
@@ -498,9 +592,6 @@ class Task(BaseModel):
                 return None
         else:
             return None
-
-    def get_signed_pk(self):
-        return get_signed_value(self.pk)
 
     def is_finished(self):
         """タスクが成功完了

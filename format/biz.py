@@ -68,12 +68,12 @@ def generate_report_pdf_binary(html):
             os.remove(temp_file)
 
 
-def get_user_subscription_steps(signature=None, pk=None):
+def get_user_subscription_steps(signature=None):
     """ユーザー申込みのステップ数
 
     :return:
     """
-    url_kwargs = {'signature': signature, 'pk': pk}
+    url_kwargs = {'signature': signature}
     step1 = models.Step(step="①", name="申込み基本情報", url_kwargs=url_kwargs)
     step2 = models.Step(step="②", name="申込者分類選択", prev_step=step1, url_kwargs=url_kwargs)
     step3 = models.Step(step="③", name="申込者情報入力", prev_step=step2, url_kwargs=url_kwargs)
@@ -96,7 +96,6 @@ def generate_subscription_pdf(request, subscription, **kwargs):
     """
     # 申込確認書のＰＤＦファイルを追加する。
     title, html = get_subscription_confirm_html(request, subscription, **kwargs)
-    subscription = get_object_or_404(Subscription, pk=kwargs.get('pk'))
     data = generate_report_pdf_binary(html)
     for report in subscription.reports.filter(name=constants.REPORT_SUBSCRIPTION_CONFIRM):
         report.delete()

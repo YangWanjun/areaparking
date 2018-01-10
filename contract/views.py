@@ -14,37 +14,34 @@ from utils.mail import EbMail
 class Index(BaseView):
 
     def get(self, request, *args, **kwargs):
-        return redirect('contract:tempcontract_list')
+        return redirect('contract:subscription_list')
 
 
-class TempContractDetailView(BaseDetailModelView):
+class SubscriptionDetailView(BaseDetailModelView):
     def get_context_data(self, **kwargs):
-        context = super(TempContractDetailView, self).get_context_data(**kwargs)
-        subscription = self.object.subscription
+        context = super(SubscriptionDetailView, self).get_context_data(**kwargs)
         context.update({
-            'subscription': subscription,
             'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
             'subscription_template': ReportSubscription.get_default_report(),
-            'change_url': reverse('admin:contract_contract_change', args=(self.object.pk,)) + '?_popup=1',
         })
         return context
 
 
-class TempContractListView(BaseListModelView):
+class SubscriptionListView(BaseListModelView):
     pass
 
 
-class TempContractVewSet(BaseModelViewSet):
-    model = models.TempContract
-    list_display = ('name', 'parking_lot', 'parking_position', 'percent', 'start_date', 'end_date')
-    detail_view_class = TempContractDetailView
-    list_view_class = TempContractListView
+class SubscriptionVewSet(BaseModelViewSet):
+    model = models.Subscription
+    list_display = ('name', 'parking_lot', 'parking_position', 'percent', 'contract_start_date', 'created_date')
+    detail_view_class = SubscriptionDetailView
+    list_view_class = SubscriptionListView
 
     # def has_change_permission(self, request, obj=None):
     #     return False
 
 
-class TempContractFinish(BaseView):
+class SubscriptionFinish(BaseView):
     def get(self, request, *args, **kwargs):
         contract = get_object_or_404(models.Contract, pk=kwargs.get('pk'))
         contract.status = '11'
@@ -54,7 +51,7 @@ class TempContractFinish(BaseView):
         return redirect('contract:tempcontract_list')
 
 
-class TempContractDestroy(BaseView):
+class SubscriptionDestroy(BaseView):
     def get(self, request, *args, **kwargs):
         contract = get_object_or_404(models.Contract, pk=kwargs.get('pk'))
         contract.status = '21'

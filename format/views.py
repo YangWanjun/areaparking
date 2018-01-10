@@ -19,17 +19,10 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
     def get_context_data(self, **kwargs):
         context = super(BaseUserOperationView, self).get_context_data(**kwargs)
         signature = kwargs.get('signature')
-        pk = kwargs.get('pk')
-        task_id = get_unsigned_value(signature)
-        task = get_object_or_404(Task, pk=task_id)
-
-        steps = self.get_steps(signature, pk)
-        self.request.session['steps'] = steps
+        pk = get_unsigned_value(signature)
         context.update({
-            'task': task,
             'pk': pk,
             'signature': signature,
-            'steps': steps,
             'is_finished': False
         })
         context.update(get_total_context())
@@ -42,9 +35,6 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
         except signing.BadSignature:
             return redirect('format:url_timeout')
 
-    def get_steps(self, signature=None, pk=None):
-        pass
-
 
 class BaseUserSubscriptionView(BaseUserOperationView):
 
@@ -52,31 +42,28 @@ class BaseUserSubscriptionView(BaseUserOperationView):
         try:
             context = self.get_context_data(**kwargs)
             # ステータスが「新規申込み」でない場合は申込み完了に飛ばす
-            task = context.get('task')
-            subscription = task.process.content_object.subscription
+            subscription = get_object_or_404(Subscription, pk=context.get('pk'))
             if subscription.status != '01' and context.get('is_finished') is False:
-                signature = kwargs.get('signature')
-                return redirect('format:user_subscription_step5', signature=signature, pk=context.get('pk'))
+                return redirect('format:user_subscription_step5', signature=kwargs.get('signature'))
             return self.render_to_response(context)
         except signing.BadSignature:
             return redirect('format:url_timeout')
 
     def get_context_data(self, **kwargs):
         context = super(BaseUserSubscriptionView, self).get_context_data(**kwargs)
-        task = context.get('task')
-        contract = task.process.content_object
-        parking_lot = contract.parking_lot
-        parking_position = contract.parking_position
+        signature = context.get('signature')
+        steps = self.get_steps(signature)
+        self.request.session['steps'] = steps
+        user_subscription = self.get_user_subscription(context.get('pk'))
         context.update({
-            'user_subscription': self.get_user_subscription(context.get('pk')),
-            'contract': contract,
-            'parking_lot': parking_lot,
-            'parking_position': parking_position,
+            'user_subscription': user_subscription,
+            'parking_lot': user_subscription.parking_lot,
+            'steps': steps,
         })
         return context
 
-    def get_steps(self, signature=None, subscription_pk=None):
-        return biz.get_user_subscription_steps(signature, pk=subscription_pk)
+    def get_steps(self, signature=None):
+        return biz.get_user_subscription_steps(signature)
 
     def get_user_subscription(self, subscription_id):
         """ユーザー申込み情報を取得する。
@@ -175,7 +162,7 @@ class UserSubscriptionStep1View(BaseUserSubscriptionView):
             signature = context.get('signature')
             current_step = context.get('current_step')
             current_step.update({'is_finished': True})
-            return redirect('format:user_subscription_step2', signature=signature, pk=context.get('pk'))
+            return redirect('format:user_subscription_step2', signature=signature)
         else:
             context.update(errors)
             return self.render_to_response(context)
@@ -202,9 +189,9 @@ class UserSubscriptionStep2View(BaseUserSubscriptionView):
         user_subscription.category = contractor_category
         self.set_user_subscription(user_subscription)
         if contractor_category == '2':
-            return redirect('format:user_subscription_step3', signature=signature, pk=context.get('pk'))
+            return redirect('format:user_subscription_step3', signature=signature)
         elif contractor_category == '1':
-            return redirect('format:user_subscription_step3', signature=signature, pk=context.get('pk'))
+            return redirect('format:user_subscription_step3', signature=signature)
         else:
             context.update({
                 'contractor_corporate': ['法人か個人かをご選択してください。']
@@ -334,7 +321,7 @@ class UserSubscriptionStep3View(BaseUserSubscriptionView):
             # ユーザーが記入した情報を一時的にセッションに保存
             self.set_user_subscription(user_subscription)
             signature = context.get('signature')
-            return redirect('format:user_subscription_step4', signature=signature, pk=context.get('pk'))
+            return redirect('format:user_subscription_step4', signature=signature)
         else:
             context.update(errors)
             return self.render_to_response(context)
@@ -346,23 +333,15 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
     def get_context_data(self, **kwargs):
         context = super(UserSubscriptionStep4View, self).get_context_data(**kwargs)
         steps = context.get('steps')
-        task = context.get('task')
-        contract = task.process.content_object
-        parking_lot = contract.parking_lot
-        parking_position = contract.parking_position
         current_step = steps[3]
         context.update({
             'title': current_step.get('name'),
             'current_step': current_step,
-            'parking_lot': parking_lot,
-            'parking_position': parking_position,
         })
         return context
 
     def post(self, request, *args, **kwargs):
         context = super(UserSubscriptionStep4View, self).get_context_data(**kwargs)
-        task = context.get('task')
-        contract = task.process.content_object
         user_subscription = context.get('user_subscription')
         # 申込PDF作成
         biz.generate_subscription_pdf(request, user_subscription, **kwargs)
@@ -379,10 +358,10 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
             None,
             '%s 申込み完了' % str(parking_lot),
             '',
-            url=reverse('contract:tempcontract_detail', args=(contract.pk,)),
+            url=reverse('contract:subscription_detail', args=(user_subscription.pk,)),
         )
         signature = kwargs.get('signature')
-        return redirect('format:user_subscription_step5', signature=signature, pk=context.get('pk'))
+        return redirect('format:user_subscription_step5', signature=signature)
 
 
 class UserSubscriptionStep5View(BaseUserSubscriptionView):

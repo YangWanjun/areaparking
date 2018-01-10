@@ -32,12 +32,7 @@
             <div class="right-align">
                 {% block actions_row %}
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
-                {% if object.contractor %}
-                <a class="waves-effect waves-light btn white-text popup" href="{% url 'admin:contract_contractor_change' object.contractor.pk %}?_popup=1">契約者変更</a>
-                {% else %}
-                <a class="waves-effect waves-light btn white-text popup" href="{% url 'admin:contract_subscription_change' subscription.pk %}?_popup=1">申込者変更</a>
-                {% endif %}
-                {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
             </div>
         </div>
@@ -50,7 +45,7 @@
                 <div class="determinate" style="width: {{ object.percent }}%"></div>
             </div>
             <ul class="collapsible" data-collapsible="expandable">
-                {% for task in object.contract.get_contract_process.task_set.all %}
+                {% for task in object.tasks %}
                 {% with group=task.get_mail_group template=task.get_mail_template %}
                 <li>
                     <div class="collapsible-header">
@@ -118,7 +113,7 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="input-field col s12">
-                                                        <input value="{% if object.contractor %}{{ object.contractor.email }}{% else %}{{ object.subscription.email }}{% endif %}" id="txtSubscriptionTo" name="subscription_to" type="text" />
+                                                        <input value="{{ object.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
                                                         <label for="txtSubscriptionTo">宛先</label>
                                                     </div>
                                                 </div>
