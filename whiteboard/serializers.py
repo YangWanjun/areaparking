@@ -18,7 +18,7 @@ class WhiteBoardSerializer(GeoFeatureModelSerializer):
         geo_field = 'point'
 
     def get_point(self, obj):
-        return Point(obj.lng, obj.lat, srid=4326)
+        return Point(obj.lng or 0, obj.lat or 0, srid=4326)
 
     def get_empty_count(self, obj):
         """空きの車室数を取得する。
