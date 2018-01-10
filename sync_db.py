@@ -11,7 +11,6 @@ from django.core.management import call_command
 # from format import migrations as format_migrations
 # from master import migrations as master_migrations
 # from parkinglot import migrations as parkinglot_migrations
-# from revolution import migrations as revolution_migrations
 # from turnover import migrations as turnover_migrations
 # from whiteboard import migrations as whiteboard_migrations
 
@@ -30,18 +29,19 @@ else:
 
 
 def main():
-    # del_migration_records()
+    del_migration_records()
     del_migration_files()
-    # migrate()
+    migrate()
 
 
 def migrate():
     call_command('migrate', '--fake')
     call_command('makemigrations', 'contract')
+    call_command('makemigrations', 'employee')
+    call_command('makemigrations', 'format')
     call_command('makemigrations', 'master')
     call_command('makemigrations', 'parkinglot')
-    call_command('makemigrations', 'revolution')
-    call_command('makemigrations', 'turnover')
+    # call_command('makemigrations', 'turnover')
     call_command('makemigrations', 'whiteboard')
     call_command('migrate', '--fake')
 

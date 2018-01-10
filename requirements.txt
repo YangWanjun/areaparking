@@ -18,3 +18,7 @@ requests==2.18.4
 # ■GDALをインストールする場合
 # ./areaparking/data/GDAL-2.2.3-cp36-cp36m-win_amd64 をインストールしてください。
 #######################################################
+##########          Linuxの注意事項          ##########
+# ■django.contrib.gis.geos.error.GEOSException: Could not parse version info string "3.6.2-CAPI-1.10.2 4d2925d6"のエラー発生した場合
+# https://stackoverflow.com/questions/18643998/geodjango-geosexception-error#answer-18721622を参照して修正してください
+#######################################################
