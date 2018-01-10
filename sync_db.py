@@ -22,6 +22,10 @@ if sys.platform == 'win32' and getpass.getuser() == 'EB097':
     user = 'root'
     password = 'root'
     host = 'localhost'
+elif sys.platform in ('linux2', 'linux'):
+    user = 'root'
+    password = os.environ['MYSQL_ENV_MYSQL_ROOT_PASSWORD']
+    host = os.environ['MYSQL_PORT_3306_TCP_ADDR']
 else:
     user = 'root'
     password = 'root'
