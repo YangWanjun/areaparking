@@ -260,11 +260,9 @@ class ParkingLotStaffHistory(BaseModel):
 class ParkingLotComment(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     comment = models.CharField(max_length=255, verbose_name="備考")
-    order = models.SmallIntegerField(editable=False, blank=True, null=True, verbose_name="並び順")
 
     class Meta:
         db_table = 'ap_parking_lot_comment'
-        ordering = ['order']
         verbose_name = "注意事項・備考"
         verbose_name_plural = "注意事項・備考一覧"
 
@@ -290,11 +288,9 @@ class ParkingLotImage(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     path = models.ImageField(upload_to=common.get_parking_lot_image_path)
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
-    order = models.SmallIntegerField(editable=False, verbose_name="並び順")
 
     class Meta:
         db_table = 'ap_parking_lot_image'
-        ordering = ['order']
         verbose_name = "駐車場画像"
         verbose_name_plural = "駐車場画像一覧"
 

@@ -106,3 +106,5 @@ ENV/
 migrations/
 user_subscription/
 docs/
+migrations/
+media/images

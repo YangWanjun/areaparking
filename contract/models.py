@@ -251,6 +251,15 @@ class Subscription(AbstractUser, AbstractCar):
         finished_count = Task.objects.public_filter(process=self.process, status__in=['10', '99']).count()
         return (finished_count / task_count) * 100
 
+    def get_suitable_positions(self):
+        """駐車可能の車室を取得する
+
+        :return:
+        """
+        positions = self.parking_lot.get_suitable_positions(self.car_length, self.car_width,
+                                                            self.car_height, self.car_weight)
+        return positions
+
     def get_subscription_completed_email(self):
         """申込み完了時のメール宛先アドレス
 
@@ -432,16 +441,6 @@ class Contract(BaseModel):
             return common.get_integer(monthly_price / days, Config.get_decimal_type()) * days
         else:
             return 0
-
-    def get_suitable_positions(self):
-        """駐車可能の車室を取得する
-
-        :return:
-        """
-        positions = self.parking_lot.get_suitable_positions(self.car.car_length, self.car.car_width,
-                                                            self.car.car_height,
-                                                            self.car.car_weight)
-        return positions
 
     def get_contract_process(self):
         """ユーザー申込みから成約までのプロセスを取得する。

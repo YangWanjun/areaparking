@@ -173,72 +173,76 @@
                         {% elif task.category == '030' %}
                             <!-- 住所・電話番号 審査・確認 -->
                             <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s4">郵便番号：</div>
+                                <div class="col s8">〒{{ object.post_code1|default:'' }}－{{ object.post_code2|default:'' }}</div>
+                            </div>
+                            <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">住所：</div>
-                                <div class="col s8">{{ object.contractor.address1|default:'' }}{{ object.contractor.address2|default:'' }}</div>
+                                <div class="col s8">{{ object.address1|default:'' }}{{ object.address2|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">電話番号：</div>
-                                <div class="col s8">{{ object.contractor.tel|default:'' }}</div>
+                                <div class="col s8">{{ object.tel|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">ファックス：</div>
-                                <div class="col s8">{{ object.contractor.fax|default:'' }}</div>
+                                <div class="col s8">{{ object.fax|default:'' }}</div>
                             </div>
                         {% elif task.category == '031' %}
                             <!-- 勤め先審査 -->
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">勤務先名称：</div>
-                                <div class="col s8">{{ object.contractor.workplace_name|default:'' }}</div>
+                                <div class="col s8">{{ object.workplace_name|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">勤務先郵便番号：</div>
-                                <div class="col s8">{{ object.contractor.workplace_post_code|default:'' }}</div>
+                                <div class="col s8">〒{{ object.workplace_post_code1|default:'' }}－{{ object.workplace_post_code2|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">勤務先住所：</div>
-                                <div class="col s8">{{ object.contractor.workplace_address1|default:'' }}{{ object.contractor.workplace_address2|default:'' }}</div>
+                                <div class="col s8">{{ object.workplace_address1|default:'' }}{{ object.workplace_address2|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">勤務先電話番号：</div>
-                                <div class="col s8">{{ object.contractor.workplace_tel|default:'' }}</div>
+                                <div class="col s8">{{ object.workplace_tel|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">勤務先ファックス：</div>
-                                <div class="col s8">{{ object.contractor.workplace_fax|default:'' }}</div>
+                                <div class="col s8">{{ object.workplace_fax|default:'' }}</div>
                             </div>
-                        {% elif task.category == '032' and object.car %}
+                        {% elif task.category == '032' %}
                             <!-- 車両サイズ審査 -->
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">車メーカー：</div>
-                                <div class="col s8">{{ object.car.car_maker|default:'' }}</div>
+                                <div class="col s8">{{ object.car_maker|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">車種：</div>
-                                <div class="col s8">{{ object.car.car_model|default:'' }}</div>
+                                <div class="col s8">{{ object.car_model|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">色：</div>
-                                <div class="col s8">{{ object.car.car_color|default:'' }}</div>
+                                <div class="col s8">{{ object.car_color|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">No.プレート：</div>
-                                <div class="col s8">{{ object.car.car_no_plate|default:'' }}</div>
+                                <div class="col s8">{{ object.car_no_plate|default:'' }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">全長：</div>
-                                <div class="col s8">{{ object.car.car_length|default:''|intcomma }}</div>
+                                <div class="col s8">{{ object.car_length|default:''|intcomma }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">全幅：</div>
-                                <div class="col s8">{{ object.car.car_width|default:''|intcomma }}</div>
+                                <div class="col s8">{{ object.car_width|default:''|intcomma }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s4">全高：</div>
-                                <div class="col s8">{{ object.car.car_height|default:''|intcomma }}</div>
+                                <div class="col s8">{{ object.car_height|default:''|intcomma }}</div>
                             </div>
                             <div class="row">
                                 <div class="col s4">重量：</div>
-                                <div class="col s8">{{ object.car.car_weight|default:''|intcomma }}</div>
+                                <div class="col s8">{{ object.car_weight|default:''|intcomma }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s1">判定結果</div>
@@ -248,7 +252,7 @@
                                 <div class="col s2">全高</div>
                                 <div class="col s2">重量</div>
                             </div>
-                            {% for suitable_position in object.contract.get_suitable_positions %}
+                            {% for suitable_position in object.get_suitable_positions %}
                                 {% if suitable_position %}
                                     <div class="row {% if suitable_position.position.pk == object.parking_position.pk %}teal lighten-5{% endif %}" style="margin-bottom: 5px;">
                                         <div class="col s1">{% if suitable_position.is_suitable %}<i class="tiny material-icons">done</i>{% else %}<i class="tiny material-icons red-text">close</i>{% endif %}</div>
@@ -351,7 +355,7 @@
         </div>
         <div class="card-action">
             <div class="right-align">
-                <a class="waves-effect waves-light btn red white-text" href="{% url 'contract:temp_contract_destroy' object.pk %}">破棄</a>
+                <a class="waves-effect waves-light btn red white-text" href="{% url 'contract:subscription_destroy' object.pk %}">破棄</a>
                 <a class="waves-effect waves-light btn white-text" href="{% url 'contract:temp_contract_finish' object.pk %}">契約完了</a>
             </div>
         </div>
