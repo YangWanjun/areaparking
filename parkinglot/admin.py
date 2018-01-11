@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django.contrib import admin
 
 from . import models, forms
-from utils import constants
 from utils.django_base import BaseAdmin
 
 
@@ -122,7 +121,3 @@ class ParkingPosition(BaseAdmin):
     )
     inlines = (ParkingPositionKeyInline,)
     save_as = True
-
-
-admin.site.site_header = constants.SYSTEM_NAME
-admin.site.site_title = constants.SYSTEM_NAME

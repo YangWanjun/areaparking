@@ -2,9 +2,11 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
+from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
 
 from . import models, forms
-from utils.django_base import BaseAdmin, BaseAdminEditor
+from utils import constants
+from utils.django_base import BaseAdmin, BaseAdminEditor, BaseAdminReadOnly
 
 
 # Register your models here.
@@ -86,3 +88,23 @@ class MailTemplateAdmin(BaseAdminEditor):
 class MailGroupAdmin(BaseAdmin):
     list_display = ('code', 'name', 'sender', 'template')
     inlines = (MailCcListInline,)
+
+
+class LogEntryAdmin(BaseAdminReadOnly):
+    list_display = ['user', 'content_type', 'object_repr', 'get_action_flag_name', 'action_time']
+
+    def get_action_flag_name(self, obj):
+        if obj.action_flag == ADDITION:
+            return u"追加"
+        elif obj.action_flag == CHANGE:
+            return u"修正"
+        else:
+            return u"削除"
+    get_action_flag_name.short_description = u"操作種別"
+    get_action_flag_name.admin_order_field = 'action_flag'
+
+
+admin.site.register(LogEntry, LogEntryAdmin)
+
+admin.site.site_header = constants.SYSTEM_NAME
+admin.site.site_title = constants.SYSTEM_NAME
