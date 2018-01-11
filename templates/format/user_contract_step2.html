@@ -1,0 +1,140 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="row">
+    <div class="card-title">{{ title }}</div>
+    <p>
+        この度は、下記駐車場のご利用申込みを頂きまして、誠に有難うございます。<br/>
+        ご契約にあたり、下記の契約金額のご用意をお願いいたします。
+    </p>
+    <div class="wrapper">
+        <table class="bordered">
+            <tr>
+                <th class="center" style="width: 200px;">物件名</th>
+                <td>{{ parking_lot }}</td>
+            </tr>
+            <tr style="border-bottom: 0px;">
+                <th class="center" style="width: 200px;">契約期間</th>
+                <td>{{ user_subscription.get_contract_start_date }}～{{ user_subscription.get_contract_end_date }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="wrapper">
+        <table class="bordered">
+            <thead>
+                <tr>
+                    <th class="center" colspan="2">項目</th>
+                    <th class="center">金額</th>
+                    <th class="center">消費税</th>
+                    <th class="center">摘要</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% with count=user_subscription.get_current_month_payments.count %}
+                {% for payment in user_subscription.get_current_month_payments %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                        <td class="center" rowspan="{{ count|add:1 }}">今月料金</td>
+                        {% endif %}
+                        <td>{{ payment }}</td>
+                        <td>￥{{ payment.amount|intcomma }}円</td>
+                        <td>￥{{ payment.consumption_tax|intcomma }}円</td>
+                        <td>{{ payment.comment|default:'日割日数XX日分' }}</td>
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td>小計①</td>
+                        <td>￥{{ user_subscription.get_current_month_payments_total.amount__sum|intcomma }}円</td>
+                        <td>￥{{ user_subscription.get_current_month_payments_total.consumption_tax__sum|intcomma }}円</td>
+                        <td></td>
+                    </tr>
+                {% endwith %}
+                {% with count=user_subscription.get_monthly_payments.count %}
+                {% for payment in user_subscription.get_monthly_payments %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                        <td class="center" rowspan="{{ count|add:1 }}">翌月料金</td>
+                        {% endif %}
+                        <td>{{ payment }}</td>
+                        <td>￥{{ payment.amount|intcomma }}円</td>
+                        <td>￥{{ payment.consumption_tax|intcomma }}円</td>
+                        <td>{{ payment.comment|default:'' }}</td>
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td>小計②</td>
+                        <td>￥{{ user_subscription.get_monthly_payments_total.amount__sum|intcomma }}円</td>
+                        <td>￥{{ user_subscription.get_monthly_payments_total.consumption_tax__sum|intcomma }}円</td>
+                        <td></td>
+                    </tr>
+                {% endwith %}
+                {% with count=user_subscription.get_contracting_payments.count %}
+                {% for payment in user_subscription.get_contracting_payments %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                        <td class="center" rowspan="{{ count|add:2 }}">契約一時金</td>
+                        {% endif %}
+                        <td>{{ payment }}</td>
+                        <td>￥{{ payment.amount|intcomma }}円</td>
+                        <td>￥{{ payment.consumption_tax|intcomma }}円</td>
+                        <td>{{ payment.comment|default:'' }}</td>
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td>敷金・礼金</td>
+                        <td>￥0円</td>
+                        <td>￥0円</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>小計③</td>
+                        <td>￥{{ user_subscription.get_contracting_payments_total.amount__sum|intcomma }}円</td>
+                        <td>￥{{ user_subscription.get_contracting_payments_total.consumption_tax__sum|intcomma }}円</td>
+                        <td></td>
+                    </tr>
+                {% endwith %}
+                <tr>
+                    <td colspan="2" class="center" style="font-size: 16px;"><span style="margin-right: 35px;">合</span><span style="margin-right: 35px;">計</span><span style="margin-right: 35px;">金</span>額</td>
+                    <td style="font-size: 16px;">￥{{ user_subscription.get_contract_payments_total.amount__sum|intcomma }}円</td>
+                    <td style="font-size: 16px;">￥{{ user_subscription.get_contract_payments_total.consumption_tax__sum|intcomma }}円</td>
+                    <td>小計①+②+③</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="center"><span style="margin-right: 60px;">手</span><span style="margin-right: 60px;">付</span>金</td>
+                    <td colspan="3"></td>
+                </tr>
+                <tr style="border-bottom: 0;">
+                    <td colspan="2" class="center" style="font-size: 25px; font-weight: bold;"><span style="margin-right: 50px;">総</span><span style="margin-right: 50px;">合</span>計</td>
+                    <td colspan="3" style="font-size: 25px; font-weight: bold;">￥{{ user_subscription.get_contract_payments_total.total|intcomma }}円</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <p style="font-size: 18px;">※上記金額を、2018年1月25日までに下記口座へお振込みください。</p>
+    <div class="wrapper">
+        <table class="tight bordered">
+            <tr>
+                <td class="center" style="width: 200px;">金融機関名</td>
+                <td>三井住友銀行</td>
+            </tr>
+            <tr>
+                <td class="center">本 支 店 名</td>
+                <td>＊＊＊＊＊＊＊＊＊＊</td>
+            </tr>
+            <tr>
+                <td class="center">口 座 分 類</td>
+                <td>普通</td>
+            </tr>
+            <tr>
+                <td class="center">口 座 番 号</td>
+                <td>＊＊＊＊＊＊＊＊＊＊</td>
+            </tr>
+            <tr style="border-bottom: 0px;">
+                <td class="center">口 座 名 義</td>
+                <td>カ）エリアパーキング</td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

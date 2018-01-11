@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.signing import TimestampSigner
 from django.urls import reverse
 
+from . import common
 from master.models import Company, Config, Payment, PushNotification
 
 
@@ -178,6 +179,18 @@ def get_user_subscription_url(task):
     return {'user_subscription_url': urljoin(domain_name, url)}
 
 
+def get_user_contract_url(task):
+    """ユーザー契約時のURLを取得する。
+
+    :param task:
+    :return:
+    """
+    subscription = task.process.content_object
+    url = reverse('format:user_contract_step1', kwargs={'signature': get_signed_value(subscription.pk)})
+    domain_name = Config.get_domain_name()
+    return {'user_contract_url': urljoin(domain_name, url)}
+
+
 def get_receipt_payment():
     """保管場所承諾証明書発行手数料
 
@@ -253,3 +266,14 @@ def push_notification(users, title, message, url=None, gcm_url=None):
         }
 
         requests.post(gcm_url, data=json.dumps(params), headers=headers)
+
+
+def get_consumption_tax(amount):
+    """消費税を取得する。
+
+    :return:
+    """
+    if not amount:
+        return 0
+    rate = Config.get_consumption_tax_rate()
+    return common.get_integer(amount * rate, Config.get_decimal_type())

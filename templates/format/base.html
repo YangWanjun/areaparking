@@ -30,19 +30,55 @@
                 close: "閉じる",
                 format: "yyyy-mm-dd",
             });
+            $('.nav-content').each(function() {
+                var $this = $(this);
+                var $target = $('div.main');
+                $this.pushpin({
+                    top: $('div.nav-wrapper').height(),
+                    bottom: $target.offset().top + $target.outerHeight() - $this.height()
+                });
+            });
+
         });
     </script>
+    <style type="text/css">
+        div.wrapper {
+            border: 1px solid lightgray;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+        div.fixed_height {
+            overflow-y: scroll;
+        }
+        table.tight td {
+            padding: 8px 15px;
+        }
+        table.tight_inner td {
+            padding: 0px 25px;
+        }
+        .contract_item {
+            margin: 10px 0px;
+        }
+        .contract_content {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .contract_content ol {
+            margin: 0px;
+            padding-left: 25px;
+        }
+    </style>
 </head>
 <body>
 <header>
-    <nav class="nav-extended">
-        <div class="nav-wrapper">
+    <nav class="nav-extended" style="width: inherit !important;">
+        <div class="nav-wrapper" style="width: 1100px;margin: 0px auto;">
             <a href="#" class="brand-logo">Logo</a>
         </div>
-        <div class="nav-content" style="position:relative;">
-            <ul class="tabs tabs-transparent">
+        <div class="nav-content" style="position:relative;background-color: #3498DB !important;width: 100%;">
+            <ul class="tabs tabs-transparent" style="width: 1100px;">
                 {% for step in steps %}
-                    <li class="tab {% if step != current_step %}disabled{% endif %}"><a class="{% if step == current_step %}active{% endif %}" href="javascript:void(0)">{{ step.full_name }}</a></li>
+                    <li class="tab {% if step != current_step and is_all_active == False %}disabled{% endif %}"><a class="{% if step == current_step %}active{% endif %}" href="{{ step.url }}">{{ step.full_name }}</a></li>
                 {% endfor %}
             </ul>
         </div>

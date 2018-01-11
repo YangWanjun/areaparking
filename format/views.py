@@ -23,7 +23,8 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
         context.update({
             'pk': pk,
             'signature': signature,
-            'is_finished': False
+            'is_finished': False,
+            'is_all_active': False,
         })
         context.update(get_total_context())
         return context
@@ -629,3 +630,113 @@ class GenerateSubscriptionPdfView(BaseView):
 
 class UrlTimeoutView(BaseTemplateViewWithoutLogin):
     template_name = 'format/url_timeout.html'
+
+
+class BaseUserContractView(BaseUserOperationView):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            context = self.get_context_data(**kwargs)
+            # ステータスが「新規申込み」でない場合は申込み完了に飛ばす
+            subscription = get_object_or_404(Subscription, pk=context.get('pk'))
+            if subscription.status >= '04' and context.get('is_finished') is False:
+                return redirect('format:user_subscription_step5', signature=kwargs.get('signature'))
+            return self.render_to_response(context)
+        except signing.BadSignature:
+            return redirect('format:url_timeout')
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseUserContractView, self).get_context_data(**kwargs)
+        signature = context.get('signature')
+        steps = self.get_steps(signature)
+        self.request.session['steps'] = steps
+        user_subscription = self.get_user_subscription(context.get('pk'))
+        context.update({
+            'user_subscription': user_subscription,
+            'parking_lot': user_subscription.parking_lot,
+            'steps': steps,
+            'is_all_active': True,
+        })
+        return context
+
+    def get_steps(self, signature=None):
+        return biz.get_user_contract_steps(signature)
+
+    def get_user_subscription(self, subscription_id):
+        """ユーザー申込み情報を取得する。
+
+        :return:
+        """
+        subscription = get_object_or_404(Subscription, pk=subscription_id)
+        if 'user_subscription' in self.request.session:
+            data = self.request.session['user_subscription']
+            if str(data.get('code', 0)) != str(subscription_id):
+                data = self.set_user_subscription(subscription)
+        else:
+            data = self.set_user_subscription(subscription)
+        return Subscription(**data)
+
+    def set_user_subscription(self, user_subscription):
+        """ユーザー申込み情報をセッションに保存する
+
+        :param user_subscription:
+        :return:
+        """
+        serializer = SubscriptionSerializer(user_subscription)
+        self.request.session['user_subscription'] = serializer.data
+        return serializer.data
+
+
+class UserContractStep1View(BaseUserContractView):
+    template_name = 'format/user_contract_step1.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserContractStep1View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[0]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        return redirect('format:user_contract_step2', signature=kwargs.get('signature'))
+
+
+class UserContractStep2View(BaseUserContractView):
+    template_name = 'format/user_contract_step2.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserContractStep2View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[1]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        return redirect('format:user_contract_step3', signature=kwargs.get('signature'))
+
+
+class UserContractStep3View(BaseUserContractView):
+    template_name = 'format/user_contract_step3.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserContractStep3View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[2]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        return redirect('format:user_contract_step4', signature=kwargs.get('signature'))
+
+
+class UserContractStep4View(BaseUserContractView):
+    template_name = 'format/user_contract_step4.html'

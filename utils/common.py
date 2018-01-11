@@ -242,3 +242,16 @@ def date_handler(obj):
 
 def json_default(o):
     return o.__dict__
+
+
+def get_consumption_tax(amount, tax_rate, decimal_type):
+    """消費税を取得する。
+
+    :param amount:
+    :param tax_rate:
+    :param decimal_type:
+    :return:
+    """
+    if not amount:
+        return 0
+    return get_integer(amount * tax_rate, decimal_type)

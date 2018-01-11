@@ -68,22 +68,67 @@ def generate_report_pdf_binary(html):
             os.remove(temp_file)
 
 
+def create_steps(steps, url_pattern=None, url_kwargs=None):
+    """
+
+    :param steps:
+    :param url_pattern:
+    :param url_kwargs:
+    :return:
+    """
+    prev_step = None
+    step_list = []
+    for i, code_name in enumerate(steps):
+        code, name = code_name
+        step = models.Step(step=code, name=name, prev_step=prev_step, url_pattern=url_pattern, url_kwargs=url_kwargs)
+        if prev_step:
+            prev_step.next_step = step
+
+        prev_step = step
+        step_list.append(step)
+
+    return step_list
+
+
 def get_user_subscription_steps(signature=None):
     """ユーザー申込みのステップ数
 
     :return:
     """
+    url_pattern = 'format:user_subscription_step%s'
     url_kwargs = {'signature': signature}
-    step1 = models.Step(step="①", name="申込み基本情報", url_kwargs=url_kwargs)
-    step2 = models.Step(step="②", name="申込者分類選択", prev_step=step1, url_kwargs=url_kwargs)
-    step3 = models.Step(step="③", name="申込者情報入力", prev_step=step2, url_kwargs=url_kwargs)
-    step4 = models.Step(step="④", name="申込み確認", prev_step=step3, url_kwargs=url_kwargs)
-    step5 = models.Step(step="⑤", name="申込み完了", prev_step=step4, url_kwargs=url_kwargs)
-    step1.next_step = step2
-    step2.next_step = step3
-    step3.next_step = step4
-    step4.next_step = step5
-    return [step1.to_json(), step2.to_json(), step3.to_json(), step4.to_json(), step5.to_json()]
+    step_list = create_steps(
+        [
+            ('①', '申込み基本情報'),
+            ('②', '申込者分類選択'),
+            ('③', '申込者情報入力'),
+            ('④', '申込み確認'),
+            ('⑤', '申込み完了'),
+        ],
+        url_pattern=url_pattern,
+        url_kwargs=url_kwargs,
+    )
+    return [step.to_json() for step in step_list]
+
+
+def get_user_contract_steps(signature=None):
+    """ユーザー契約のステップ数
+
+    :return:
+    """
+    url_pattern = 'format:user_contract_step%s'
+    url_kwargs = {'signature': signature}
+    step_list = create_steps(
+        [
+            ('①', '送付状'),
+            ('②', '契約金計算書'),
+            ('③', '駐車場利用契約書'),
+            ('④', '契約完了'),
+        ],
+        url_pattern=url_pattern,
+        url_kwargs=url_kwargs,
+    )
+    return [step.to_json() for step in step_list]
 
 
 def generate_subscription_pdf(request, subscription, **kwargs):

@@ -313,6 +313,62 @@
                                     </div>
                                 </div>
                             {% endfor %}
+                            <!-- 契約時メール送信の確認ボックス -->
+                            <div id="send_contract" class="modal modal-fixed-footer" style="min-height: 500px;">
+                                <form method="post" action="{% url 'contract:send_contract_mail' task.pk %}" id="frmSendContractMail">
+                                    {{ formset.management_form }}
+                                    <input type="hidden" name="subscription_url"/>
+                                    <div class="modal-content">
+                                        <h4>申込書の送付</h4>
+                                        <div class="row">
+                                            <div class="col s12">
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input readonly value="{{ group.sender }}" id="txtContractSender" name="contract_sender" type="text" />
+                                                        <label for="txtContractSender">差出人</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{{ object.email }}" id="txtContractTo" name="contract_to" type="text" />
+                                                        <label for="txtContractTo">宛先</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtContractCC" name="contract_cc" type="text" />
+                                                        <label for="txtContractCC">ＣＣ</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtContractBCC" name="contract_bcc" type="text" />
+                                                        <label for="txtContractBCC">ＢＣＣ</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{{ template.title }}" id="txtContractTitle" name="contract_title" type="text" />
+                                                        <label for="txtContractTitle">件名</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <textarea id="txtContractContent" name="contract_content" class="materialize-textarea" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                                                        <label for="txtSubscriptionContent">メール本文</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
+                                            <i class="material-icons right">send</i>
+                                        </button>
+                                        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+                                    </div>
+                                </form>
+                            </div>
                         {% endif %}
                         {% if task.updated_user %}
                             <div class="row updated_datetime" style="margin-bottom: 5px;">
@@ -332,8 +388,8 @@
                                         <i class="tiny material-icons">send</i>
                                     </a>
                                 {% elif task.category == "100" %}
-                                    <a data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
-                                       class="waves-effect waves-light btn-floating tooltipped" >
+                                    <a data-target="send_contract" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped {% if subscription and subscription.status > '03' %}disabled{%endif%}" >
                                         <i class="tiny material-icons">send</i>
                                     </a>
                                 {% endif %}

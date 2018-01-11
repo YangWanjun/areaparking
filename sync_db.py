@@ -29,7 +29,7 @@ elif sys.platform in ('linux2', 'linux'):
 else:
     user = 'root'
     password = 'root'
-    host = 'localhost'
+    host = '127.0.0.1'
 
 
 def main():

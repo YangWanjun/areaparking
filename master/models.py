@@ -387,17 +387,19 @@ class Payment(BaseModel):
     def __str__(self):
         return self.name
 
-    def get_consumption_tax(self):
+    def get_consumption_tax(self, amount=None):
         """消費税を取得する。
 
+        :param amount:
         :return:
         """
-        if not self.amount:
+        amount = amount if amount else self.amount
+        if not amount:
             return 0
-        rate = Config.get_consumption_tax_rate()
         if self.consumption_tax_kbn == '1':
+            rate = Config.get_consumption_tax_rate()
             # 税抜の場合
-            return common.get_integer(self.amount * rate, Config.get_decimal_type())
+            return common.get_consumption_tax(amount, rate, Config.get_decimal_type())
         else:
             return 0
 
@@ -480,6 +482,17 @@ class MailGroup(BaseModel):
         """
         try:
             return MailGroup.objects.get(code='002')
+        except ObjectDoesNotExist:
+            return None
+
+    @classmethod
+    def get_contract_send_group(cls):
+        """ユーザー契約時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='011')
         except ObjectDoesNotExist:
             return None
 

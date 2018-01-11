@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import datetime
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
@@ -7,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.db import models
+from django.db.models import Sum
 from django.utils.functional import cached_property
 
 from utils import constants, common
@@ -16,7 +16,7 @@ from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
 from format.models import ReportFile, ReportSubscription, ReportSubscriptionConfirm
 from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
-from utils.app_base import get_total_context, get_user_subscription_url
+from utils.app_base import get_total_context, get_user_subscription_url, get_user_contract_url
 
 
 # Create your models here.
@@ -260,6 +260,32 @@ class Subscription(AbstractUser, AbstractCar):
                                                             self.car_height, self.car_weight)
         return positions
 
+    def get_contract_start_date(self):
+        """契約開始日を取得する。
+
+        :return:
+        """
+        start_date = self.contract_start_date
+        if not start_date:
+            start_date = datetime.date.today()
+        if start_date and isinstance(start_date, str):
+            start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        return start_date
+
+    def get_contract_end_date(self):
+        """長期契約の場合の契約更新日を自動設置
+
+        :return:
+        """
+        # 駐車場の既定の契約期間を設置
+        default_period = self.parking_lot.default_contract_months
+        start_date = self.get_contract_start_date()
+        if start_date.day == 1:
+            default_period -= 1
+
+        date = common.add_months(start_date, default_period)
+        return common.get_last_day_by_month(date)
+
     def get_subscription_completed_email(self):
         """申込み完了時のメール宛先アドレス
 
@@ -281,7 +307,7 @@ class Subscription(AbstractUser, AbstractCar):
             'user_honorific': '様' if self.category == '1' else '御中'
         }
 
-    def get_monthly_price(self):
+    def get_monthly_rent(self):
         """月分の賃料（税抜）を取得する。
 
         デフォルトはホームページ価格
@@ -301,17 +327,58 @@ class Subscription(AbstractUser, AbstractCar):
                         pass
         return price
 
-    def get_current_month_price(self):
+    def get_current_month_rent(self):
         """契約開始月末日までの賃料
 
         :return:
         """
-        monthly_price = self.get_monthly_price()
+        monthly_price = self.get_monthly_rent()
         if monthly_price and self.contract_start_date and self.contract_start_date.day != 1:
             days = common.get_days_by_month(self.contract_start_date) - self.contract_start_date.day - 1
             return common.get_integer(monthly_price / days, Config.get_decimal_type()) * days
         else:
             return 0
+
+    def get_current_month_payments(self):
+        """契約開始月の支払項目
+
+        :return:
+        """
+        queryset = ContractPayment.objects.public_filter(subscription=self, timing='11')
+        return queryset
+
+    def get_current_month_payments_total(self):
+        return self.get_current_month_payments().aggregate(Sum('amount'), Sum('consumption_tax'))
+
+    def get_monthly_payments(self):
+        """翌月以降の支払項目
+
+        :return:
+        """
+        queryset = ContractPayment.objects.public_filter(subscription=self, timing='30')
+        return queryset
+
+    def get_monthly_payments_total(self):
+        summary = self.get_monthly_payments().aggregate(Sum('amount'), Sum('consumption_tax'))
+        summary['total'] = summary.get('amount__sum') + summary.get('consumption_tax__sum')
+        return summary
+
+    def get_contracting_payments(self):
+        """契約時の支払項目
+
+        :return:
+        """
+        queryset = ContractPayment.objects.public_filter(subscription=self, timing__startswith='4')
+        return queryset
+
+    def get_contracting_payments_total(self):
+        return self.get_contracting_payments().aggregate(Sum('amount'), Sum('consumption_tax'))
+
+    def get_contract_payments_total(self):
+        queryset = ContractPayment.objects.public_filter(subscription=self, timing__in=['11', '30', '40', '41'])
+        summary = queryset.aggregate(Sum('amount'), Sum('consumption_tax'))
+        summary['total'] = summary.get('amount__sum') + summary.get('consumption_tax__sum')
+        return summary
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -334,9 +401,9 @@ class Subscription(AbstractUser, AbstractCar):
                 contract_payment.amount = payment.amount or 0
                 if payment.timing == '11':
                     # 契約開始月
-                    contract_payment.amount = self.get_current_month_price()
+                    contract_payment.amount = self.get_current_month_rent()
                 elif payment.timing == '30':
-                    contract_payment.amount = self.get_monthly_price()
+                    contract_payment.amount = self.get_monthly_rent()
                 contract_payment.consumption_tax = common.get_integer(contract_payment.amount * consumption_tax_rate,
                                                                       decimal_type)
                 contract_payment.save()
@@ -498,7 +565,7 @@ class ContractPayment(BaseModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.consumption_tax = self.payment.get_consumption_tax()
+        self.consumption_tax = self.payment.get_consumption_tax(self.amount)
         super(ContractPayment, self).save(force_insert, force_update, using, update_fields)
 
 
@@ -549,6 +616,10 @@ class Task(BaseModel):
             # 申込書送付
             group = MailGroup.get_subscription_send_group()
             return group
+        elif self.category == '100':
+            # 契約書類一式の送付
+            group = MailGroup.get_contract_send_group()
+            return group
         return None
 
     def get_mail_template(self):
@@ -558,7 +629,10 @@ class Task(BaseModel):
                 parking_lot=self.process.content_object.parking_lot,
                 subscription=self.process.content_object,
             )
-            data.update(get_user_subscription_url(self))
+            if self.category == '010':
+                data.update(get_user_subscription_url(self))
+            elif self.category == '100':
+                data.update(get_user_contract_url(self))
 
             return group.get_template_content(data)
         else:
