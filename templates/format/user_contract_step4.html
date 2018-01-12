@@ -1,0 +1,14 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="row">
+    <div class="card-title">ご契約ありがとうございます。</div>
+    <div class="card-comment">
+        このたび駐車場のご契約いただき誠にありがとうございます。
+        <p>
+            ご登録されたメールアドレス&lt;{{ user_subscription.email }}&gt;に契約完了のメールがお送りいたしました。
+        </p>
+    </div>
+</div>
+{% endblock %}

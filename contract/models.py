@@ -251,6 +251,14 @@ class Subscription(AbstractUser, AbstractCar):
         finished_count = Task.objects.public_filter(process=self.process, status__in=['10', '99']).count()
         return (finished_count / task_count) * 100
 
+    @property
+    def is_require_receipt(self):
+        """保管証発行-車庫証明は必要なのか
+
+        :return:
+        """
+        return self.require_receipt == 'yes'
+
     def get_suitable_positions(self):
         """駐車可能の車室を取得する
 
@@ -286,7 +294,7 @@ class Subscription(AbstractUser, AbstractCar):
         date = common.add_months(start_date, default_period)
         return common.get_last_day_by_month(date)
 
-    def get_subscription_completed_email(self):
+    def get_subscription_email(self):
         """申込み完了時のメール宛先アドレス
 
         :return:
@@ -297,7 +305,7 @@ class Subscription(AbstractUser, AbstractCar):
         else:
             return self.corporate_staff_email
 
-    def get_subscription_completed_addressee(self):
+    def get_subscription_addressee(self):
         """申込み完了時、メール送信の宛名と敬称
 
         :return:
@@ -393,7 +401,7 @@ class Subscription(AbstractUser, AbstractCar):
                     task.is_end = True
                 task.save()
             # 入金項目作成
-            payments = Payment.objects.public_filter(is_active=True)
+            payments = Payment.objects.public_filter(is_active=True, is_initial=True)
             consumption_tax_rate = Config.get_consumption_tax_rate()
             decimal_type = Config.get_decimal_type()
             for payment in payments:
@@ -403,10 +411,17 @@ class Subscription(AbstractUser, AbstractCar):
                     # 契約開始月
                     contract_payment.amount = self.get_current_month_rent()
                 elif payment.timing == '30':
+                    # 翌月以降
                     contract_payment.amount = self.get_monthly_rent()
                 contract_payment.consumption_tax = common.get_integer(contract_payment.amount * consumption_tax_rate,
                                                                       decimal_type)
                 contract_payment.save()
+        # 保管証発行-車庫証明
+        if self.is_require_receipt:
+            payment = Payment.objects.get(timing='41')
+            if ContractPayment.objects.public_filter(timing='41').count() == 0:
+                contract_payment = ContractPayment(subscription=self, timing='41', payment=payment)
+                # TODO: 保管証発行-車庫証明の入金項目作成
 
     parking_lot.short_description = '駐車場'
     parking_position.short_description = '車室'
@@ -529,7 +544,7 @@ class Contract(BaseModel):
                     task.is_end = True
                 task.save()
             # 入金項目作成
-            payments = Payment.objects.public_filter(is_active=True)
+            payments = Payment.objects.public_filter(is_active=True, is_initial=True)
             consumption_tax_rate = Config.get_consumption_tax_rate()
             decimal_type = Config.get_decimal_type()
             for payment in payments:

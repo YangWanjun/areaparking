@@ -25,11 +25,11 @@
             </tr>
             <tr>
                 <td>車両・車名型式</td>
-                <td>{{ user_subscription.car_maker }}&nbsp;{{ user_subscription.car_model }}</td>
+                <td>{{ user_subscription.car_maker|default:'' }}&nbsp;{{ user_subscription.car_model|default:'' }}</td>
             </tr>
             <tr>
                 <td>登録番号</td>
-                <td>{{ user_subscription.car_no_plate }}</td>
+                <td>{{ user_subscription.car_no_plate|default:'' }}</td>
             </tr>
         </table>
     </div>

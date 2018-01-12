@@ -245,8 +245,8 @@
                                 <div class="col s8">{{ object.car_weight|default:''|intcomma }}</div>
                             </div>
                             <div class="row" style="margin-bottom: 5px;">
-                                <div class="col s1">判定結果</div>
-                                <div class="col s3">車室</div>
+                                <div class="col s2">判定結果</div>
+                                <div class="col s2">車室</div>
                                 <div class="col s2">全長</div>
                                 <div class="col s2">全幅</div>
                                 <div class="col s2">全高</div>
@@ -255,8 +255,8 @@
                             {% for suitable_position in object.get_suitable_positions %}
                                 {% if suitable_position %}
                                     <div class="row {% if suitable_position.position.pk == object.parking_position.pk %}teal lighten-5{% endif %}" style="margin-bottom: 5px;">
-                                        <div class="col s1">{% if suitable_position.is_suitable %}<i class="tiny material-icons">done</i>{% else %}<i class="tiny material-icons red-text">close</i>{% endif %}</div>
-                                        <div class="col s3">
+                                        <div class="col s2">{% if suitable_position.is_suitable %}<i class="tiny material-icons">done</i>{% else %}<i class="tiny material-icons red-text">close</i>{% endif %}</div>
+                                        <div class="col s2">
                                             <span>{{ suitable_position.position }}</span>
                                         </div>
                                         <div class="col s2">
@@ -369,6 +369,39 @@
                                     </div>
                                 </form>
                             </div>
+                        {% elif task.category == '110' %}
+                            <!-- 入金確認 -->
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>入金項目</th>
+                                    <th class="right-align">金額</th>
+                                    <th class="right-align">消費税</th>
+                                    <th class="right-align">入金</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in subscription.contractpayment_set.all %}
+                                        <tr>
+                                            <td>{{ payment }}</td>
+                                            <td class="right-align">￥{{ payment.amount|intcomma }}円</td>
+                                            <td class="right-align">￥{{ payment.consumption_tax|intcomma }}円</td>
+                                            <td class="right-align">未入金</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td><b>合計金額</b></td>
+                                    <td colspan="2" class="right-align">
+                                        ￥{{ subscription.get_contract_payments_total.amount__sum|intcomma }}円＋
+                                        ￥{{ subscription.get_contract_payments_total.consumption_tax__sum|intcomma }}円＝
+                                        <b>￥{{ subscription.get_contract_payments_total.total|intcomma }}円</b>
+                                    </td>
+                                    <td class="right-align"></td>
+                                </tr>
+                                </tfoot>
+                            </table>
                         {% endif %}
                         {% if task.updated_user %}
                             <div class="row updated_datetime" style="margin-bottom: 5px;">
@@ -457,6 +490,13 @@ $(document).ready(function(){
         subscription_sent_failure_fn,
         subscription_sent_always_fn
     );
+    // 契約書類の送信イベント
+    ebjs.material.send_subscription_mail(
+        "frmSendContractMail",
+        contract_sent_success_fn,
+        subscription_sent_failure_fn,
+        subscription_sent_always_fn
+    );
 });
 
 function subscription_sent_success_fn(result) {
@@ -466,6 +506,25 @@ function subscription_sent_success_fn(result) {
         Materialize.toast('メール送信しました!', 10000);
         $('#send_subscription').modal('close');
         var obj = $("a[data-target=send_subscription]");
+        $(obj).next().addClass('disabled');
+        $(obj).next().next().addClass('disabled');
+        // 次のタスクを実施中にする
+        //ebjs.material.set_task_status($(obj).closest('li').next(), '02');
+        // 進捗更新
+        ebjs.material.update_task_info(obj, '99');
+        // 前回送信時間と送信者
+        obj.closest('li').find('span.updated_date').text(result.updated_date);
+        obj.closest('li').find('span.updated_user').text(result.updated_user);
+    }
+}
+
+function contract_sent_success_fn(result) {
+    if (result.error) {
+        alert(result.message);
+    } else {
+        Materialize.toast('メール送信しました!', 10000);
+        $('#send_contract').modal('close');
+        var obj = $("a[data-target=send_contract]");
         $(obj).next().addClass('disabled');
         $(obj).next().next().addClass('disabled');
         // 次のタスクを実施中にする

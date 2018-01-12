@@ -86,6 +86,19 @@ def sync_master():
 </html>""")
         MailGroup.objects.create(code='011', name="契約書類送付", sender='ap.test@e-business.co.jp', template=template)
         print('作成', '契約書類送付のメールグループ')
+    if MailGroup.objects.public_filter(code='012').count() == 0:
+        template = MailTemplate.objects.create(title='ご契約ありがとうございます！', body="""<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>{{ user_name }} {{user_honorific}}：&nbsp;</p>
+<p>いつもお世話になっております、<br />株式会社エリアパーキングです。</p>
+<p>ご契約は完了しましたので、お知らせいたします。</p>
+</body>
+</html>""")
+        MailGroup.objects.create(code='012', name="契約完了", sender='ap.test@e-business.co.jp', template=template)
+        print('作成', '契約完了のメールグループ')
     # 媒体を作成
     if TransmissionRoute.objects.public_all().count() == 0:
         TransmissionRoute.objects.create(name='チラシ', price_kbn='01')

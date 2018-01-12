@@ -119,7 +119,8 @@ CHOICE_PARKING_STATUS = (
 CHOICE_MAIL_GROUP = (
     ('001', '申込書送付'),
     ('002', '申込完了'),
-    ('011', '契約書送付'),
+    ('011', '契約書類送付'),
+    ('012', '契約完了'),
 )
 CHOICE_REPORT_KBN = (
     ('001', REPORT_SUBSCRIPTION),

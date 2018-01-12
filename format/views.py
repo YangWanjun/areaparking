@@ -353,8 +353,8 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
         # 通知（メールとプッシュ）
         parking_lot = context.get('parking_lot')
         mail_group = MailGroup.get_subscription_completed_group()
-        data = user_subscription.get_subscription_completed_addressee()
-        mail_group.send_main(user_subscription.get_subscription_completed_email(), data)
+        data = user_subscription.get_subscription_addressee()
+        mail_group.send_main(user_subscription.get_subscription_email(), data)
         push_notification(
             None,
             '%s 申込み完了' % str(parking_lot),
@@ -640,7 +640,7 @@ class BaseUserContractView(BaseUserOperationView):
             # ステータスが「新規申込み」でない場合は申込み完了に飛ばす
             subscription = get_object_or_404(Subscription, pk=context.get('pk'))
             if subscription.status >= '04' and context.get('is_finished') is False:
-                return redirect('format:user_subscription_step5', signature=kwargs.get('signature'))
+                return redirect('format:user_contract_step4', signature=kwargs.get('signature'))
             return self.render_to_response(context)
         except signing.BadSignature:
             return redirect('format:url_timeout')
@@ -655,7 +655,7 @@ class BaseUserContractView(BaseUserOperationView):
             'user_subscription': user_subscription,
             'parking_lot': user_subscription.parking_lot,
             'steps': steps,
-            'is_all_active': True,
+            'is_all_active': False,
         })
         return context
 
@@ -735,8 +735,36 @@ class UserContractStep3View(BaseUserContractView):
         return context
 
     def post(self, request, *args, **kwargs):
+        context = super(UserContractStep3View, self).get_context_data(**kwargs)
+        user_subscription = context.get('user_subscription')
+        # 契約完了、ユーザーサイン済み
+        user_subscription.status = '04'
+        user_subscription.save()
+        self.set_user_subscription(user_subscription)
+        # 通知（メールとプッシュ）
+        parking_lot = context.get('parking_lot')
+        mail_group = MailGroup.get_contract_completed_group()
+        data = user_subscription.get_subscription_addressee()
+        mail_group.send_main(user_subscription.get_subscription_email(), data)
+        push_notification(
+            None,
+            '%s 契約完了' % str(parking_lot),
+            '',
+            url=reverse('contract:subscription_detail', args=(user_subscription.pk,)),
+        )
         return redirect('format:user_contract_step4', signature=kwargs.get('signature'))
 
 
 class UserContractStep4View(BaseUserContractView):
     template_name = 'format/user_contract_step4.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserContractStep4View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[3]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+            'is_finished': True
+        })
+        return context

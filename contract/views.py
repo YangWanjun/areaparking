@@ -1,13 +1,10 @@
-import datetime
-
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.shortcuts import get_object_or_404, redirect
 
-from . import models
+from . import models, biz
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
 from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseModelViewSet
-from utils.mail import EbMail
 
 
 # Create your views here.
@@ -79,37 +76,35 @@ class SendSubscriptionMail(BaseView):
         task = get_object_or_404(Task, pk=kwargs.get('task_id'))
         subscription_url = request.POST.get('subscription_url', None)
         if not subscription_url:
-            return JsonResponse({'error': True, 'message': '少なくとも１つの申込書を選択してください。'})
-        sender = request.POST.get('subscription_sender', None)
-        recipient_list = request.POST.get('subscription_to', None)
-        cc_list = request.POST.get('subscription_cc', None)
-        bcc_list = request.POST.get('subscription_bcc', None)
-        mail_title = request.POST.get('subscription_title', None)
-        mail_body = request.POST.get('subscription_content', None)
+            json = {'error': True, 'message': '少なくとも１つの申込書を選択してください。'}
+        else:
+            task.url_links = subscription_url
+            sender = request.POST.get('subscription_sender', None)
+            recipient_list = request.POST.get('subscription_to', None)
+            cc_list = request.POST.get('subscription_cc', None)
+            bcc_list = request.POST.get('subscription_bcc', None)
+            mail_title = request.POST.get('subscription_title', None)
+            mail_body = request.POST.get('subscription_content', None)
+            mail_data = {
+                'sender': sender, 'recipient_list': recipient_list, 'cc_list': cc_list,
+                'bcc_list': bcc_list, 'mail_title': mail_title, 'mail_body': mail_body,
+            }
+            json = biz.send_mail_from_view(task, request, mail_data)
+        return JsonResponse(json)
+
+
+class SendContractMail(BaseView):
+    def post(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, pk=kwargs.get('task_id'))
+        sender = request.POST.get('contract_sender', None)
+        recipient_list = request.POST.get('contract_to', None)
+        cc_list = request.POST.get('contract_cc', None)
+        bcc_list = request.POST.get('contract_bcc', None)
+        mail_title = request.POST.get('contract_title', None)
+        mail_body = request.POST.get('contract_content', None)
         mail_data = {
             'sender': sender, 'recipient_list': recipient_list, 'cc_list': cc_list,
             'bcc_list': bcc_list, 'mail_title': mail_title, 'mail_body': mail_body,
         }
-        try:
-            mail = EbMail(**mail_data)
-            mail.send_email()
-            task.status = '99'      # タスク完了
-            task.updated_user = request.user
-            task.url_links = subscription_url
-            task.save()
-            # # 申込書確認のタスクを実施中とする
-            # next_task = task.get_next_task()
-            # if next_task:
-            #     next_task.status = '02'
-            #     next_task.save()
-            json = {
-                'error': False,
-                'updated_date': datetime.datetime.now(),
-                'updated_user': '%s %s' % (request.user.last_name, request.user.first_name),
-            }
-        except Exception as ex:
-            json = {
-                'error': True,
-                'message': str(ex)
-            }
+        json = biz.send_mail_from_view(task, request, mail_data)
         return JsonResponse(json)

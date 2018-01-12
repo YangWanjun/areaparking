@@ -14,7 +14,7 @@ urlpatterns = [
         name='send_subscription_mail'),
     url('^subscription/(?P<pk>\d+)/finish/$', views.SubscriptionFinish.as_view(), name='temp_contract_finish'),
     url('^subscription/(?P<pk>\d+)/destroy/$', views.SubscriptionDestroy.as_view(), name='subscription_destroy'),
-    url('^subscription/(?P<task_id>\d+)/send_contract_mail/$', views.SendSubscriptionMail.as_view(),
+    url('^subscription/(?P<task_id>\d+)/send_contract_mail/$', views.SendContractMail.as_view(),
         name='send_contract_mail'),
 
     url('^contract/', include(views.ContractVewSet().urls)),

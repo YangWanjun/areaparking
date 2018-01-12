@@ -56,12 +56,14 @@ class CarModelAdmin(BaseAdmin):
 
 @admin.register(models.Bank)
 class BankAdmin(BaseAdmin):
-    pass
+    list_display = ('code', 'name', 'kana')
+    list_display_links = ('code', 'name')
 
 
 @admin.register(models.BankAccount)
 class BankAccountAdmin(BaseAdmin):
     list_display = ('bank', 'branch_no', 'branch_name', 'account_type', 'account_number', 'account_holder')
+    list_display_links = ('account_number',)
 
 
 @admin.register(models.TransmissionRoute)
@@ -71,7 +73,7 @@ class TransmissionRouteAdmin(BaseAdmin):
 
 @admin.register(models.Payment)
 class PaymentAdmin(BaseAdmin):
-    list_display = ('name', 'timing', 'amount', 'consumption_tax_kbn', 'is_active')
+    list_display = ('name', 'timing', 'amount', 'consumption_tax_kbn', 'is_active', 'is_initial')
 
 
 @admin.register(models.Mediation)

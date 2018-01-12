@@ -38,7 +38,13 @@
                     bottom: $target.offset().top + $target.outerHeight() - $this.height()
                 });
             });
-
+            {% if is_all_active %}
+            $('ul.tabs').tabs({
+                onShow: function() {
+                    window.location = this.href;
+                }
+            });
+            {% endif %}
         });
     </script>
     <style type="text/css">
@@ -78,7 +84,10 @@
         <div class="nav-content" style="position:relative;background-color: #3498DB !important;width: 100%;">
             <ul class="tabs tabs-transparent" style="width: 1100px;">
                 {% for step in steps %}
-                    <li class="tab {% if step != current_step and is_all_active == False %}disabled{% endif %}"><a class="{% if step == current_step %}active{% endif %}" href="{{ step.url }}">{{ step.full_name }}</a></li>
+                    <li class="tab {% if step != current_step and is_all_active == False %}disabled{% endif %}">
+                        <a class="{% if step == current_step %}active{% endif %}" href="{% if is_all_active %}{{ step.url }}{% else %}javascript:void(0){% endif %}">{{ step.full_name }}
+                        </a>
+                    </li>
                 {% endfor %}
             </ul>
         </div>

@@ -310,7 +310,7 @@ class CarModel(BaseModel):
 class Bank(BaseModel):
     code = models.CharField(max_length=4, verbose_name="金融機関コード")
     name = models.CharField(max_length=30, verbose_name="金融機関名称")
-    kana = models.CharField(max_length=30, verbose_name="金融機関カナ")
+    kana = models.CharField(blank=True, null=True, max_length=30, verbose_name="金融機関カナ")
 
     class Meta:
         db_table = 'mst_bank'
@@ -375,6 +375,7 @@ class Payment(BaseModel):
     amount = models.IntegerField(blank=True, null=True, verbose_name="デフォールト金額")
     consumption_tax_kbn = models.CharField(max_length=1, default=1, choices=constants.CHOICE_TAX_KBN,
                                            verbose_name="消費税")
+    is_initial = models.BooleanField(default=False, verbose_name="初期作成")
     is_active = models.BooleanField(default=True, verbose_name="有効")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
@@ -493,6 +494,17 @@ class MailGroup(BaseModel):
         """
         try:
             return MailGroup.objects.get(code='011')
+        except ObjectDoesNotExist:
+            return None
+
+    @classmethod
+    def get_contract_completed_group(cls):
+        """ユーザー契約完了時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='012')
         except ObjectDoesNotExist:
             return None
 
