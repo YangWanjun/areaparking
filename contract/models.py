@@ -248,8 +248,12 @@ class Subscription(AbstractUser, AbstractCar):
         :return:
         """
         task_count = Task.objects.public_filter(process=self.process).count()
-        finished_count = Task.objects.public_filter(process=self.process, status__in=['10', '99']).count()
-        return (finished_count / task_count) * 100
+        if task_count == 0:
+            return 0
+        else:
+            # スキップと完了したタスク数
+            finished_count = Task.objects.public_filter(process=self.process, status__in=['10', '99']).count()
+            return (finished_count / task_count) * 100
 
     @property
     def is_require_receipt(self):
