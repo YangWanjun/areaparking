@@ -372,7 +372,7 @@ class Subscription(AbstractUser, AbstractCar):
 
     def get_monthly_payments_total(self):
         summary = self.get_monthly_payments().aggregate(Sum('amount'), Sum('consumption_tax'))
-        summary['total'] = summary.get('amount__sum') + summary.get('consumption_tax__sum')
+        summary['total'] = (summary.get('amount__sum', 0) or 0) + (summary.get('consumption_tax__sum', 0) or 0)
         return summary
 
     def get_contracting_payments(self):
