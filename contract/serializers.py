@@ -47,3 +47,9 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Task
         fields = '__all__'
+
+
+class ProcessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Process
+        fields = '__all__'

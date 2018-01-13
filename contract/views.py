@@ -2,11 +2,12 @@ import operator
 
 from functools import reduce
 
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 
-from . import models, biz
+from . import models, biz, forms
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
 from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseModelViewSet
@@ -89,11 +90,24 @@ class ContractListView(BaseListModelView):
         return config
 
 
+class ContractDetailView(BaseDetailModelView):
+
+    def get_context_data(self, **kwargs):
+        context = super(ContractDetailView, self).get_context_data(**kwargs)
+        content_type = ContentType.objects.get_for_model(self.object)
+        process_form = forms.ProcessForm(initial={'content_type': content_type, 'object_id': self.object.pk})
+        context.update({
+            'process_form': process_form,
+        })
+        return context
+
+
 class ContractVewSet(BaseModelViewSet):
     model = models.Contract
     queryset = models.Contract.real_objects.public_all()
     list_display = ('id', 'contractor', 'parking_lot', 'parking_position', 'staff', 'start_date', 'end_date')
     list_view_class = ContractListView
+    detail_view_class = ContractDetailView
 
 
 class ContractorListView(BaseListModelView):
@@ -124,6 +138,22 @@ class ContractorVewSet(BaseModelViewSet):
     def get_category_display(self, obj):
         return obj.get_category_display()
     get_category_display.short_description = '分類'
+
+
+class ProcessViewSet(BaseModelViewSet):
+    model = models.Process
+    queryset = models.Process.objects.public_filter(name__gte='10')
+    list_display = (
+        'get_name_display', 'percent', 'contractor', 'parking_lot', 'parking_position', 'created_date'
+    )
+
+    def get_name_display(self, obj):
+        return obj.get_name_display()
+    get_name_display.short_description = '名称'
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
 
 class SendSubscriptionMail(BaseView):
     def post(self, request, *args, **kwargs):

@@ -19,4 +19,5 @@ urlpatterns = [
 
     url('^contract/', include(views.ContractVewSet().urls)),
     url('^contractor/', include(views.ContractorVewSet().urls)),
+    url('^process/', include(views.ProcessViewSet().urls)),
 ]

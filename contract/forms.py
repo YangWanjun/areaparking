@@ -57,3 +57,15 @@ class ContractForm(BaseForm):
             self.fields['parking_lot'].queryset = models.ParkingLot.objects.filter(pk=self.instance.parking_lot.pk)
             self.fields['parking_position'].queryset = models.ParkingPosition.objects.filter(
                 parking_lot=self.instance.parking_lot)
+
+
+class ProcessForm(BaseForm):
+    class Meta:
+        model = models.Process
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        self.fields['name'].widget = forms.HiddenInput()
+        self.fields['content_type'].widget = forms.HiddenInput()
+        self.fields['object_id'].widget = forms.HiddenInput()

@@ -250,13 +250,11 @@ class Subscription(AbstractUser, AbstractCar):
 
         :return:
         """
-        task_count = Task.objects.public_filter(process=self.process).count()
-        if task_count == 0:
-            return 0.0
+        process = self.process
+        if process:
+            return process.percent
         else:
-            # スキップと完了したタスク数
-            finished_count = Task.objects.public_filter(process=self.process, status__in=['10', '99']).count()
-            return round((finished_count / task_count) * 100, 1)
+            return 0.0
 
     @property
     def is_require_receipt(self):
@@ -577,40 +575,16 @@ class Contract(BaseModel):
         else:
             return 0
 
-    def get_contract_process(self):
-        """ユーザー申込みから成約までのプロセスを取得する。
+    def get_process_list(self):
+        """契約に関する髄対応のプロセスを取得する。
 
         :return:
         """
-        return self.processes.filter(name='01').first()
-
-    # def save(self, force_insert=False, force_update=False, using=None,
-    #          update_fields=None):
-    #     is_new = True if self.pk is None else False
-    #     super(Contract, self).save(force_insert, force_update, using, update_fields)
-    #     if is_new:
-    #         # 進捗のプロセス作成
-    #         process = Process.objects.create(name='01', content_object=self)
-    #         for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
-    #             task = Task(process=process, order=i, category=category[0], name=category[1])
-    #             if i == len(constants.CHOICE_TASK_CATEGORY):
-    #                 task.is_end = True
-    #             task.save()
-    #         # 入金項目作成
-    #         payments = Payment.objects.public_filter(is_active=True, is_initial=True)
-    #         consumption_tax_rate = Config.get_consumption_tax_rate()
-    #         decimal_type = Config.get_decimal_type()
-    #         for payment in payments:
-    #             contract_payment = ContractPayment(contract=self, timing=payment.timing, payment=payment)
-    #             contract_payment.amount = payment.amount or 0
-    #             if payment.timing == '11':
-    #                 # 契約開始月
-    #                 contract_payment.amount = self.get_current_month_price()
-    #             elif payment.timing == '30':
-    #                 contract_payment.amount = self.get_monthly_price()
-    #             contract_payment.consumption_tax = common.get_integer(contract_payment.amount * consumption_tax_rate,
-    #                                                                   decimal_type)
-    #             contract_payment.save()
+        process_list = []
+        for code, name in constants.CHOICE_PROCESS:
+            if code >= '10':
+                process_list.append((code, name, self.processes.filter(name=code)))
+        return process_list
 
 
 class ContractPayment(BaseModel):
@@ -638,25 +612,57 @@ class ContractPayment(BaseModel):
 
 
 class Process(BaseModel):
-    name = models.CharField(max_length=2, choices=constants.CHOICE_PROCESS)
+    name = models.CharField(max_length=2, choices=constants.CHOICE_PROCESS, verbose_name="プロセス名称")
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
         db_table = 'ap_process'
-        unique_together = ['name', 'content_type', 'object_id']
-        verbose_name = "進捗"
-        verbose_name_plural = "進捗一覧"
+        verbose_name = "プロセス"
+        verbose_name_plural = "プロセス一覧"
 
-    def get_percent(self):
+    @cached_property
+    def percent(self):
         """進捗の完成度（%）を取得
 
         :return:
         """
-        finished = Task.objects.public_filter(process=self, status__in=['10', '99']).count()
-        total = Task.objects.public_filter(process=self).count()
-        return ('%.1f' % (round(finished / total, 3) * 100,)) if total else 0.0
+        task_count = Task.objects.public_filter(process=self).count()
+        if task_count == 0:
+            return 0.0
+        else:
+            # スキップと完了したタスク数
+            finished_count = Task.objects.public_filter(process=self, status__in=['10', '99']).count()
+            return round((finished_count / task_count) * 100, 1)
+
+    @cached_property
+    def contractor(self):
+        return self.content_object.contractor
+
+    @cached_property
+    def parking_lot(self):
+        return self.content_object.parking_lot
+
+    @cached_property
+    def parking_position(self):
+        return self.content_object.parking_position
+
+    percent.short_description = '進捗'
+    contractor.short_description = '契約者'
+    parking_lot.short_description = '駐車場'
+    parking_position.short_description = '車室'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        is_new = True if self.pk is None else False
+        super(Process, self).save(force_insert, force_update, using, update_fields)
+        if is_new and self.name != '01':
+            for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
+                code, name = category
+                if code.startswith(self.name):
+                    task = Task(process=self, order=i, category=code, name=name)
+                    task.save()
 
 
 class Task(BaseModel):

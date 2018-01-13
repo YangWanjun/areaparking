@@ -1,0 +1,86 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object.get_name_display }}</a>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            {% block card %}
+            <div class="card-title">{{ view.model|verbose_name|title }}: {{ object.get_name_display }}</div>
+            <table class="table bordered">
+                {% for field_name, value in object_data %}
+                <tr>
+                    <th>{{ field_name }}</th>
+                    {% if value.get_absolute_url %}
+                    <td><a href="{{ value.get_absolute_url }}">{{ value }}</a></td>
+                    {% else %}
+                    <td>{{ value }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% endblock %}
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% block actions_row %}
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% endblock actions_row %}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">進捗情報</div>
+            <div>進捗：<span class="percentage">{{ object.percent }}</span> %</div>
+            <div class="progress" style="height: 14px;">
+                <div class="determinate" style="width: {{ object.percent }}%"></div>
+            </div>
+            <ul class="collapsible" data-collapsible="expandable">
+                {% for task in object.task_set.all %}
+                {% with group=task.get_mail_group template=task.get_mail_template %}
+                <li>
+                    <div class="collapsible-header">
+                        <span class="icon-stack">
+                             <i class="icon-sign-blank icon-stack-base"></i>
+                             <span class="icon-fixed-width icon-light char-overlay">{{ forloop.counter }}</span>
+                        </span>
+                        {{ task }}
+                        {% if task.status == '01' %}
+                            <!-- 未実施 -->
+                            <span class="new badge red" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% elif task.status == '02' %}
+                            <!-- 実施中 -->
+                            <span class="new badge purple" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% elif task.status == '10' %}
+                            <!-- スキップ -->
+                            <span class="new badge grey" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% elif task.status == '99' %}
+                            <span class="new badge grey" data-badge-caption="{{ task.get_status_display }}" style="margin-left: 0px;"></span>
+                        {% endif %}
+                    </div>
+                    <div class="collapsible-body">
+                    </div>
+                </li>
+                {% endwith %}
+                {% endfor %}
+            </ul>
+            <div class="card-action">
+                <div class="right-align">
+                    <a class="waves-effect waves-light btn red white-text" href="javascript:void(0)" onclick="alert('未完成');return false">破棄</a>
+                    <a class="waves-effect waves-light btn white-text" href="javascript:void(0)" onclick="alert('未完成');return false;">対応完了</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}{% endblock right-panel %}
+{% endblock %}

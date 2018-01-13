@@ -18,6 +18,11 @@ class TempContractViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ContractSerializer
 
 
+class ProcessViewSet(viewsets.ModelViewSet):
+    queryset = models.Process.objects.public_all()
+    serializer_class = serializers.ProcessSerializer
+
+
 @api_view(['PUT'])
 def task_finish(request, pk):
     """タスクを完了するＡＰＩ
