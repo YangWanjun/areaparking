@@ -48,21 +48,6 @@ class WhiteBoardListView(ListModelView):
                 queryset = queryset.filter(reduce(operator.or_, or_queries))
         return queryset
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     """Handle for browser HTTP and AJAX requests from datatables."""
-    #     if not self.has_view_permission(self.request):
-    #         raise PermissionDenied
-    #     self.request_form = DatatableRequestForm(request.POST, prefix='datatable')
-    #     self.object_list = self.get_object_list()
-    #     if 'HTTP_DATATABLE' in request.META:
-    #         handler = self.get_json_data
-    #     elif request.method.lower() in self.http_method_names:
-    #         handler = getattr(
-    #             self, request.method.lower(), self.http_method_not_allowed)
-    #     else:
-    #         handler = self.http_method_not_allowed
-    #     return handler(request, *args, **kwargs)
-
     def get_datatable_config(self):
         config = super(WhiteBoardListView, self).get_datatable_config()
         config['searching'] = True

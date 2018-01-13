@@ -135,7 +135,7 @@ class AbstractCar(BaseModel):
         abstract = True
 
     def __str__(self):
-        return self.car_model
+        return self.car_model or ''
 
 
 class Contractor(AbstractUser):
@@ -195,6 +195,9 @@ class Subscription(AbstractUser, AbstractCar):
     is_deleted = models.BooleanField(default=False, editable=False, verbose_name=u"削除フラグ")
     deleted_date = models.DateTimeField(blank=True, null=True, editable=False, verbose_name=u"削除年月日")
 
+    objects = PublicManager(is_deleted=False)
+    temp_objects = PublicManager(is_deleted=False, status__lt='11')
+
     class Meta:
         db_table = 'ap_subscription'
         ordering = ['name']
@@ -249,11 +252,11 @@ class Subscription(AbstractUser, AbstractCar):
         """
         task_count = Task.objects.public_filter(process=self.process).count()
         if task_count == 0:
-            return 0
+            return 0.0
         else:
             # スキップと完了したタスク数
             finished_count = Task.objects.public_filter(process=self.process, status__in=['10', '99']).count()
-            return (finished_count / task_count) * 100
+            return round((finished_count / task_count) * 100, 1)
 
     @property
     def is_require_receipt(self):
@@ -262,6 +265,24 @@ class Subscription(AbstractUser, AbstractCar):
         :return:
         """
         return self.require_receipt == 'yes'
+
+    def get_post_code(self):
+        if self.post_code1 and self.post_code2:
+            return '%s-%s' % (self.post_code1, self.post_code2)
+        else:
+            return None
+
+    def get_corporate_user_post_code(self):
+        if self.corporate_user_post_code1 and self.corporate_user_post_code2:
+            return '%s-%s' % (self.corporate_user_post_code1, self.corporate_user_post_code2)
+        else:
+            return None
+
+    def get_workplace_post_code(self):
+        if self.workplace_post_code1 and self.workplace_post_code2:
+            return '%s-%s' % (self.workplace_post_code1, self.workplace_post_code2)
+        else:
+            return None
 
     def get_suitable_positions(self):
         """駐車可能の車室を取得する
@@ -297,6 +318,34 @@ class Subscription(AbstractUser, AbstractCar):
 
         date = common.add_months(start_date, default_period)
         return common.get_last_day_by_month(date)
+
+    def get_notify_start_date(self):
+        """契約終了通知開始日を取得する
+
+        デフォルトは１か月前
+
+        :return:
+        """
+        start_date = None
+        contract_end_date = self.get_contract_end_date()
+        if contract_end_date:
+            start_date = common.add_months(contract_end_date, -1)
+            start_date = common.get_first_day_by_month(start_date)
+        return start_date
+
+    def get_notify_end_date(self):
+        """契約終了通知終了日を取得する
+
+        デフォルトは１か月前
+
+        :return:
+        """
+        end_date = None
+        contract_end_date = self.get_contract_end_date()
+        if contract_end_date:
+            end_date = common.add_months(contract_end_date, -1)
+            end_date = common.get_last_day_by_month(end_date)
+        return end_date
 
     def get_subscription_email(self):
         """申込み完了時のメール宛先アドレス
@@ -535,33 +584,33 @@ class Contract(BaseModel):
         """
         return self.processes.filter(name='01').first()
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        is_new = True if self.pk is None else False
-        super(Contract, self).save(force_insert, force_update, using, update_fields)
-        if is_new:
-            # 進捗のプロセス作成
-            process = Process.objects.create(name='01', content_object=self)
-            for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
-                task = Task(process=process, order=i, category=category[0], name=category[1])
-                if i == len(constants.CHOICE_TASK_CATEGORY):
-                    task.is_end = True
-                task.save()
-            # 入金項目作成
-            payments = Payment.objects.public_filter(is_active=True, is_initial=True)
-            consumption_tax_rate = Config.get_consumption_tax_rate()
-            decimal_type = Config.get_decimal_type()
-            for payment in payments:
-                contract_payment = ContractPayment(contract=self, timing=payment.timing, payment=payment)
-                contract_payment.amount = payment.amount or 0
-                if payment.timing == '11':
-                    # 契約開始月
-                    contract_payment.amount = self.get_current_month_price()
-                elif payment.timing == '30':
-                    contract_payment.amount = self.get_monthly_price()
-                contract_payment.consumption_tax = common.get_integer(contract_payment.amount * consumption_tax_rate,
-                                                                      decimal_type)
-                contract_payment.save()
+    # def save(self, force_insert=False, force_update=False, using=None,
+    #          update_fields=None):
+    #     is_new = True if self.pk is None else False
+    #     super(Contract, self).save(force_insert, force_update, using, update_fields)
+    #     if is_new:
+    #         # 進捗のプロセス作成
+    #         process = Process.objects.create(name='01', content_object=self)
+    #         for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
+    #             task = Task(process=process, order=i, category=category[0], name=category[1])
+    #             if i == len(constants.CHOICE_TASK_CATEGORY):
+    #                 task.is_end = True
+    #             task.save()
+    #         # 入金項目作成
+    #         payments = Payment.objects.public_filter(is_active=True, is_initial=True)
+    #         consumption_tax_rate = Config.get_consumption_tax_rate()
+    #         decimal_type = Config.get_decimal_type()
+    #         for payment in payments:
+    #             contract_payment = ContractPayment(contract=self, timing=payment.timing, payment=payment)
+    #             contract_payment.amount = payment.amount or 0
+    #             if payment.timing == '11':
+    #                 # 契約開始月
+    #                 contract_payment.amount = self.get_current_month_price()
+    #             elif payment.timing == '30':
+    #                 contract_payment.amount = self.get_monthly_price()
+    #             contract_payment.consumption_tax = common.get_integer(contract_payment.amount * consumption_tax_rate,
+    #                                                                   decimal_type)
+    #             contract_payment.save()
 
 
 class ContractPayment(BaseModel):

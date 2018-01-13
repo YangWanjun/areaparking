@@ -1,5 +1,10 @@
+import operator
+
+from functools import reduce
+
+from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, reverse
 
 from . import models, biz
 from contract.models import Task
@@ -30,6 +35,7 @@ class SubscriptionListView(BaseListModelView):
 
 class SubscriptionVewSet(BaseModelViewSet):
     model = models.Subscription
+    queryset = models.Subscription.temp_objects.public_all()
     list_display = ('name', 'parking_lot', 'parking_position', 'percent', 'contract_start_date', 'created_date')
     detail_view_class = SubscriptionDetailView
     list_view_class = SubscriptionListView
@@ -39,13 +45,20 @@ class SubscriptionVewSet(BaseModelViewSet):
 
 
 class SubscriptionFinish(BaseView):
-    def get(self, request, *args, **kwargs):
-        contract = get_object_or_404(models.Contract, pk=kwargs.get('pk'))
-        contract.status = '11'
-        contract.contractor.status = '11'
-        contract.save()
-        contract.contractor.save()
-        return redirect('contract:tempcontract_list')
+
+    def post(self, request, *args, **kwargs):
+        subscription = get_object_or_404(models.Subscription, pk=kwargs.get('pk'))
+        try:
+            # 契約情報を作成する
+            contract = biz.subscription_to_contract(subscription)
+            url = reverse('contract:contract_detail', args=(contract.pk,))
+            # 成約
+            subscription.status = '11'
+            subscription.save()
+            json = {'error': 0, 'url': url}
+        except Exception as ex:
+            json = {'error': 1, 'message': str(ex)}
+        return JsonResponse(json)
 
 
 class SubscriptionDestroy(BaseView):
@@ -58,10 +71,47 @@ class SubscriptionDestroy(BaseView):
         return redirect('contract:tempcontract_list')
 
 
+class ContractListView(BaseListModelView):
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(ContractListView, self).get_queryset()
+        q = self.request.GET.get('datatable-search[value]', None)
+        if q:
+            orm_lookups = ['parking_lot__name__icontains', 'contractor__name__icontains', 'staff__first_name__icontains', 'staff__last_name__icontains']
+            for bit in q.split():
+                or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
+        return queryset
+
+    def get_datatable_config(self):
+        config = super(ContractListView, self).get_datatable_config()
+        config['searching'] = True
+        return config
+
+
 class ContractVewSet(BaseModelViewSet):
     model = models.Contract
     queryset = models.Contract.real_objects.public_all()
-    list_display = ('id', 'contractor', 'parking_lot', 'parking_position', 'start_date', 'end_date')
+    list_display = ('id', 'contractor', 'parking_lot', 'parking_position', 'staff', 'start_date', 'end_date')
+    list_view_class = ContractListView
+
+
+class ContractorListView(BaseListModelView):
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(ContractorListView, self).get_queryset()
+        q = self.request.GET.get('datatable-search[value]', None)
+        if q:
+            orm_lookups = ['name__icontains', 'tel__icontains']
+            for bit in q.split():
+                or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
+        return queryset
+
+    def get_datatable_config(self):
+        config = super(ContractorListView, self).get_datatable_config()
+        config['searching'] = True
+        return config
 
 
 class ContractorVewSet(BaseModelViewSet):
@@ -69,7 +119,11 @@ class ContractorVewSet(BaseModelViewSet):
     queryset = models.Contractor.real_objects.public_all()
     list_display = ('code', 'get_category_display', 'name', 'tel', 'email', 'address1')
     list_display_links = ('code', 'name',)
+    list_view_class = ContractorListView
 
+    def get_category_display(self, obj):
+        return obj.get_category_display()
+    get_category_display.short_description = '分類'
 
 class SendSubscriptionMail(BaseView):
     def post(self, request, *args, **kwargs):

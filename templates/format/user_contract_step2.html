@@ -81,6 +81,7 @@
                         <td>{{ payment.comment|default:'' }}</td>
                     </tr>
                 {% endfor %}
+                {% if count > 0 %}
                     <tr>
                         <td>敷金・礼金</td>
                         <td>￥0円</td>
@@ -93,6 +94,7 @@
                         <td>￥{{ user_subscription.get_contracting_payments_total.consumption_tax__sum|intcomma }}円</td>
                         <td></td>
                     </tr>
+                {% endif %}
                 {% endwith %}
                 <tr>
                     <td colspan="2" class="center" style="font-size: 16px;"><span style="margin-right: 35px;">合</span><span style="margin-right: 35px;">計</span><span style="margin-right: 35px;">金</span>額</td>

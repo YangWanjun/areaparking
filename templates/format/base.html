@@ -81,7 +81,7 @@
         <div class="nav-wrapper" style="width: 1100px;margin: 0px auto;">
             <a href="#" class="brand-logo">Logo</a>
         </div>
-        <div class="nav-content" style="position:relative;background-color: #3498DB !important;width: 100%;">
+        <div class="nav-content" style="position:relative;background-color: #3498DB !important;width: 100%;z-index: 1;">
             <ul class="tabs tabs-transparent" style="width: 1100px;">
                 {% for step in steps %}
                     <li class="tab {% if step != current_step and is_all_active == False %}disabled{% endif %}">

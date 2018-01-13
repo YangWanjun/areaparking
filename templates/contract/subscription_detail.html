@@ -444,8 +444,8 @@
         </div>
         <div class="card-action">
             <div class="right-align">
-                <a class="waves-effect waves-light btn red white-text" href="{% url 'contract:subscription_destroy' object.pk %}">破棄</a>
-                <a class="waves-effect waves-light btn white-text" href="{% url 'contract:temp_contract_finish' object.pk %}">契約完了</a>
+                <a class="waves-effect waves-light btn red white-text" href="{% url 'contract:subscription_destroy' object.pk %}" onclick="alert('未完成');return false">破棄</a>
+                <a class="waves-effect waves-light btn white-text" href="{% url 'contract:subscription_finish' object.pk %}" onclick="ebjs.material.subscription_finish(this); return false;">契約完了</a>
             </div>
         </div>
     </div>

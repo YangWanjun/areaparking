@@ -21,31 +21,7 @@
   config['ajax']['beforeSend'] = function(request) {
     request.setRequestHeader("datatable", true);
   };
-  config['headerCallback'] = function( thead, data, start, end, display ) {
-    $(thead).find('th').eq(0).text('Code');
-    $(thead).find('th').eq(2).text('担当');
-    $(thead).find('th').eq(6).text('車室');
-    $(thead).find('th').eq(7).text('待ち');
-    $(thead).find('th').eq(8).text('既');
-    $(thead).find('th').eq(9).text('新');
-    $(thead).find('th').eq(10).text('ﾁﾗｼ');
-  };
-  config['columnDefs'] = [{
-    "targets": [5, 11],
-    "createdCell": function (td, cellData, rowData, row, col) {
-      var html;
-      if (col == 5) {
-          $(td).html(ebjs.material.get_contract_status_html(cellData));
-          $(td).css("padding", "0px");
-      } else if (col == 11) {
-          ebjs.material.collapse_parking_lot(td, rowData.code);
-      }
-    }
-  }];
   $(document).one("turbolinks:load", function() {
-    ebjs.material.load_user_info();
-    ebjs.material.save_user_info();
-
     if ( ! $.fn.DataTable.isDataTable( '#table' ) ) {
       var datatable = $('#table').DataTable(config);
       new $.fn.dataTable.FixedHeader(datatable);
@@ -59,12 +35,6 @@
         var txt = $("#searchbar").val();
         datatable.search( txt ).draw();
       });
-
-      // 駐車場を自動マッチする
-      $("#match_parking_lot").css('display', '');
-      $("#match_parking_lot").click(function() {
-        ebjs.material.match_parking_lot(datatable);
-      });
     }
   });
 </script>
@@ -75,7 +45,7 @@
 <div class="left-panel">
     <div class="card list-card">
         <div class="card-content">
-            <table id="table" class="table bordered" data-form-control="datatable" style="width:100%">
+            <table id="table" data-turbolinks="false" class="table bordered" data-form-control="datatable" style="width:100%">
                 <thead>
                     <tr>
                         {% for header, header_title in headers %}
@@ -106,7 +76,6 @@
 {% block right-panel %}
 <div class="right-panel">
     {% include 'common/filter.html' %}
-    {% include 'common/user_info.html' %}
 </div>
 {% endblock right-panel %}
 {% block action_btn %}

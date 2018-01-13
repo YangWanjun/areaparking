@@ -29,16 +29,6 @@
       $(document).one("turbolinks:before-cache", function() {
         datatable.destroy();
       });
-      {% if has_filter %}
-      // 検索フィルター
-      if ($("div#table_filter").length > 0) {
-          $("div#table_filter").css("display", "none");
-          $("#id_q_container input[type=search]").remove();
-          $("div#table_filter input").prependTo("#id_q_container");
-          $("#id_q_container input[type=search]").removeAttr("placeholder");
-          $("#id_q_container input[type=search]").attr("id", "id_q");
-      }
-      {% endif %}
     }
   });
 </script>
@@ -77,24 +67,7 @@
     </div>
 </div>
 {% endblock left-panel %}
-{% block right-panel %}
-{% if has_filter %}
-<div class="right-panel">
-    <form action="." method="get" data-control-form="">
-        <div class="card form-card">
-            <div class="card-content">
-                <span class="card-title">フィルター</span>
-                <div class="row">
-                    <div class="input-field col s12" id="id_q_container">
-                        <label class="active" for="id_q">検索</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
-{% endif %}
-{% endblock right-panel %}
+{% block right-panel %}{% endblock right-panel %}
 {% block action_btn %}
 <div class="fixed-action-btn">
     {% if add_url %}

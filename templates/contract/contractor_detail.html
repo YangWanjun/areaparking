@@ -38,99 +38,29 @@
     </div>
     <div class="card">
         <div class="card-content">
-            <div class="card-title">契約名義変更</div>
-            <ul class="collapsible" data-collapsible="expandable">
-                <li>
-                    <div class="collapsible-header">
-                        <span class="icon-stack">
-                             <i class="icon-sign-blank icon-stack-base"></i>
-                             <span class="icon-fixed-width icon-light char-overlay">1</span>
-                        </span>
-                        契約書及び請求書の発行
-                        <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
-                    </div>
-                    <div class="collapsible-body">
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s12">
-                                <input type="checkbox" class="filled-in" id="chk001" checked="checked"/>
-                                <label for="chk001">送付状</label>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s12">
-                                <input type="checkbox" class="filled-in" id="chk002" checked="checked"/>
-                                <label for="chk002">新契約書(名義変更)</label>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s12">
-                                <input type="checkbox" class="filled-in" id="chk003" checked="checked"/>
-                                <label for="chk003">請求書(変更手数料)</label>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s6">
-                                <span style="font-weight: bold;">前回送信日時：</span>2017年12月15日1:22<br/>
-                                <span style="font-weight: bold;">送信者：</span>楊
-                            </div>
-                            <div class="col s6 right-align">
-                                <button data-target="send_subscription" class="btn modal-trigger">送信<i class="material-icons right">send</i></button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header">
-                        <span class="icon-stack">
-                             <i class="icon-sign-blank icon-stack-base"></i>
-                             <span class="icon-fixed-width icon-light char-overlay">2</span>
-                        </span>
-                        入金確認
-                        <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
-                    </div>
-                    <div class="collapsible-body">
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header">
-                        <span class="icon-stack">
-                             <i class="icon-sign-blank icon-stack-base"></i>
-                             <span class="icon-fixed-width icon-light char-overlay">3</span>
-                        </span>
-                        新契約書・請求書の送付
-                        <span class="new badge red" data-badge-caption="未実施" style="margin-left: 0px;"></span>
-                    </div>
-                    <div class="collapsible-body">
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s12">
-                                <input type="checkbox" class="filled-in" id="chk004" checked="checked"/>
-                                <label for="chk004">送付状</label>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s12">
-                                <input type="checkbox" class="filled-in" id="chk005" checked="checked"/>
-                                <label for="chk005">契約書</label>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s12">
-                                <input type="checkbox" class="filled-in" id="chk006" checked="checked"/>
-                                <label for="chk006">請求書</label>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col s6">
-                                <span style="font-weight: bold;">前回送信日時：</span>2017年12月15日1:22<br/>
-                                <span style="font-weight: bold;">送信者：</span>楊
-                            </div>
-                            <div class="col s6 right-align">
-                                <button data-target="send_subscription" class="btn modal-trigger">送信<i class="material-icons right">send</i></button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+            <div class="card-title" id="divPositionTitle">契約中の車室</div>
+            <table id="tblPosition" class="table bordered highlight mdl-data-table" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>番号</th>
+                        <th>駐車場</th>
+                        <th>車室</th>
+                        <th>契約開始日</th>
+                        <th>契約終了日</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contract in object.contract_set.all %}
+                        <tr>
+                            <td><a href="{% url 'contract:contract_detail' contract.pk %}" data-turbolinks="false">{{ contract.pk }}</a></td>
+                            <td>{{ contract.parking_lot }}</td>
+                            <td>{{ contract.parking_position }}</td>
+                            <td>{{ contract.start_date }}</td>
+                            <td>{{ contract.end_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
