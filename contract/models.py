@@ -389,7 +389,7 @@ class Subscription(AbstractUser, AbstractCar):
     def get_contract_payments_total(self):
         queryset = ContractPayment.objects.public_filter(subscription=self, timing__in=['11', '30', '40', '41'])
         summary = queryset.aggregate(Sum('amount'), Sum('consumption_tax'))
-        summary['total'] = summary.get('amount__sum') + summary.get('consumption_tax__sum')
+        summary['total'] = (summary.get('amount__sum', 0) or 0) + (summary.get('consumption_tax__sum', 0) or 0)
         return summary
 
     def save(self, force_insert=False, force_update=False, using=None,
