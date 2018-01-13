@@ -345,7 +345,7 @@ class UserSubscriptionStep4View(BaseUserSubscriptionView):
         context = super(UserSubscriptionStep4View, self).get_context_data(**kwargs)
         user_subscription = context.get('user_subscription')
         # 申込PDF作成
-        # biz.generate_subscription_pdf(request, user_subscription, **kwargs)
+        biz.generate_subscription_pdf(request, user_subscription, **kwargs)
         # 申込みデータをＤＢに保存
         user_subscription.status = '02'     # 申込み完了
         user_subscription.save()
