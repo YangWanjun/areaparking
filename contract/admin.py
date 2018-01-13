@@ -21,6 +21,7 @@ class ContractPaymentInline(admin.TabularInline):
 @admin.register(models.Subscription)
 class SubscriptionAdmin(BaseAdmin):
     icon = '<i class="material-icons">nature_people</i>'
+    list_display = ('name', 'created_date')
     inlines = (ContractPaymentInline,)
 
 
@@ -106,7 +107,9 @@ class ContractorAdmin(BaseAdmin):
 
 @admin.register(models.Contract)
 class ContractAdmin(BaseAdmin):
-    list_display = ('contractor', 'parking_lot', 'parking_position', 'contract_date', 'start_date', 'end_date')
+    list_display = (
+        'contractor', 'parking_lot', 'parking_position', 'contract_date', 'start_date', 'end_date', 'created_date'
+    )
     list_display_links = ('contractor',)
     inlines = (ContractPaymentInline,)
     form = forms.ContractForm
