@@ -168,7 +168,27 @@ CHOICE_TASK_NAME_CATEGORY = [
     ('212', '新契約書・請求書の送付'),
     ('213', '結果確認'),
 ]
-CHOICE_TASK_CATEGORY = CHOICE_TASK_SUBSCRIPTION_CATEGORY + CHOICE_TASK_CREDIT_CATEGORY + CHOICE_TASK_NAME_CATEGORY
+CHOICE_TASK_CHANGE_POSITION = [
+    ('220', '契約書等送付'),
+    ('221', '書類確認'),
+]
+CHOICE_TASK_CHANGE_CAR = [
+    ('230', '書類発行'),
+]
+CHOICE_TASK_KEY_LOST = [
+    ('240', '｢落し物｣の有無確認'),
+    ('241', '書類発行'),
+    ('242', '入金確認'),
+    ('243', '必要書類一式と操作鍵類の送付'),
+    ('244', '操作鍵類の見積り依頼（オーナー側）'),
+    ('245', '操作鍵類の発注/入金'),
+]
+CHOICE_TASK_CATEGORY = CHOICE_TASK_SUBSCRIPTION_CATEGORY + \
+                       CHOICE_TASK_CREDIT_CATEGORY + \
+                       CHOICE_TASK_NAME_CATEGORY + \
+                       CHOICE_TASK_CHANGE_POSITION + \
+                       CHOICE_TASK_CHANGE_CAR + \
+                       CHOICE_TASK_KEY_LOST
 CHOICE_TASK_STATUS = (
     ('01', '未実施'),
     ('02', '実施中'),
