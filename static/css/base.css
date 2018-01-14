@@ -176,3 +176,19 @@ div.loading .preloader-wrapper {
 .local-storage select:focus {
     outline-width: 0;
 }
+/***************** Auto Complete ***************/
+ul.ui-autocomplete {
+    white-space: nowrap;
+}
+.ui-state-default,
+.ui-state-hover,
+.ui-state-focus,
+.ui-state-active,
+.ui-state-default:hover,
+.ui-state-hover:hover,
+.ui-state-focus:hover,
+.ui-state-active:hover,
+.ui-menu-item-wrapper:hover {
+    font-weight: inherit !important;
+    white-sp
+}

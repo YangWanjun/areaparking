@@ -48,6 +48,7 @@ router.register(r'car-model', master_api.CarModelViewSet)
 
 router.register(r'whiteboard', whiteboard_api.WhiteBoardViewSet)
 router.register(r'inquiry', whiteboard_api.InquiryViewSet)
+router.register(r'search-tel', whiteboard_api.SearchTel, base_name='search-tel')
 
 
 class Home(ModuleMixin):
