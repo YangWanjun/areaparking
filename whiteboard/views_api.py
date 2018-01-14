@@ -21,7 +21,7 @@ class InquiryViewSet(viewsets.ModelViewSet):
 class SearchTel(viewsets.ViewSet):
 
     def list(self, request):
-        tel = request.GET.get('tel', None)
+        tel = request.GET.get('search', None)
         no_list = []
         if tel:
             # 問い合わせ履歴
@@ -29,10 +29,12 @@ class SearchTel(viewsets.ViewSet):
             for obj in queryset:
                 d = {
                     'id': obj.pk,
-                    'label': '%s:問い合わせ履歴' % (obj.tel,),
+                    'label': '問い合わせ履歴:%s %s' % (obj.tel, obj.user_name),
+                    'label_value': obj.tel,
                     'url': reverse('whiteboard:inquiry_detail', args=(obj.pk,)),
                 }
                 no_list.append(d)
+            # 契約者
             queryset = Contractor.objects.public_filter(
                 Q(tel__endswith=tel) | Q(personal_phone__endswith=tel) |
                 Q(corporate_staff_tel__endswith=tel) |
@@ -46,7 +48,8 @@ class SearchTel(viewsets.ViewSet):
             for obj in queryset:
                 d = {
                     'id': obj.pk,
-                    'label': '%s:契約者' % (obj.tel,),
+                    'label': '契約者:%s %s' % (obj.tel, obj.name),
+                    'label_value': obj.tel,
                     'url': reverse('contract:contractor_detail', args=(obj.pk,)),
                 }
                 no_list.append(d)

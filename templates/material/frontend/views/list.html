@@ -22,6 +22,9 @@
     request.setRequestHeader("datatable", true);
   };
   $(document).one("turbolinks:load", function() {
+    ebjs.material.load_user_info();
+    ebjs.material.save_user_info();
+    ebjs.autocomplete.init();
     if ( ! $.fn.DataTable.isDataTable( '#table' ) ) {
       var datatable = $('#table').DataTable(config);
       new $.fn.dataTable.FixedHeader(datatable);
@@ -67,7 +70,12 @@
     </div>
 </div>
 {% endblock left-panel %}
-{% block right-panel %}{% endblock right-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/filter.html' %}
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
 {% block action_btn %}
 <div class="fixed-action-btn">
     {% if add_url %}

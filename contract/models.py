@@ -446,9 +446,9 @@ class Subscription(AbstractUser, AbstractCar):
         if is_new:
             # 進捗のプロセス作成
             process = Process.objects.create(name='01', content_object=self)
-            for i, category in enumerate(constants.CHOICE_TASK_CATEGORY, 1):
+            for i, category in enumerate(constants.CHOICE_TASK_SUBSCRIPTION_CATEGORY, 1):
                 task = Task(process=process, order=i, category=category[0], name=category[1])
-                if i == len(constants.CHOICE_TASK_CATEGORY):
+                if i == len(constants.CHOICE_TASK_SUBSCRIPTION_CATEGORY):
                     task.is_end = True
                 task.save()
             # 入金項目作成

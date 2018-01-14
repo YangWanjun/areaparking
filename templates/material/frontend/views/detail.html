@@ -38,5 +38,19 @@
     </div>
 </div>
 {% endblock left-panel %}
-{% block right-panel %}{% endblock right-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    ebjs.material.load_user_info();
+    ebjs.material.save_user_info();
+    ebjs.autocomplete.init();
+});
+</script>
 {% endblock %}

@@ -43,9 +43,6 @@
     }
   }];
   $(document).one("turbolinks:load", function() {
-    ebjs.material.load_user_info();
-    ebjs.material.save_user_info();
-
     if ( ! $.fn.DataTable.isDataTable( '#table' ) ) {
       var datatable = $('#table').DataTable(config);
       new $.fn.dataTable.FixedHeader(datatable);

@@ -1,4 +1,4 @@
-<div class="card filters-card local-storage tight-card">
+<div class="card filters-card local-storage tight-card pushpin">
     <div class="card-content">
         <span class="card-title" style="font-size: 18px;">聞き取り</span>
         <div class="row" style="margin-top: 0px;">
@@ -17,7 +17,7 @@
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <input type="text" value="" id="tel" name="tel">
+                <input type="text" value="" id="tel" name="tel" class="eb-autocomplete" eb-autocomplete-url="/api/search-tel/"/>
                 <label for="tel">ＴＥＬ</label>
             </div>
         </div>
@@ -119,4 +119,18 @@
             <a href="javascript:void(0)" class="blue-text" id="match_parking_lot" title="車サイズと空き情報によって自動マッチする" style="display: none;"><i class="material-icons">youtube_searched_for</i></a>
         </div>
     </div>
+    <script type="text/javascript">
+        $(document).one("turbolinks:load", function() {
+            ebjs.material.load_user_info();
+            ebjs.material.save_user_info();
+            ebjs.autocomplete.init();
+            $('.pushpin').each(function() {
+                var $this = $(this);
+                $index = 0;
+                $this.pushpin({
+                  top: $this.offset().top
+                });
+            });
+        });
+    </script>
 </div>

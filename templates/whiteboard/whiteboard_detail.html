@@ -106,8 +106,6 @@
 <script type="text/javascript">
     ebjs.material.popup_anchor();
     $(document).one("turbolinks:load", function() {
-        ebjs.material.load_user_info();
-        ebjs.material.save_user_info();
         if ( ! $.fn.DataTable.isDataTable( '#tblPosition' ) ) {
             var datatable = $('#tblPosition').DataTable({
                 "searching": false,

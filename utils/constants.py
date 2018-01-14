@@ -142,17 +142,7 @@ CHOICE_PROCESS = (
     ('23', '車両変更'),
     ('24', '鍵紛失'),
 )
-CHOICE_TASK_CREDIT_CATEGORY = [
-    ('200', 'クレジット決済申込書発行'),
-    ('201', 'クレジット決済申込書確認'),
-]
-CHOICE_TASK_NAME_CATEGORY = [
-    ('210', '契約書及び請求書の発行'),
-    ('211', '入金確認'),
-    ('212', '新契約書・請求書の送付'),
-    ('213', '結果確認'),
-]
-CHOICE_TASK_CATEGORY = [
+CHOICE_TASK_SUBSCRIPTION_CATEGORY = [
     # 01 申込
     ('010', '申込書送付'),
     ('011', '申込書確認'),
@@ -166,7 +156,18 @@ CHOICE_TASK_CATEGORY = [
     ('101', '契約書類確認'),
     # 入金
     ('110', '入金確認'),
-] + CHOICE_TASK_CREDIT_CATEGORY + CHOICE_TASK_NAME_CATEGORY
+]
+CHOICE_TASK_CREDIT_CATEGORY = [
+    ('200', 'クレジット決済申込書発行'),
+    ('201', 'クレジット決済申込書確認'),
+]
+CHOICE_TASK_NAME_CATEGORY = [
+    ('210', '契約書及び請求書の発行'),
+    ('211', '入金確認'),
+    ('212', '新契約書・請求書の送付'),
+    ('213', '結果確認'),
+]
+CHOICE_TASK_CATEGORY = CHOICE_TASK_SUBSCRIPTION_CATEGORY + CHOICE_TASK_CREDIT_CATEGORY + CHOICE_TASK_NAME_CATEGORY
 CHOICE_TASK_STATUS = (
     ('01', '未実施'),
     ('02', '実施中'),
