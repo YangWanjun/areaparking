@@ -61,6 +61,7 @@
                                         <tr>
                                             <th>名称</th>
                                             <th>作成日時</th>
+                                            <th>進捗</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -68,6 +69,7 @@
                                             <tr>
                                                 <td><a href="{% url 'contract:process_detail' process.pk %}">{{ process.get_name_display }}</a></td>
                                                 <td>{{ process.created_date }}</td>
+                                                <td>{{ process.percent }}</td>
                                             </tr>
                                         {% endfor %}
                                         </tbody>

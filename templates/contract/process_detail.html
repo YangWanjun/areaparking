@@ -67,6 +67,16 @@
                         {% endif %}
                     </div>
                     <div class="collapsible-body">
+                        <div class="row">
+                            <div class="col s12 right-align">
+                                <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします"
+                                   class="waves-effect waves-light btn-floating tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}">
+                                    <i class="tiny material-icons">call_missed_outgoing</i></a>
+                                <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします"
+                                   class="waves-effect waves-light btn-floating btn-tiny tooltipped {%if task.is_finished or task.is_skipped%}disabled{%endif%}">
+                                    <i class="tiny material-icons">done</i></a>
+                            </div>
+                        </div>
                     </div>
                 </li>
                 {% endwith %}
