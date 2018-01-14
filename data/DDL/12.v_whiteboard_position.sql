@@ -6,7 +6,7 @@ select pos.id
      , CONCAT(lot.pref_name, lot.city_name, ifnull(lot.town_name, ''), ifnull(lot.aza_name, ''), ifnull(lot.other_name, '')) as address
      , CASE
            WHEN c.id is not null THEN '03' 		-- 空き無
-           WHEN tc.id is not null THEN '02'     -- 手続き中
+           WHEN tc.code is not null THEN '02'     -- 手続き中
            ELSE '01'							-- 空き
        END as position_status
 	 , c.end_date as contract_end_date			-- 契約終了日
@@ -36,8 +36,8 @@ select pos.id
                          and c.start_date <= current_date()
                          and c.end_date >= current_date()
                          and c.is_deleted = 0
-  left join ap_contract tc on tc.parking_position_id = pos.id
-                          and tc.is_deleted = 0
-                          and tc.status = '01' 	-- 仮契約
+  left join ap_subscription tc on tc.parking_position_id = pos.id
+							  and tc.is_deleted = 0
+							  and tc.status < '11' 	-- 仮契約
  where lot.is_deleted = 0
    and pos.is_deleted = 0

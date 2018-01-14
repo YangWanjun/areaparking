@@ -21,9 +21,9 @@ BEGIN
 		-- 契約済み 空無
         SET ret_value = '03';
 	ELSEIF (SELECT COUNT(1)
-              FROM ap_contract
+              FROM ap_subscription
 			 WHERE parking_position_id = in_position_id
-               AND status = '01'
+               AND status < '11'
                AND is_deleted = 0) > 0 THEN
 		-- 仮契約中 手続中
 		SET ret_value = '02';

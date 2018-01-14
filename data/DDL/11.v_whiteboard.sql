@@ -15,7 +15,7 @@ select lot.code as code
            and c.end_date >= current_date()
            and c.is_deleted = 0
        ) as contract_count
-     , (select count(1) from ap_contract c where c.parking_lot_id = lot.code and c.status = '01' and c.is_deleted = 0) as temp_contract_count
+     , (select count(1) from ap_subscription s where s.parking_lot_id = lot.code and s.status < '11' and s.is_deleted = 0) as temp_contract_count
      , 0 as waiting_count
      , lot.is_existed_contractor_allowed        -- 既契約者
      , lot.is_new_contractor_allowed            -- 新テナント
