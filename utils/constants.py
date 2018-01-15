@@ -142,6 +142,7 @@ CHOICE_PROCESS = (
     ('22', '車室変更'),
     ('23', '車両変更'),
     ('24', '鍵紛失'),
+    ('31', '一般解約'),
 )
 CHOICE_TASK_SUBSCRIPTION_CATEGORY = [
     # 01 申込
@@ -183,12 +184,19 @@ CHOICE_TASK_KEY_LOST = [
     ('244', '操作鍵類の見積り依頼（オーナー側）'),
     ('245', '操作鍵類の発注/入金'),
 ]
+CHOICE_TASK_CONTRACT_CANCELLATION = [
+    ('310', '退出届送付'),
+    ('311', '解約処理'),
+    ('312', '鍵返送案内'),
+    ('313', '鍵回収'),
+]
 CHOICE_TASK_CATEGORY = CHOICE_TASK_SUBSCRIPTION_CATEGORY + \
                        CHOICE_TASK_CREDIT_CATEGORY + \
                        CHOICE_TASK_NAME_CATEGORY + \
                        CHOICE_TASK_CHANGE_POSITION + \
                        CHOICE_TASK_CHANGE_CAR + \
-                       CHOICE_TASK_KEY_LOST
+                       CHOICE_TASK_KEY_LOST + \
+                       CHOICE_TASK_CONTRACT_CANCELLATION
 CHOICE_TASK_STATUS = (
     ('01', '未実施'),
     ('02', '実施中'),
@@ -229,3 +237,6 @@ ERROR_SETTING_NO_SUBSCRIPTION_CONFIRM = "申込確認書の出力書式が設定
 ERROR_REQUEST_SIGNATURE = "サインしてください。"
 ERROR_PREV_TASK_UNFINISHED = '前のタスクは処理していないので、完了できません！'
 ERROR_SUBSCRIPTION_NO_CAR = '車情報がありません。'
+ERROR_CONTRACT_WRONG_RETIRE_DATE = "退居予定日は解約日の前に選択してください。"
+ERROR_CONTRACT_RETIRE_DATE_RANGE = "退居予定日は契約期間内に選択してください。"
+ERROR_CONTRACT_CANCELLATION_DATE_RANGE = "解約日は契約期間内に選択してください。"

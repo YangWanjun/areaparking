@@ -21,6 +21,13 @@
   config['ajax']['beforeSend'] = function(request) {
     request.setRequestHeader("datatable", true);
   };
+  config['columnDefs'] = [{
+    "targets": 1,
+    "createdCell": function (td, cellData, rowData, row, col) {
+      $(td).html("<div class='center'>" + cellData + "%</div>");
+      $(td).find('div').css('background', 'linear-gradient(90deg, transparent 0%, transparent 0.0%, #9adaaf 0.0%, #9adaaf ' + cellData + '%, transparent ' + cellData + '%)');
+    }
+  }];
   $(document).one("turbolinks:load", function() {
     if ( ! $.fn.DataTable.isDataTable( '#table' ) ) {
       var datatable = $('#table').DataTable(config);

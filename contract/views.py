@@ -96,8 +96,16 @@ class ContractDetailView(BaseDetailModelView):
         context = super(ContractDetailView, self).get_context_data(**kwargs)
         content_type = ContentType.objects.get_for_model(self.object)
         process_form = forms.ProcessForm(initial={'content_type': content_type, 'object_id': self.object.pk})
+        contract_cancellation_form = forms.ContractCancellationForm(initial={
+            'contract': self.object,
+            'parking_lot': self.object.parking_lot,
+            'parking_position': self.object.parking_position,
+            'contractor': self.object.contractor,
+            'reception_user': self.request.user,
+        })
         context.update({
             'process_form': process_form,
+            'contract_cancellation_form': contract_cancellation_form,
         })
         return context
 

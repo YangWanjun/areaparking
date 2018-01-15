@@ -113,3 +113,8 @@ class ContractAdmin(BaseAdmin):
     list_display_links = ('contractor',)
     inlines = (ContractPaymentInline,)
     form = forms.ContractForm
+
+
+@admin.register(models.ContractCancellation)
+class ContractCancellationAdmin(BaseAdmin):
+    list_display = ('contract', 'parking_lot', 'parking_position')

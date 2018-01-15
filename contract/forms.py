@@ -69,3 +69,19 @@ class ProcessForm(BaseForm):
         self.fields['name'].widget = forms.HiddenInput()
         self.fields['content_type'].widget = forms.HiddenInput()
         self.fields['object_id'].widget = forms.HiddenInput()
+
+
+class ContractCancellationForm(BaseForm):
+    class Meta:
+        model = models.ContractCancellation
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        self.fields['contract'].widget = forms.HiddenInput()
+        self.fields['parking_lot'].widget = forms.HiddenInput()
+        self.fields['parking_position'].widget = forms.HiddenInput()
+        self.fields['contractor'].widget = forms.HiddenInput()
+        self.fields['reception_user'].widget = forms.HiddenInput()
+        self.fields['cancellation_date'].widget.attrs.update({'class': 'vDateField'})
+        self.fields['retire_date'].widget.attrs.update({'class': 'vDateField'})

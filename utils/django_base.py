@@ -12,7 +12,14 @@ from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
 
+from rest_framework import serializers, status
+from rest_framework.compat import set_rollback
+from rest_framework.response import Response
+from rest_framework.views import exception_handler
+
 from material.frontend.views import ModelViewSet, DetailModelView, ListModelView, UpdateModelView
+
+from utils import errors
 
 
 class PublicManager(models.Manager):
@@ -236,3 +243,25 @@ class BaseUpdateModelView(UpdateModelView):
             'debug': True,
         })
         return context
+
+
+class BaseModelSerializer(serializers.ModelSerializer):
+    pass
+
+
+def custom_exception_handler(exc, context):
+    # Call REST framework's default exception handler first,
+    # to get the standard error response.
+    response = exception_handler(exc, context)
+
+    # Now add the HTTP status code to the response.
+    if response is None:
+        if isinstance(exc, errors.MyBaseException):
+            data = {'detail': str(exc)}
+
+            set_rollback()
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return None
+    else:
+        return response

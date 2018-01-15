@@ -53,5 +53,25 @@ class SearchTel(viewsets.ViewSet):
                     'url': reverse('contract:contractor_detail', args=(obj.pk,)),
                 }
                 no_list.append(d)
+            # 申込者
+            queryset = Subscription.objects.public_filter(
+                Q(tel__endswith=tel) | Q(personal_phone__endswith=tel) |
+                Q(corporate_staff_tel__endswith=tel) |
+                Q(corporate_staff_phone__endswith=tel) |
+                Q(corporate_user_tel__endswith=tel) |
+                Q(workplace_tel__endswith=tel) |
+                Q(contact_tel__endswith=tel) |
+                Q(delivery_tel__endswith=tel) |
+                Q(guarantor_tel__endswith=tel),
+                status__lt='11',
+            )
+            for obj in queryset:
+                d = {
+                    'id': obj.pk,
+                    'label': '申込者:%s %s' % (obj.tel, obj.name),
+                    'label_value': obj.tel,
+                    'url': reverse('contract:subscription_detail', args=(obj.pk,)),
+                }
+                no_list.append(d)
 
         return Response(no_list)

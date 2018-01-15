@@ -38,6 +38,7 @@ router = routers.DefaultRouter()
 router.register(r'subscription', contract_api.SubscriptionViewSet)
 router.register(r'temp-contract', contract_api.TempContractViewSet)
 router.register(r'process', contract_api.ProcessViewSet)
+router.register(r'contract-cancellation', contract_api.ContractCancellation)
 
 router.register(r'parking-lot', parking_lot_api.ParkingLotViewSet)
 router.register(r'parking-position-size-grouped', parking_lot_api.ParkingPositionSizeGrouped, base_name='size-grouped')

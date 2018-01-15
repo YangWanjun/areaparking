@@ -23,6 +23,11 @@ class ProcessViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ProcessSerializer
 
 
+class ContractCancellation(viewsets.ModelViewSet):
+    queryset = models.ContractCancellation.objects.public_all()
+    serializer_class = serializers.ContractCancellationSerializer
+
+
 @api_view(['PUT'])
 def task_finish(request, pk):
     """タスクを完了するＡＰＩ

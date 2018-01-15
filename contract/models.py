@@ -3,20 +3,19 @@ import datetime
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.db import models
 from django.db.models import Sum
 from django.utils.functional import cached_property
 
-from utils import constants, common
-from utils.django_base import BaseModel, PublicManager
-
-from parkinglot.models import ParkingLot, ParkingPosition
 from employee.models import Member
 from format.models import ReportFile, ReportSubscription, ReportSubscriptionConfirm
 from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
+from parkinglot.models import ParkingLot, ParkingPosition
+from utils import constants, common, errors
 from utils.app_base import get_total_context, get_user_subscription_url, get_user_contract_url
+from utils.django_base import BaseModel, PublicManager
 
 
 # Create your models here.
@@ -817,5 +816,39 @@ class TempContract(models.Model):
         return super(TempContract, self).save(force_insert, force_update, using, update_fields)
 
 
-class Cancellation(BaseModel):
-    contract = models.ForeignKey(Contract, on_delete=models.DO_NOTHING, verbose_name="契約情報")
+class ContractCancellation(BaseModel):
+    contract = models.OneToOneField(Contract, on_delete=models.PROTECT, verbose_name="契約情報")
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    cancellation_date = models.DateField(verbose_name="解約日")
+    retire_date = models.DateField(blank=True, null=True, verbose_name="退居予定日")
+    reception_user = models.ForeignKey(User, verbose_name="受付者")
+
+    class Meta:
+        db_table = 'ap_contract_cancellation'
+        verbose_name = "一般解約"
+        verbose_name_plural = "一般解約一覧"
+
+    def __str__(self):
+        return '%s - %s：%s' % (self.parking_lot, self.parking_position, self.cancellation_date)
+
+    @cached_property
+    def process(self):
+        try:
+            return self.contract.processes.get(name='31')
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            return None
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.retire_date:
+            if self.retire_date > self.cancellation_date:
+                raise errors.CustomException(constants.ERROR_CONTRACT_WRONG_RETIRE_DATE)
+            elif self.retire_date > self.contract.end_date or self.retire_date < self.contract.start_date:
+                raise errors.CustomException(constants.ERROR_CONTRACT_RETIRE_DATE_RANGE)
+        if self.cancellation_date > self.contract.end_date or self.cancellation_date < self.contract.start_date:
+            raise errors.CustomException(constants.ERROR_CONTRACT_CANCELLATION_DATE_RANGE)
+        super(ContractCancellation, self).save(force_insert, force_update, using, update_fields)
+        # 解約のプロセスを作成
+        Process.objects.create(name='31', content_object=self.contract)
