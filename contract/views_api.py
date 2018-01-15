@@ -66,6 +66,23 @@ def task_skip(request, pk):
 
 
 @api_view(['PUT'])
+def task_undo(request, pk):
+    """タスクを未実施の状態に戻るＡＰＩ
+
+    :param request:
+    :param pk:
+    :return:
+    """
+    task = get_object_or_404(models.Task, pk=pk)
+
+    if request.method == 'PUT' and task.status != '01':
+        task.status = '01'
+        task.save()
+        serializer = serializers.TaskSerializer(task)
+        return Response(serializer.data)
+
+
+@api_view(['PUT'])
 def task_cancel(request, pk):
     """タスクを完了するＡＰＩ
 
