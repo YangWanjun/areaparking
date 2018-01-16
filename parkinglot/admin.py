@@ -23,6 +23,7 @@ class ParkingLotImageInline(admin.TabularInline):
     model = models.ParkingLotImage
     extra = 1
 
+
 class ParkingLotCommentInline(admin.TabularInline):
     model = models.ParkingLotComment
     extra = 1

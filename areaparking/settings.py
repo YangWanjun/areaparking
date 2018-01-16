@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'contract.apps.ContractConfig',
     'whiteboard.apps.WhiteboardConfig',
     'format.apps.FormatConfig',
+    'billing.apps.BillingConfig',
     # 'turnover.apps.TurnoverConfig',
     'rest_framework',
     'django_filters',

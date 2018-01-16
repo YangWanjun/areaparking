@@ -73,6 +73,12 @@ CHOICE_BANK_ACCOUNT_TYPE = (
     (6, "大口定期預金"),
     (7, "積立定期預金")
 )
+CHOICE_BANK_DEPOSIT_TYPE = (
+    ('1', "普通"),
+    ('2', "当座"),
+    ('4', "貯蓄"),
+    ('9', "その他"),
+)
 CHOICE_BANK_POST_KBN = (
     (1, "銀行"),
     (2, "郵便局"),
@@ -241,3 +247,4 @@ ERROR_SUBSCRIPTION_NO_CAR = '車情報がありません。'
 ERROR_CONTRACT_WRONG_RETIRE_DATE = "退居予定日は解約日の前に選択してください。"
 ERROR_CONTRACT_RETIRE_DATE_RANGE = "退居予定日は契約期間内に選択してください。"
 ERROR_CONTRACT_CANCELLATION_DATE_RANGE = "解約日は契約期間内に選択してください。"
+ERROR_FORMAT_BANK_TRANSFER = "全銀フォーマットエラー。"

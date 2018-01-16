@@ -323,12 +323,12 @@ class Bank(BaseModel):
 
 
 class BankAccount(BaseModel):
-    bank = models.ForeignKey(Bank, verbose_name=u"銀行")
-    branch_no = models.CharField(max_length=7, verbose_name=u"支店番号")
-    branch_name = models.CharField(max_length=20, verbose_name=u"支店名称")
-    account_type = models.CharField(max_length=1, choices=constants.CHOICE_BANK_ACCOUNT_TYPE, verbose_name=u"預金種類")
-    account_number = models.CharField(max_length=7, verbose_name=u"口座番号")
-    account_holder = models.CharField(blank=True, null=True, max_length=20, verbose_name=u"口座名義")
+    bank = models.ForeignKey(Bank, verbose_name="銀行")
+    branch_no = models.CharField(max_length=7, verbose_name="支店番号")
+    branch_name = models.CharField(max_length=20, verbose_name="支店名称")
+    account_type = models.CharField(max_length=1, choices=constants.CHOICE_BANK_ACCOUNT_TYPE, verbose_name="預金種類")
+    account_number = models.CharField(max_length=7, verbose_name="口座番号")
+    account_holder = models.CharField(blank=True, null=True, max_length=30, verbose_name="口座名義")
 
     class Meta:
         db_table = 'mst_bank_account'
