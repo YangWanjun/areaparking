@@ -16,6 +16,8 @@ urlpatterns = [
     url('^subscription/(?P<pk>\d+)/destroy/$', views.SubscriptionDestroy.as_view(), name='subscription_destroy'),
     url('^subscription/(?P<task_id>\d+)/send_contract_mail/$', views.SendContractMail.as_view(),
         name='send_contract_mail'),
+    url('^task/(?P<task_id>\d+)/send_task_mail/$', views.SendTaskMail.as_view(),
+        name='send_task_mail'),
 
     url('^contract/', include(views.ContractVewSet().urls)),
     url('^contractor/', include(views.ContractorVewSet().urls)),

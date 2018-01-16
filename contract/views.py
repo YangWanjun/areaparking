@@ -200,3 +200,21 @@ class SendContractMail(BaseView):
         }
         json = biz.send_mail_from_view(task, request, mail_data)
         return JsonResponse(json)
+
+
+class SendTaskMail(BaseView):
+
+    def post(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, pk=kwargs.get('task_id'))
+        sender = request.POST.get('mail_sender', None)
+        recipient_list = request.POST.get('mail_to', None)
+        cc_list = request.POST.get('mail_cc', None)
+        bcc_list = request.POST.get('mail_bcc', None)
+        mail_title = request.POST.get('mail_title', None)
+        mail_body = request.POST.get('mail_content', None)
+        mail_data = {
+            'sender': sender, 'recipient_list': recipient_list, 'cc_list': cc_list,
+            'bcc_list': bcc_list, 'mail_title': mail_title, 'mail_body': mail_body,
+        }
+        json = biz.send_mail_from_view(task, request, mail_data)
+        return JsonResponse(json)
