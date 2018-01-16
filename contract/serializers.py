@@ -57,6 +57,12 @@ class ProcessSerializer(BaseModelSerializer):
 
 
 class ContractCancellationSerializer(BaseModelSerializer):
+    class Meta:
+        model = models.ContractCancellation
+        fields = '__all__'
+
+
+class ContractCancellationApiSerializer(BaseModelSerializer):
     process_id = serializers.SerializerMethodField(source='get_process_id')
 
     class Meta:

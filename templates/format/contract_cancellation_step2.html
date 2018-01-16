@@ -1,0 +1,13 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="row">
+    <div class="card-title">退出届の提出は完了しました。</div>
+    <div class="card-comment">
+        <p>
+            ご登録されたメールアドレス&lt;{{ contractor.email }}&gt;にメールがお送りいたしました。
+        </p>
+    </div>
+</div>
+{% endblock %}

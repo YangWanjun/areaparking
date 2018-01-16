@@ -1,0 +1,37 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="row">
+    <p style="font-size: 22px;">{{ contractor.name }} 様</p>
+    <p>
+        最短の解約はお申し出をいただいた日の翌月末日付の解約になります。下記空欄に必要事項を<br/>
+        ご記入の上、本紙を弊社までＦＡＸ、メール、郵送にてご返送下さい。（　　月　　日までに返送）
+    </p>
+    <p class="red-text">
+        尚、こちらの解約届を弊社よりお送りした段階では、解約は仮の受付となります。<br/>
+        書面が弊社に到着しませんと解約とはならず、契約は継続されておりますので、予めご承知おきいただき期日までに必ず弊社へご返送ください。
+    </p>
+    <p class="red-text">当駐車場の【＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊】は、最終ご利用日から５日以内に弊社にご返送下さい。その際、鍵類は必ず何かに包んでお送りください。</p>
+    <p>株式会社エリア・パーキング　御中</p>
+    <p>平成　　　年　　　月　末　日をもって＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊を解約、退出しますので、お届け致します。</p>
+    <p>平成　　　年　　　月　　　日</p>
+    <p>駐車場名称　　　{{ parking_lot }}</p>
+    <p>氏名<input type="text"/></p>
+    <p>住所<input type="text"/></p>
+    <p>固定電話<input type="text"/></p>
+    <p>携帯<input type="text"/></p>
+    <p>勤務先<input type="text"/></p>
+    <p>退出理由<br/>
+        <input type="checkbox" id="1"/><label for="1">転居</label><br/>
+        <input type="checkbox" id="2"/><label for="2">処分</label><br/>
+        <input type="checkbox" id="3"/><label for="3">別の駐車場へ</label><br/>
+        <input type="checkbox" id="4"/><label for="4">新車サイズオーバー</label><br/>
+        <input type="checkbox" id="5"/><label for="5">利用頻度低下</label><br/>
+        <input type="checkbox" id="6"/><label for="6">その他</label>（<input type="text" style="width: 200px;"/>）
+    </p>
+    <p>＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊設備やサービスでご不満、ご不便だった点をお教え下さい。</p>
+    <p>この調査結果は，今後の業務運営の改善に役立てさせていただきます。ご利用誠にありがとうございました。</p>
+    <p>弊社管理の駐車場は多数ございます。転居先近隣にございましたら是非お問い合わせ下さい。http://www.monthlyparking.co.jp/</p>
+</div>
+{% endblock %}

@@ -131,6 +131,24 @@ def get_user_contract_steps(signature=None):
     return [step.to_json() for step in step_list]
 
 
+def get_contract_cancellation_steps(signature=None):
+    """ユーザー契約のステップ数
+
+    :return:
+    """
+    url_pattern = 'format:user_contract_cancellation_step%s'
+    url_kwargs = {'signature': signature}
+    step_list = create_steps(
+        [
+            ('①', '退出届'),
+            ('②', '退出届送付完了'),
+        ],
+        url_pattern=url_pattern,
+        url_kwargs=url_kwargs,
+    )
+    return [step.to_json() for step in step_list]
+
+
 def generate_subscription_pdf(request, subscription, **kwargs):
     """ユーザー申込完了時、申込確認書と申込書のPDFを作成する。
 

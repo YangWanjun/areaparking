@@ -42,19 +42,41 @@
             <div class="card-title">随時対応</div>
             <ul class="collapsible" data-collapsible="expandable">
                 {% for code, name, processes in object.get_process_list %}
-                {% with count=processes.count %}
+                {% with count=processes.count cancellation_count=object.contractcancellation.processes.count|default:0 %}
                     <li>
                         <div class="collapsible-header">
                             <span class="icon-stack">
                                  <i class="icon-sign-blank icon-stack-base"></i>
                                  <span class="icon-fixed-width icon-light char-overlay">{{ forloop.counter }}</span>
                             </span>
-                            {{ name }}
-                            <span class="new badge" data-badge-caption="{{ count }}" style="margin-left: 0px;"></span>
+                            {{ name }}{{ cancellation_count}}
+                            <span class="new badge" data-badge-caption="{% if code == '31' %}{{ cancellation_count }}{% else %}{{ count }}{% endif %}" style="margin-left: 0px;"></span>
                         </div>
                         <div class="collapsible-body">
                             <div class="row">
-                                {% if count == 0 %}
+                                {% if code == '31' and cancellation_count > 0 %}
+                                    <table>
+                                        <thead>
+                                        <tr>
+                                            <th>名称</th>
+                                            <th>作成日時</th>
+                                            <th>進捗</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for process in object.contractcancellation.processes.all %}
+                                            <tr>
+                                                <td><a href="{% url 'contract:process_detail' process.pk %}">{{ process.get_name_display }}</a></td>
+                                                <td>{{ process.created_date }}</td>
+                                                <td>
+                                                    <div class='center' style="background: linear-gradient(90deg, transparent 0%, transparent 0.0%, #9adaaf 0.0%, #9adaaf {{ process.percent }}%, transparent {{ process.percent }}%);">
+                                                        {{ process.percent }}%</div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% elif count == 0 %}
                                     <div class="col s12 red-text">対応履歴がありません。</div>
                                 {% else %}
                                     <table>
@@ -80,6 +102,7 @@
                                     </table>
                                 {% endif %}
                             </div>
+                            {% if code < '31' or cancellation_count == 0 %}
                             <div class="row">
                                 <div class="col s12 right-align">
                                     <a data-position="left" data-delay="50" data-tooltip="{{name}}のプロセスを新規追加する" data-target="new_process_{{code}}"
@@ -87,6 +110,7 @@
                                         <i class="tiny material-icons">add</i></a>
                                 </div>
                             </div>
+                            {% endif %}
                         </div>
                         <div id="new_process_{{code}}" class="modal modal-fixed-footer" style="min-height: 500px;">
                             <div class="modal-content">

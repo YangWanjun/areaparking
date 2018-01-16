@@ -1,11 +1,13 @@
+from django.contrib.auth.models import User
 from django.core import signing
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 
 from . import biz
-from contract.serializers import SubscriptionSerializer
-from contract.models import Task, Subscription
+from contract.serializers import SubscriptionSerializer, ContractCancellationSerializer
+from contract.models import Contract, Subscription, ContractCancellation, Contractor
 from master.models import TransmissionRoute, MailGroup
+from parkinglot.models import ParkingLot, ParkingPosition
 from utils import common
 from utils.app_base import get_unsigned_value, get_total_context, push_notification
 from utils.django_base import BaseView, BaseTemplateViewWithoutLogin
@@ -766,5 +768,99 @@ class UserContractStep4View(BaseUserContractView):
             'title': current_step.get('name'),
             'current_step': current_step,
             'is_finished': True
+        })
+        return context
+
+
+class BaseContractCancellationView(BaseUserOperationView):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            context = self.get_context_data(**kwargs)
+            # ステータスが「新規申込み」でない場合は申込み完了に飛ばす
+            # cancellation = get_object_or_404(ContractCancellation, pk=context.get('pk'))
+            # if subscription.status >= '04' and context.get('is_finished') is False:
+            #     return redirect('format:user_contract_step4', signature=kwargs.get('signature'))
+            return self.render_to_response(context)
+        except signing.BadSignature:
+            return redirect('format:url_timeout')
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseContractCancellationView, self).get_context_data(**kwargs)
+        signature = context.get('signature')
+        steps = self.get_steps(signature)
+        self.request.session['steps'] = steps
+        cancellation = self.get_cancellation(context.get('pk'))
+        context.update({
+            'cancellation': cancellation,
+            'parking_lot': cancellation.parking_lot,
+            'contractor': cancellation.contractor,
+            'contract': cancellation.contract,
+            'steps': steps,
+            'is_all_active': False,
+        })
+        return context
+
+    def get_steps(self, signature=None):
+        return biz.get_contract_cancellation_steps(signature)
+
+    def get_cancellation(self, cancellation_id):
+        """ユーザー申込み情報を取得する。
+
+        :return:
+        """
+        cancellation = get_object_or_404(ContractCancellation, pk=cancellation_id)
+        if 'contract_cancellation' in self.request.session:
+            data = self.request.session['contract_cancellation']
+            if str(data.get('pk', 0)) != str(cancellation_id):
+                data = self.set_cancellation(cancellation)
+        else:
+            data = self.set_cancellation(cancellation)
+        data['contract'] = get_object_or_404(Contract, pk=data['contract'])
+        data['parking_lot'] = get_object_or_404(ParkingLot, pk=data['parking_lot'])
+        data['parking_position'] = get_object_or_404(ParkingPosition, pk=data['parking_position'])
+        data['contractor'] = get_object_or_404(Contractor, pk=data['contractor'])
+        data['reception_user'] = get_object_or_404(User, pk=data['reception_user'])
+        return ContractCancellation(**data)
+
+    def set_cancellation(self, cancellation):
+        """ユーザー申込み情報をセッションに保存する
+
+        :param cancellation:
+        :return:
+        """
+        serializer = ContractCancellationSerializer(cancellation)
+        self.request.session['contract_cancellation'] = serializer.data
+        return serializer.data
+
+
+class ContractCancellationStep1View(BaseContractCancellationView):
+    template_name = 'format/contract_cancellation_step1.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContractCancellationStep1View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[0]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        return redirect('format:user_contract_cancellation_step2', signature=kwargs.get('signature'))
+
+
+class ContractCancellationStep2View(BaseContractCancellationView):
+    template_name = 'format/contract_cancellation_step2.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContractCancellationStep2View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[1]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+            'is_finished': True,
         })
         return context

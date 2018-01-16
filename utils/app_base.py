@@ -191,6 +191,18 @@ def get_user_contract_url(task):
     return {'user_contract_url': urljoin(domain_name, url)}
 
 
+def get_contract_cancellation_url(task):
+    """ユーザー解約時のURLを取得する。
+
+    :param task:
+    :return:
+    """
+    subscription = task.process.content_object
+    url = reverse('format:user_contract_cancellation_step1', kwargs={'signature': get_signed_value(subscription.pk)})
+    domain_name = Config.get_domain_name()
+    return {'user_cancellation_url': urljoin(domain_name, url)}
+
+
 def get_receipt_payment():
     """保管場所承諾証明書発行手数料
 

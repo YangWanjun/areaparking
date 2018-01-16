@@ -14,7 +14,8 @@ from format.models import ReportFile, ReportSubscription, ReportSubscriptionConf
 from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
 from parkinglot.models import ParkingLot, ParkingPosition
 from utils import constants, common, errors
-from utils.app_base import get_total_context, get_user_subscription_url, get_user_contract_url
+from utils.app_base import get_total_context, get_user_subscription_url, get_user_contract_url, get_parking_lot_context, \
+    get_subscription_context, get_contractor_context, get_contract_cancellation_url
 from utils.django_base import BaseModel, PublicManager
 
 
@@ -693,19 +694,29 @@ class Task(BaseModel):
             # 契約書類一式の送付
             group = MailGroup.get_contract_send_group()
             return group
+        elif self.category == '310':
+            # 一般解約の送付
+            group = MailGroup.get_contract_cancellation_send_group()
+            return group
         return None
 
     def get_mail_template(self):
         group = self.get_mail_group()
         if group:
-            data = get_total_context(
-                parking_lot=self.process.content_object.parking_lot,
-                subscription=self.process.content_object,
-            )
+            data = get_total_context()
             if self.category == '010':
+                data.update(get_parking_lot_context(self.process.content_object.parking_lot))
+                data.update(get_subscription_context(self.process.content_object))
                 data.update(get_user_subscription_url(self))
             elif self.category == '100':
+                data.update(get_parking_lot_context(self.process.content_object.parking_lot))
+                data.update(get_subscription_context(self.process.content_object))
                 data.update(get_user_contract_url(self))
+            elif self.category == '310':
+                # 一般解約の送付
+                data.update(get_parking_lot_context(self.process.content_object.parking_lot))
+                data.update(get_contractor_context(self.process.content_object.contractor))
+                data.update(get_contract_cancellation_url(self))
 
             return group.get_template_content(data)
         else:
@@ -824,6 +835,7 @@ class ContractCancellation(BaseModel):
     cancellation_date = models.DateField(verbose_name="解約日")
     retire_date = models.DateField(blank=True, null=True, verbose_name="退居予定日")
     reception_user = models.ForeignKey(User, verbose_name="受付者")
+    processes = GenericRelation('Process', related_query_name='contract_cancellations')
 
     class Meta:
         db_table = 'ap_contract_cancellation'
@@ -835,8 +847,12 @@ class ContractCancellation(BaseModel):
 
     @cached_property
     def process(self):
+        """解約のプロセスを取得する。
+
+        :return:
+        """
         try:
-            return self.contract.processes.get(name='31')
+            return self.processes.get(name='31')
         except (ObjectDoesNotExist, MultipleObjectsReturned):
             return None
 
@@ -851,4 +867,4 @@ class ContractCancellation(BaseModel):
             raise errors.CustomException(constants.ERROR_CONTRACT_CANCELLATION_DATE_RANGE)
         super(ContractCancellation, self).save(force_insert, force_update, using, update_fields)
         # 解約のプロセスを作成
-        Process.objects.create(name='31', content_object=self.contract)
+        Process.objects.create(name='31', content_object=self)

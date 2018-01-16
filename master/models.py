@@ -440,7 +440,7 @@ class MailGroup(BaseModel):
     code = models.CharField(max_length=3, primary_key=True, choices=constants.CHOICE_MAIL_GROUP, verbose_name=u"コード")
     name = models.CharField(max_length=50, blank=False, null=True, verbose_name=u"名称")
     sender = models.EmailField(verbose_name=u"メール差出人")
-    template = models.ForeignKey(MailTemplate, on_delete=models.PROTECT, verbose_name=u"メールテンプレート")
+    template = models.ForeignKey(MailTemplate, on_delete=models.CASCADE, verbose_name=u"メールテンプレート")
 
     class Meta:
         db_table = 'mst_mail_group'
@@ -508,6 +508,17 @@ class MailGroup(BaseModel):
         except ObjectDoesNotExist:
             return None
 
+    @classmethod
+    def get_contract_cancellation_send_group(cls):
+        """ユーザー解約時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='310')
+        except ObjectDoesNotExist:
+            return None
+
     def get_template_content(self, context):
         """メールテンプレートの内容を取得する。
 
@@ -547,7 +558,7 @@ class MailGroup(BaseModel):
 
 
 class MailCcList(BaseModel):
-    group = models.ForeignKey(MailGroup, on_delete=models.PROTECT, verbose_name=u"メールグループ")
+    group = models.ForeignKey(MailGroup, on_delete=models.CASCADE, verbose_name=u"メールグループ")
     email = models.EmailField(verbose_name=u"メールアドレス")
     is_bcc = models.BooleanField(default=False, verbose_name="ＢＣＣ")
 

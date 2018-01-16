@@ -121,6 +121,7 @@ CHOICE_MAIL_GROUP = (
     ('002', '申込完了'),
     ('011', '契約書類送付'),
     ('012', '契約完了'),
+    ('310', '一般解約書類送付'),
 )
 CHOICE_REPORT_KBN = (
     ('001', REPORT_SUBSCRIPTION),

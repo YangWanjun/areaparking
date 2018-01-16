@@ -25,7 +25,7 @@ class ProcessViewSet(viewsets.ModelViewSet):
 
 class ContractCancellation(viewsets.ModelViewSet):
     queryset = models.ContractCancellation.objects.public_all()
-    serializer_class = serializers.ContractCancellationSerializer
+    serializer_class = serializers.ContractCancellationApiSerializer
 
 
 @api_view(['PUT'])

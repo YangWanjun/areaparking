@@ -31,6 +31,11 @@ urlpatterns = [
         name="user_contract_step3"),
     url('^user_contract_step4/(?P<signature>[^/]+)\.html$', views.UserContractStep4View.as_view(),
         name="user_contract_step4"),
+    # 一般解約
+    url('^user_contract_cancellation_step1/(?P<signature>[^/]+)\.html$', views.ContractCancellationStep1View.as_view(),
+        name="user_contract_cancellation_step1"),
+    url('^user_contract_cancellation_step2/(?P<signature>[^/]+)\.html$', views.ContractCancellationStep2View.as_view(),
+        name="user_contract_cancellation_step2"),
 
     # Download PDF
     url('^download/pdf/subscription_confirm/(?P<subscription_id>\d+)/$',
