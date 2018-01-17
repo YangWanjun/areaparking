@@ -40,6 +40,7 @@ def main():
 
 def migrate():
     call_command('migrate', '--fake')
+    call_command('makemigrations', 'billing')
     call_command('makemigrations', 'contract')
     call_command('makemigrations', 'employee')
     call_command('makemigrations', 'format')

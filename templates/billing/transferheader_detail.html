@@ -14,7 +14,7 @@
         <div class="card-content">
             {% block card %}
             <div class="card-title">口座振込入金書処理: {{ object }}</div>
-            <table class="table bordered highlight">
+            <table class="table bordered highlight" id="tblTransferDetails">
                 <thead>
                 <tr>
                     <th>振込依頼人名</th>
@@ -29,7 +29,11 @@
                 </thead>
                 <tbody>
                 {% for detail in details %}
-                    <tr>
+                    <tr class="{%if detail.status == '00'%}
+                               {%elif detail.status == '01'%}red-text
+                               {%elif detail.status == '02'%}purple-text
+                               {%elif detail.status == '11'%}green-text
+                               {%endif%}">
                         <td>{{ detail.nominee_name }}</td>
                         <td>2017-12-25</td>
                         <td>{{ detail.amount|intcomma }}</td>
@@ -109,6 +113,7 @@
 </style>
 <script type="text/javascript">
     $(document).one("turbolinks:load", function() {
+        ebjs.utils.autoFixColumns($("#tblTransferDetails"));
     });
 </script>
 {% endblock %}
