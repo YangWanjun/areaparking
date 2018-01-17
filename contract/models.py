@@ -103,6 +103,8 @@ class AbstractUser(BaseModel):
     # 仮契約であるかどうかのステータス
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_CONTRACT_STATUS, editable=False,
                               verbose_name="ステータス")
+    payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.SET_NULL,
+                                           verbose_name="口座")
 
     objects = PublicManager(is_deleted=False)
 
@@ -776,55 +778,6 @@ class Task(BaseModel):
             return True
         else:
             return False
-
-
-class TempContract(models.Model):
-    contract = models.ForeignKey(Contract, on_delete=models.DO_NOTHING, verbose_name="契約情報")
-    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
-    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室番号")
-    contractor = models.ForeignKey(Contractor, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="契約者")
-    subscription = models.ForeignKey(Subscription, blank=True, null=True, on_delete=models.DO_NOTHING,
-                                     verbose_name="申込者")
-    percent = models.DecimalField(max_digits=4, decimal_places=1, editable=False, verbose_name="進捗")
-    # 基本情報
-    contract_date = models.DateField(blank=True, null=True, verbose_name="契約日")
-    start_date = models.DateField(blank=True, null=True, verbose_name="契約開始日")
-    end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")
-    staff = models.ForeignKey(Member, on_delete=models.DO_NOTHING, verbose_name="担当者")
-    mediation = models.ForeignKey(Mediation, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="仲介業者")
-    staff_assistant1 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant1_set',
-                                         on_delete=models.DO_NOTHING, verbose_name="アシスタント１")
-    staff_assistant2 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant2_set',
-                                         on_delete=models.DO_NOTHING, verbose_name="アシスタント２")
-    staff_assistant3 = models.ForeignKey(Member, null=True, blank=True, related_name='temp_contract_assistant3_set',
-                                         on_delete=models.DO_NOTHING, verbose_name="アシスタント３")
-    # 口座情報
-    payee_bank_account = models.ForeignKey(BankAccount, blank=True, null=True, on_delete=models.DO_NOTHING,
-                                           verbose_name="振込先口座")
-    # 車情報
-    car = models.ForeignKey(ContractorCar, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="契約車")
-
-    class Meta:
-        managed = False
-        db_table = 'v_temp_contract'
-        ordering = ['contractor', 'start_date']
-        verbose_name = "仮契約情報"
-        verbose_name_plural = "仮契約情報一覧"
-
-    @property
-    def name(self):
-        if self.contractor:
-            name = str(self.contractor)
-        else:
-            name = str(self.subscription)
-        return name
-
-    def __str__(self):
-        return '%s（%s～%s）' % (self.name, self.start_date, self.end_date)
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        return super(TempContract, self).save(force_insert, force_update, using, update_fields)
 
 
 class ContractCancellation(BaseModel):

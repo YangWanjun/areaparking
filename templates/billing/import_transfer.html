@@ -9,14 +9,28 @@
 {% block left-panel %}
 <div class="left-panel">
     <div class="card">
+        <form method="post" action="{% url 'billing:import_transfer' %}" enctype="multipart/form-data">
+            {% csrf_token %}
         <div class="card-content">
-            <div class="card-title">入金データ導入</div>
+            <div class="card-title">振込入金データ</div>
+            <div>
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>日々の振込入金データ</span>
+                        <input type="file" name="transfer">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-action">
             <div class="right-align">
-                <a class="waves-effect waves-light btn white-text popup">導入</a>
+                <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i>導入</button>
             </div>
         </div>
+        </form>
     </div>
 </div>
 {% endblock left-panel %}

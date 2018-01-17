@@ -7,7 +7,6 @@ from django.template import Context, Template
 from django.template.context_processors import csrf
 
 from . import models
-from contract.models import Task, Subscription
 from utils import common, constants
 from utils.app_base import get_total_context
 

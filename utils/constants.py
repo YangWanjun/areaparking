@@ -238,6 +238,13 @@ CHOICE_IS_REQUIRED = (
     ('yes', '必要'),
     ('no', '不要'),
 )
+CHOICE_TRANSFER_STATUS = (
+    ('00', '請求なし'),
+    ('01', '金額不一致'),
+    ('02', '名義不一致'),
+    ('11', '完全一致'),
+    ('99', 'その他'),
+)
 
 ERROR_SETTING_NO_SUBSCRIPTION = "申込書の出力書式が設定されていません、管理サイトで「出力書式」->「申込書一覧」にて設定してください。"
 ERROR_SETTING_NO_SUBSCRIPTION_CONFIRM = "申込確認書の出力書式が設定されていません、管理サイトで「出力書式」->「申込確認書一覧」にて設定してください。"
@@ -248,3 +255,4 @@ ERROR_CONTRACT_WRONG_RETIRE_DATE = "退居予定日は解約日の前に選択�
 ERROR_CONTRACT_RETIRE_DATE_RANGE = "退居予定日は契約期間内に選択してください。"
 ERROR_CONTRACT_CANCELLATION_DATE_RANGE = "解約日は契約期間内に選択してください。"
 ERROR_FORMAT_BANK_TRANSFER = "全銀フォーマットエラー。"
+ERROR_REQUIRE_TRANSFER_DATA = "入金データを選択してください。"

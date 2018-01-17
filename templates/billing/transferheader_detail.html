@@ -1,0 +1,114 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+
+{% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object }}</a>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            {% block card %}
+            <div class="card-title">口座振込入金書処理: {{ object }}</div>
+            <table class="table bordered highlight">
+                <thead>
+                <tr>
+                    <th>振込依頼人名</th>
+                    <th>入金日</th>
+                    <th>入金額</th>
+                    <th>名前</th>
+                    <th>駐車場</th>
+                    <th>車室</th>
+                    <th>請求額</th>
+                    <th>結果</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for detail in details %}
+                    <tr>
+                        <td>{{ detail.nominee_name }}</td>
+                        <td>2017-12-25</td>
+                        <td>{{ detail.amount|intcomma }}</td>
+                        <td>{{ detail.contractor }}</td>
+                        <td>{{ detail.parking_lot }}</td>
+                        <td>{{ detail.parking_position }}</td>
+                        <td>{{ detail.request_amount|intcomma }}</td>
+                        <td>{{ detail.get_status_display }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endblock %}
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% block actions_row %}
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% endblock actions_row %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    <div class="card filters-card tight-card">
+        <form method="get">
+        <div class="card-content">
+            <span class="card-title" style="font-size: 18px;">フィルター</span>
+            <div class="row" style="margin-top:-10px">
+                <div class="input-field col s12" style="padding: 0px;">
+                    <input type="search" data-name="q" name="q" value="" id="searchbar">
+                    <label for="searchbar" style="left: 0;">検索</label>
+                </div>
+            </div>
+            <div class="row" style="margin-top:-10px">
+                <div class="input-field col s12" style="padding: 0px;">
+                    <select id="id_status" name="status" class="browser-default" style="border: none;border-bottom: 1px solid gray;">
+                        <option value="" selected>--------</option>
+                        {% for status_code, status_name in status_list %}
+                            <option value="{{ status_code }}">{{ status_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_status" class="active">判定結果</label>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <button class="btn waves-effect waves-light" type="submit" name="action">検索
+                    <i class="material-icons right">search</i>
+                </button>
+            </div>
+        </div>
+        </form>
+    </div>
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<style type="text/css">
+    table.table {
+
+    }
+    table.table td {
+        margin: 0px;
+        padding: 2px 3px;
+    }
+    select.browser-default:focus {
+        outline-width: 0;
+    }
+</style>
+<script type="text/javascript">
+    $(document).one("turbolinks:load", function() {
+    });
+</script>
+{% endblock %}
