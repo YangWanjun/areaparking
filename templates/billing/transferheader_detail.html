@@ -46,7 +46,7 @@
                         <td>2017-12-25</td>
                         <td>{{ detail.amount|intcomma }}</td>
                         <td>
-                            <a href="{% url 'billing:contractor_detail' detail.contractor.pk %}">{{ detail.contractor }}</a>
+                            <div class="left nowrap" style="width: 80px;"><a href="{% url 'billing:contractor_detail' detail.contractor.pk %}" title="{{ detail.contractor }}">{{ detail.contractor }}</a></div>
                             {% if detail.transfer_kana_list %}
                             <a href="#" class="right dropdown-button" data-activates="id_kana_{{detail.pk}}"><i class="material-icons tiny">history</i></a>
                             <ul id="id_kana_{{detail.pk}}" class='dropdown-content'>
@@ -56,7 +56,7 @@
                             </ul>
                             {% endif %}
                         </td>
-                        <td>{{ detail.parking_lot }}</td>
+                        <td><div class="nowrap" title="{{ detail.parking_lot }}" style="width: 150px;">{{ detail.parking_lot }}</div></td>
                         <td>{{ detail.parking_position }}</td>
                         <td>{{ detail.request_amount|intcomma }}</td>
                         <td>{% if not detail.is_committed %}{{ detail.get_status_display }}{% endif %}</td>

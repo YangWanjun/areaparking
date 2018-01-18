@@ -316,7 +316,10 @@ class VTransferDetail(BaseViewModel):
             queryset = ContractorTransfer.objects.public_filter(
                 contractor=self.contractor
             ).values('transfer_detail__nominee_name')
-            return [item.get('transfer_detail__nominee_name') for item in queryset]
+            kana_list = [item.get('transfer_detail__nominee_name') for item in queryset]
+            if self.contractor.kana not in kana_list:
+                kana_list.append(self.contractor.kana)
+            return kana_list
         else:
             return []
 
