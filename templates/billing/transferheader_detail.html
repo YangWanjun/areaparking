@@ -46,7 +46,7 @@
                         <td>2017-12-25</td>
                         <td>{{ detail.amount|intcomma }}</td>
                         <td>
-                            <a href="{% url 'billing:contractor_detail' detail.contractor.pk %}">{{ detail.contractor }}</a>
+                            <a href="">{{ detail.contractor }}</a>
                             {% if detail.transfer_kana_list %}
                             <a href="#" class="right dropdown-button" data-activates="id_kana_{{detail.pk}}"><i class="material-icons tiny">history</i></a>
                             <ul id="id_kana_{{detail.pk}}" class='dropdown-content'>
