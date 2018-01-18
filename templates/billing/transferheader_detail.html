@@ -11,12 +11,14 @@
 {% block left-panel %}
 <div class="left-panel">
     <div class="card">
+        <form method="post" action="{% url 'billing:transferheader_detail' object.pk %}" id="frmImportTransfer">
         <div class="card-content">
             {% block card %}
             <div class="card-title">口座振込入金書処理: {{ object }}</div>
             <table class="table bordered highlight" id="tblTransferDetails">
                 <thead>
                 <tr>
+                    <th><input type="checkbox" id="id_check_all" class="tiny filled-in"/><label for="id_check_all" style="height: 15px;"></label></th>
                     <th>振込依頼人名</th>
                     <th>入金日</th>
                     <th>入金額</th>
@@ -29,19 +31,35 @@
                 </thead>
                 <tbody>
                 {% for detail in details %}
-                    <tr class="{%if detail.status == '00'%}
-                               {%elif detail.status == '01'%}red-text
-                               {%elif detail.status == '02'%}purple-text
-                               {%elif detail.status == '11'%}green-text
+                    <tr class="{%if detail.is_committed %}grey-text
+                               {%elif detail.status == '00'%}untreated
+                               {%elif detail.status == '01'%}untreated red-text
+                               {%elif detail.status == '02'%}untreated purple-text
+                               {%elif detail.status == '11'%}untreated green-text
                                {%endif%}">
+                        <td>
+                            {% if not detail.is_committed %}
+                            <input type="checkbox" id="chk_{{detail.pk}}" name="selected_detail" {%if detail.status == '11'%}checked{%endif%} class="tiny filled-in detail" value="{{ detail.pk }}"/><label for="chk_{{detail.pk}}" style="height: 15px;"></label>
+                            {% endif %}
+                        </td>
                         <td>{{ detail.nominee_name }}</td>
                         <td>2017-12-25</td>
                         <td>{{ detail.amount|intcomma }}</td>
-                        <td>{{ detail.contractor }}</td>
+                        <td>
+                            <a href="{% url 'billing:contractor_detail' detail.contractor.pk %}">{{ detail.contractor }}</a>
+                            {% if detail.transfer_kana_list %}
+                            <a href="#" class="right dropdown-button" data-activates="id_kana_{{detail.pk}}"><i class="material-icons tiny">history</i></a>
+                            <ul id="id_kana_{{detail.pk}}" class='dropdown-content'>
+                                {% for kana in detail.transfer_kana_list %}
+                                    <li>{{ kana }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </td>
                         <td>{{ detail.parking_lot }}</td>
                         <td>{{ detail.parking_position }}</td>
                         <td>{{ detail.request_amount|intcomma }}</td>
-                        <td>{{ detail.get_status_display }}</td>
+                        <td>{% if not detail.is_committed %}{{ detail.get_status_display }}{% endif %}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -54,8 +72,10 @@
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
+                <button class="btn waves-effect waves-light" type="submit" name="action">入金</button>
             </div>
         </div>
+        </form>
     </div>
 </div>
 {% endblock left-panel %}
@@ -80,6 +100,17 @@
                         {% endfor %}
                     </select>
                     <label for="id_status" class="active">判定結果</label>
+                </div>
+            </div>
+            <div class="row" style="margin-top:-10px">
+                <div class="input-field col s12" style="padding: 0px;">
+                    <input type="checkbox" id="id_is_committed" name="is_committed" class="filled-in"/>
+                    <label for="id_is_committed">処理済み</label>
+                </div>
+            </div>
+            <div class="row" style="margin-top:-10px">
+                <div class="input-field col s12" style="padding: 0px;">
+                    &nbsp;
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -110,10 +141,51 @@
     select.browser-default:focus {
         outline-width: 0;
     }
+    .all_green {
+        color: #4CAF50 !important;
+    }
 </style>
 <script type="text/javascript">
-    $(document).one("turbolinks:load", function() {
-        ebjs.utils.autoFixColumns($("#tblTransferDetails"));
+$(document).one("turbolinks:load", function() {
+    ebjs.utils.ajax_form($("#frmImportTransfer"), success_fn, failure_fn);
+    var params = ebjs.utils.getQueryParams();
+    if (params['q']) {
+        $("input[name=q]").val(params['q']);
+    }
+    if (params['status']) {
+        $("select[name=status]").val(params['status']);
+    }
+    if (params['is_committed'] == "on") {
+        $("input[name=is_committed]").prop('checked', true);
+    }
+    //ebjs.utils.autoFixColumns($("#tblTransferDetails"));
+    $("#id_check_all").click(function() {
+        if ($(this).is(':checked')) {
+            $("input[type=checkbox].detail").prop('checked', true);
+            $("#tblTransferDetails tbody tr.untreated").addClass("all_green");
+        } else {
+            $("input[type=checkbox].detail").prop('checked', false);
+            $("#tblTransferDetails tbody tr.untreated").removeClass("all_green");
+        }
     });
+    $("input[type=checkbox].detail").click(function(){
+        if ($(this).is(':checked')) {
+            $(this).closest('tr').addClass("all_green");
+        } else {
+            $(this).closest('tr').removeClass("all_green");
+        }
+    });
+});
+
+function success_fn(result) {
+    if (result.error) {
+        alert('ERROR');
+    } else {
+        ebjs.material.toast(result.committed_count + "件のレコードが処理されました。");
+    }
+}
+function failure_fn(result) {
+    debugger;
+}
 </script>
 {% endblock %}

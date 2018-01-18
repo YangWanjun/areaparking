@@ -1,0 +1,77 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+
+{% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object }}</a>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            {% block card %}
+            <div class="card-title">請求一覧: {{ object }}</div>
+            <table class="table bordered highlight" id="tblTransferDetails">
+                <thead>
+                <tr>
+                    <th>請求年月</th>
+                    <th>請求金額</th>
+                    <th>駐車場</th>
+                    <th>車室</th>
+                    <th>請求項目</th>
+                    <th>入金金額</th>
+                    <th>状態</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for contractor_request in contractor_request_list %}
+                    <tr class="">
+                        <td>{{ contractor_request.request.year }}年{{ contractor_request.request.month }}月</td>
+                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
+                        <td>2017年12月賃料</td>
+                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td><span class="new badge left grey" data-badge-caption="入金済" style="margin-left: 0px;"></span></td>
+                    </tr>
+                    <tr class="">
+                        <td>2018年01月</td>
+                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
+                        <td>2018年01月賃料</td>
+                        <td>0</td>
+                        <td><span class="new badge left red" data-badge-caption="未入金" style="margin-left: 0px;"></span></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endblock %}
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% block actions_row %}
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% endblock actions_row %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+    $(document).one("turbolinks:load", function() {
+    });
+</script>
+{% endblock %}

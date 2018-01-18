@@ -24,8 +24,8 @@ class AbstractUser(BaseModel):
     code = models.AutoField(primary_key=True, verbose_name="契約者No.")
     category = models.CharField(blank=True, null=True, max_length=1, choices=constants.CHOICE_CONTRACTOR_TYPE,
                                 verbose_name="契約者分類")
-    name = models.CharField(max_length=15, verbose_name="名前")
-    kana = models.CharField(blank=True, null=True, max_length=15, verbose_name="カナ")
+    name = models.CharField(max_length=30, verbose_name="名前")
+    kana = models.CharField(blank=True, null=True, max_length=30, verbose_name="カナ")
     post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="郵便番号",
                                  validators=(RegexValidator(regex=constants.REG_POST_CODE),))
     address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所１")

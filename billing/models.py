@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.functional import cached_property
 
-from contract.models import Contract, Contractor, ParkingLot, ParkingPosition
+from contract.models import Contract, Contractor, ParkingLot, ParkingPosition, ContractPayment
 from master.models import BankAccount
 from utils import constants, errors
 from utils.django_base import BaseModel, BaseViewModel
@@ -247,6 +247,7 @@ class Request(BaseModel):
     month = models.CharField(max_length=2, verbose_name="請求月")
     bank_account = models.ForeignKey(BankAccount, verbose_name="口座")
     amount = models.IntegerField(verbose_name="請求金額")
+    contract_payment = models.ForeignKey(ContractPayment, verbose_name="入金項目")
 
     class Meta:
         db_table = 'ap_request'
@@ -257,8 +258,22 @@ class Request(BaseModel):
         return str(self.pk)
 
 
+class ContractorTransfer(BaseModel):
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    transfer_detail = models.ForeignKey(TransferDetail, on_delete=models.PROTECT, verbose_name="振込明細")
+
+    class Meta:
+        db_table = 'ap_contractor_transfer'
+        verbose_name = "契約者入金"
+        verbose_name_plural = "契約者入金履歴"
+
+    def __str__(self):
+        return str(self.contractor)
+
+
 class VTransferDetail(BaseViewModel):
-    header = models.ForeignKey(TransferHeader, on_delete=models.PROTECT, verbose_name="振込ヘッダー")
+    header = models.ForeignKey(TransferHeader, on_delete=models.DO_NOTHING, verbose_name="振込ヘッダー")
+    detail = models.ForeignKey(TransferDetail, on_delete=models.DO_NOTHING, verbose_name="振込明細")
     reference_no = models.CharField(max_length=8, verbose_name="照会番号")
     settlement_ymd = models.CharField(max_length=6, verbose_name="勘定日")
     reckoning_ymd = models.CharField(max_length=6, verbose_name="預入・払出日", help_text="入金・出金の起算日　(和暦)")
@@ -276,14 +291,15 @@ class VTransferDetail(BaseViewModel):
     bank_name = models.CharField(max_length=15, verbose_name="仕向銀行名", help_text="仕向(振込元)金融機関名")
     branch_name = models.CharField(max_length=15, verbose_name="仕向店名", help_text="仕向(振込元)支店名")
     summary = models.CharField(max_length=20, verbose_name="摘要内容")
-    request = models.ForeignKey(Request, blank=True, null=True, verbose_name="請求")
+    request = models.ForeignKey(Request, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="請求")
     request_amount = models.IntegerField(blank=True, null=True, verbose_name="金額")
-    contract = models.OneToOneField(Contract, blank=True, null=True, on_delete=models.PROTECT, verbose_name="契約情報")
-    parking_lot = models.ForeignKey(ParkingLot, blank=True, null=True, on_delete=models.PROTECT, verbose_name="駐車場")
-    parking_position = models.ForeignKey(ParkingPosition, blank=True, null=True, on_delete=models.PROTECT,
+    contract = models.OneToOneField(Contract, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="契約情報")
+    parking_lot = models.ForeignKey(ParkingLot, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, blank=True, null=True, on_delete=models.DO_NOTHING,
                                          verbose_name="車室番号")
-    contractor = models.ForeignKey(Contractor, blank=True, null=True, on_delete=models.PROTECT, verbose_name="契約者")
+    contractor = models.ForeignKey(Contractor, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="契約者")
     status = models.CharField(max_length=2, choices=constants.CHOICE_TRANSFER_STATUS, verbose_name="状態")
+    is_committed = models.BooleanField(default=False, verbose_name="入金済み")
 
     class Meta:
         managed = False
@@ -293,3 +309,28 @@ class VTransferDetail(BaseViewModel):
 
     def __str__(self):
         return self.nominee_name
+
+    @cached_property
+    def transfer_kana_list(self):
+        if self.contractor:
+            queryset = ContractorTransfer.objects.public_filter(
+                contractor=self.contractor
+            ).values('transfer_detail__nominee_name')
+            return [item.get('transfer_detail__nominee_name') for item in queryset]
+        else:
+            return []
+
+
+class VContractorRequest(BaseViewModel):
+    contractor = models.ForeignKey(Contractor, on_delete=models.DO_NOTHING, verbose_name="契約者")
+    name = models.CharField(max_length=30, verbose_name="名前")
+    request = models.ForeignKey(Request, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="請求")
+
+    class Meta:
+        managed = False
+        db_table = 'v_contractor_request'
+        verbose_name = "契約者別請求"
+        verbose_name_plural = "契約者別請求一覧"
+
+    def __str__(self):
+        return self.name

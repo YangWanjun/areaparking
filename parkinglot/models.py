@@ -184,6 +184,8 @@ class ParkingLot(BaseModel):
             self.pref_name, self.city_name, self.town_name or '', self.aza_name or '', self.other_name or ''
         )
 
+    address.short_description = '所在地'
+
     def get_suitable_positions(self, length, width, height, weight):
         """指定した車のサイズによって、該当する車室リストを取得する。
 
