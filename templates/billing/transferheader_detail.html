@@ -46,7 +46,7 @@
                         <td>2017-12-25</td>
                         <td>{{ detail.amount|intcomma }}</td>
                         <td>
-                            <a href="">{{ detail.contractor }}</a>
+                            <a href="{% url 'billing:contractor_detail' detail.contractor.pk %}">{{ detail.contractor }}</a>
                             {% if detail.transfer_kana_list %}
                             <a href="#" class="right dropdown-button" data-activates="id_kana_{{detail.pk}}"><i class="material-icons tiny">history</i></a>
                             <ul id="id_kana_{{detail.pk}}" class='dropdown-content'>
@@ -72,7 +72,7 @@
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
-                <!--<button class="btn waves-effect waves-light" type="submit" name="action">入金</button>-->
+                <button class="btn waves-effect waves-light" type="submit" name="action">入金</button>
             </div>
         </div>
         </form>
