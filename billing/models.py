@@ -203,7 +203,7 @@ class TransferHeader(BaseModel):
 
 
 class TransferDetail(BaseModel):
-    header = models.ForeignKey(TransferHeader, on_delete=models.PROTECT, verbose_name="振込ヘッダー")
+    header = models.ForeignKey(TransferHeader, on_delete=models.CASCADE, verbose_name="振込ヘッダー")
     data_kbn = models.CharField(max_length=1, verbose_name="データ区分", help_text="レコード種別")
     reference_no = models.CharField(max_length=8, verbose_name="照会番号")
     settlement_ymd = models.CharField(max_length=6, verbose_name="勘定日")
