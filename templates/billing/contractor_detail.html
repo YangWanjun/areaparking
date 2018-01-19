@@ -44,7 +44,16 @@
                         <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
                         <td>2018年01月賃料</td>
                         <td>0</td>
-                        <td><span class="new badge left red" data-badge-caption="未入金" style="margin-left: 0px;"></span></td>
+                        <td><span class="new badge left red" data-badge-caption="滞納" style="margin-left: 0px;"></span></td>
+                    </tr>
+                    <tr class="">
+                        <td>2018年02月</td>
+                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
+                        <td>2018年02月賃料</td>
+                        <td>0</td>
+                        <td><span class="new badge left green" data-badge-caption="未入金" style="margin-left: 0px;"></span></td>
                     </tr>
                 {% endfor %}
                 </tbody>

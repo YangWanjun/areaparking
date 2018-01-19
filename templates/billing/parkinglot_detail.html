@@ -14,39 +14,40 @@
         <div class="card-content">
             {% block card %}
             <div class="card-title">車室別請求: {{ object }}</div>
-            <table class="table bordered highlight" id="tblTransferDetails">
+            <table class="table bordered" id="tblTransferDetails">
                 <thead>
                 <tr>
-                    <th>請求年月</th>
-                    <th>請求金額</th>
-                    <th>駐車場</th>
                     <th>車室</th>
+                    <th>請求年月</th>
+                    <th>契約者</th>
                     <th>請求項目</th>
-                    <th>入金金額</th>
+                    <th>請求金額</th>
                     <th>状態</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for contractor_request in contractor_request_list %}
                     <tr class="">
-                        <td>{{ contractor_request.request.year }}年{{ contractor_request.request.month }}月</td>
-                        <td>{{ contractor_request.request.amount|intcomma }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
-                        <td>2017年12月賃料</td>
-                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td rowspan="3">Ｎｏ１</td>
+                        <td>2017-11</td>
+                        <td>契約者００１</td>
+                        <td>駐車料金</td>
+                        <td>21600</td>
                         <td><span class="new badge left grey" data-badge-caption="入金済" style="margin-left: 0px;"></span></td>
                     </tr>
                     <tr class="">
-                        <td>2018年01月</td>
-                        <td>{{ contractor_request.request.amount|intcomma }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
-                        <td>2018年01月賃料</td>
-                        <td>0</td>
-                        <td><span class="new badge left red" data-badge-caption="未入金" style="margin-left: 0px;"></span></td>
+                        <td>2017-12</td>
+                        <td>契約者００１</td>
+                        <td>駐車料金</td>
+                        <td>21600</td>
+                        <td><span class="new badge left red" data-badge-caption="滞納" style="margin-left: 0px;"></span></td>
                     </tr>
-                {% endfor %}
+                    <tr class="">
+                        <td>2018-01</td>
+                        <td>契約者００１</td>
+                        <td>駐車料金</td>
+                        <td>21600</td>
+                        <td><span class="new badge left green" data-badge-caption="未入金" style="margin-left: 0px;"></span></td>
+                    </tr>
                 </tbody>
             </table>
             {% endblock %}
