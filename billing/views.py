@@ -44,8 +44,43 @@ class ImportTransfer(BaseTemplateView):
         return self.render_to_response(context)
 
 
-class ArrearsListView(BaseTemplateView):
-    template_name = 'billing/arrears_list.html'
+# class ArrearsListView(BaseTemplateView):
+#     template_name = 'billing/arrears_list.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(ArrearsListView, self).get_context_data(**kwargs)
+#         object_list = models.VArrears.objects.all()
+#         context.update({
+#             'object_list': object_list,
+#         })
+#         return context
+
+
+class ArrearsListView(BaseListModelView):
+
+    def format_column(self, item, field_name, value):
+        if field_name == 'contractor':
+            formatted = format_html(
+                '<a href="{}">{}</a>', reverse('contract:contractor_detail', args=(item.contractor.pk,)), value
+            )
+        elif field_name == 'request':
+            formatted = format_html(
+                '<a href="{}">{}</a>', reverse('billing:contractor_detail', args=(item.contractor.pk,)), value
+            )
+        else:
+            formatted = super(ArrearsListView, self).format_column(item, field_name, value)
+        return formatted
+
+
+class ArrearsViewSet(BaseModelViewSet):
+    model = models.VArrears
+    list_display = (
+        'contractor', 'parking_lot', 'parking_position', 'limit_date', 'request', 'request_amount', 'transfer_amount'
+    )
+    list_view_class = ArrearsListView
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 class TransferDetailView(BaseDetailModelView):

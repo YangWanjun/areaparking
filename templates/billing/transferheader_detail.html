@@ -18,7 +18,7 @@
             <table class="table bordered highlight" id="tblTransferDetails">
                 <thead>
                 <tr>
-                    <th><input type="checkbox" id="id_check_all" class="tiny filled-in"/><label for="id_check_all" style="height: 15px;"></label></th>
+                    <th style="width: 30px;"><input type="checkbox" id="id_check_all" class="tiny filled-in"/><label for="id_check_all" style="height: 15px; padding-left: 20px;"></label></th>
                     <th>振込依頼人名</th>
                     <th>入金日</th>
                     <th>入金額</th>
@@ -26,6 +26,7 @@
                     <th>駐車場</th>
                     <th>車室</th>
                     <th>請求額</th>
+                    <th>差額</th>
                     <th>結果</th>
                 </tr>
                 </thead>
@@ -44,21 +45,22 @@
                         </td>
                         <td>{{ detail.nominee_name }}</td>
                         <td>2017-12-25</td>
-                        <td>{{ detail.amount|intcomma }}</td>
+                        <td class="right-align">{{ detail.amount|intcomma }}</td>
                         <td>
                             <div class="left nowrap" style="width: 80px;"><a href="{% url 'billing:contractor_detail' detail.contractor.pk %}" title="{{ detail.contractor }}">{{ detail.contractor }}</a></div>
                             {% if detail.transfer_kana_list %}
                             <a href="#" class="right dropdown-button" data-activates="id_kana_{{detail.pk}}"><i class="material-icons tiny">history</i></a>
                             <ul id="id_kana_{{detail.pk}}" class='dropdown-content'>
                                 {% for kana in detail.transfer_kana_list %}
-                                    <li>{{ kana }}</li>
+                                    <li style="min-height: inherit;">{{ kana }}</li>
                                 {% endfor %}
                             </ul>
                             {% endif %}
                         </td>
                         <td><div class="nowrap" title="{{ detail.parking_lot }}" style="width: 150px;">{{ detail.parking_lot }}</div></td>
                         <td>{{ detail.parking_position }}</td>
-                        <td>{{ detail.request_amount|intcomma }}</td>
+                        <td class="right-align">{{ detail.request_amount|intcomma }}</td>
+                        <td class="right-align">{{ detail.deficit|intcomma }}</td>
                         <td>{% if not detail.is_committed %}{{ detail.get_status_display }}{% endif %}</td>
                     </tr>
                 {% endfor %}

@@ -247,6 +247,7 @@ class Request(BaseModel):
     month = models.CharField(max_length=2, verbose_name="請求月")
     bank_account = models.ForeignKey(BankAccount, verbose_name="口座")
     amount = models.IntegerField(verbose_name="請求金額")
+    limit_date = models.DateField(verbose_name="支払期限日")
     contract_payment = models.ForeignKey(ContractPayment, verbose_name="入金項目")
 
     class Meta:
@@ -256,6 +257,18 @@ class Request(BaseModel):
 
     def __str__(self):
         return str(self.pk)
+
+
+class RequestDemand(BaseModel):
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    contract = models.ForeignKey(Contract, on_delete=models.PROTECT, verbose_name="契約")
+    request = models.ForeignKey(Request, on_delete=models.PROTECT, verbose_name="請求")
+    send_user = models.ForeignKey(User, verbose_name="送信者")
+
+    class Meta:
+        db_table = 'ap_request_demand'
+        verbose_name = "督促"
+        verbose_name_plural = "督促履歴"
 
 
 class ContractorTransfer(BaseModel):
@@ -293,6 +306,7 @@ class VTransferDetail(BaseViewModel):
     summary = models.CharField(max_length=20, verbose_name="摘要内容")
     request = models.ForeignKey(Request, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="請求")
     request_amount = models.IntegerField(blank=True, null=True, verbose_name="金額")
+    deficit = models.IntegerField(blank=True, null=True, verbose_name="不足額")
     contract = models.OneToOneField(Contract, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="契約情報")
     parking_lot = models.ForeignKey(ParkingLot, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, blank=True, null=True, on_delete=models.DO_NOTHING,
@@ -337,3 +351,24 @@ class VContractorRequest(BaseViewModel):
 
     def __str__(self):
         return self.name
+
+
+class VArrears(BaseViewModel):
+    request = models.ForeignKey(Request, on_delete=models.DO_NOTHING, verbose_name="請求")
+    request_amount = models.IntegerField(verbose_name="請求金額")
+    limit_date = models.DateField(verbose_name="支払期限日")
+    contractor = models.ForeignKey(Contractor, on_delete=models.DO_NOTHING, verbose_name="契約者")
+    contract = models.ForeignKey(Contract, on_delete=models.DO_NOTHING, verbose_name="契約")
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室")
+    transfer_amount = models.IntegerField(verbose_name="入金金額")
+    amount = models.IntegerField(verbose_name="滞納金額")
+
+    class Meta:
+        managed = False
+        db_table = 'v_arrears'
+        verbose_name = "滞納"
+        verbose_name_plural = "滞納一覧"
+
+    def __str__(self):
+        return str(self.contractor)

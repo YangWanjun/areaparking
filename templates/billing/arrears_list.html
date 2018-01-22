@@ -12,6 +12,30 @@
         <div class="card-content">
             <div class="card-title">滞納金一覧</div>
             <div>
+                <table class="table bordered highlight" id="tblArrears">
+                    <thead>
+                    <tr>
+                        <th>契約者</th>
+                        <th>駐車場</th>
+                        <th>車室</th>
+                        <th>支払期限日</th>
+                        <th>請求金額</th>
+                        <th>入金金額</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for object in object_list %}
+                        <tr>
+                            <td>{{ object.contractor }}</td>
+                            <td>{{ object.contract.parking_lot }}</td>
+                            <td>{{ object.contract.parking_position }}</td>
+                            <td>{{ object.limit_date }}</td>
+                            <td class="right-align">{{ object.request_amount|intcomma }}</td>
+                            <td class="right-align">{{ object.transfer_amount|intcomma }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="card-action">

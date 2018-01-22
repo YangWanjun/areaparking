@@ -29,17 +29,23 @@ def sync_master():
         print('作成', '自社情報は作成しました。')
     # 入金項目
     if Payment.objects.public_filter(timing='10').count() == 0:
-        Payment.objects.create(timing='10', name="契約時事務手数料", amount=10000)
+        Payment.objects.create(timing='10', name="契約時事務手数料", amount=10000, is_initial=True)
         print('作成', '契約時事務手数料は作成しました。')
     if Payment.objects.public_filter(timing='11').count() == 0:
-        Payment.objects.create(timing='11', name="契約開始月末日までの日割賃料")
+        Payment.objects.create(timing='11', name="契約開始月末日までの日割賃料", is_initial=True)
         print('作成', '契約時事務手数料は作成しました')
+    if Payment.objects.public_filter(timing='20').count() == 0:
+        Payment.objects.create(timing='20', name="更新時")
+        print('作成', '更新時')
     if Payment.objects.public_filter(timing='30').count() == 0:
-        Payment.objects.create(timing='30', name="翌月分の賃料")
+        Payment.objects.create(timing='30', name="翌月分の賃料", is_initial=True)
         print('作成', '契約時事務手数料は作成しました')
     if Payment.objects.public_filter(timing='41').count() == 0:
         Payment.objects.create(timing='41', name="保管場所承諾証明書発行手数料", amount=10000)
         print('作成', '保管場所承諾証明書発行手数料は作成しました')
+    if Payment.objects.public_filter(timing='42').count() == 0:
+        Payment.objects.create(timing='42', name="繰越")
+        print('作成', '繰越')
     # 申込書送付のメールテンプレート
     if MailGroup.objects.public_filter(code='001').count() == 0:
         template = MailTemplate.objects.create(title='申込書送付', body="""<!DOCTYPE html>

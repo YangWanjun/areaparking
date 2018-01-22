@@ -21,6 +21,7 @@ select td.id
 	 , td.id as detail_id
      , r.id as request_id
      , r.amount as request_amount
+     , (td.amount - ifnull(r.amount, 0)) as deficit
      , c.id as contract_id
      , c.contractor_id
      , c.parking_lot_id
