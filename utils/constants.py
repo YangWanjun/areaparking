@@ -246,6 +246,11 @@ CHOICE_TRANSFER_STATUS = (
     ('11', '完全一致'),
     ('99', 'その他'),
 )
+CHOICE_PAYMENT_KBN = (
+    ('01', '振込'),
+    ('02', '振替'),
+    ('03', 'クレジット'),
+)
 
 ERROR_SETTING_NO_SUBSCRIPTION = "申込書の出力書式が設定されていません、管理サイトで「出力書式」->「申込書一覧」にて設定してください。"
 ERROR_SETTING_NO_SUBSCRIPTION_CONFIRM = "申込確認書の出力書式が設定されていません、管理サイトで「出力書式」->「申込確認書一覧」にて設定してください。"

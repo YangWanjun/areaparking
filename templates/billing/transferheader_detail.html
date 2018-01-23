@@ -57,11 +57,23 @@
                             </ul>
                             {% endif %}
                         </td>
-                        <td><div class="nowrap" title="{{ detail.parking_lot }}" style="width: 150px;">{{ detail.parking_lot }}</div></td>
+                        <td><div class="nowrap" title="{{ detail.parking_lot }}" style="width: 120px;">{{ detail.parking_lot }}</div></td>
                         <td>{{ detail.parking_position }}</td>
                         <td class="right-align">{{ detail.request_amount|intcomma }}</td>
                         <td class="right-align">{{ detail.deficit|intcomma }}</td>
-                        <td>{% if not detail.is_committed %}{{ detail.get_status_display }}{% endif %}</td>
+                        <td>
+                            {% if not detail.is_committed %}
+                                {{ detail.get_status_display }}
+                                {% if detail.status == '01' %}
+                                    <!-- 金額不一致 -->
+                                    <a href="#" class="right dropdown-button" data-activates="id_action_{{detail.pk}}"><i class="material-icons tiny">more_vert</i></a>
+                                    <ul id="id_action_{{detail.pk}}" class='dropdown-content'>
+                                        <li style="min-height: inherit;"><a href="javascript:void(0)" onclick="carry_over(this)" style="font-size: 13px;padding: 0px;"><i class="material-icons tiny" style="margin-right: 0px;">call_missed_outgoing</i>繰越</a></li>
+                                        <li style="min-height: inherit;"><a href="javascript:void(0)" style="font-size: 13px;padding: 0px;"><i class="material-icons tiny" style="margin-right: 0px;">history</i>滞納</a></li>
+                                    </ul>
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -178,6 +190,12 @@ $(document).one("turbolinks:load", function() {
         }
     });
 });
+
+function carry_over(obj) {
+    var trObj = $(obj).closest('tr')
+    trObj.find('input[type=checkbox]').prop('checked', true);
+    trObj.addClass("all_green");
+}
 
 function success_fn(result) {
     if (result.error) {

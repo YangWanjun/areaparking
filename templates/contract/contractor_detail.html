@@ -63,6 +63,48 @@
             </table>
         </div>
     </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title" id="divDemandHistory">督促履歴</div>
+            <table id="tblDemandHistory" class="table bordered highlight mdl-data-table" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>駐車場</th>
+                        <th>車室</th>
+                        <th>契約開始日</th>
+                        <th>支払期限日</th>
+                        <th>差引滞納額</th>
+                        <th>督促方式</th>
+                        <th>状態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% with contract=object.contract_set.first %}
+                        <td>{{ contract.parking_lot }}</td>
+                        <td>{{ contract.parking_position }}</td>
+                        <td>{{ contract.start_date }}</td>
+                        <td>2017年12月25日</td>
+                        <td>22,2680</td>
+                        <td>メール</td>
+                        <td><span class="new badge left grey" data-badge-caption="入金済" style="margin-left: 0px;"></span></td>
+                        {% endwith %}
+                    </tr>
+                    <tr>
+                        {% with contract=object.contract_set.first %}
+                        <td>{{ contract.parking_lot }}</td>
+                        <td>{{ contract.parking_position }}</td>
+                        <td>{{ contract.start_date }}</td>
+                        <td>2018年01月25日</td>
+                        <td>22,2680</td>
+                        <td>メール</td>
+                        <td><span class="new badge left red" data-badge-caption="滞納" style="margin-left: 0px;"></span></td>
+                        {% endwith %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock left-panel %}
 {% block right-panel %}

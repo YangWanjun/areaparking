@@ -246,6 +246,8 @@ class Request(BaseModel):
     year = models.CharField(max_length=4, verbose_name="請求年")
     month = models.CharField(max_length=2, verbose_name="請求月")
     bank_account = models.ForeignKey(BankAccount, verbose_name="口座")
+    payment_kbn = models.CharField(max_length=2, default='01', choices=constants.CHOICE_PAYMENT_KBN,
+                                   verbose_name="入金区分")
     amount = models.IntegerField(verbose_name="請求金額")
     limit_date = models.DateField(verbose_name="支払期限日")
     contract_payment = models.ForeignKey(ContractPayment, verbose_name="入金項目")
@@ -356,13 +358,19 @@ class VContractorRequest(BaseViewModel):
 class VArrears(BaseViewModel):
     request = models.ForeignKey(Request, on_delete=models.DO_NOTHING, verbose_name="請求")
     request_amount = models.IntegerField(verbose_name="請求金額")
-    limit_date = models.DateField(verbose_name="支払期限日")
+    limit_date = models.DateField(max_length=8, verbose_name="支払期限日")
+    payment_kbn = models.CharField(max_length=2, default='01', choices=constants.CHOICE_PAYMENT_KBN,
+                                   verbose_name="入金区分")
     contractor = models.ForeignKey(Contractor, on_delete=models.DO_NOTHING, verbose_name="契約者")
+    kana = models.CharField(blank=True, null=True, max_length=30, verbose_name="フリガナ")
+    guarantor_name = models.CharField(blank=True, null=True, max_length=15, verbose_name="保証人")
+    guarantor_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"保証人TEL")
     contract = models.ForeignKey(Contract, on_delete=models.DO_NOTHING, verbose_name="契約")
+    contract_start_date = models.CharField(max_length=8, verbose_name='契約開始日')
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室")
     transfer_amount = models.IntegerField(verbose_name="入金金額")
-    amount = models.IntegerField(verbose_name="滞納金額")
+    amount = models.IntegerField(verbose_name="差引滞納額")
 
     class Meta:
         managed = False

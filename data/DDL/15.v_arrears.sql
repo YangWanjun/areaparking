@@ -2,11 +2,16 @@ CREATE OR REPLACE VIEW v_arrears AS
 select r.id
      , r.id as request_id
      , r.amount as request_amount
-     , r.limit_date
+     , DATE_FORMAT(r.limit_date, '%y.%m.%d') as limit_date
+	 , r.payment_kbn
      , cor.code as contractor_id
+     , cor.kana
+     , cor.guarantor_name
+     , cor.guarantor_tel
      , c.id as contract_id
      , c.parking_lot_id
      , c.parking_position_id
+     , DATE_FORMAT(c.start_date, '%y.%m.%d') as contract_start_date
      , IFNULL(td.amount, 0) as transfer_amount
      , (r.amount - IFNULL(td.amount, 0)) as amount
   from ap_request r
