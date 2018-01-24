@@ -11,7 +11,7 @@ urlpatterns = [
     url('^whiteboard/', include(views.WhiteBoardViewSet().urls)),
     url('^whiteboard-position-(?P<pk>\d+)\.html', views.WhiteBoardPositionDetailView.as_view(),
         name='whiteboard_position_detail'),
-    # url('^waiting/', include(views.WaitingListViewSet().urls)),
+    url('^waiting/', include(views.WaitingViewSet().urls)),
     url('^map.html$', views.WhiteBoardMapView.as_view(), name='whiteboard_map'),
     url('^inquiry/', include(views.InquiryViewSet().urls)),
 

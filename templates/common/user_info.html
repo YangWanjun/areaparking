@@ -25,7 +25,7 @@
             <div class="input-field col s12">
                 <input type="hidden" id="parking_lot_id" name="parking_lot_id"/>
                 <input type="text" value="" id="parking_lot_name" name="parking_lot_name" class="eb-autocomplete" eb-autocomplete-url="/api/parking-lot/" eb-autocomplete-target-id="id_parking_lot_code">
-                <label for="parking_lot_name">希望する駐車場</label>
+                <label for="parking_lot_name">希望エリア／駐車場</label>
             </div>
         </div>
         <div class="row">
@@ -115,7 +115,7 @@
             <a href="javascript:void(0)" id="clear_inquiry" onclick="ebjs.material.clear_user_info()" class="red-text" title="入力した内容をクリアする"><i class="material-icons">clear</i></a>
         </div>
         <div class="right-align">
-            <a href="javascript:void(0)" class="deep-orange-text" title="空きがない場合は順番待ちする"><i class="material-icons">timer</i></a>
+            <a href="javascript:void(0)" onclick="ebjs.material.waiting_from_inquiry(this)" class="deep-orange-text" title="空きがない場合は空き待ちする"><i class="material-icons">timer</i></a>
             <a href="javascript:void(0)" class="blue-text" id="match_parking_lot" title="車サイズと空き情報によって自動マッチする" style="display: none;"><i class="material-icons">youtube_searched_for</i></a>
         </div>
     </div>

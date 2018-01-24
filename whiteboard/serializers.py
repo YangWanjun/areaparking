@@ -5,6 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySe
 
 from . import models
 from employee.serializers import MemberSerializer
+from utils.django_base import BaseModelSerializer
 
 
 class WhiteBoardSerializer(GeoFeatureModelSerializer):
@@ -29,8 +30,26 @@ class WhiteBoardSerializer(GeoFeatureModelSerializer):
         return obj.position_count - obj.contract_count - obj.temp_contract_count
 
 
-class InquirySerializer(serializers.ModelSerializer):
+class InquirySerializer(BaseModelSerializer):
 
     class Meta:
         model = models.Inquiry
         fields = '__all__'
+
+
+class WaitingSerializer(BaseModelSerializer):
+
+    class Meta:
+        model = models.Waiting
+        fields = '__all__'
+
+
+class WaitingContactSerializer(BaseModelSerializer):
+    contact_user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.WaitingContact
+        fields = '__all__'
+
+    def get_contact_user_name(self, obj):
+        return obj.get_contact_user_name()

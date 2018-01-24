@@ -1,0 +1,180 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object }}</a>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            {% block card %}
+            <div class="card-title">{{ view.model|verbose_name|title }}: {{ object }}</div>
+            <table class="table bordered">
+                {% for field_name, value in object_data %}
+                <tr>
+                    <th>{{ field_name }}</th>
+                    {% if value.get_absolute_url %}
+                    <td><a href="{{ value.get_absolute_url }}">{{ value }}</a></td>
+                    {% else %}
+                    <td>{{ value }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% endblock %}
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% block actions_row %}
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% endblock actions_row %}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">連絡履歴
+                <a class="btn-floating waves-effect waves-light red right modal-trigger" data-target="add_waiting_contact"><i class="material-icons" style="line-height: 41px;">add</i></a>
+            </div>
+            <table class="table bordered highlight" id="tblWaitingContact">
+                <thead>
+                <tr>
+                    <th>連絡日</th>
+                    <th>連絡者</th>
+                    <th>備考・特記</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for contact in object.waitingcontact_set.all %}
+                    <tr>
+                        <td>{{ contact.contact_date }}</td>
+                        <td>{{ contact.get_contact_user_name }}</td>
+                        <td>{{ contact.comment }}</td>
+                    </tr>
+                {% empty %}
+                    <tr class="empty">
+                        <td colspan="3">履歴ありません。</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">マッチング結果</div>
+            <table class="table bordered highlight">
+                <thead>
+                <tr>
+                    <th>駐車場</th>
+                    <th>車室</th>
+                    <th>待ち数</th>
+                    <th>状態</th>
+                    <th style="width: 100px;"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>アデニウム田端</td>
+                    <td>No.446</td>
+                    <td>3</td>
+                    <td><span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>アデニウム田端</td>
+                    <td>No.447</td>
+                    <td>3</td>
+                    <td><span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>アデニウム田端</td>
+                    <td>No.448</td>
+                    <td>3</td>
+                    <td><span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span></td>
+                    <td style="padding: 0px;"><button class="btn waves-effect waves-light" style="font-size: 12px;padding: 0 18px;height: 30px;line-height: inherit;">契約に進む</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="add_waiting_contact" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>連絡履歴追加</h4>
+        <div class="row">
+            <form method="post" action="/api/waiting-contact/" id="frmAddWaitingContact">
+                {{ waiting_contact_form.as_p }}
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0)" onclick="add_waiting_contact()"
+           class="modal-action waves-effect waves-green btn-flat ">次へ</a>
+        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    ebjs.material.load_user_info();
+    ebjs.material.save_user_info();
+    ebjs.autocomplete.init();
+
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+        },
+        complete: function(obj) {
+            //alert('Closed');
+        } // Callback for Modal close
+    });
+
+    var form_obj = $("#frmAddWaitingContact")
+    form_obj.submit(function(){
+        ebjs.utils.ajax_request(
+            $(this).attr('action'),
+            $(this).attr('method'),
+            $(this).serialize()
+        ).done(function(result){
+            // 「履歴ありません」のレコード削除
+            $("#tblWaitingContact tbody tr:last").after("<tr><td>" + result.contact_date + "</td><td>" + result.contact_user_name + "</td><td>" + result.comment + "</td></tr>");
+            $("#tblWaitingContact tr.empty").remove();
+            $('#add_waiting_contact').modal('close');
+        }).fail(function(result){
+            ebjs.material.reflection_form_errors(form_obj, result.responseJSON);
+        }).always(function(result){
+        });
+        return false;
+    });
+
+    ebjs.$('.vDateField').datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+});
+
+function add_waiting_contact() {
+    $('#frmAddWaitingContact').submit();
+}
+</script>
+{% endblock %}

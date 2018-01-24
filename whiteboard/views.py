@@ -9,13 +9,12 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
-from material.frontend.views.viewset import ModelViewSet, ListModelView, DetailModelView
-
+from . import models, forms
 from contract.forms import SubscriptionForm
 from utils import errors
-from utils.django_base import BaseTemplateView, BaseView, BaseViewWithoutLogin
+from utils.django_base import BaseTemplateView, BaseView, BaseViewWithoutLogin, BaseModelViewSet, BaseListModelView, \
+    BaseDetailModelView
 from master.models import Config, PushNotification
-from . import models
 
 
 # Create your views here.
@@ -25,7 +24,7 @@ class Index(BaseView):
         return redirect('whiteboard:whiteboard_list')
 
 
-class WhiteBoardListView(ListModelView):
+class WhiteBoardListView(BaseListModelView):
     # paginate_by = 25
 
     def get_headers_data(self):
@@ -42,7 +41,8 @@ class WhiteBoardListView(ListModelView):
         queryset = super(WhiteBoardListView, self).get_queryset()
         q = self.request.GET.get('datatable-search[value]', None)
         if q:
-            orm_lookups = ['name__icontains', 'address__icontains', 'staff__first_name__icontains', 'staff__last_name__icontains']
+            orm_lookups = ['name__icontains', 'address__icontains',
+                           'staff__first_name__icontains', 'staff__last_name__icontains']
             for bit in q.split():
                 or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
                 queryset = queryset.filter(reduce(operator.or_, or_queries))
@@ -54,7 +54,7 @@ class WhiteBoardListView(ListModelView):
         return config
 
 
-class WhiteBoardDetailView(DetailModelView):
+class WhiteBoardDetailView(BaseDetailModelView):
     template_name = 'whiteboard/whiteboard_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -65,7 +65,7 @@ class WhiteBoardDetailView(DetailModelView):
         return context
 
 
-class WhiteBoardViewSet(ModelViewSet):
+class WhiteBoardViewSet(BaseModelViewSet):
     model = models.WhiteBoard
     list_display = (
         'code', 'name', 'staff', 'category', 'address', 'is_empty', 'position_count',
@@ -100,73 +100,49 @@ class WhiteBoardPositionDetailView(BaseTemplateView):
         return context
 
 
-# class WaitingListView(ListModelView):
-#
-#     def get_queryset(self, *args, **kwargs):
-#         queryset = super(WaitingListView, self).get_queryset()
-#         q = self.request.GET.get('datatable-search[value]', None)
-#         if q:
-#             orm_lookups = ['parking_lot__buken__bk_name__icontains', 'name__icontains', 'address1__icontains', 'address2__icontains']
-#             for bit in q.split():
-#                 or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
-#                 queryset = queryset.filter(reduce(operator.or_, or_queries))
-#         return queryset
-#
-#     def get_datatable_config(self):
-#         config = super(WaitingListView, self).get_datatable_config()
-#         config['searching'] = True
-#         return config
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(WaitingListView, self).get_context_data(**kwargs)
-#         context.update({
-#             'has_filter': True,
-#         })
-#         return context
-#
-#
-# class WaitingCreateView(CreateModelView):
-#     form_class = forms.WaitingAddForm
-#
-#     def get_initial(self):
-#         initials = super(WaitingCreateView, self).get_initial()
-#         parking_lot_id = self.request.GET.get('parking_lot_id', None)
-#         if parking_lot_id:
-#             parking_lot = get_object_or_404(parkinglot_model.ParkingLot, pk=parking_lot_id)
-#             initials.update({
-#                 'parking_lot': parking_lot
-#             })
-#         return initials
-#
-#
-# class WaitingUpdateView(UpdateModelView):
-#     form_class = forms.WaitingForm
-#
-#     def report(self, message, level=messages.INFO, fail_silently=True, **kwargs):
-#         """Construct message and notify the user."""
-#         opts = self.model._meta
-#
-#         url = reverse('{}:{}_detail'.format(
-#             opts.app_label, opts.model_name), args=[self.object.pk])
-#         link = format_html(u'<a href="{}">{}</a>', urlquote(url), force_text(self.object))
-#         name = force_text(opts.verbose_name)
-#
-#         options = {
-#             'link': link,
-#             'name': name
-#         }
-#         options.update(kwargs)
-#         message = format_html(_(message).format(**options))
-#         messages.add_message(self.request, messages.SUCCESS, message, fail_silently=True)
-#
-#
-# class WaitingListViewSet(ModelViewSet):
-#     model = models.Waiting
-#     list_display = ('parking_lot', 'name', 'tel1', 'address1', 'email', 'created_date')
-#     list_display_links = ('parking_lot', 'name')
-#     update_view_class = WaitingUpdateView
-#     list_view_class = WaitingListView
-#     create_view_class = WaitingCreateView
+class WaitingListView(BaseListModelView):
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(WaitingListView, self).get_queryset()
+        q = self.request.GET.get('datatable-search[value]', None)
+        if q:
+            orm_lookups = ['parking_lot_name__icontains', 'user_name__icontains', 'tel', 'phone']
+            for bit in q.split():
+                or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
+        return queryset
+
+    def get_datatable_config(self):
+        config = super(WaitingListView, self).get_datatable_config()
+        config['searching'] = True
+        return config
+
+
+class WaitingDetailView(BaseDetailModelView):
+
+    def get_context_data(self, **kwargs):
+        context = super(WaitingDetailView, self).get_context_data(**kwargs)
+        waiting_contact_form = forms.WaitingContactForm(initial={
+            'waiting': self.object,
+            'contact_user': self.request.user,
+        })
+        context.update({
+            'waiting_contact_form': waiting_contact_form,
+        })
+        return context
+
+
+class WaitingViewSet(BaseModelViewSet):
+    model = models.Waiting
+    list_display = ('user_name', 'parking_lot_name', 'tel', 'phone', 'address1', 'email', 'created_date')
+    list_view_class = WaitingListView
+    detail_view_class = WaitingDetailView
+
+    def has_add_permission(self, request):
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return True
 
 
 class WhiteBoardMapView(BaseTemplateView):
@@ -180,7 +156,7 @@ class WhiteBoardMapView(BaseTemplateView):
         return context
 
 
-class InquiryViewSet(ModelViewSet):
+class InquiryViewSet(BaseModelViewSet):
     model = models.Inquiry
     list_display = ('user_name', 'get_gender_display', 'tel', 'parking_lot_name', 'area_name', 'created_date')
 

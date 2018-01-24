@@ -1,7 +1,8 @@
 from django.db.models import Q
+from django.http import QueryDict
 from django.shortcuts import reverse
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from . import models, serializers
@@ -75,3 +76,26 @@ class SearchTel(viewsets.ViewSet):
                 no_list.append(d)
 
         return Response(no_list)
+
+
+class WaitingViewSet(viewsets.ModelViewSet):
+    queryset = models.Waiting.objects.public_all()
+    serializer_class = serializers.WaitingSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = dict(request.data)
+        data['created_user'] = request.user.pk
+        for key in data.keys():
+            val = data.get(key, None)
+            if val and isinstance(val, list):
+                data[key] = val[0] if len(val) > 0 else None
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class WaitingContactViewSet(viewsets.ModelViewSet):
+    queryset = models.WaitingContact.objects.public_all()
+    serializer_class = serializers.WaitingContactSerializer

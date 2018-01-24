@@ -12,6 +12,7 @@ div.modal form td input {
 }
 .eb-disabled {
     color: gray !important;
+    cursor: default;
 }
 /**************** サイドバー *****************/
 div.content {
@@ -19,7 +20,7 @@ div.content {
 }
 main {
     margin-left: 250px !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
 }
 @media only screen and (max-width : 992px) {
     header, main, footer {
@@ -28,7 +29,7 @@ main {
 }
 /*************** Fixed Header ****************/
 table.fixedHeader-floating th {
-    font-size: 13px;
+    font-size: 12px;
 }
 /**************** サイドバー *****************/
 .side-nav.fixed .userView {
@@ -46,7 +47,7 @@ table.fixedHeader-floating th {
     width: 250px;
 }
 .side-nav li>a {
-    font-size: 13px !important;
+    font-size: 12px !important;
 }
 
 /**************** 複雑なテーブル *****************/
@@ -54,12 +55,12 @@ thead.complex {
     background-color: white;
 }
 thead.complex th {
-    font-size: 13px;
+    font-size: 12px;
     padding: 5px 5px;
 }
 
 tbody.complex td {
-    font-size: 13px;
+    font-size: 12px;
     padding: 3px 5px;
 }
 table > tbody > tr.row1,
@@ -154,7 +155,7 @@ div.loading .preloader-wrapper {
     height: 20px;
 }
 .tight-card .card-action {
-    padding: 8px 13px;
+    padding: 8px 12px;
 }
 .tight-card a.btn {
     padding: 0 10px;

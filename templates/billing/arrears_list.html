@@ -21,13 +21,12 @@
                         </th>
                         <th>契約者</th>
                         <th>フリガナ</th>
+                        <th>TEL</th>
                         <th>駐車場</th>
                         <th>車室</th>
                         <th>契約開始</th>
                         <th>支払期限</th>
                         <th>支払区分</th>
-                        <th>保証人</th>
-                        <th>保証人TEL</th>
                         <th>差引滞納額</th>
                     </tr>
                     </thead>
@@ -40,13 +39,12 @@
                             </td>
                             <td><a href="{% url 'contract:contractor_detail' object.contractor.pk %}">{{ object.contractor }}</a></td>
                             <td>{{ object.kana }}</td>
+                            <td>{{ object.tel|default:'' }}</td>
                             <td><div class="nowrap" style="width: 120px;">{{ object.contract.parking_lot }}</div></td>
                             <td>{{ object.contract.parking_position }}</td>
                             <td>{{ object.contract_start_date }}</td>
                             <td>{{ object.limit_date }}</td>
                             <td>{{ object.get_payment_kbn_display }}</td>
-                            <td>{{ object.guarantor_name|default:'' }}</td>
-                            <td>{{ object.guarantor_tel|default:'' }}</td>
                             <td class="right-align">{{ object.amount|intcomma }}</td>
                         </tr>
                     {% endfor %}

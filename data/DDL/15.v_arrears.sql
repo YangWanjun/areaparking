@@ -6,8 +6,7 @@ select r.id
 	 , r.payment_kbn
      , cor.code as contractor_id
      , cor.kana
-     , cor.guarantor_name
-     , cor.guarantor_tel
+     , cor.tel
      , c.id as contract_id
      , c.parking_lot_id
      , c.parking_position_id
