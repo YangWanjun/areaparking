@@ -150,6 +150,7 @@ CHOICE_PROCESS = (
     ('22', '車室変更'),
     ('23', '車両変更'),
     ('24', '鍵紛失'),
+    # ('26', '値上げ更新'),
     ('31', '一般解約'),
 )
 CHOICE_TASK_SUBSCRIPTION_CATEGORY = [
@@ -191,6 +192,9 @@ CHOICE_TASK_KEY_LOST = [
     ('243', '必要書類一式と操作鍵類の送付'),
     ('244', '操作鍵類の見積り依頼（オーナー側）'),
     ('245', '操作鍵類の発注/入金'),
+]
+CHOICE_TASK_PRICE_RAISE = [
+    ('260', '｢落し物｣の有無確認'),
 ]
 CHOICE_TASK_CONTRACT_CANCELLATION = [
     ('310', '退出届送付'),

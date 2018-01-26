@@ -143,3 +143,9 @@ def subscription_to_contract(subscription):
         payment.contract = contract
         payment.save()
     return contract
+
+
+def get_year_list():
+    start_year = 2010
+    end_year = datetime.date.today().year + 1
+    return range(start_year, end_year)

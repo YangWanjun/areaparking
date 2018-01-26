@@ -1,0 +1,174 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+{% load contract_tags %}
+
+{% block breadcrumbs_items %}
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <form method="post" action="?">
+            {% csrf_token %}
+            <div class="card-content">
+                <div class="card-title">値上げ対象抽出：{{ year }}年{{ month }}月</div>
+                <div>
+                    <div style="display: none;">
+                        値上げ不可の理由<br/>
+                        ①駐車場設備不具合<br/>
+                        ②周辺相場が低め（APより安い駐車場がある）<br/>
+                        ③パレットの特異性<br/>
+                        ④前年度値上済/車室移動済<br/>
+                        ⑤多台数契約者<br/>
+                        ⑥契約内容に納得できない<br/>
+                        ⑦値上げ交渉あり<br/>
+                        ⑧感情問題（気に食わない）<br/>
+                        ⑨設定価格に問題があった<br/>
+                        ⑩その他
+                    </div>
+                    <table class="table bordered highlight" id="tblPriceRaise">
+                        <thead>
+                        <tr>
+                            <th style="width: 30px;"><input type="checkbox" id="id_check_all" class="tiny filled-in"/><label for="id_check_all" style="height: 15px; padding-left: 20px;"></label></th>
+                            <th>駐車場</th>
+                            <th>車室</th>
+                            <th>契約者</th>
+                            <th>契約<br/>開始日</th>
+                            <th>契約<br/>終了日</th>
+                            <th>税抜</th>
+                            <th>税込</th>
+                            <th>税抜<br/>更新前</th>
+                            <th>税込<br/>更新前</th>
+                            <th>不具合</th>
+                            <th>周辺<br/>相場</th>
+                            <th>対象内</th>
+                            <th>担当者</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for object in object_list %}
+                            <tr class="{% if object.is_raise %}green-text{% endif %}">
+                                <td>
+                                    <input type="checkbox" id="chk_{{object.pk}}" name="selected_object" {%if object.is_raise %}checked{%endif%} class="tiny filled-in detail" value="{{ object.pk }}"/><label for="chk_{{object.pk}}" style="height: 15px;"></label>
+                                </td>
+                                <td><div class="nowrap" title="{{ object.parking_lot }}" style="width: 110px;">{{ object.parking_lot }}</div></td>
+                                <td>{{ object.parking_position }}</td>
+                                <td><a href="{% url 'contract:contractor_detail' object.contractor.pk %}">{{ object.contractor }}</a>
+                                    {% if object.car %}
+                                    <a href="#" class="right dropdown-button" data-activates="id_car_{{detail.pk}}"><i class="material-icons tiny">directions_car</i></a>
+                                    <ul id="id_car_{{detail.pk}}" class='dropdown-content'>
+                                        <li style="min-height: inherit;">全長：{{ object.car.car_length|default:''|intcomma }}</li>
+                                        <li style="min-height: inherit;">全幅：{{ object.car.car_width|default:''|intcomma }}</li>
+                                        <li style="min-height: inherit;">全高：{{ object.car.car_height|default:''|intcomma }}</li>
+                                        <li style="min-height: inherit;">重量：{{ object.car.car_weight|default:''|intcomma }}</li>
+                                        <li style="min-height: inherit;">地上最低高：{{ object.car.car_min_height|default:''|intcomma }}</li>
+                                        <li style="min-height: inherit;">F値：{{ object.car.car_f_value|default:''|intcomma }}</li>
+                                        <li style="min-height: inherit;">R値：{{ object.car.car_r_value|default:''|intcomma }}</li>
+                                    </ul>
+                                    {% endif %}
+                                </td>
+                                <td>{{ object.start_date|date:'y-m-d' }}</td>
+                                <td>{{ object.end_date|date:'y-m-d' }}</td>
+                                <td class="right-align">{{ object.amount|intcomma }}</td>
+                                <td class="right-align">{{ object.amount_with_tax|intcomma }}</td>
+                                <td class="right-align">{{ object.prev_amount|default:'-'|intcomma }}</td>
+                                <td class="right-align">{{ object.prev_amount_with_tax|default:'-'|intcomma }}</td>
+                                <td class="right-align">
+                                    {% if object.is_defect %}
+                                        <i class="material-icons">panorama_fish_eye</i>
+                                    {% endif %}
+                                </td>
+                                <td class="right-align">
+                                    {% if object.around_price < object.amount_with_tax %}
+                                        {{ object.around_price|intcomma }}
+                                    {% endif %}
+                                </td>
+                                <td class="center">
+                                    {% if object.is_raise %}
+                                        <i class="material-icons">panorama_fish_eye</i>
+                                    {% else %}
+                                        <i class="material-icons">close</i>
+                                    {% endif %}
+                                </td>
+                                <td>{{ object.staff }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="14">値上げ対象がありません。</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-action">
+                <div class="right-align">
+                    <a href="?_year={{ prev_month|date:'Y' }}&_month={{ prev_month|date:'m' }}" class="waves-effect waves-light btn white-text popup">前月</a>
+                    <a href="?_year={{ next_month|date:'Y' }}&_month={{ next_month|date:'m' }}" class="waves-effect waves-light btn white-text popup">次月</a>
+                    <button class="btn waves-effect waves-light" type="submit" name="action">賃料設定へ</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    <div class="card filters-card tight-card">
+        <form method="get">
+            <div class="card-content">
+                <span class="card-title" style="font-size: 18px;">フィルター</span>
+                <div class="row" style="margin-top:0px">
+                    <div class="input-field col s12" style="padding: 0px;">
+                        {% year_month_filter year month %}
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-action">
+                <div class="right-align">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">検索
+                        <i class="material-icons right">search</i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<style type="text/css">
+    table.table {
+        font-size: 12px;
+    }
+    table.table td {
+        margin: 0px;
+        padding: 2px 3px;
+    }
+    select.browser-default:focus {
+        outline-width: 0;
+    }
+</style>
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    ebjs.material.check_all(document.getElementById("id_check_all"), "selected_object");
+    ebjs.material.check_single("selected_object");
+    $('.dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrainWidth: false, // Does not change width of dropdown to that of the activator
+        hover: true, // Activate on hover
+        gutter: 0, // Spacing from edge
+        belowOrigin: false, // Displays dropdown below the button
+        alignment: 'left', // Displays dropdown with edge aligned to the left of button
+        stopPropagation: false // Stops event propagation
+        }
+    );
+});
+</script>
+{% endblock %}

@@ -50,7 +50,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for contract in object.contract_set.all %}
+                    {% for contract in object.get_current_contracts %}
                         <tr>
                             <td><a href="{% url 'contract:contract_detail' contract.pk %}" data-turbolinks="false">{{ contract.pk }}</a></td>
                             <td>{{ contract.parking_lot }}</td>

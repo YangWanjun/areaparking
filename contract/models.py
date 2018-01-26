@@ -16,7 +16,7 @@ from parkinglot.models import ParkingLot, ParkingPosition
 from utils import constants, common, errors
 from utils.app_base import get_total_context, get_user_subscription_url, get_user_contract_url, get_parking_lot_context, \
     get_subscription_context, get_contractor_context, get_contract_cancellation_url
-from utils.django_base import BaseModel, PublicManager
+from utils.django_base import BaseModel, PublicManager, BaseViewModel
 
 
 # Create your models here.
@@ -149,6 +149,15 @@ class Contractor(AbstractUser):
         ordering = ['name']
         verbose_name = "契約者"
         verbose_name_plural = "契約者一覧"
+
+    def get_current_contracts(self):
+        """現在の契約を取得する。
+
+        :return:
+        """
+        today = datetime.date.today()
+        queryset = Contract.objects.public_filter(contractor=self, start_date__lte=today, end_date__gte=today)
+        return queryset
 
 
 def get_default_subscription_format_id():
@@ -821,3 +830,60 @@ class ContractCancellation(BaseModel):
         super(ContractCancellation, self).save(force_insert, force_update, using, update_fields)
         # 解約のプロセスを作成
         Process.objects.create(name='31', content_object=self)
+
+
+class PriceRaising(BaseModel):
+    year = models.CharField(max_length=4, verbose_name="更新年")
+    month = models.CharField(max_length=2, verbose_name="更新月")
+    contract = models.OneToOneField(Contract, on_delete=models.PROTECT, verbose_name="契約情報")
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室番号")
+    car = models.ForeignKey(ContractorCar, blank=True, null=True, verbose_name="契約する車")
+    staff = models.ForeignKey(Member, verbose_name="担当者")
+    start_date = models.DateField(verbose_name="契約開始日")
+    end_date = models.DateField(verbose_name="契約終了日")
+    current_amount = models.IntegerField(verbose_name="通常月請求税別額")
+    current_amount_with_tax = models.IntegerField(verbose_name="通常月請求税込額")
+    prev_amount = models.IntegerField(verbose_name="通常月請求税別額・更新前")
+    prev_amount_with_tax = models.IntegerField(verbose_name="通常月請求税込額・更新前")
+    reference_amount = models.IntegerField(blank=True, null=True, verbose_name="目安（税別）")
+    leasing_amount = models.IntegerField(blank=True, null=True, verbose_name="リーシング担当者の値付（税別）")
+    new_amount = models.IntegerField(blank=True, null=True, verbose_name="決定賃料（税別）")
+
+    class Meta:
+        db_table = 'ap_price_raising'
+        verbose_name = "値上げ賃料設定"
+        verbose_name_plural = "値上げ賃料設定"
+
+    def __str__(self):
+        return str(self.contractor)
+
+
+class VPriceRaise(BaseViewModel):
+    year = models.CharField(max_length=4, verbose_name="更新年")
+    month = models.CharField(max_length=2, verbose_name="更新月")
+    contract = models.OneToOneField(Contract, on_delete=models.DO_NOTHING, verbose_name="契約情報")
+    contractor = models.ForeignKey(Contractor, on_delete=models.DO_NOTHING, verbose_name="契約者")
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室番号")
+    car = models.ForeignKey(ContractorCar, blank=True, null=True, verbose_name="契約する車")
+    staff = models.ForeignKey(Member, verbose_name="担当者")
+    start_date = models.DateField(verbose_name="契約開始日")
+    end_date = models.DateField(verbose_name="契約終了日")
+    amount = models.IntegerField(verbose_name="通常月請求税別額")
+    amount_with_tax = models.IntegerField(verbose_name="通常月請求税込額")
+    prev_amount = models.IntegerField(verbose_name="通常月請求税別額・更新前")
+    prev_amount_with_tax = models.IntegerField(verbose_name="通常月請求税込額・更新前")
+    is_defect = models.BooleanField(verbose_name="駐車場設備不具合")
+    around_price = models.IntegerField(blank=True, null=True, verbose_name="周辺相場")
+    is_raise = models.BooleanField(verbose_name="対象内")
+
+    class Meta:
+        managed = False
+        db_table = 'v_price_raise'
+        verbose_name = "値上げ対象"
+        verbose_name_plural = "値上げ対象一覧"
+
+    def __str__(self):
+        return str(self.contractor)

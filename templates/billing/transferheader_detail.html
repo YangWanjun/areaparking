@@ -33,11 +33,11 @@
                 <tbody>
                 {% for detail in details %}
                     <tr class="{%if detail.is_committed %}grey-text
-                               {%elif detail.status == '00'%}untreated
-                               {%elif detail.status == '01'%}untreated red-text
-                               {%elif detail.status == '02'%}untreated purple-text
-                               {%elif detail.status == '11'%}untreated green-text
-                               {%endif%}">
+                           {%elif detail.status == '00'%}untreated
+                           {%elif detail.status == '01'%}untreated red-text
+                           {%elif detail.status == '02'%}untreated purple-text
+                           {%elif detail.status == '11'%}untreated green-text
+                           {%endif%}">
                         <td>
                             {% if not detail.is_committed %}
                             <input type="checkbox" id="chk_{{detail.pk}}" name="selected_detail" {%if detail.status == '11'%}checked{%endif%} class="tiny filled-in detail" value="{{ detail.pk }}"/><label for="chk_{{detail.pk}}" style="height: 15px;"></label>

@@ -1,3 +1,4 @@
+import datetime
 import operator
 
 from functools import reduce
@@ -6,11 +7,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
+from django.template.context_processors import csrf
 
 from . import models, biz, forms
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
-from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseModelViewSet
+from utils import common
+from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseModelViewSet, BaseTemplateView
 
 
 # Create your views here.
@@ -218,3 +221,77 @@ class SendTaskMail(BaseView):
         }
         json = biz.send_mail_from_view(task, request, mail_data)
         return JsonResponse(json)
+
+
+# class VPriceRaiseViewSet(BaseModelViewSet):
+#     model = models.VPriceRaise
+#     list_display = ('parking_lot', 'parking_position', 'contractor', 'start_date', 'end_date', 'amount_with_tax', 'prev_amount_with_tax')
+
+
+class PriceRaiseListView(BaseTemplateView):
+    template_name = 'contract/priceraise_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceRaiseListView, self).get_context_data(**kwargs)
+        year = self.request.GET.get('_year') or datetime.date.today().strftime('%Y')
+        month = self.request.GET.get('_month') or datetime.date.today().strftime('%m')
+        prev_month = common.add_months(datetime.date(int(year), int(month), 1), -1)
+        next_month = common.add_months(datetime.date(int(year), int(month), 1), 1)
+        object_list = models.VPriceRaise.objects.filter(year=year, month=month)
+        context.update({
+            'object_list': object_list,
+            'year': year,
+            'month': month,
+            'prev_month': prev_month,
+            'next_month': next_month,
+        })
+        context.update(csrf(self.request))
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        object_list = context.get('object_list')
+        year = context.get('year')
+        month = context.get('month')
+        selected_objects = request.POST.getlist('selected_object')
+        if object_list and selected_objects:
+            object_list = object_list.filter(pk__in=selected_objects)
+            for obj in object_list:
+                try:
+                    price_raising = models.PriceRaising(contract=obj.contract, contractor=obj.contractor)
+                    price_raising.year = obj.year
+                    price_raising.month = obj.month
+                    price_raising.parking_lot = obj.parking_lot
+                    price_raising.parking_position = obj.parking_position
+                    price_raising.car = obj.car
+                    price_raising.staff = obj.staff
+                    price_raising.start_date = obj.start_date
+                    price_raising.end_date = obj.end_date
+                    price_raising.current_amount = obj.amount
+                    price_raising.current_amount_with_tax = obj.amount_with_tax
+                    price_raising.prev_amount = obj.prev_amount
+                    price_raising.prev_amount_with_tax = obj.prev_amount_with_tax
+                    price_raising.save()
+                except Exception as ex:
+                    common.get_ap_logger().error(ex)
+        return redirect(reverse('contract:priceraising_list') + "?_year=%s&_month=%s" % (year, month))
+
+
+class PriceRaisingListView(BaseTemplateView):
+    template_name = 'contract/priceraising_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceRaisingListView, self).get_context_data(**kwargs)
+        year = self.request.GET.get('_year') or datetime.date.today().strftime('%Y')
+        month = self.request.GET.get('_month') or datetime.date.today().strftime('%m')
+        prev_month = common.add_months(datetime.date(int(year), int(month), 1), -1)
+        next_month = common.add_months(datetime.date(int(year), int(month), 1), 1)
+        object_list = models.PriceRaising.objects.filter(year=year, month=month)
+        context.update({
+            'object_list': object_list,
+            'year': year,
+            'month': month,
+            'prev_month': prev_month,
+            'next_month': next_month,
+        })
+        return context
