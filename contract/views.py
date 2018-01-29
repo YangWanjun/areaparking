@@ -223,11 +223,6 @@ class SendTaskMail(BaseView):
         return JsonResponse(json)
 
 
-# class VPriceRaiseViewSet(BaseModelViewSet):
-#     model = models.VPriceRaise
-#     list_display = ('parking_lot', 'parking_position', 'contractor', 'start_date', 'end_date', 'amount_with_tax', 'prev_amount_with_tax')
-
-
 class PriceRaiseListView(BaseTemplateView):
     template_name = 'contract/priceraise_list.html'
 
@@ -295,3 +290,23 @@ class PriceRaisingListView(BaseTemplateView):
             'next_month': next_month,
         })
         return context
+
+
+class TroubleListView(BaseTemplateView):
+    template_name = 'contract/trouble_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TroubleListView, self).get_context_data(**kwargs)
+        return context
+
+
+class TroubleDetailView(BaseTemplateView):
+    template_name = 'contract/trouble_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TroubleDetailView, self).get_context_data(**kwargs)
+        return context
+
+
+class TroubleAddView(BaseTemplateView):
+    template_name = 'contract/trouble_add.html'

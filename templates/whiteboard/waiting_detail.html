@@ -131,10 +131,6 @@
 {% block footer %}
 <script type="text/javascript">
 $(document).one("turbolinks:load", function() {
-    ebjs.material.load_user_info();
-    ebjs.material.save_user_info();
-    ebjs.autocomplete.init();
-
     $('.modal').modal({
         dismissible: true, // Modal can be dismissed by clicking outside of the modal
         opacity: .5, // Opacity of modal background

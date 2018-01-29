@@ -12,8 +12,8 @@ BEGIN
     
     SELECT IF(
 		date_format(current_date(), '%m%d') > '0331'
-	  , str_to_date(concat(cast(extract(year from current_date()) + 1 as char), '0331'), '%Y%m%d')
-      , str_to_date(concat(cast(extract(year from current_date()) as char), '0331'), '%Y%m%d')
+	  , str_to_date(concat(extract(year from current_date()) + 1, '0331'), '%Y%m%d')
+      , str_to_date(concat(extract(year from current_date()), '0331'), '%Y%m%d')
 	) INTO ret_value;
     
     RETURN ret_value;
