@@ -166,6 +166,18 @@ class InquiryViewSet(BaseModelViewSet):
     get_gender_display.short_description = '性別'
 
 
+class HandbillDistributionView(BaseTemplateView):
+    template_name = 'whiteboard/handbilldistribution_list.html'
+
+
+class HandbillCompanyViewSet(BaseModelViewSet):
+    model = models.HandbillCompany
+    list_display = ('name', 'unit_price', 'distribute_count')
+
+    def has_add_permission(self, request):
+        return True
+
+
 class UpdateSubscription(BaseView):
 
     def post(self, request, *args, **kwargs):

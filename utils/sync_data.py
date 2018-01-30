@@ -12,6 +12,7 @@ from . import common
 from master.models import CarModel, CarMaker, Config, Company, Payment, MailTemplate, MailGroup, TransmissionRoute
 from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaffHistory
 from employee.models import Department, Member, MemberShip
+from whiteboard.models import HandbillCompany
 
 
 def sync_master():
@@ -129,6 +130,34 @@ def sync_master():
         TransmissionRoute.objects.create(name='知人紹介',)
         TransmissionRoute.objects.create(name='その他',)
         print('作成', '媒体一覧')
+    # チラシ業者
+    if HandbillCompany.objects.public_all().count() == 0:
+        for name, price in (("アドバリュー", 4.4),
+                            ("GMP", 4.5),
+                            ("丸山", 3.5),
+                            ("うたり", 3),
+                            ("弁天堂", 3.5),
+                            ("イープロジェクト八王子", 5.5),
+                            ("町田広告", 3.8),
+                            ("GMP名古屋", 5),
+                            ("GMP千葉", 5.3),
+                            ("ポスネット名古屋", 4),
+                            ("スタープラングループ名古屋", 3.5),
+                            ("GMP大阪", 5.5),
+                            ("アドバリュー奈良", 9),
+                            ("イープロジェクト", 5),
+                            ("アドバリュー神戸", 4.8),
+                            ("うたり大阪郊外", 4),
+                            ("鈴木　克美", 3.5),
+                            ("ミッドウィン", 4),
+                            ("ミッドウィン提携", 5.3),
+                            ("ポスト", 3.5),
+                            ("タイムズ", 5),
+                            ("オレンジネット", 4.5),
+                            ("オレンジネット（23区）", 5.5),
+                            ):
+            HandbillCompany.objects.create(name=name, unit_price=price)
+        print('作成', 'チラシ業者')
 
 
 def sync_car_models():

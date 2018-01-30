@@ -1,0 +1,142 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+{% load contract_tags %}
+
+{% block breadcrumbs_items %}
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">不具合一覧</div>
+            <div data-turbolinks="false">
+                <table class="table bordered highlight" id="tblPriceRaise">
+                    <thead>
+                    <tr>
+                        <th>発生日</th>
+                        <th>受付者</th>
+                        <th>問い合わせ元</th>
+                        <th>物件</th>
+                        <th>車室</th>
+                        <th>契約者</th>
+                        <th>担当者</th>
+                        <th>状態</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>2017/7/28</td>
+                        <td>受付者1</td>
+                        <td><a href="{% url 'contract:defect_detail' 1 %}">管理員</a></td>
+                        <td>シティタワー池袋</td>
+                        <td>10</td>
+                        <td>契約者001</td>
+                        <td>担当者1</td>
+                        <td><span class="new badge left grey" data-badge-caption="完了" style="margin-left: 0px;"></span></td>
+                    </tr>
+                    <tr>
+                        <td>2017/12/10</td>
+                        <td>受付者2</td>
+                        <td><a href="{% url 'contract:defect_detail' 2 %}">野村不動産　中山様</a></td>
+                        <td>プラウド弦巻アベニュー</td>
+                        <td>22,23,24,29</td>
+                        <td>契約者002</td>
+                        <td>担当者2</td>
+                        <td><span class="new badge left deep-orange" data-badge-caption="対応中" style="margin-left: 0px;"></span></td>
+                    </tr>
+                    <tr>
+                        <td>2018/1/10</td>
+                        <td>受付者3</td>
+                        <td><a href="{% url 'contract:defect_detail' 3 %}">レジディア六本木檜町公園　管理人様</a></td>
+                        <td>プラウド弦巻アベニュー</td>
+                        <td>全体</td>
+                        <td>契約者003</td>
+                        <td>担当者3</td>
+                        <td><span class="new badge left deep-orange" data-badge-caption="対応中" style="margin-left: 0px;"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <!--<a class="waves-effect waves-light btn white-text popup">一時保存</a>-->
+                <!--<a class="waves-effect waves-light btn white-text popup">最終決定</a>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="{% url 'contract:defect_add' %}"><i class="large material-icons">add</i></a>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    <div class="card filters-card tight-card">
+        <form method="get">
+            <div class="card-content">
+                <span class="card-title" style="font-size: 18px;">フィルター</span>
+                <div class="row" style="margin-top:0px">
+                    <div class="input-field col s12" style="padding: 0px;">
+                        {% year_month_filter year month %}
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-action">
+                <div class="right-align">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">検索
+                        <i class="material-icons right">search</i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<style type="text/css">
+    table.table {
+        font-size: 12px;
+    }
+    table.table td {
+        margin: 0px;
+        padding: 2px 3px;
+    }
+    select.browser-default:focus {
+        outline-width: 0;
+    }
+    table input[type=number] {
+        margin: 0px;
+        height: 20px;
+        border-bottom: 0px;
+        font-size: 13px;
+    }
+    table input[type=number]:focus {
+        border: 0px !important;
+        outline: 0 !important;
+        background-size: 0 !important;
+    }
+</style>
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    $('.dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrainWidth: false, // Does not change width of dropdown to that of the activator
+        hover: true, // Activate on hover
+        gutter: 0, // Spacing from edge
+        belowOrigin: false, // Displays dropdown below the button
+        alignment: 'left', // Displays dropdown with edge aligned to the left of button
+        stopPropagation: false // Stops event propagation
+        }
+    );
+});
+</script>
+{% endblock %}

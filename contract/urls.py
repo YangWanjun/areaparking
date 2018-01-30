@@ -30,4 +30,7 @@ urlpatterns = [
     url('^trouble/$', views.TroubleListView.as_view(), name='trouble_list'),
     url('^trouble/(?P<pk>\d+)/detail/$', views.TroubleDetailView.as_view(), name='trouble_detail'),
     url('^trouble/add/$', views.TroubleAddView.as_view(), name='trouble_add'),
+    url('^defect/$', views.DefectListView.as_view(), name='defect_list'),
+    url('^defect/(?P<pk>\d+)/detail/$', views.DefectDetailView.as_view(), name='defect_detail'),
+    url('^defect/add/$', views.DefectAddView.as_view(), name='defect_add'),
 ]

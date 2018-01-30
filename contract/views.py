@@ -295,18 +295,22 @@ class PriceRaisingListView(BaseTemplateView):
 class TroubleListView(BaseTemplateView):
     template_name = 'contract/trouble_list.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(TroubleListView, self).get_context_data(**kwargs)
-        return context
-
 
 class TroubleDetailView(BaseTemplateView):
     template_name = 'contract/trouble_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(TroubleDetailView, self).get_context_data(**kwargs)
-        return context
-
 
 class TroubleAddView(BaseTemplateView):
     template_name = 'contract/trouble_add.html'
+
+
+class DefectListView(BaseTemplateView):
+    template_name = 'contract/defect_list.html'
+
+
+class DefectDetailView(BaseTemplateView):
+    template_name = 'contract/defect_detail.html'
+
+
+class DefectAddView(BaseTemplateView):
+    template_name = 'contract/defect_add.html'

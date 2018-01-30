@@ -1,0 +1,169 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+{% load contract_tags %}
+
+{% block breadcrumbs_items %}
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">チラシ配布資料</div>
+            <div data-turbolinks="false">
+                <table class="table bordered highlight" id="tblPriceRaise">
+                    <thead>
+                    <tr>
+                        <th style="width: 30px;"><input type="checkbox" id="id_check_all" class="tiny filled-in"/><label for="id_check_all" style="height: 15px; padding-left: 20px;"></label></th>
+                        <th>物件名</th>
+                        <th class="center">台数</th>
+                        <th class="center">借上賃料</th>
+                        <th class="center">現空+<br/>解予</th>
+                        <th class="center">％</th>
+                        <th class="center">空待</th>
+                        <th>新規</th>
+                        <th class="center">月間損失</th>
+                        <th>ルート先</th>
+                        <th>投函カテゴリー</th>
+                        <th>単価</th>
+                        <th>部数</th>
+                        <th>回数</th>
+                        <th>金額</th>
+                        <th>累計</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type='checkbox' id='chk_1' name='selected_object' class='tiny filled-in detail'/><label for='chk_1' style='height: 15px;'></label></td>
+                        <td>
+                            <div class='nowrap' style='width: 120px;'>アーバンネット銀座一丁目ビル</div>
+                        </td>
+                        <td class='right-align'>30</td>
+                        <td class='right-align'>36720</td>
+                        <td class='right-align'>9</td>
+                        <td class='right-align'>30%</td>
+                        <td class='right-align'>0</td>
+                        <td>新規</td>
+                        <td class='right-align'>330480</td>
+                        <td></td>
+                        <td>
+                            <select class="browser-default" style="height: 20px;padding: 0;width:100px;">
+                                <option value="">---------</option>
+                                <option value='1'>アドバリュー</option>
+                                <option value='2'>GMP</option>
+                                <option value='3'>丸山</option>
+                                <option value='4'>うたり</option>
+                                <option value='5'>弁天堂</option>
+                                <option value='6'>イープロジェクト八王子</option>
+                                <option value='7'>町田広告</option>
+                                <option value='8'>GMP名古屋</option>
+                                <option value='9'>GMP千葉</option>
+                                <option value='10'>ポスネット名古屋</option>
+                                <option value='11'>スタープラングループ名古屋</option>
+                                <option value='12'>GMP大阪</option>
+                                <option value='13'>アドバリュー奈良</option>
+                                <option value='14'>イープロジェクト</option>
+                                <option value='15'>アドバリュー神戸</option>
+                                <option value='16'>うたり大阪郊外</option>
+                                <option value='17'>鈴木　克美</option>
+                                <option value='18'>ミッドウィン</option>
+                                <option value='19'>ミッドウィン提携</option>
+                                <option value='20'>ポスト</option>
+                                <option value='21'>タイムズ</option>
+                                <option value='22'>オレンジネット</option>
+                                <option value='23'>オレンジネット（23区）</option>
+                            </select>
+                        </td>
+                        <td class='right-align'>5</td>
+                        <td class='right-align'><input type="text" value="3000" class="right-align" style="height: 20px;margin:0;border-bottom:0;width:27px;font-size:12px;"/></td>
+                        <td class='right-align'><input type="text" value="2" class="right-align" style="height: 10px;margin:0;border-bottom:0;width:20px;font-size:12px;"/></td>
+                        <td class='right-align'><input type="text" value="30000" class="right-align" style="height: 20px;margin:0;border-bottom:0;width:40px;font-size:12px;"/></td>
+                        <td class='right-align'>30000</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <a class="waves-effect waves-light btn white-text popup">一時保存</a>
+                <a class="waves-effect waves-light btn white-text popup">配布</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="{% url 'contract:defect_add' %}"><i class="large material-icons">add</i></a>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    <div class="card filters-card tight-card">
+        <form method="get">
+            <div class="card-content">
+                <span class="card-title" style="font-size: 18px;">フィルター</span>
+                <div class="row" style="margin-top:0px">
+                    <div class="input-field col s12" style="padding: 0px;">
+                        {% year_month_filter year month %}
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-action">
+                <div class="right-align">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">検索
+                        <i class="material-icons right">search</i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<style type="text/css">
+    table.table {
+        font-size: 12px;
+    }
+    table.table td {
+        margin: 0px;
+        padding: 2px 3px;
+    }
+    select.browser-default:focus {
+        outline-width: 0;
+    }
+    table input[type=number] {
+        margin: 0px;
+        height: 20px;
+        border-bottom: 0px;
+        font-size: 13px;
+    }
+    table input[type=number]:focus {
+        border: 0px !important;
+        outline: 0 !important;
+        background-size: 0 !important;
+    }
+</style>
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    ebjs.material.check_all(document.getElementById("id_check_all"), "selected_object");
+    ebjs.material.check_single("selected_object");
+    $('.dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrainWidth: false, // Does not change width of dropdown to that of the activator
+        hover: true, // Activate on hover
+        gutter: 0, // Spacing from edge
+        belowOrigin: false, // Displays dropdown below the button
+        alignment: 'left', // Displays dropdown with edge aligned to the left of button
+        stopPropagation: false // Stops event propagation
+        }
+    );
+});
+</script>
+{% endblock %}

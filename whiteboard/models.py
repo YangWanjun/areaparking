@@ -175,3 +175,23 @@ class WaitingContact(BaseModel):
             return '%s %s' % ((self.contact_user.last_name or ''), (self.contact_user.first_name or ''))
         else:
             return self.contact_user.username
+
+
+class HandbillCompany(BaseModel):
+    name = models.CharField(max_length=50, unique=True, verbose_name="業者名称")
+    unit_price = models.DecimalField(max_digits=5, decimal_places=1, verbose_name="配布単価")
+    distribute_count = models.IntegerField(default=0, verbose_name="配布枚数")
+
+    class Meta:
+        db_table = 'ap_handbill_company'
+        verbose_name = "チラシ業者"
+        verbose_name_plural = "チラシ業者一覧"
+
+    def __str__(self):
+        return self.name
+
+
+# class HandbillDistribution(BaseModel):
+#     handbill_company = models.ForeignKey(HandbillCompany, verbose_name="チラシ業者")
+#     unit_price = models.DecimalField(max_digits=5, decimal_places=1, verbose_name="配布単価")
+#     distribute_count = models.IntegerField(verbose_name="配布枚数")

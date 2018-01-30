@@ -14,6 +14,8 @@ urlpatterns = [
     url('^waiting/', include(views.WaitingViewSet().urls)),
     url('^map.html$', views.WhiteBoardMapView.as_view(), name='whiteboard_map'),
     url('^inquiry/', include(views.InquiryViewSet().urls)),
+    url('^distribution/', views.HandbillDistributionView.as_view(), name='distribution_list'),
+    url('^handbill/', include(views.HandbillCompanyViewSet().urls)),
 
     url('^update_subscription$', views.UpdateSubscription.as_view(), name='update_subscription'),
     url('^notification_data/\.json$', views.GetNotificationData.as_view(), name='notification_data'),
