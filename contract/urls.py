@@ -19,6 +19,7 @@ urlpatterns = [
     url('^task/(?P<task_id>\d+)/send_task_mail/$', views.SendTaskMail.as_view(),
         name='send_task_mail'),
 
+    url('^contracted-parking-lot/', include(views.ContractedParkingLotViewSet().urls)),
     url('^contract/', include(views.ContractVewSet().urls)),
     url('^contractor/', include(views.ContractorVewSet().urls)),
     url('^process/', include(views.ProcessViewSet().urls)),
@@ -33,4 +34,5 @@ urlpatterns = [
     url('^defect/$', views.DefectListView.as_view(), name='defect_list'),
     url('^defect/(?P<pk>\d+)/detail/$', views.DefectDetailView.as_view(), name='defect_detail'),
     url('^defect/add/$', views.DefectAddView.as_view(), name='defect_add'),
+    url('^voluntary-insurance-list/$', views.VoluntaryInsuranceListView.as_view(), name='voluntary_insurance_list'),
 ]

@@ -1,0 +1,162 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object }}</a>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            {% block card %}
+            <div class="card-title">{{ view.model|verbose_name|title }}: {{ object }}</div>
+            <table class="table bordered">
+                {% for field_name, value in object_data %}
+                <tr>
+                    <th>{{ field_name }}</th>
+                    {% if value.get_absolute_url %}
+                    <td><a href="{{ value.get_absolute_url }}">{{ value }}</a></td>
+                    {% else %}
+                    <td>{{ value }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% endblock %}
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% block actions_row %}
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% endblock actions_row %}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">車室</div>
+            <table class="table bordered highlight" data-turbolinks="false">
+                <thead>
+                <tr>
+                    <th>契約番号</th>
+                    <th>契約者</th>
+                    <th>車室</th>
+                    <th>契約開始日</th>
+                    <th>契約終了日</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for position in object.parking_lot.parkingposition_set.all %}
+                {% with contract=position.get_current_contract %}
+                <tr>
+                    <td>
+                        {% if contract %}
+                            <a href="{% url 'contract:contract_detail' contract.pk %}">{{ contract.pk }}</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ contract.contractor|default:'-' }}</td>
+                    <td>{{ position }}</td>
+                    <td>{{ contract.start_date|default:'-' }}</td>
+                    <td>{{ contract.end_date|default:'-' }}</td>
+                </tr>
+                {% endwith %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <a class="waves-effect waves-light btn white-text modal-trigger" data-target="send_subscription_list">申込者リスト送信</a>
+                <a class="waves-effect waves-light btn white-text" href="javascript:void(0)">申込者リストダウンロード</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="send_subscription_list" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>申込者リスト送信</h4>
+        <div class="row">
+            <form method="post" action="/api/waiting-contact/" id="frmAddWaitingContact">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input readonly value="{{ group.sender }}" id="txtContractSender" name="contract_sender" type="text" />
+                                <label for="txtContractSender">差出人</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input value="{{ object.email }}" id="txtContractTo" name="contract_to" type="text" />
+                                <label for="txtContractTo">宛先</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtContractCC" name="contract_cc" type="text" />
+                                <label for="txtContractCC">ＣＣ</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtContractBCC" name="contract_bcc" type="text" />
+                                <label for="txtContractBCC">ＢＣＣ</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input value="{{ template.title }}" id="txtContractTitle" name="contract_title" type="text" />
+                                <label for="txtContractTitle">件名</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="txtContractContent" name="contract_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                                <label for="txtContractContent">メール本文</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
+            <i class="material-icons right">send</i>
+        </button>
+        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+        },
+        complete: function(obj) {
+            //alert('Closed');
+        }
+    });
+});
+</script>
+{% endblock %}

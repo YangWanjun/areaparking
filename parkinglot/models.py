@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import os
-import requests
+import datetime
 
 from django.core.validators import RegexValidator
 from django.db import models
@@ -160,6 +158,7 @@ class ParkingLot(BaseModel):
     try_putting_operator = models.ForeignKey(TryPuttingOperator, blank=True, null=True, verbose_name="試入れの対応者")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
+    required_insurance = models.BooleanField(default=True, verbose_name="任意保険回収必須")
     # その他の情報
     default_contract_months = models.SmallIntegerField(default=12, verbose_name="契約期間初期値",
                                                        help_text='月単位です、１年の場合は１２を入力してください。')
@@ -334,6 +333,11 @@ class ParkingPosition(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def get_current_contract(self):
+        today = datetime.date.today()
+        queryset = self.contract_set.filter(start_date__lte=today, end_date__gte=today)
+        return queryset.first()
 
 
 class ParkingPositionKey(BaseModel):

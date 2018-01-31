@@ -1,0 +1,179 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+{% load contract_tags %}
+
+{% block breadcrumbs_items %}
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">任意保険一覧</div>
+            <div data-turbolinks="false">
+                <table class="table bordered highlight" id="tblPriceRaise">
+                    <thead>
+                    <tr>
+                        <th>駐車場</th>
+                        <th>車室</th>
+                        <th>契約者</th>
+                        <th>回収<br/>必須</th>
+                        <td>対物限度額</td>
+                        <th>任意保険<br/>期限日</th>
+                        <th>残り日数</th>
+                        <th>更新状態</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>シティタワー池袋</td>
+                        <td>10</td>
+                        <td>契約者００１</td>
+                        <td>×</td>
+                        <td>5000万まで</td>
+                        <td>2018-02-03</td>
+                        <td>３日</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>シティタワー池袋</td>
+                        <td>13</td>
+                        <td>契約者００５</td>
+                        <td>×</td>
+                        <td>5000万まで</td>
+                        <td>2017-12-31</td>
+                        <td><span class="new badge left red" data-badge-caption="期限切れ" style="margin-left: 0px;"></span></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>シティタワー池袋</td>
+                        <td>11</td>
+                        <td>契約者００２</td>
+                        <td>×</td>
+                        <td>5000万まで</td>
+                        <td>2018-01-31</td>
+                        <td>０日</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>プラウド弦巻アベニュー</td>
+                        <td>20</td>
+                        <td>契約者００４</td>
+                        <td>○</td>
+                        <td>5000万まで</td>
+                        <td>2019-01-31</td>
+                        <td>１年</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>プラウド弦巻アベニュー</td>
+                        <td>21</td>
+                        <td>契約者００６</td>
+                        <td>○</td>
+                        <td>5000万まで</td>
+                        <td>2018-01-30</td>
+                        <td><span class="new badge left red" data-badge-caption="期限切れ" style="margin-left: 0px;"></span></td>
+                        <td>更新中</td>
+                    </tr>
+                    <tr>
+                        <td>プラウド弦巻アベニュー</td>
+                        <td>22</td>
+                        <td>契約者００７</td>
+                        <td>○</td>
+                        <td>5000万まで</td>
+                        <td>2018-01-30</td>
+                        <td><span class="new badge left red" data-badge-caption="期限切れ" style="margin-left: 0px;"></span></td>
+                        <td><a href="javascript:void(0)"><i class="material-icons">send</i></a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <!--<a class="waves-effect waves-light btn white-text popup">一時保存</a>-->
+                <!--<a class="waves-effect waves-light btn white-text popup">最終決定</a>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="{% url 'contract:trouble_add' %}"><i class="large material-icons">add</i></a>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    <div class="card filters-card tight-card">
+        <form method="get">
+            <div class="card-content">
+                <span class="card-title" style="font-size: 18px;">フィルター</span>
+                <div class="row" style="margin-top:0px">
+                    <div class="input-field col s12" style="padding: 0px;">
+                        <input type="checkbox" class="filled-in" id="chk_1"/>
+                        <label for="chk_1">回収必須</label>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:0px;margin-bottom: 20px;">
+                    <div class="input-field col s12" style="padding: 0px;">
+                        <input type="checkbox" class="filled-in" id="chk_2"/>
+                        <label for="chk_2">期限切れ</label>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-action">
+                <div class="right-align">
+                    <button class="btn waves-effect waves-light" type="submit" onclick="return false;" name="action">検索
+                        <i class="material-icons right">search</i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<style type="text/css">
+    table.table {
+        font-size: 12px;
+    }
+    table.table td {
+        margin: 0px;
+        padding: 2px 3px;
+    }
+    select.browser-default:focus {
+        outline-width: 0;
+    }
+    table input[type=number] {
+        margin: 0px;
+        height: 20px;
+        border-bottom: 0px;
+        font-size: 13px;
+    }
+    table input[type=number]:focus {
+        border: 0px !important;
+        outline: 0 !important;
+        background-size: 0 !important;
+    }
+</style>
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    $('.dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrainWidth: false, // Does not change width of dropdown to that of the activator
+        hover: true, // Activate on hover
+        gutter: 0, // Spacing from edge
+        belowOrigin: false, // Displays dropdown below the button
+        alignment: 'left', // Displays dropdown with edge aligned to the left of button
+        stopPropagation: false // Stops event propagation
+        }
+    );
+});
+</script>
+{% endblock %}

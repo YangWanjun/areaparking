@@ -12,6 +12,7 @@ from django.template.context_processors import csrf
 from . import models, biz, forms
 from contract.models import Task
 from format.models import ReportSubscriptionConfirm, ReportSubscription
+from parkinglot.models import ParkingLot
 from utils import common
 from utils.django_base import BaseView, BaseDetailModelView, BaseListModelView, BaseModelViewSet, BaseTemplateView
 
@@ -119,6 +120,14 @@ class ContractVewSet(BaseModelViewSet):
     list_display = ('id', 'contractor', 'parking_lot', 'parking_position', 'staff', 'start_date', 'end_date')
     list_view_class = ContractListView
     detail_view_class = ContractDetailView
+
+
+class ContractedParkingLotViewSet(BaseModelViewSet):
+    model = models.VContractedParkingLot
+    list_display = ('name', 'address', 'staff', 'owner', 'lease_management_company', 'building_management_company')
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 class ContractorListView(BaseListModelView):
@@ -314,3 +323,7 @@ class DefectDetailView(BaseTemplateView):
 
 class DefectAddView(BaseTemplateView):
     template_name = 'contract/defect_add.html'
+
+
+class VoluntaryInsuranceListView(BaseTemplateView):
+    template_name = 'contract/voluntary_insurance_list.html'

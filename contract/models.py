@@ -12,7 +12,8 @@ from django.utils.functional import cached_property
 from employee.models import Member
 from format.models import ReportFile, ReportSubscription, ReportSubscriptionConfirm
 from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
-from parkinglot.models import ParkingLot, ParkingPosition
+from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, LeaseManagementCompany, \
+    BuildingManagementCompany
 from utils import constants, common, errors
 from utils.app_base import get_total_context, get_user_subscription_url, get_user_contract_url, get_parking_lot_context, \
     get_subscription_context, get_contractor_context, get_contract_cancellation_url
@@ -893,3 +894,31 @@ class VPriceRaise(BaseViewModel):
 #     reception = models.ForeignKey(Member, on_delete=models.PROTECT, related_name='trouble_reception_set', verbose_name="受付者")
 #     staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.PROTECT, related_name='trouble_staff_set', verbose_name="対応者")
 #     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+
+
+class VContractedParkingLot(BaseViewModel):
+    code = models.IntegerField(primary_key=True, verbose_name="コード")
+    name = models.CharField(max_length=100, verbose_name="駐車場名称")
+    category = models.ForeignKey(ParkingLotType, on_delete=models.DO_NOTHING, verbose_name="分類")
+    staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="担当者")
+    post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="郵便番号",
+                                 validators=(RegexValidator(regex=constants.REG_POST_CODE),))
+    address = models.CharField(max_length=255, blank=True, null=True, editable=False, verbose_name="所在地")
+    owner = models.CharField(max_length=50, blank=True, null=True, verbose_name="所有者")
+    lender = models.CharField(max_length=50, blank=True, null=True, verbose_name="貸主")
+    lease_management_company = models.ForeignKey(
+        LeaseManagementCompany, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="賃貸管理会社"
+    )
+    building_management_company = models.ForeignKey(
+        BuildingManagementCompany, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="建物管理会社"
+    )
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
+
+    class Meta:
+        managed = False
+        db_table = 'v_contracted_parking_lot'
+        verbose_name = "契約物件"
+        verbose_name_plural = "契約物件一覧"
+
+    def __str__(self):
+        return self.name
