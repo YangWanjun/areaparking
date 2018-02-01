@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'whiteboard.apps.WhiteboardConfig',
     'format.apps.FormatConfig',
     'billing.apps.BillingConfig',
+    'management_dep.apps.ManagementDepConfig',
     # 'turnover.apps.TurnoverConfig',
     'rest_framework',
     'django_filters',

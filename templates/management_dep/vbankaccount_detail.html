@@ -1,0 +1,82 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block breadcrumbs_items %}
+<a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
+<a class="active">{{ object }}</a>
+{% endblock %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            {% block card %}
+            <div class="card-title">{{ view.model|verbose_name|title }}: {{ object }}</div>
+            <table class="table bordered">
+                {% for field_name, value in object_data %}
+                <tr>
+                    <th>{{ field_name }}</th>
+                    {% if value.get_absolute_url %}
+                    <td><a href="{{ value.get_absolute_url }}">{{ value }}</a></td>
+                    {% else %}
+                    <td>{{ value }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% endblock %}
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% block actions_row %}
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+                {% endblock actions_row %}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">使用履歴</div>
+            <table class="table bordered highlight">
+                <thead>
+                <tr>
+                    <th>契約者</th>
+                    <th>住所</th>
+                    <th>駐車場</th>
+                    <th>車室</th>
+                    <th>開始日</th>
+                    <th>終了日</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for contract in object.bank_account.contract_set.all %}
+                <tr>
+                    <td>{{ contract.contractor }}</td>
+                    <td>{{ contract.contractor.address }}</td>
+                    <td>{{ contract.parking_lot }}</td>
+                    <td>{{ contract.parking_position }}</td>
+                    <td>{{ contract.start_date }}</td>
+                    <td>{{ contract.end_date }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+});
+</script>
+{% endblock %}

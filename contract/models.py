@@ -115,6 +115,9 @@ class AbstractUser(BaseModel):
     def __str__(self):
         return self.name
 
+    def address(self):
+        return '%s%s' % ((self.address1 or ''), (self.address2 or ''))
+
 
 class AbstractCar(BaseModel):
     car_maker = models.CharField(max_length=50, blank=True, null=True, verbose_name="車メーカー")
