@@ -85,3 +85,19 @@ class ContractCancellationForm(BaseForm):
         self.fields['reception_user'].widget = forms.HiddenInput()
         self.fields['cancellation_date'].widget.attrs.update({'class': 'vDateField'})
         self.fields['retire_date'].widget.attrs.update({'class': 'vDateField'})
+
+
+class ParkingLotCancellationForm(BaseForm):
+
+    class Meta:
+        model = models.ParkingLotCancellation
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        forms.ModelForm.__init__(self, *args, **kwargs)
+        self.fields['parking_lot'].widget = forms.HiddenInput()
+        self.fields['is_all'].widget.attrs.update({'class': 'filled-in'})
+        self.fields['is_immediately'].widget.attrs.update({'class': 'filled-in'})
+        self.fields['is_with_continue'].widget.attrs.update({'class': 'filled-in'})
+        self.fields['contact_date'].widget.attrs.update({'class': 'vDateField'})
+        self.fields['return_date'].widget.attrs.update({'class': 'vDateField'})

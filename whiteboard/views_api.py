@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.http import QueryDict
 from django.shortcuts import reverse
 
 from rest_framework import viewsets, status

@@ -122,9 +122,24 @@ class ContractVewSet(BaseModelViewSet):
     detail_view_class = ContractDetailView
 
 
+class ContractedParkingLotDetailView(BaseDetailModelView):
+
+    def get_context_data(self, **kwargs):
+        context = super(ContractedParkingLotDetailView, self).get_context_data(**kwargs)
+        cancellation_form = forms.ParkingLotCancellationForm(initial={
+            'parking_lot': self.object.parking_lot,
+            'contact_date': datetime.date.today(),
+        })
+        context.update({
+            'cancellation_form': cancellation_form,
+        })
+        return context
+
+
 class ContractedParkingLotViewSet(BaseModelViewSet):
     model = models.VContractedParkingLot
     list_display = ('name', 'address', 'staff', 'owner', 'lease_management_company', 'building_management_company')
+    detail_view_class = ContractedParkingLotDetailView
 
     def has_change_permission(self, request, obj=None):
         return False
@@ -327,3 +342,15 @@ class DefectAddView(BaseTemplateView):
 
 class VoluntaryInsuranceListView(BaseTemplateView):
     template_name = 'contract/voluntary_insurance_list.html'
+
+
+class ParkingLotCancellationViewSet(BaseModelViewSet):
+    model = models.ParkingLotCancellation
+    list_display = ('parking_lot', 'get_parking_positions', 'is_immediately', 'is_with_continue', 'contact_date', 'return_date')
+
+    def get_parking_positions(self, obj):
+        if obj.is_all:
+            return "全件"
+        else:
+            return obj.parking_positions
+    get_parking_positions.short_description = "返却車室"

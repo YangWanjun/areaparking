@@ -152,6 +152,8 @@ CHOICE_PROCESS = (
     ('24', '鍵紛失'),
     ('26', '値上げ更新'),
     ('31', '一般解約'),
+    ('32', '物件解約(承継なし)'),
+    ('33', '物件解約(承継あり)'),
 )
 CHOICE_TASK_SUBSCRIPTION_CATEGORY = [
     # 01 申込
@@ -203,6 +205,21 @@ CHOICE_TASK_CONTRACT_CANCELLATION = [
     ('312', '鍵返送案内'),
     ('313', '鍵回収'),
 ]
+CHOICE_TASK_POSITION_CANCELLATION_WITH_CONTINUE = [
+    ('320', 'ユーザーへ連絡'),
+    ('321', '強制解約書類送付'),
+    ('322', '滞納金確認'),
+    ('323', '返金確認'),
+    ('324', '鍵返送案内'),
+    ('325', '鍵回収'),
+]
+CHOICE_TASK_POSITION_CANCELLATION_WITHOUT_CONTINUE = [
+    ('330', 'ユーザーへ連絡'),
+    ('331', '承継承諾書送付'),
+    ('332', '滞納金確認'),
+    ('333', '返金確認'),
+    ('334', '予備分の操作鍵類と契約時書類オーナー側へ送付'),
+]
 CHOICE_TASK_CATEGORY = CHOICE_TASK_SUBSCRIPTION_CATEGORY + \
                        CHOICE_TASK_CREDIT_CATEGORY + \
                        CHOICE_TASK_NAME_CATEGORY + \
@@ -210,7 +227,9 @@ CHOICE_TASK_CATEGORY = CHOICE_TASK_SUBSCRIPTION_CATEGORY + \
                        CHOICE_TASK_CHANGE_CAR + \
                        CHOICE_TASK_KEY_LOST + \
                        CHOICE_TASK_PRICE_RAISE + \
-                       CHOICE_TASK_CONTRACT_CANCELLATION
+                       CHOICE_TASK_CONTRACT_CANCELLATION + \
+                       CHOICE_TASK_POSITION_CANCELLATION_WITH_CONTINUE + \
+                       CHOICE_TASK_POSITION_CANCELLATION_WITHOUT_CONTINUE
 CHOICE_TASK_STATUS = (
     ('01', '未実施'),
     ('02', '実施中'),
@@ -275,6 +294,7 @@ ERROR_SUBSCRIPTION_NO_CAR = '車情報がありません。'
 ERROR_CONTRACT_WRONG_RETIRE_DATE = "退居予定日は解約日の前に選択してください。"
 ERROR_CONTRACT_RETIRE_DATE_RANGE = "退居予定日は契約期間内に選択してください。"
 ERROR_CONTRACT_CANCELLATION_DATE_RANGE = "解約日は契約期間内に選択してください。"
+ERROR_PARKING_LOT_CANCELLATION_NO_POSITIONS = "物件解約の場合全体解約または車室を選択してください。"
 ERROR_FORMAT_BANK_TRANSFER = "全銀フォーマットエラー。"
 ERROR_FORMAT_BANK_TRANSFER_CANNOT_IMPORT = "ファイル読み込みできません。"
 ERROR_REQUIRE_TRANSFER_DATA = "入金データを選択してください。"

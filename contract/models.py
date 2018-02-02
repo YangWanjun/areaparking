@@ -836,6 +836,77 @@ class ContractCancellation(BaseModel):
         Process.objects.create(name='31', content_object=self)
 
 
+class ParkingLotCancellation(BaseModel):
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
+    parking_positions = models.CharField(max_length=100, blank=True, null=True,
+                                         validators=[validate_comma_separated_integer_list], verbose_name="返却車室")
+    is_all = models.BooleanField(default=False, verbose_name="全件解約")
+    is_immediately = models.BooleanField(default=False, verbose_name="随時返還")
+    is_with_continue = models.BooleanField(default=False, verbose_name="継承あり")
+    contact_date = models.DateField(verbose_name="告知日")
+    created_user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="作成者")
+    return_date = models.DateField(blank=True, null=True, verbose_name="返却リミット")
+
+    class Meta:
+        db_table = 'ap_parking_lot_cancellation'
+        verbose_name = "物件解約"
+        verbose_name_plural = "物件解約一覧"
+
+    def __str__(self):
+        return str(self.parking_lot)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.is_all and not self.parking_positions:
+            raise errors.CustomException(constants.ERROR_PARKING_LOT_CANCELLATION_NO_POSITIONS)
+        super(ParkingLotCancellation, self).save(force_insert, force_update, using, update_fields)
+        if self.is_all:
+            parking_positions = ParkingPosition.objects.public_filter(parking_lot=self.parking_lot)
+        else:
+            parking_positions = ParkingPosition.objects.public_filter(pk__in=self.parking_positions.split(','))
+        for parking_position in parking_positions:
+            contract = parking_position.get_current_contract()
+            ParkingPositionCancellation.objects.create(
+                cancellation=self,
+                parking_lot=self.parking_lot,
+                parking_position=parking_position,
+                contract=contract,
+                contractor=contract.contractor,
+            )
+
+
+class ParkingPositionCancellation(BaseModel):
+    cancellation = models.ForeignKey(ParkingLotCancellation)
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室")
+    contract = models.OneToOneField(Contract, on_delete=models.PROTECT, verbose_name="契約情報")
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    processes = GenericRelation('Process', related_query_name='parking_position_cancellations')
+
+    class Meta:
+        db_table = 'ap_parking_position_cancellation'
+        verbose_name = "車室解約"
+        verbose_name_plural = "車室解約一覧"
+
+    def __str__(self):
+        return '%s-%s' % (str(self.cancellation), str(self.parking_position))
+
+    @cached_property
+    def process(self):
+        """解約のプロセスを取得する。
+
+        :return:
+        """
+        return self.processes.first()
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(ParkingPositionCancellation, self).save(force_insert, force_update, using, update_fields)
+        # 解約のプロセスを作成
+        name = '33' if self.cancellation.is_with_continue else '32'
+        Process.objects.create(name=name, content_object=self)
+
+
 class PriceRaising(BaseModel):
     year = models.CharField(max_length=4, verbose_name="更新年")
     month = models.CharField(max_length=2, verbose_name="更新月")

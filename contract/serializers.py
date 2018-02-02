@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from django.db import models
 
 from rest_framework import serializers
 
@@ -11,24 +10,6 @@ class ContractorSerializer(BaseModelSerializer):
     class Meta:
         model = models.Contractor
         fields = '__all__'
-
-    # def validate_name(self, value):
-    #     segment = self.initial_data.get('segment', None)
-    #     if segment == '1' and not value:
-    #         raise ValidationError("個人の場合、契約者の名前を入力してください。")
-    #     return value
-    #
-    # def validate_corporate_president(self, value):
-    #     segment = self.initial_data.get('segment', None)
-    #     if segment == '2' and not value:
-    #         raise ValidationError("法人の場合、代表者名を入力してください。")
-    #     return value
-    #
-    # def validate_corporate_staff_name(self, value):
-    #     segment = self.initial_data.get('segment', None)
-    #     if segment == '2' and not value:
-    #         raise ValidationError("法人の場合、担当者名を入力してください。")
-    #     return value
 
 
 class SubscriptionSerializer(BaseModelSerializer):
@@ -72,3 +53,10 @@ class ContractCancellationApiSerializer(BaseModelSerializer):
     def get_process_id(self, obj):
         process = obj.process
         return process.pk if process else None
+
+
+class ParkingLotCancellationSerializer(BaseModelSerializer):
+
+    class Meta:
+        model = models.ParkingLotCancellation
+        fields = '__all__'

@@ -24,6 +24,7 @@ urlpatterns = [
     url('^contractor/', include(views.ContractorVewSet().urls)),
     url('^process/', include(views.ProcessViewSet().urls)),
     # url('^price-raise/', include(views.VPriceRaiseViewSet().urls)),
+    url('^parking-lot-cancellation/', include(views.ParkingLotCancellationViewSet().urls)),
 
     url('^price-raise-list/$', views.PriceRaiseListView.as_view(), name='priceraise_list'),
     url('^price-raising-list/$', views.PriceRaisingListView.as_view(), name='priceraising_list'),

@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -26,6 +26,30 @@ class ProcessViewSet(viewsets.ModelViewSet):
 class ContractCancellation(viewsets.ModelViewSet):
     queryset = models.ContractCancellation.objects.public_all()
     serializer_class = serializers.ContractCancellationApiSerializer
+
+
+class ParkingLotCancellationViewSet(viewsets.ModelViewSet):
+    queryset = models.ParkingLotCancellation.objects.public_all()
+    serializer_class = serializers.ParkingLotCancellationSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = dict(request.data)
+        data['created_user'] = request.user.pk
+        for key in data.keys():
+            val = data.get(key, None)
+            if val and isinstance(val, list):
+                data[key] = (val[0] or None) if len(val) > 0 else None
+                if len(val) == 0:
+                    data[key] = None
+                elif len(val) == 1:
+                    data[key] = val[0] or None
+                else:
+                    data[key] = ",".join(val)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 @api_view(['PUT'])

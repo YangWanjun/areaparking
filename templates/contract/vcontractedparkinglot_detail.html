@@ -33,6 +33,7 @@
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
+                <a class="waves-effect waves-light btn white-text modal-trigger" data-target="parking_lot_cancellation">物件解約</a>
             </div>
         </div>
     </div>
@@ -133,6 +134,56 @@
         <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
     </div>
 </div>
+<div id="parking_lot_cancellation" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>物件解約</h4>
+        <form method="post" action="/api/parking-lot-cancellation/" id="frmParkingLotCancellation">
+            <div style="display: none;">
+                {{ cancellation_form.parking_lot }}
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    {{ cancellation_form.contact_date }}
+                    {{ cancellation_form.contact_date.label_tag }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    {{ cancellation_form.return_date }}
+                    {{ cancellation_form.return_date.label_tag }}
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="input-field col s4">
+                    {{ cancellation_form.is_all }}
+                    {{ cancellation_form.is_all.label_tag }}
+                </div>
+                <div class="input-field col s4">
+                    {{ cancellation_form.is_immediately }}
+                    {{ cancellation_form.is_immediately.label_tag }}
+                </div>
+                <div class="input-field col s4">
+                    {{ cancellation_form.is_with_continue }}
+                    {{ cancellation_form.is_with_continue.label_tag }}
+                </div>
+            </div>
+            <div class="row">
+                一部解約の場合は車室を選択してください
+                <hr/>
+                {% for position in object.parking_lot.parkingposition_set.all %}
+                <div class="input-field col s2" style="margin-top: 0px;">
+                    <input type="checkbox" class="filled-in" name="parking_positions" value="{{ position.pk }}" id="chk_{{ position.pk }}"/>
+                    <label for="chk_{{ position.pk }}">{{ position }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0)" class="modal-action btn-flat waves-effect waves-green" onclick="parking_lot_cancellation(this)">解約</a>
+        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+    </div>
+</div>
 {% endblock left-panel %}
 {% block right-panel %}
 <div class="right-panel">
@@ -157,6 +208,37 @@ $(document).one("turbolinks:load", function() {
             //alert('Closed');
         }
     });
+    ebjs.$('.vDateField').datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+
+    var form_obj = $("#frmParkingLotCancellation")
+    form_obj.submit(function(){
+        ebjs.utils.ajax_request(
+            $(this).attr('action'),
+            $(this).attr('method'),
+            $(this).serialize()
+        ).done(function(result){
+            // 「履歴ありません」のレコード削除
+            ebjs.material.toast("{{ object }}が物件解約として登録しました。");
+            $('#parking_lot_cancellation').modal('close');
+        }).fail(function(result){
+            if (result.responseJSON && result.responseJSON.detail) {
+                alert(result.responseJSON.detail);
+            } else if (result.responseJSON) {
+                ebjs.material.reflection_form_errors(form_obj, result.responseJSON);
+            } else {
+                alert("エラーが発生しました。");
+            }
+        }).always(function(result){
+        });
+        return false;
+    });
 });
+
+function parking_lot_cancellation() {
+    $('#frmParkingLotCancellation').submit();
+}
 </script>
 {% endblock %}
