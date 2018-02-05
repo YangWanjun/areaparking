@@ -68,6 +68,13 @@
                     </div>
                     <div class="collapsible-body">
                         <div class="row">
+                            {% if task.category == "320" %}
+                            <div class="input-field col s6">
+                                <input value="" id="id_replacement_parking_lot" name="replacement_parking_lot" type="text" />
+                                <label for="id_replacement_parking_lot">代替駐車場</label>
+                            </div>
+                            {% endif %}
+                            {% if group %}
                             <div id="send_mail_{{ task.pk }}" class="modal modal-fixed-footer" style="min-height: 500px;">
                                 <form method="post" action="{% url 'contract:send_task_mail' task.pk %}" id="frmSendTaskMail">
                                     <div class="modal-content">
@@ -117,6 +124,7 @@
                                     </div>
                                 </form>
                             </div>
+                            {% endif %}
                         </div>
                         <div class="row">
                             <div class="col s12 right-align">

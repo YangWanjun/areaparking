@@ -96,6 +96,7 @@ class ParkingLotCancellationForm(BaseForm):
     def __init__(self, *args, **kwargs):
         forms.ModelForm.__init__(self, *args, **kwargs)
         self.fields['parking_lot'].widget = forms.HiddenInput()
+        self.fields['parking_positions'].widget.attrs.update({'readonly': 'readonly'})
         self.fields['is_all'].widget.attrs.update({'class': 'filled-in'})
         self.fields['is_immediately'].widget.attrs.update({'class': 'filled-in'})
         self.fields['is_with_continue'].widget.attrs.update({'class': 'filled-in'})

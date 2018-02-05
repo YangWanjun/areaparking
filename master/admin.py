@@ -83,7 +83,7 @@ class MediationAdmin(BaseAdmin):
 
 @admin.register(models.MailTemplate)
 class MailTemplateAdmin(BaseAdminEditor):
-    pass
+    list_display = ('title', 'comment')
 
 
 @admin.register(models.MailGroup)

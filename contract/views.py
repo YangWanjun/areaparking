@@ -138,7 +138,7 @@ class ContractedParkingLotDetailView(BaseDetailModelView):
 
 class ContractedParkingLotViewSet(BaseModelViewSet):
     model = models.VContractedParkingLot
-    list_display = ('name', 'address', 'staff', 'owner', 'lease_management_company', 'building_management_company')
+    list_display = ('name', 'address', 'staff', 'owner', 'lease_management_company', 'building_management_company', 'is_all_cancellation')
     detail_view_class = ContractedParkingLotDetailView
 
     def has_change_permission(self, request, obj=None):
@@ -347,6 +347,7 @@ class VoluntaryInsuranceListView(BaseTemplateView):
 class ParkingLotCancellationViewSet(BaseModelViewSet):
     model = models.ParkingLotCancellation
     list_display = ('parking_lot', 'get_parking_positions', 'is_immediately', 'is_with_continue', 'contact_date', 'return_date')
+    form_class = forms.ParkingLotCancellationForm
 
     def get_parking_positions(self, obj):
         if obj.is_all:

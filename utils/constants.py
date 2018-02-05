@@ -129,6 +129,7 @@ CHOICE_MAIL_GROUP = (
     ('011', '契約書類送付'),
     ('012', '契約完了'),
     ('310', '一般解約書類送付'),
+    ('322', '物件解約書類送付'),
 )
 CHOICE_REPORT_KBN = (
     ('001', REPORT_SUBSCRIPTION),
@@ -205,15 +206,16 @@ CHOICE_TASK_CONTRACT_CANCELLATION = [
     ('312', '鍵返送案内'),
     ('313', '鍵回収'),
 ]
-CHOICE_TASK_POSITION_CANCELLATION_WITH_CONTINUE = [
-    ('320', 'ユーザーへ連絡'),
-    ('321', '強制解約書類送付'),
-    ('322', '滞納金確認'),
-    ('323', '返金確認'),
-    ('324', '鍵返送案内'),
-    ('325', '鍵回収'),
-]
 CHOICE_TASK_POSITION_CANCELLATION_WITHOUT_CONTINUE = [
+    ('320', '代替駐車場の調査'),
+    ('321', 'ユーザーへ連絡'),
+    ('322', '強制解約書類送付'),
+    ('323', '滞納金確認'),
+    ('324', '返金確認'),
+    ('325', '鍵返送案内'),
+    ('326', '鍵回収'),
+]
+CHOICE_TASK_POSITION_CANCELLATION_WITH_CONTINUE = [
     ('330', 'ユーザーへ連絡'),
     ('331', '承継承諾書送付'),
     ('332', '滞納金確認'),
@@ -228,8 +230,8 @@ CHOICE_TASK_CATEGORY = CHOICE_TASK_SUBSCRIPTION_CATEGORY + \
                        CHOICE_TASK_KEY_LOST + \
                        CHOICE_TASK_PRICE_RAISE + \
                        CHOICE_TASK_CONTRACT_CANCELLATION + \
-                       CHOICE_TASK_POSITION_CANCELLATION_WITH_CONTINUE + \
-                       CHOICE_TASK_POSITION_CANCELLATION_WITHOUT_CONTINUE
+                       CHOICE_TASK_POSITION_CANCELLATION_WITHOUT_CONTINUE + \
+                       CHOICE_TASK_POSITION_CANCELLATION_WITH_CONTINUE
 CHOICE_TASK_STATUS = (
     ('01', '未実施'),
     ('02', '実施中'),

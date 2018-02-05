@@ -591,7 +591,7 @@ class Contract(BaseModel):
             return 0
 
     def get_process_list(self):
-        """契約に関する髄対応のプロセスを取得する。
+        """契約に関する随時対応のプロセスを取得する。
 
         :return:
         """
@@ -600,6 +600,28 @@ class Contract(BaseModel):
             if code >= '10':
                 process_list.append((code, name, self.processes.filter(name=code)))
         return process_list
+
+    @cached_property
+    def parking_position_cancellation_without_continue_process(self):
+        """物件解約（継承なし）のおプロセスを取得する。
+
+        :return:
+        """
+        if hasattr(self, 'parkingpositioncancellation'):
+            return self.parkingpositioncancellation.processes.filter(name='32').first()
+        else:
+            return None
+
+    @cached_property
+    def parking_position_cancellation_with_continue_process(self):
+        """物件解約（継承あり）のプロセスを取得する。
+
+        :return:
+        """
+        if hasattr(self, 'parkingpositioncancellation'):
+            return self.parkingpositioncancellation.processes.filter(name='33').first()
+        else:
+            return None
 
 
 class ContractPayment(BaseModel):
@@ -701,19 +723,19 @@ class Task(BaseModel):
         return self.name
 
     def get_mail_group(self):
+        group = None
         if self.category == '010':
             # 申込書送付
             group = MailGroup.get_subscription_send_group()
-            return group
         elif self.category == '100':
             # 契約書類一式の送付
             group = MailGroup.get_contract_send_group()
-            return group
         elif self.category == '310':
             # 一般解約の送付
             group = MailGroup.get_contract_cancellation_send_group()
-            return group
-        return None
+        elif self.category == '322':
+            group = MailGroup.get_parking_lot_cancellation_send_group()
+        return group
 
     def get_mail_template(self):
         group = self.get_mail_group()
@@ -732,6 +754,10 @@ class Task(BaseModel):
                 data.update(get_parking_lot_context(self.process.content_object.parking_lot))
                 data.update(get_contractor_context(self.process.content_object.contractor))
                 data.update(get_contract_cancellation_url(self))
+            elif self.category == '322':
+                # 物件解約（継承なし）時の書類送付
+                data.update(get_parking_lot_context(self.process.content_object.parking_lot))
+                data.update(get_contractor_context(self.process.content_object.contractor))
 
             return group.get_template_content(data)
         else:
@@ -857,22 +883,28 @@ class ParkingLotCancellation(BaseModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        if self.pk:
+            is_add = False
+        else:
+            is_add = True
         if not self.is_all and not self.parking_positions:
             raise errors.CustomException(constants.ERROR_PARKING_LOT_CANCELLATION_NO_POSITIONS)
         super(ParkingLotCancellation, self).save(force_insert, force_update, using, update_fields)
-        if self.is_all:
-            parking_positions = ParkingPosition.objects.public_filter(parking_lot=self.parking_lot)
-        else:
-            parking_positions = ParkingPosition.objects.public_filter(pk__in=self.parking_positions.split(','))
-        for parking_position in parking_positions:
-            contract = parking_position.get_current_contract()
-            ParkingPositionCancellation.objects.create(
-                cancellation=self,
-                parking_lot=self.parking_lot,
-                parking_position=parking_position,
-                contract=contract,
-                contractor=contract.contractor,
-            )
+        if is_add:
+            # 新規の場合、解約対象の車室とそのプロセスも新規追加する。
+            if self.is_all:
+                parking_positions = ParkingPosition.objects.public_filter(parking_lot=self.parking_lot)
+            else:
+                parking_positions = ParkingPosition.objects.public_filter(pk__in=self.parking_positions.split(','))
+            for parking_position in parking_positions:
+                contract = parking_position.get_current_contract()
+                ParkingPositionCancellation.objects.create(
+                    cancellation=self,
+                    parking_lot=self.parking_lot,
+                    parking_position=parking_position,
+                    contract=contract,
+                    contractor=contract.contractor,
+                )
 
 
 class ParkingPositionCancellation(BaseModel):
@@ -881,6 +913,7 @@ class ParkingPositionCancellation(BaseModel):
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室")
     contract = models.OneToOneField(Contract, on_delete=models.PROTECT, verbose_name="契約情報")
     contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+    replacement = models.CharField(max_length=100, blank=True, null=True, verbose_name="代替駐車場")
     processes = GenericRelation('Process', related_query_name='parking_position_cancellations')
 
     class Meta:
@@ -987,6 +1020,9 @@ class VContractedParkingLot(BaseViewModel):
         BuildingManagementCompany, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="建物管理会社"
     )
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
+    parking_lot_cancellation = models.ForeignKey(ParkingLotCancellation, blank=True, null=True,
+                                                 on_delete=models.DO_NOTHING, verbose_name="物件解約")
+    is_all_cancellation = models.BooleanField(default=False, verbose_name="全件解約")
 
     class Meta:
         managed = False
@@ -996,3 +1032,13 @@ class VContractedParkingLot(BaseViewModel):
 
     def __str__(self):
         return self.name
+
+    def get_cancellation_positions(self):
+        if self.is_all_cancellation:
+            return list()
+        elif self.parking_lot_cancellation:
+            positions = [cancellation.parking_position.pk for cancellation in
+                         ParkingPositionCancellation.objects.public_filter(cancellation=self.parking_lot_cancellation)]
+            return self.parking_lot.parkingposition_set.exclude(pk__in=positions)
+        else:
+            return self.parking_lot.parkingposition_set.all()

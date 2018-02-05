@@ -422,7 +422,7 @@ class ReportFormat(BaseModel):
 
 
 class MailTemplate(BaseModel):
-    title = models.CharField(max_length=50, unique=True, verbose_name=u"送信メールのタイトル")
+    title = models.CharField(max_length=50, verbose_name=u"送信メールのタイトル")
     body = models.TextField(verbose_name=u"メール本文")
     password = models.TextField(blank=True, null=True, verbose_name=u"パスワードお知らせ本文")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name=u"説明")
@@ -516,6 +516,17 @@ class MailGroup(BaseModel):
         """
         try:
             return MailGroup.objects.get(code='310')
+        except ObjectDoesNotExist:
+            return None
+
+    @classmethod
+    def get_parking_lot_cancellation_send_group(cls):
+        """物件解約時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='322')
         except ObjectDoesNotExist:
             return None
 

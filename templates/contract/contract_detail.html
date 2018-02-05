@@ -31,7 +31,6 @@
             <div class="right-align">
                 {% block actions_row %}
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
-                <a class="waves-effect waves-light btn white-text" href="javascript:void(0)">物件解約</a>
                 {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
             </div>
@@ -40,7 +39,7 @@
     <div class="card">
         <div class="card-content">
             <div class="card-title">随時対応</div>
-            <ul class="collapsible" data-collapsible="expandable">
+            <ul class="collapsible" data-collapsible="expandable" data-turbolinks="false">
                 {% for code, name, processes in object.get_process_list %}
                 {% with count=processes.count cancellation_count=object.contractcancellation.processes.count|default:0 %}
                     <li>
@@ -54,7 +53,61 @@
                         </div>
                         <div class="collapsible-body">
                             <div class="row">
-                                {% if code == '31' and cancellation_count > 0 %}
+                                {% if code == '32' %}
+                                    {% with process=object.parking_position_cancellation_without_continue_process %}
+                                        {% if process %}
+                                            <!-- 物件解約 -->
+                                            <table>
+                                                <thead>
+                                                <tr>
+                                                    <th>名称</th>
+                                                    <th>作成日時</th>
+                                                    <th>進捗</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td><a href="{% url 'contract:process_detail' process.pk %}">{{ process.get_name_display }}</a></td>
+                                                    <td>{{ process.created_date }}</td>
+                                                    <td>
+                                                        <div class='center' style="background: linear-gradient(90deg, transparent 0%, transparent 0.0%, #9adaaf 0.0%, #9adaaf {{ process.percent }}%, transparent {{ process.percent }}%);">
+                                                            {{ process.percent }}%</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        {% else %}
+                                            <div class="col s12 red-text">対応履歴がありません。</div>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% elif code == '33' %}
+                                    {% with process=object.parking_position_cancellation_with_continue_process %}
+                                        {% if process %}
+                                            <!-- 物件解約 -->
+                                            <table>
+                                                <thead>
+                                                <tr>
+                                                    <th>名称</th>
+                                                    <th>作成日時</th>
+                                                    <th>進捗</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td><a href="{% url 'contract:process_detail' process.pk %}">{{ process.get_name_display }}</a></td>
+                                                    <td>{{ process.created_date }}</td>
+                                                    <td>
+                                                        <div class='center' style="background: linear-gradient(90deg, transparent 0%, transparent 0.0%, #9adaaf 0.0%, #9adaaf {{ process.percent }}%, transparent {{ process.percent }}%);">
+                                                            {{ process.percent }}%</div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        {% else %}
+                                            <div class="col s12 red-text">対応履歴がありません。</div>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% elif code == '31' and cancellation_count > 0 %}
                                     <table>
                                         <thead>
                                         <tr>
@@ -102,7 +155,9 @@
                                     </table>
                                 {% endif %}
                             </div>
-                            {% if code < '31' or cancellation_count == 0 %}
+                            {% if code == '32' or code == '33' %}
+                                <!-- 物件解約はここでは行わない -->
+                            {% elif code < '31' or cancellation_count == 0 %}
                             <div class="row">
                                 <div class="col s12 right-align">
                                     <a data-position="left" data-delay="50" data-tooltip="{{name}}のプロセスを新規追加する" data-target="new_process_{{code}}"

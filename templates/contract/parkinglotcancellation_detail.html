@@ -46,21 +46,27 @@
                     <th>契約者</th>
                     <th>契約開始日</th>
                     <th>契約終了日</th>
+                    <th>代替駐車場</th>
                     <td>進捗</td>
                 </tr>
                 </thead>
                 <tbody>
                 {% for position_cancellation in object.parkingpositioncancellation_set.all %}
+                {% with process=position_cancellation.process %}
                 <tr>
                     <td>{{ position_cancellation.parking_position }}</td>
                     <td>{{ position_cancellation.contractor }}</td>
                     <td>{{ position_cancellation.contract.start_date }}</td>
                     <td>{{ position_cancellation.contract.end_date }}</td>
+                    <td>{{ position_cancellation.replacement|default:'' }}</td>
                     <td>
-                        <div style="background: linear-gradient(90deg, transparent 0%, transparent 0.0%, #9adaaf 0.0%, #9adaaf {{ position_cancellation.process.percent }}%, transparent {{ position_cancellation.process.percent }}%);">
-                            {{ position_cancellation.process.percent }}%</div>
+                        <a href="{% url 'contract:process_detail' process.pk %}" data-turbolinks="false">
+                        <div style="background: linear-gradient(90deg, transparent 0%, transparent 0.0%, #9adaaf 0.0%, #9adaaf {{ process.percent }}%, transparent {{ process.percent }}%);">
+                            {{ process.percent }}%</div>
+                        </a>
                     </td>
                 </tr>
+                {% endwith %}
                 {% endfor %}
                 </tbody>
             </table>

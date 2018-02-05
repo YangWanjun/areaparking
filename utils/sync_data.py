@@ -117,9 +117,24 @@ def sync_master():
 <p>ご解約は下記のＵＲＬにて進んでください。</p>
 <p>■解約手続き<br/><a title="解約書類" href="{{user_cancellation_url}}" target="_blank" rel="noopener">{{user_cancellation_url}}</a></p>
 </body>
-</html>""")
+</html>""", comment="一般解約用")
         MailGroup.objects.create(code='310', name="一般解約書類送付", sender='ap.test@e-business.co.jp', template=template)
         print('作成', '一般解約書類送付のメールグループ')
+    if MailGroup.objects.public_filter(code='320').count() == 0:
+        template = MailTemplate.objects.create(title='{{parking_lot_name}}の退出届', body="""<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>{{ user_name }} {{user_honorific}}：&nbsp;</p>
+<p>いつもお世話になっております、<br />株式会社エリアパーキングです。</p>
+<p>この度は、急な契約解除のお話しで大変申し訳ございません。<br />{{parking_lot_name}}は、所有者と弊社との間の駐車場利用契約が終了するため、<br />　月　日（　）以降のご利用が頂けなくなります。解約日が確定致しましたら、本書類に<br />ご記入いただき、弊社へ返送下さいますようお願い申し上げます。解約は最長　月　日（　）までと致します。<br />各月の日割賃料はご退出の確認後速やかに口座へ返金致します。敷金の預かりはございません。<br />尚、当駐車場の鍵類は最終ご利用日から５日以内に何かに包んで弊社にご返送下さい。</p>
+<p>ご解約は下記のＵＲＬにて進んでください。</p>
+<p>■解約手続き<br /><a title="解約書類" href="{{parking_lot_cancellation_url}}" target="_blank" rel="noopener">{{parking_lot_cancellation_url}}</a></p>
+</body>
+</html>""", comment="物件解約用")
+        MailGroup.objects.create(code='322', name="物件解約書類送付", sender='ap.test@e-business.co.jp', template=template)
+        print('作成', '物件解約書類送付のメールグループ')
     # 媒体を作成
     if TransmissionRoute.objects.public_all().count() == 0:
         TransmissionRoute.objects.create(name='チラシ', price_kbn='01')
