@@ -17,6 +17,10 @@ urlpatterns = [
     url('^distribution/', views.HandbillDistributionView.as_view(), name='distribution_list'),
     url('^handbill/', include(views.HandbillCompanyViewSet().urls)),
 
+    url('^construction/$', views.ConstructionListView.as_view(), name='construction_list'),
+    url('^construction/(?P<pk>\d+)/detail/$', views.ConstructionDetailView.as_view(), name='construction_detail'),
+    url('^construction/add/$', views.ConstructionAddView.as_view(), name='construction_add'),
+
     url('^update_subscription$', views.UpdateSubscription.as_view(), name='update_subscription'),
     url('^notification_data/\.json$', views.GetNotificationData.as_view(), name='notification_data'),
 ]

@@ -178,6 +178,18 @@ class HandbillCompanyViewSet(BaseModelViewSet):
         return True
 
 
+class ConstructionListView(BaseTemplateView):
+    template_name = 'whiteboard/construction_list.html'
+
+
+class ConstructionDetailView(BaseTemplateView):
+    template_name = 'whiteboard/construction_detail.html'
+
+
+class ConstructionAddView(BaseTemplateView):
+    template_name = 'whiteboard/construction_add.html'
+
+
 class UpdateSubscription(BaseView):
 
     def post(self, request, *args, **kwargs):

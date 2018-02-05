@@ -1,0 +1,224 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">不具合: プラウド弦巻アベニュー</div>
+            <table class="table bordered">
+                <tr>
+                    <th>工事日</th>
+                    <td>2017/12/10</td>
+                </tr>
+                <tr>
+                    <th>問い合わせ元</th>
+                    <td>野村不動産　中山様</td>
+                </tr>
+                <tr>
+                    <th>駐車場</th>
+                    <td>プラウド弦巻アベニュー</td>
+                </tr>
+                <tr>
+                    <th>車室</th>
+                    <td>22,23,24,29</td>
+                </tr>
+                <tr>
+                    <th>賃貸管理会社</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th>建物管理会社</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th>所有者</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th>貸主</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th>現地掲示物有り</th>
+                    <th>○</th>
+                </tr>
+                <tr>
+                    <th>車両の入出庫可能</th>
+                    <th>○</th>
+                </tr>
+                <tr>
+                    <th>代替駐車場の用意有り</th>
+                    <th>○</th>
+                </tr>
+                <tr>
+                    <th>担当者</th>
+                    <td>担当者2</td>
+                </tr>
+                <tr>
+                    <th>工事内容</th>
+                    <td>定期点検</td>
+                </tr>
+                <tr>
+                    <th>状態</th>
+                    <td><span class="new badge left deep-orange" data-badge-caption="対応中" style="margin-left: 0px;"></span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">契約中の車室</div>
+            <table class="table bordered highlight">
+                <thead>
+                <tr>
+                    <th>車室</th>
+                    <th>契約者</th>
+                    <th>TEL</th>
+                    <th>連絡</th>
+                    <th style="width: 20%;">代替駐車場</th>
+                    <th style="width: 10%;">駐車場料金</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>22</td>
+                    <td><a href="{% url 'contract:contractor_detail' 101 %}">契約者001</a></td>
+                    <td>080-1234-5678</td>
+                    <td>連絡済</td>
+                    <td style="padding: 0px; border-left: 1px solid lightgray;border-right: 1px solid lightgray;"><input type="text" value="有り"/></td>
+                    <td style="padding: 0px; border-left: 1px solid lightgray;border-right: 1px solid lightgray;"><input type="number" class="right-align" value="12345"/></td>
+                    <td class="center"><a href="javascript:void(0)">返金</a></td>
+                </tr>
+                <tr>
+                    <td>23</td>
+                    <td><a href="{% url 'contract:contractor_detail' 102 %}">契約者002</a></td>
+                    <td>080-1234-5678</td>
+                    <td>連絡済</td>
+                    <td style="padding: 0px; border-left: 1px solid lightgray;border-right: 1px solid lightgray;"><input type="text" value="有り"/></td>
+                    <td style="padding: 0px; border-left: 1px solid lightgray;border-right: 1px solid lightgray;"><input type="number" class="right-align" value="12345"/></td>
+                    <td class="center"><a href="javascript:void(0)">返金</a></td>
+                </tr>
+                <tr>
+                    <td>24</td>
+                    <td><a href="{% url 'contract:contractor_detail' 103 %}">契約者003</a></td>
+                    <td>080-1234-5678</td>
+                    <td></td>
+                    <td style="padding: 0px; border-left: 1px solid lightgray;border-right: 1px solid lightgray;"><input type="text" value="有り"/></td>
+                    <td style="padding: 0px; border-left: 1px solid lightgray;border-right: 1px solid lightgray;"><input type="number" class="right-align" value="12345"/></td>
+                    <td class="center"><a href="javascript:void(0)">返金</a></td>
+                </tr>
+                <tr>
+                    <td>29</td>
+                    <td><a href="{% url 'contract:contractor_detail' 104 %}">契約者004</a></td>
+                    <td>080-1234-5678</td>
+                    <td>連絡済</td>
+                    <td style="padding: 0px; border-left: 1px solid lightgray;border-right: 1px solid lightgray;"><input type="text" value=""/></td>
+                    <td style="padding: 0px; border-left: 1px solid lightgray;border-right: 1px solid lightgray;"><input type="number" class="right-align" value=""/></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <a class="waves-effect waves-light btn white-text modal-trigger" data-target="add_defect_mail_send"><i class="material-icons right">send</i>一斎連絡</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="add_defect_mail_send" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>連絡メール送信</h4>
+        <div class="row">
+            <form method="post" action="?" id="frmAddWaitingContact">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input readonly value="{{ group.sender }}" id="mail_sender" name="mail_sender" type="text" />
+                            <label for="mail_sender">差出人</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input value="{{ object.content_object.contractor.email }}" id="mail_to" name="mail_to" type="text" />
+                            <label for="mail_to">宛先</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="mail_cc" name="mail_cc" type="text" />
+                            <label for="mail_cc">ＣＣ</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="mail_bcc" name="mail_bcc" type="text" />
+                            <label for="mail_bcc">ＢＣＣ</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input value="{{ template.title }}" id="mail_title" name="mail_title" type="text" />
+                            <label for="mail_title">件名</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="mail_content" name="mail_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                            <label for="mail_content">メール本文</label>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0)" onclick="add_trouble_detail()"
+           class="modal-action waves-effect waves-green btn-flat ">次へ</a>
+        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<style type="text/css">
+    table input[type=text],
+    table input[type=number] {
+        margin: 0px;
+        height: 20px;
+        border-bottom: 0px;
+        font-size: 13px;
+    }
+    table input[type=text]:focus ,
+    table input[type=number]:focus {
+        border: 0px !important;
+        outline: 0 !important;
+        background-size: 0 !important;
+    }
+
+</style>
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+        },
+        complete: function(obj) {
+            //alert('Closed');
+        } // Callback for Modal close
+    });
+});
+</script>
+{% endblock %}

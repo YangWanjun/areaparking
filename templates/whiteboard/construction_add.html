@@ -1,0 +1,88 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">不具合追加</div>
+            <form>
+                <div class="row input-field">
+                    <label for="id_contact_date" class="">工事日:</label>
+                    <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_date">
+                </div>
+                <div class="row input-field">
+                    <label for="id_1" class="">問い合わせ元:</label>
+                    <input type="text" name="contact_date" required="" id="id_1">
+                </div>
+                <div class="row input-field">
+                    <label for="id_parking_lot" class="active">駐車場:</label>
+                    <select id="id_parking_lot">
+                        <option>コスモフェスタ日暮里</option>
+                        <option>アデニウム田端</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="checkbox" class="filled-in" id="id_pos1"/><label for="id_pos1" style="margin-right:15px;">22</label>
+                    <input type="checkbox" class="filled-in" id="id_pos2"/><label for="id_pos2" style="margin-right:15px;">23</label>
+                    <input type="checkbox" class="filled-in" id="id_pos3"/><label for="id_pos3" style="margin-right:15px;">24</label>
+                    <input type="checkbox" class="filled-in" id="id_pos4"/><label for="id_pos4" style="margin-right:15px;">25</label>
+                    <input type="checkbox" class="filled-in" id="id_pos5"/><label for="id_pos5" style="margin-right:15px;">26</label>
+                    <input type="checkbox" class="filled-in" id="id_pos6"/><label for="id_pos6" style="margin-right:15px;">27</label>
+                    <input type="checkbox" class="filled-in" id="id_pos7"/><label for="id_pos7" style="margin-right:15px;">全体</label>
+                </div>
+                <div class="row input-field">
+                    <input type="checkbox" class="filled-in" id="id_pos8"/><label for="id_pos8" style="margin-right:15px;">現地掲示物有り</label>
+                </div>
+                <div class="row input-field">
+                    <input type="checkbox" class="filled-in" id="id_pos9"/><label for="id_pos9" style="margin-right:15px;">車両の入出庫可能</label>
+                </div>
+                <div class="row input-field">
+                    <input type="checkbox" class="filled-in" id="id_pos10"/><label for="id_pos10" style="margin-right:15px;">代替駐車場の用意有り</label>
+                </div>
+                <div class="row input-field" style="margin-top: 30px;">
+                    <label for="id_user" class="active">受付者:</label>
+                    <select id="id_user">
+                        <option>楊皖軍</option>
+                        <option>admin</option>
+                    </select>
+                </div>
+                <div class="row input-field">
+                    <label for="id_staff" class="active">担当者:</label>
+                    <select id="id_staff">
+                        <option>楊皖軍</option>
+                        <option>admin</option>
+                    </select>
+                </div>
+                <div class="row input-field">
+                    <textarea id="textarea1" class="materialize-textarea"></textarea>
+                    <label for="textarea1">工事内容</label>
+                </div>
+            </form>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <a class="waves-effect waves-light btn white-text popup">保存</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    ebjs.$('.vDateField').datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+});
+</script>
+{% endblock %}
