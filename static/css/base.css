@@ -19,19 +19,16 @@ div.content {
     height: calc(100% - 110px);
 }
 main {
-    margin-left: 250px !important;
+    /* margin-left: 250px !important; */
     font-size: 12px !important;
 }
-@media only screen and (max-width : 992px) {
-    header, main, footer {
-        margin-left: 0 !important;
-    }
+header, main, footer {
+    margin-left: 0 !important;
 }
-/*************** Fixed Header ****************/
-table.fixedHeader-floating th {
-    font-size: 12px;
+nav a.button-collapse {
+    display: inherit !important;
 }
-/**************** サイドバー *****************/
+/*
 .side-nav.fixed .userView {
     min-height: 100px !important;
 }
@@ -46,10 +43,17 @@ table.fixedHeader-floating th {
 .side-nav img.background {
     width: 250px;
 }
+*/
+.side-nav div.collapsible-body ul li a {
+    padding-left: 70px !important;
+}
 .side-nav li>a {
     font-size: 12px !important;
 }
-
+/*************** Fixed Header ****************/
+table.fixedHeader-floating th {
+    font-size: 12px;
+}
 /**************** 複雑なテーブル *****************/
 thead.complex {
     background-color: white;
@@ -87,17 +91,17 @@ div.nowrap {
     white-space: nowrap;
 }
 /**************** Collapsible  *****************/
-ul.collapsible {
+main ul.collapsible {
     border-top: 0px;
     border-left: 0px;
     border-right: 0px;
     box-shadow: none;
 }
-ul.collapsible div.collapsible-body {
+main ul.collapsible div.collapsible-body {
     padding-top: 10px;
     padding-bottom: 10px;
 }
-ul.collapsible div.collapsible-body table td {
+main ul.collapsible div.collapsible-body table td {
     padding-top: 5px;
     padding-bottom: 5px;
 }
