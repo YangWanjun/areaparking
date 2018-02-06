@@ -20,8 +20,11 @@ table.table th::before {
 table.table th::after {
     right: 0em !important;
 }
+table.table th {
+   padding: 5px 4px !important;
+}
 table.table td {
-    padding: 5px 4px;
+    padding: 5px 4px !important;
     border-left: 1px dashed lightgray;
 }
 table.table tr td:first-child {
