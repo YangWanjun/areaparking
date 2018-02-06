@@ -14,6 +14,9 @@ div.modal form td input {
     color: gray !important;
     cursor: default;
 }
+table.table td {
+    padding: 5px 2px;
+}
 /**************** サイドバー *****************/
 div.content {
     height: calc(100% - 110px);

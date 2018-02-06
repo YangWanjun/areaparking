@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
-from django.utils.html import mark_safe
+from django.utils.html import mark_safe, format_html
 
 from rest_framework import serializers, status
 from rest_framework.compat import set_rollback
@@ -223,7 +223,24 @@ class BaseModelViewSet(ModelViewSet):
 
 
 class BaseListModelView(ListModelView):
-    pass
+
+    def format_column(self, item, field_name, value):
+        if isinstance(value, bool):
+            return format_html('<i class="material-icons">{}</i>'.format(
+                'panorama_fish_eye' if value else 'close'
+            ))
+        else:
+            formatted = super(ListModelView, self).format_column(item, field_name, value)
+            if field_name in self.get_list_display_links(self.get_list_display()):
+                formatted = format_html('<a href="{}">{}</a>', self.get_item_url(item), formatted)
+            return formatted
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseListModelView, self).get_context_data(**kwargs)
+        context.update({
+            'debug': True,
+        })
+        return context
 
 
 class BaseDetailModelView(DetailModelView):
