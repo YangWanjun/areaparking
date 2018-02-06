@@ -14,8 +14,19 @@ div.modal form td input {
     color: gray !important;
     cursor: default;
 }
+table.table th::before {
+    right: 0.5em !important;
+}
+table.table th::after {
+    right: 0em !important;
+}
 table.table td {
-    padding: 5px 2px;
+    padding: 5px 4px;
+    border-left: 1px dashed lightgray;
+}
+table.table tr td:first-child {
+    border-left: 0px;
+}
 }
 /**************** サイドバー *****************/
 div.content {

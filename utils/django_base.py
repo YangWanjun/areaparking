@@ -19,7 +19,7 @@ from rest_framework.views import exception_handler
 
 from material.frontend.views import ModelViewSet, DetailModelView, ListModelView, UpdateModelView
 
-from utils import errors
+from utils import errors, common
 
 
 class PublicManager(models.Manager):
@@ -213,16 +213,8 @@ class BaseTemplateView(BaseTemplateViewWithoutLogin):
     pass
 
 
-class BaseModelViewSet(ModelViewSet):
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-
 class BaseListModelView(ListModelView):
+    paginate_by = 25
 
     def format_column(self, item, field_name, value):
         if isinstance(value, bool):
@@ -260,6 +252,18 @@ class BaseUpdateModelView(UpdateModelView):
             'debug': True,
         })
         return context
+
+
+class BaseModelViewSet(ModelViewSet):
+    list_view_class = BaseListModelView
+    detail_view_class = BaseDetailModelView
+    update_view_class = BaseUpdateModelView
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class BaseModelSerializer(serializers.ModelSerializer):

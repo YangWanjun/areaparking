@@ -29,6 +29,7 @@
     $(thead).find('th').eq(8).text('既');
     $(thead).find('th').eq(9).text('新');
     $(thead).find('th').eq(10).text('ﾌﾘｰ');
+    $(thead).find('th').eq(11).css('width', '20px');
   };
   config['columnDefs'] = [{
     "targets": [5, 11],
@@ -40,6 +41,8 @@
       } else if (col == 11) {
           ebjs.material.collapse_parking_lot(td, rowData.code);
           $(td).css("padding", "0px");
+          $(td).css("width", "20px");
+          $(td).addClass("center");
       }
     }
   }];
