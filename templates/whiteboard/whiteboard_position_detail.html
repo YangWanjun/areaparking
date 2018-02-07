@@ -16,6 +16,8 @@
                 <tr>
                     <th style="width: 25%;">車室名称：</th>
                     <td>{{ whiteboard_position }}</td>
+                </tr>
+                <tr>
                     <th style="width: 30%;">空き状況：</th>
                     <td>
                         <span class="new badge left {%if whiteboard_position.position_status == '01'%}green{% else %}{%if whiteboard_position.position_status == '02' %}deep-orange{%else%}grey{%endif%}{%endif%}"
@@ -25,63 +27,79 @@
                 </tr>
                 <tr>
                     <th>駐車場名称：</th>
-                    <td colspan="3">{{ whiteboard_position.whiteboard }}</td>
+                    <td>{{ whiteboard_position.whiteboard }}</td>
                 </tr>
                 <tr>
                     <th>場所：</th>
-                    <td colspan="3">{{ whiteboard_position.address }}</td>
+                    <td>{{ whiteboard_position.address }}</td>
                 </tr>
                 <tr>
                     <th>募集賃料（税込）：</th>
                     <td>{{ whiteboard_position.price_recruitment|default:''|intcomma }}</td>
+                </tr>
+                <tr>
                     <th>募集賃料（税抜）：</th>
                     <td>{{ whiteboard_position.price_recruitment_no_tax|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>ホームページ（税込）：</th>
                     <td>{{ whiteboard_position.price_homepage|default:''|intcomma }}</td>
+                </tr>
+                <tr>
                     <th>ホームページ（税別）：</th>
                     <td>{{ whiteboard_position.price_homepage_no_tax|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>チラシ価格（税込）：</th>
                     <td>{{ whiteboard_position.price_handbill|default:''|intcomma }}</td>
+                </tr>
+                <tr>
                     <th>チラシ価格（税抜）：</th>
                     <td>{{ whiteboard_position.price_handbill_no_tax|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>全長：</th>
                     <td>{{ whiteboard_position.length|default:''|intcomma }}</td>
+                </tr>
+                <tr>
                     <th>全幅：</th>
                     <td>{{ whiteboard_position.width|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>全高：</th>
                     <td>{{ whiteboard_position.height|default:''|intcomma }}</td>
+                </tr>
+                <tr>
                     <th>重量：</th>
                     <td>{{ whiteboard_position.weight|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>ﾒｰｶｰのタイヤ幅：</th>
                     <td>{{ whiteboard_position.tyre_width|default:''|intcomma }}</td>
+                </tr>
+                <tr>
                     <th>AP計測のタイヤ幅：</th>
                     <td>{{ whiteboard_position.tyre_width_ap|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>ﾒｰｶｰの地上最低高：</th>
                     <td>{{ whiteboard_position.min_height|default:''|intcomma }}</td>
+                </tr>
+                <tr>
                     <th>AP計測の地上最低高：</th>
                     <td>{{ whiteboard_position.min_height_ap|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>F値：</th>
                     <td>{{ whiteboard_position.f_value|default:''|intcomma }}</td>
+                </tr>
+                <tr>
                     <th>R値：</th>
                     <td>{{ whiteboard_position.r_value|default:''|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>備考：</th>
-                    <td colspan="3">{{ whiteboard_position.position_comment|default:'' }}</td>
+                    <td>{{ whiteboard_position.position_comment|default:'' }}</td>
                 </tr>
 
                 {% endblock %}
@@ -210,6 +228,10 @@ $(document).one("turbolinks:load", function() {
                 if (user_info.tel && user_info.tel.length > 0) {
                     $("#id_tel").val(user_info.tel || '');
                     $("#id_tel").next().addClass('active');
+                }
+                if (user_info.email && user_info.email.length > 0) {
+                    $("#id_email").val(user_info.email || '');
+                    $("#id_email").next().addClass('active');
                 }
             }
         },

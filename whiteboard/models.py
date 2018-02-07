@@ -14,6 +14,7 @@ from utils.django_base import BaseViewModel, BaseModel
 class WhiteBoard(BaseViewModel):
     code = models.IntegerField(primary_key=True, verbose_name="コード")
     name = models.CharField(max_length=100, verbose_name="駐車場名称")
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
     category = models.ForeignKey(ParkingLotType, on_delete=models.DO_NOTHING, verbose_name="分類")
     staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="担当者")
     address = models.CharField(max_length=255, blank=True, null=True, editable=False, verbose_name="所在地")
@@ -95,6 +96,8 @@ class Inquiry(BaseModel):
     user_name = models.CharField(blank=True, null=True, max_length=15, verbose_name="名前")
     gender = models.CharField(blank=True, null=True, max_length=1, choices=constants.CHOICE_GENDER, verbose_name="性別")
     tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
+    email = models.EmailField(blank=True, null=True, verbose_name="メールアドレス")
+    is_tenant = models.BooleanField(default=False, verbose_name="入居者")
     parking_lot_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="希望駐車場コード")
     parking_lot_name = models.CharField(blank=True, null=True, max_length=100, verbose_name="希望駐車場")
     area_code = models.CharField(blank=True, null=True, max_length=20, verbose_name="希望エリアコード")

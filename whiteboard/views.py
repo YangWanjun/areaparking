@@ -84,7 +84,7 @@ class WhiteBoardViewSet(BaseModelViewSet):
 
 
 class WhiteBoardPositionDetailView(BaseTemplateView):
-    template_name = './whiteboard/parking_position_detail.html'
+    template_name = './whiteboard/whiteboard_position_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super(WhiteBoardPositionDetailView, self).get_context_data(**kwargs)

@@ -42,6 +42,45 @@
     </div>
     <div class="card">
         <div class="card-content">
+            <div class="card-title">駐車場画像一覧</div>
+            <div class="row">
+                <div class="col s12 m12 l12 portfolio-holder">
+                    {% for img in object.parking_lot.parkinglotimage_set.all %}
+                        <div class="left" style="width: 200px;height: 180px;margin: 0px 5px 2px 0px;"><img class="materialboxed" width="200" src="{{ img.path.url }}"/></div>
+                    {% empty %}
+                        <div class="red-text">駐車場画像はありません。</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">駐車場書類一覧</div>
+            <table class="table bordered highlight">
+                <thead>
+                <tr>
+                    <th>ファイル名</th>
+                    <th>備考</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for doc in object.parking_lot.parkinglotdoc_set.all %}
+                    <tr>
+                        <td>{{ doc }}</td>
+                        <td>{{ doc.comment }}</td>
+                        <td><a target="_blank" href="{{ doc.path.url }}"><i class="material-icons">file_download</i></a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="red-text">駐車場書類はありません。</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
             <div class="card-title" id="divPositionTitle">車室一覧</div>
             <table id="tblPosition" class="table bordered highlight mdl-data-table" cellspacing="0">
                 <thead>
@@ -100,10 +139,15 @@
 
 {% block footer %}
 <link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.material.min.css" />
-<!--<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.1.0/material.min.css" />-->
+<style type="text/css">
+    div.portfolio-holder div.left {
+        overflow: hidden;
+    }
+</style>
 <script type="text/javascript">
     ebjs.material.popup_anchor();
     $(document).one("turbolinks:load", function() {
+        $('.materialboxed').materialbox();
         if ( ! $.fn.DataTable.isDataTable( '#tblPosition' ) ) {
             var datatable = $('#tblPosition').DataTable({
                 "searching": false,

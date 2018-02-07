@@ -272,7 +272,7 @@ class ParkingLotComment(BaseModel):
 
 
 class ParkingLotDoc(BaseModel):
-    parking_lot = models.ForeignKey(ParkingLot, related_name='docs', verbose_name="駐車場")
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
     path = models.FileField(upload_to=common.get_parking_lot_doc_path)
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 

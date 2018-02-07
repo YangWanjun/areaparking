@@ -15,10 +15,20 @@
                 <label for="gender" class="active">性別</label>
             </div>
         </div>
-        <div class="row">
-            <div class="input-field col s12">
+        <div class="row" style="margin-top: 0px;">
+            <div class="input-field col s6">
                 <input type="text" value="" id="tel" name="tel" class="eb-autocomplete" eb-autocomplete-url="/api/search-tel/"/>
                 <label for="tel">ＴＥＬ</label>
+            </div>
+            <div class="input-field col s6">
+                <input type="checkbox" class="filled-in questionnaire" id="is_tenant" name="is_tenant">
+                <label for="is_tenant">入居者</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input type="text" value="" id="email" name="email" class="eb-autocomplete"/>
+                <label for="email">メールアドレス</label>
             </div>
         </div>
         <div class="row">
