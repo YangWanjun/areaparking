@@ -3,6 +3,7 @@ select pos.id
      , lot.code as whiteboard_id
      /* 車室情報 */
      , pos.id as parking_position_id
+     , pos.name
      , CONCAT(lot.pref_name, lot.city_name, ifnull(lot.town_name, ''), ifnull(lot.aza_name, ''), ifnull(lot.other_name, '')) as address
      , CASE
            WHEN c.id is not null THEN '03' 		-- 空き無

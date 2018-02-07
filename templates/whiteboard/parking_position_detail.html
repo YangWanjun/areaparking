@@ -94,7 +94,7 @@
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
                 {% if whiteboard_position.position_status != "01" %}
-                    <a class="waves-effect waves-light btn white-text popup">順番待ちへ</a>
+                    <a class="waves-effect waves-light btn white-text">順番待ちへ</a>
                 {% else %}
                     <button data-target="start_temp_contract" class="btn modal-trigger">契約に進む</button>
                 {% endif %}

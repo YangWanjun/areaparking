@@ -57,6 +57,7 @@ class WhiteBoard(BaseViewModel):
 class WhiteBoardPosition(BaseViewModel):
     whiteboard = models.ForeignKey(WhiteBoard, on_delete=models.DO_NOTHING, verbose_name="ホワイトボード")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室")
+    name = models.CharField(max_length=30, verbose_name="車室番号")
     address = models.CharField(max_length=255, blank=True, null=True, verbose_name="所在地")
     position_status = models.CharField(max_length=2, choices=constants.CHOICE_PARKING_STATUS, verbose_name="空き")
     contract_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")

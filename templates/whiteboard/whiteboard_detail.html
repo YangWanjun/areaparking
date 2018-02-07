@@ -35,8 +35,6 @@
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% if object.is_empty != "01" %}
                     <a class="waves-effect waves-light btn white-text popup">順番待ちへ</a>
-                {% else %}
-                    <button data-target="start_temp_contract" class="btn modal-trigger">契約に進む</button>
                 {% endif %}
                 {% endblock actions_row %}
             </div>
@@ -62,7 +60,7 @@
                         <th>重量</th>
                         <!-- その他 -->
                         <th>備考</th>
-                        <th></th>
+                        <!--<th></th>-->
                     </tr>
                 </thead>
                 <tbody>
@@ -79,11 +77,11 @@
                             <td>{{ position.height|default:''|intcomma }}</td>
                             <td>{{ position.weight|default:''|intcomma }}</td>
                             <td title="{{ position.position_comment|default:'' }}">{{ position.position_comment|default:''|truncatechars:10 }}</td>
-                            <td>
-                                <a class="popup" href="{% url 'admin:parkinglot_parkingposition_change' position.pk %}?_popup=1">
-                                    <i class="tiny material-icons">mode_edit</i>
-                                </a>
-                            </td>
+                            <!--<td class="center">-->
+                                <!--<a class="popup" href="{% url 'admin:parkinglot_parkingposition_change' position.pk %}?_popup=1">-->
+                                    <!--<i class="tiny material-icons">mode_edit</i>-->
+                                <!--</a>-->
+                            <!--</td>-->
                         </tr>
                     {% endfor %}
                 </tbody>

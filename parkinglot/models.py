@@ -301,7 +301,7 @@ class ParkingLotImage(BaseModel):
 
 class ParkingPosition(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    name = models.CharField(max_length=30, verbose_name="車室名称")
+    name = models.CharField(max_length=30, verbose_name="車室番号")
     category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
     # 賃料
     price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")

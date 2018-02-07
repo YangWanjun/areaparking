@@ -49,6 +49,7 @@ router.register(r'car-maker', master_api.CarMakerViewSet)
 router.register(r'car-model', master_api.CarModelViewSet)
 
 router.register(r'whiteboard', whiteboard_api.WhiteBoardViewSet)
+router.register(r'whiteboard-position', whiteboard_api.WhiteBoardPositionViewSet)
 router.register(r'inquiry', whiteboard_api.InquiryViewSet)
 router.register(r'search-tel', whiteboard_api.SearchTel, base_name='search-tel')
 router.register(r'waiting', whiteboard_api.WaitingViewSet)

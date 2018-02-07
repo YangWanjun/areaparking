@@ -8,3 +8,6 @@ class BillingConfig(ModuleMixin, AppConfig):
     icon = '<i class="material-icons">attach_money</i>'
     verbose_name = '請求管理'
     order = 40
+
+    def index_url(self):
+        return None

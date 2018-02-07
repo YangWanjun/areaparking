@@ -30,6 +30,13 @@ class WhiteBoardSerializer(GeoFeatureModelSerializer):
         return obj.position_count - obj.contract_count - obj.temp_contract_count
 
 
+class WhiteBoardPositionSerializer(BaseModelSerializer):
+
+    class Meta:
+        model = models.WhiteBoardPosition
+        fields = '__all__'
+
+
 class InquirySerializer(BaseModelSerializer):
 
     class Meta:

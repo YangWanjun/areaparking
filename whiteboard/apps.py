@@ -11,3 +11,6 @@ class WhiteboardConfig(ModuleMixin, AppConfig):
     icon = '<i class="material-icons">airplay</i>'
     verbose_name = 'ホワイトボード'
     order = 20
+
+    def index_url(self):
+        return None

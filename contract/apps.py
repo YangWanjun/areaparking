@@ -11,3 +11,6 @@ class ContractConfig(ModuleMixin, AppConfig):
     icon = '<i class="material-icons">library_books</i>'
     verbose_name = '契約管理'
     order = 30
+
+    def index_url(self):
+        return None

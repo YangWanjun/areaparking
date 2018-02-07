@@ -26,8 +26,8 @@ $(document).ready(function(){
             modal.find('h5').text(parking_lot_name);
 
             ebjs.utils.ajax_get(
-                ebjs.config.setting.api_size_grouped_positions,
-                {code: parking_lot_id}
+                ebjs.config.setting.api_whiteboard_positions,
+                {whiteboard__code: parking_lot_id}
             ).done(function(result) {
                 var tbl = ebjs.material.get_expanded_positions_html(result);
                 modal.find('div#div_positions').html('');

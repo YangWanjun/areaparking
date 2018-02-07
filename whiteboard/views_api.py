@@ -8,9 +8,15 @@ from . import models, serializers
 from contract.models import Subscription, Contractor
 
 
-class WhiteBoardViewSet(viewsets.ModelViewSet):
+class WhiteBoardViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.WhiteBoard.objects.all()
     serializer_class = serializers.WhiteBoardSerializer
+
+
+class WhiteBoardPositionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.WhiteBoardPosition.objects.all()
+    serializer_class = serializers.WhiteBoardPositionSerializer
+    filter_fields = ('whiteboard__code',)
 
 
 class InquiryViewSet(viewsets.ModelViewSet):

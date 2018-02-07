@@ -8,3 +8,6 @@ class ManagementDepConfig(ModuleMixin, AppConfig):
     icon = '<i class="material-icons">business</i>'
     verbose_name = '管理部関連'
     order = 50
+
+    def index_url(self):
+        return None
