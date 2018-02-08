@@ -1,0 +1,199 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="row">
+    <div class="card-title">駐車場情報</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">駐車場名称</th>
+            <td class="form-field">{{ parking_lot }}</td>
+        </tr>
+        <tr>
+            <th class="form-field">所在地</th>
+            <td class="form-field">
+                {{ parking_lot.address }}
+                {% if parking_lot.address %}
+                    <br/><a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{parking_lot.address}}" style="font-size:11px;">Googleマップで表示</a>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">収容可能サイズ</th>
+            <td class="form-field">
+                {% for position in parking_lot.get_size_grouped_position %}
+                    {% if position.position_count %}
+                    <div>
+                        <span style="margin-right: 5px;">全長:{{ position.length|default:''|intcomma }}mm</span>
+                        <span style="margin-right: 5px;">全幅:{{ position.width|default:''|intcomma }}mm</span>
+                        <span style="margin-right: 5px;">全高:{{ position.height|default:''|intcomma }}mm</span>
+                        <span style="margin-right: 5px;">重量:{{ position.weight|default:''|intcomma }}kg</span>
+                        <span>{% if position.min_height %}地上最低高:{{ position.min_height|default:''|intcomma }}mm{% endif %}</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% if parking_lot.time_limit_comment %}
+        <tr>
+            <th class="red-text form-field">※利用時間帯について</th>
+            <td class="form-field"><pre>{{ parking_lot.time_limit_comment }}</pre></td>
+        </tr>
+        {% endif %}
+        {% if parking_lot.transit_pass_comment %}
+        <tr>
+            <th class="red-text form-field">※通行許可証について</th>
+            <td class="form-field"><pre>{{ parking_lot.transit_pass_comment }}</pre></td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+<div class="row">
+    <div class="card-title">申込み基本情報入力</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field">契約者分類<span class="new badge red" data-badge-caption="必須"></span></th>
+            <td class="form-field">
+                <input type="radio" name="contractor_category" required id="contractor_corporate" value="2" {% if user_subscription.category == '2' %}checked{% endif %}>
+                <label for="contractor_corporate" style="margin-right: 50px;">法人</label>
+                <input type="radio" name="contractor_category" required id="contractor_personal" value="1" {% if user_subscription.category == '1' %}checked{% endif %}>
+                <label for="contractor_personal">個人</label>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="id_name">お名前<span class="new badge red" data-badge-caption="必須"></span></label></th>
+            <td class="form-field"><input type="text" id="id_name" name="name" required placeholder="例）株式会社エリア・パーキング" value="{{ user_subscription.name|default:'' }}"/></td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="id_kana">フリガナ<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
+            <td class="form-field"><input type="text" id="id_kana" name="kana" required placeholder="例）カブシキガイシャエリア・パーキング" value="{{ user_subscription.kana|default:'' }}"/></td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="id_tel">電話番号<span class="new badge red" data-badge-caption="必須"></span></label></th>
+            <td class="form-field">
+                <p>
+                    <input type="text" id="id_tel" name="tel" required placeholder="例）03-1234-5678" value="{{ user_subscription.tel|default:'' }}" />
+                </p>
+                <span class="red-text">※ご連絡のつきやすい番号をご入力ください。</span>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="id_email">メールアドレス<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
+            <td class="form-field"><input type="text" id="id_email" name="email" required placeholder="例）プリウス" value="{{ user_subscription.email|default:'' }}"/></td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="id_email_confirm">メールアドレス（確認）<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
+            <td class="form-field"><input type="text" id="id_email_confirm" name="email_confirm" required placeholder="例）プリウス" value="{{ user_subscription.email|default:'' }}"/></td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="id_car_model">ご契約予定車両の車種<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
+            <td class="form-field"><input type="text" id="id_car_model" name="car_model" required placeholder="例）プリウス" value="{{ user_subscription.car_model|default:'' }}"/></td>
+        </tr>
+        <tr>
+            <th class="form-field">希望契約開始日<span class="new badge red" data-badge-caption="必須"></span></th>
+            <td class="form-field">
+                <div>
+                    <input name="rdo_contract_start_date" type="radio" id="id_start_shortest" value="shortest" required />
+                    <label for="id_start_shortest">最短</label>
+                </div>
+                <div>
+                    <input name="rdo_contract_start_date" type="radio" id="id_start_select" value="calendar" required />
+                    <label for="id_start_select">カレンダーから選択</label>
+                    <input type="text" class="datepicker validate" id="id_contract_start_date" name="contract_start_date" required placeholder="例）2018-01-01" value="{{ user_subscription.contract_start_date|default:'' }}" style="width: 200px; height: 30px;"/>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field">保険加入の状況<span class="new badge red" data-badge-caption="必須"></span></th>
+            <td class="form-field">
+                <div>
+                    <input name="rdo_insurance" type="radio" id="id_insurance_within" value="within" required {% if user_subscription.insurance_limit_type == 'within' %}checked{% endif %}/>
+                    <label for="id_insurance_within">加入中</label>
+                </div>
+                <div>
+                    <input name="rdo_insurance" type="radio" id="id_insurance_plans" value="plans" required {% if user_subscription.insurance_limit_type == 'plans' %}checked{% endif %}/>
+                    <label for="id_insurance_plans">加入予定</label>
+                </div>
+                {% if not parking_lot.required_insurance %}
+                <div>
+                    <input name="rdo_insurance" type="radio" id="id_insurance_without" value="without" required {% if user_subscription.insurance_limit_type == 'without' %}checked{% endif %}/>
+                    <label for="id_insurance_without">加入なし</label>
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="rdo_waiting_yes">空き待ち<span class="new badge red" data-badge-caption="必須"></span></label></th>
+            <td class="form-field">
+                <div>申込み時点で当該駐車場が満車になっていた場合、空き待ちを希望しますか？</div>
+                <div>
+                    <input name="rdo_waiting" type="radio" id="rdo_waiting_yes" value="yes" required {% if user_subscription.require_waiting == 'yes' %}checked{% endif %}/>
+                    <label for="rdo_waiting_yes">はい</label>
+                </div>
+                <div>
+                    <input name="rdo_waiting" type="radio" id="rdo_waiting_no" value="no" required {% if user_subscription.require_waiting == 'no' %}checked{% endif %}/>
+                    <label for="rdo_waiting_no">いいえ</label>
+                </div>
+                <span class="red-text">※本駐車場または周辺にご希望に添う駐車場があった場合にご紹介いたします。</span>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="id_comment">備考</label></th>
+            <td class="form-field">
+                <textarea id="id_comment" name="comment" class="materialize-textarea">{{ user_subscription.comment|default:'' }}</textarea>
+                <div class="red-text">※2台(2車室)以上のご契約をご希望の場合は当欄にその旨を記載してください。</div>
+                <div class="red-text">※その他、ご連絡事項がありましたらご記入ください。</div>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+function checkContractStartDate() {
+  if ($('#txt_contract_start_date').val() == '') {
+    $('#txt_contract_start_date').addClass('invalid');
+    return false;
+  } else {
+    $('#txt_contract_start_date').removeClass('invalid');
+    return true;
+  }
+}
+
+$('#txt_contract_start_date').change(function() {
+    checkContractStartDate();
+});
+
+// 希望契約期間は「１・２ヶ月契約」の場合、末日は必須です。
+$('input[name=rdo_contract_period]').change(function() {
+    if ($('#id_contract_period_short').is(':checked')) {
+        $("#txt_contract_end_month").attr('required', 'required');
+    } else {
+        $("#txt_contract_end_month").removeAttr('required');
+    }
+});
+
+// 希望契約期間は「１・２ヶ月契約」の場合、末日は必須です。
+$('input[name=rdo_insurance]').change(function() {
+    if ($('#id_insurance_limit_with').is(':checked')) {
+        $("#txt_insurance_limit_amount").attr('required', 'required');
+    } else {
+        $("#txt_insurance_limit_amount").removeAttr('required');
+    }
+});
+
+// アンケート「その他」が選択された場合
+$('input.questionnaire').change(function() {
+    var label_text = $("label[for=" + this.id + "]").text();
+    if (label_text == "その他") {
+        if ($(this).is(':checked')) {
+            $("#txt_route_other").attr('required', 'required');
+        } else {
+            $("#txt_route_other").removeAttr('required');
+        }
+    }
+});
+
+$('form').submit(function() {
+    return checkContractStartDate();
+});
+</script>
+{% endblock %}

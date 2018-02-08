@@ -15,8 +15,13 @@ from master.models import Mediation, BankAccount, Config, Payment, MailGroup, Tr
 from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, LeaseManagementCompany, \
     BuildingManagementCompany
 from utils import constants, common, errors
-from utils.app_base import get_total_context, get_user_subscription_url, get_user_contract_url, get_parking_lot_context, \
-    get_subscription_context, get_contractor_context, get_contract_cancellation_url
+from utils.app_base import get_total_context, \
+    get_user_subscription_simple_url, \
+    get_user_contract_url, \
+    get_parking_lot_context, \
+    get_subscription_context, \
+    get_contractor_context, \
+    get_contract_cancellation_url
 from utils.django_base import BaseModel, PublicManager, BaseViewModel
 
 
@@ -744,7 +749,7 @@ class Task(BaseModel):
             if self.category == '010':
                 data.update(get_parking_lot_context(self.process.content_object.parking_lot))
                 data.update(get_subscription_context(self.process.content_object))
-                data.update(get_user_subscription_url(self))
+                data.update(get_user_subscription_simple_url(self))
             elif self.category == '100':
                 data.update(get_parking_lot_context(self.process.content_object.parking_lot))
                 data.update(get_subscription_context(self.process.content_object))

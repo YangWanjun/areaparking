@@ -7,6 +7,11 @@ from . import views
 urlpatterns = [
     url('^$', generic.View.as_view(), name="index"),
     url('^url_timeout\.html$', views.UrlTimeoutView.as_view(), name='url_timeout'),
+    # 申込み用フォーム(車室の一時確保に必要な項目)【個人・法人共通】
+    url('^user_subscription_simple_step1/(?P<signature>[^/]+)\.html$', views.UserSubscriptionSimpleStep1View.as_view(),
+        name="user_subscription_simple_step1"),
+    url('^user_subscription_simple_step2/(?P<signature>[^/]+)\.html$', views.UserSubscriptionSimpleStep2View.as_view(),
+        name="user_subscription_simple_step2"),
     # ユーザー申込み
     url('^user_subscription_step1/(?P<signature>[^/]+)\.html$', views.UserSubscriptionStep1View.as_view(),
         name="user_subscription_step1"),

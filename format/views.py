@@ -24,7 +24,7 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
         pk = get_unsigned_value(signature)
         context.update({
             'pk': pk,
-            'signature': signature,
+            'signature': signature,         # デジタル署名
             'is_finished': False,
             'is_all_active': False,
         })
@@ -37,6 +37,107 @@ class BaseUserOperationView(BaseTemplateViewWithoutLogin):
             return response
         except signing.BadSignature:
             return redirect('format:url_timeout')
+
+
+class BaseUserSubscriptionSimpleView(BaseUserOperationView):
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseUserSubscriptionSimpleView, self).get_context_data(**kwargs)
+        signature = context.get('signature')
+        steps = self.get_steps(signature)
+        # 申込み対象（Subscription）の主キー
+        pk = context.get('pk')
+        user_subscription = self.get_user_subscription(pk)
+        context.update({
+            'user_subscription': user_subscription,
+            'parking_lot': user_subscription.parking_lot,
+            'steps': steps,
+        })
+        return context
+
+    def get_steps(self, signature=None):
+        """申込み用フォーム(車室の一時確保に必要な項目)のステップ数
+
+        :param signature:
+        :return:
+        """
+        return biz.get_user_subscription_simple_steps(signature)
+
+    def get_user_subscription(self, subscription_id):
+        """ユーザー申込み情報を取得する。
+
+        :return:
+        """
+        subscription = get_object_or_404(Subscription, pk=subscription_id)
+        if 'user_subscription' in self.request.session:
+            data = self.request.session['user_subscription']
+            if str(data.get('code', 0)) != str(subscription_id):
+                data = self.set_user_subscription(subscription)
+        else:
+            data = self.set_user_subscription(subscription)
+        return Subscription(**data)
+
+    def set_user_subscription(self, user_subscription):
+        """ユーザー申込み情報をセッションに保存する
+
+        :param user_subscription:
+        :return:
+        """
+        serializer = SubscriptionSerializer(user_subscription)
+        self.request.session['user_subscription'] = serializer.data
+        return serializer.data
+
+
+class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
+    template_name = 'format/user_subscription_simple_step1.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserSubscriptionSimpleStep1View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[0]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        user_subscription = context.get('user_subscription')
+        current_step = context.get('current_step')
+        contractor_category = request.POST.get('contractor_category')
+        name = request.POST.get('name') or None
+        kana = request.POST.get('kana') or None
+        tel = request.POST.get('tel') or None
+        email = request.POST.get('email') or None
+        email_confirm = request.POST.get('email_confirm') or None
+        car_model = request.POST.get('car_model') or None
+        if email == email_confirm:
+            user_subscription.category = contractor_category
+            user_subscription.name = name
+            user_subscription.kana = kana
+            user_subscription.tel = tel
+            user_subscription.email = email
+            user_subscription.car_model = car_model
+            self.set_user_subscription(user_subscription)
+            return redirect(current_step.get('next_step').get('url'))
+        else:
+            return self.render_to_response(context)
+
+
+class UserSubscriptionSimpleStep2View(BaseUserSubscriptionSimpleView):
+    template_name = 'format/user_subscription_simple_step2.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserSubscriptionSimpleStep2View, self).get_context_data(**kwargs)
+        steps = context.get('steps')
+        current_step = steps[1]
+        context.update({
+            'title': current_step.get('name'),
+            'current_step': current_step,
+            'is_finished': True
+        })
+        return context
 
 
 class BaseUserSubscriptionView(BaseUserOperationView):

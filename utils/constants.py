@@ -160,6 +160,8 @@ CHOICE_TASK_SUBSCRIPTION_CATEGORY = [
     # 01 申込
     ('010', '申込み用フォーム送付'),
     ('011', '申込み用フォーム確認'),
+    ('012', '審査用フォーム送付'),
+    ('013', '審査用フォーム確認'),
     # 03 審査
     ('030', '住所・電話番号 審査・確認'),
     ('031', '勤め先審査'),
@@ -254,8 +256,8 @@ CHOICE_SUBSCRIPTION_STATUS = (
     ('12', '破棄'),
 )
 CHOICE_INSURANCE_TYPE = (
-    ('within', '制限あり'),
-    ('without', '無制限'),
+    ('within', '加入中'),
+    ('without', '加入なし'),
     ('plans', '加入予定'),
 )
 CHOICE_CONTRACT_PERIOD = (

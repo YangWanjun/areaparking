@@ -467,7 +467,8 @@
 <script type="text/javascript" src="/static/tinymce/tinymce.init.js"></script>
 <script type="text/javascript">
 ebjs.material.popup_anchor();
-$(document).ready(function(){
+$(document).one("turbolinks:load", function() {
+    $('.collapsible').collapsible();
     $('.modal').modal({
         dismissible: true, // Modal can be dismissed by clicking outside of the modal
         opacity: .5, // Opacity of modal background

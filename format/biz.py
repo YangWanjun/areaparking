@@ -89,6 +89,25 @@ def create_steps(steps, url_pattern=None, url_kwargs=None):
     return step_list
 
 
+def get_user_subscription_simple_steps(signature=None):
+    """申込み用フォーム(車室の一時確保に必要な項目)のステップ数
+
+    :param signature:
+    :return:
+    """
+    url_pattern = 'format:user_subscription_simple_step%s'
+    url_kwargs = {'signature': signature}
+    step_list = create_steps(
+        [
+            ('①', '申込み基本情報'),
+            ('②', '申込み完了'),
+        ],
+        url_pattern=url_pattern,
+        url_kwargs=url_kwargs,
+    )
+    return [step.to_json() for step in step_list]
+
+
 def get_user_subscription_steps(signature=None):
     """ユーザー申込みのステップ数
 

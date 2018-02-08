@@ -8,3 +8,6 @@ class FormatConfig(ModuleMixin, AppConfig):
     icon = '<i class="material-icons">vibration</i>'
     verbose_name = '出力書式'
     order = 99
+
+    def is_hide(self):
+        return True

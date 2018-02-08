@@ -33,12 +33,13 @@ class Step(object):
             'prev_step': self.prev_step.to_json(1) if self.prev_step and level == 0 else None,
             'next_step': self.next_step.to_json(1) if self.next_step and level == 0 else None,
             'is_finished': self.is_finished,
-            'url': self.url(),
+            'url': self.url,
         }
 
     def full_name(self):
         return '%s %s' % (self.step, self.name)
 
+    @property
     def url(self):
         url_name = self.url_pattern % self.STEPS.get(self.step)
         return reverse(url_name, kwargs=self.url_kwargs)

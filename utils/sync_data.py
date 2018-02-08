@@ -58,7 +58,7 @@ def sync_master():
 <p>いつもお世話になっております、<br />株式会社エリアパーキングです。</p>
 <p>このたび駐車場のご申込みいただき<br />誠にありがとうございます。</p>
 <p>下記のURLにて、お申込みください。</p>
-<p>■申込書<br /><a title="申込書" href="{{user_subscription_url}}" data-mce-href="{{user_subscription_url}}" target="_blank" rel="noopener">{{user_subscription_url}}</a></p>
+<p>■申込書<br /><a title="申込書" href="{{user_subscription_simple_url}}" data-mce-href="{{user_subscription_simple_url}}" target="_blank" rel="noopener">{{user_subscription_simple_url}}</a></p>
 </body>
 </html>""")
         MailGroup.objects.create(code='001', name="申込書送付", sender='ap.test@e-business.co.jp', template=template)

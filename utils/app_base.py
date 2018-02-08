@@ -167,6 +167,18 @@ def get_subscription_context(subscription):
         return dict()
 
 
+def get_user_subscription_simple_url(task):
+    """ユーザー申込時のURLを取得する。
+
+    :param task:
+    :return:
+    """
+    subscription = task.process.content_object
+    url = reverse('format:user_subscription_simple_step1', kwargs={'signature': get_signed_value(subscription.pk)})
+    domain_name = Config.get_domain_name()
+    return {'user_subscription_simple_url': urljoin(domain_name, url)}
+
+
 def get_user_subscription_url(task):
     """ユーザー申込時のURLを取得する。
 
