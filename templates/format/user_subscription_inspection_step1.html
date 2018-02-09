@@ -1,0 +1,361 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+{% include 'format/parking_lot_info.html' %}
+{% if user_subscription.category == '1' %}
+    <!-- 個人 -->
+    <div class="row">
+        <div class="card-title">ご契約者様について</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="id_personal_name">ご契約名義<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <p>
+                        <input type="text" id="id_personal_name" name="personal_name" required placeholder="" value="{{ user_subscription.name|default:'' }}"/>
+                    </p>
+                    <p>
+                        <input type="text" id="id_personal_name_comment" name="name_personal_comment" placeholder="ご契約名義が車検証のご名義と異なる場合記入"/>
+                    </p>
+                    <span class="red-text">※ご契約名義が車検証のご名義（車両の所有者様）と異なる場合には、異なる理由を記載してください。</span>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="id_personal_kana">フリガナ<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
+                <td class="form-field"><input type="text" id="id_personal_kana" name="personal_kana" required placeholder="例）カブシキガイシャエリア・パーキング" value="{{ user_subscription.kana|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_birthday">生年月日</label></th>
+                <td class="form-field"><input type="text" class="datepicker" id="txt_personal_birthday" name="personal_birthday" placeholder="例）1980-01-01" value="{{ user_subscription.personal_birthday|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_post1">住所<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <div>
+                        〒<input type="text" class="center" required id="txt_personal_post1" name="txt_personal_post1" maxlength="3" value="{{ user_subscription.post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" required id="txt_personal_post2" name="txt_personal_post2" maxlength="4" value="{{ user_subscription.post_code2|default:'' }}" style="width: 60px;height:20px;"/>
+                    </div>
+                    <input type="text" required id="txt_personal_address1" name="txt_personal_address1" value="{{ user_subscription.address1|default:'' }}" />
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_address2">建物名</label></th>
+                <td class="form-field"><input type="text" id="txt_personal_address2" name="txt_personal_address2" placeholder="例）○○ビル　１０階" value="{{ user_subscription.address2|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_phone">携帯電話<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_personal_phone" name="txt_personal_phone" required placeholder="例）080-1234-5678" value="{{ user_subscription.personal_phone|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_tel">ご自宅の電話番号</label></th>
+                <td class="form-field"><input type="text" id="txt_personal_tel" name="txt_personal_tel" placeholder="例）03-1234-1234" value="{{ user_subscription.tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_fax">ご自宅のFAX番号</label></th>
+                <td class="form-field"><input type="text" id="txt_personal_fax" name="txt_personal_tel" placeholder="例）03-1234-1234" value="{{ user_subscription.fax|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_workplace_name">ご勤務先<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <input type="checkbox" class="filled-in" id="id_workplace_without" name="workplace_without"/><label for="id_workplace_without">なし</label>
+                    <input type="text" id="txt_workplace_name" name="workplace_name" required placeholder="" value="{{ user_subscription.workplace_name|default:'' }}"/>
+                </td>
+            </tr>
+            <tr id="tr_without_workplace" style="display: none;">
+                <th class="form-field"><label for="id_without_workplace_file" style="font-weight: normal;font-size:11px;">※勤務先のない方は、支払能力を証明できる書類（確定申告書や通帳残高が分かるもの等）を添付してください。</label></th>
+                <td class="form-field">
+                    <div class="file-field input-field" style="margin-top: 0px;">
+                        <div class="btn">
+                            <span>書類</span>
+                            <input type="file" id="id_without_workplace_file">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr id="tr_workplace_address">
+                <th class="form-field"><label for="txt_workplace_post1">ご勤務先の所在地<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <div>
+                        〒<input type="text" class="center" required id="txt_workplace_post1" name="txt_workplace_post1" maxlength="3" value="{{ user_subscription.workplace_post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" required id="txt_workplace_post2" name="txt_workplace_post2" maxlength="4" value="{{ user_subscription.workplace_post_code2|default:'' }}" style="width: 60px;height:20px;"/>
+                    </div>
+                    <input type="text" required id="txt_workplace_address1" name="txt_workplace_address1" value="{{ user_subscription.workplace_address1|default:'' }}" />
+                </td>
+            </tr>
+            <tr id="tr_workplace_tel">
+                <th class="form-field"><label for="txt_workplace_tel">ご勤務先の電話番号<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_workplace_tel" name="workplace_tel" required placeholder="例）03-1234-1234" value="{{ user_subscription.workplace_tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field">希望契約開始日<span class="new badge red" data-badge-caption="必須"></span></th>
+                <td class="form-field">
+                    <div>
+                        <input name="rdo_contract_start_date" type="radio" id="id_start_shortest" value="shortest" required />
+                        <label for="id_start_shortest">最短</label>
+                    </div>
+                    <div>
+                        <input name="rdo_contract_start_date" type="radio" id="id_start_select" value="calendar" required />
+                        <label for="id_start_select">カレンダーから選択</label>
+                        <input type="text" class="datepicker validate" id="id_contract_start_date" name="contract_start_date" required placeholder="例）2018-01-01" value="{{ user_subscription.contract_start_date|default:'' }}" style="width: 200px; height: 30px;"/>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field">希望契約期間<span class="new badge red" data-badge-caption="必須"></span></th>
+                <td class="form-field">
+                    <p>
+                        <input name="rdo_contract_period" type="radio" id="id_contract_period_long" value="long" required {% if user_subscription.contract_period == 'long' %}checked{% endif %}/>
+                        <label for="id_contract_period_long">１年間（その後自動更新）</label>
+                    </p>
+                    <p>
+                        <input name="rdo_contract_period" type="radio" id="id_contract_period_short" value="short" required {% if user_subscription.contract_period == 'short' %}checked{% endif %}/>
+                        <label for="id_contract_period_short">１・２ヶ月契約</label>
+                        （<input type="text" id="txt_contract_end_month" name="txt_contract_end_month" maxlength="2" value="{{ user_subscription.contract_end_month|default:'' }}" {% if user_subscription.contract_period == 'short' %}required{% endif %} style="width: 30px; height: 20px;text-align: right;padding-right:5px;" /><label for="txt_contract_end_month">月末日まで</label>）
+                        ※更新できませんのでご注意ください
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_try_putting_date1">試入れの希望日<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <p>
+                        <label for="txt_try_putting_date1">第1希望日時</label>
+                        <input type="text" class="datepicker" id="txt_try_putting_date1" name="try_putting_date1" required placeholder="例）2020-01-01" value="" style="width: 200px; height: 30px;"/>
+                        <input type="text" class="timepicker" id="txt_try_putting_time1" name="try_putting_time1" required placeholder="例）10:30" style="width: 200px; height: 30px;">
+                    </p>
+                    <p>
+                        <label for="txt_try_putting_date2">第2希望日時</label>
+                        <input type="text" class="datepicker" id="txt_try_putting_date2" name="try_putting_date2" required placeholder="例）2020-02-01" value="" style="width: 200px; height: 30px;"/>
+                        <input type="text" class="timepicker" id="txt_try_putting_time2" name="try_putting_time2" required placeholder="例）10:30" style="width: 200px; height: 30px;">
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field">保管証発行-車庫証明<span class="new badge red" data-badge-caption="必須"></span><br/>に必要な書類</th>
+                <td class="form-field">
+                    <p>
+                        <input name="rdo_receipt" type="radio" id="rdo_receipt_yes" value="yes" required {% if user_subscription.require_receipt == 'yes' %}checked{% endif %}/>
+                        <label for="rdo_receipt_yes">必要</label>
+                        （発行手数料：消費{% if receipt_without_consumption %}税別{% else %}税込{% endif %}{{ receipt_amount|intcomma }}円）
+                    </p>
+                    <p>
+                        <input name="rdo_receipt" type="radio" id="rdo_receipt_no" value="no" required {% if user_subscription.require_receipt == 'no' %}checked{% endif %}/>
+                        <label for="rdo_receipt_no">不要</label>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_personal_comment">備考</label></th>
+                <td class="form-field">
+                    <p>
+                        <input type="text" id="txt_personal_comment" name="txt_personal_address2" placeholder="" value=""/>
+                    </p>
+                    <span class="red-text">※ご連絡事項がありましたらご自由にご記入ください。</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% else %}
+    <!-- 法人 -->
+    <div class="row">
+        <div class="card-title">ご契約者様について</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="id_corporate_name">ご契約名義<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <p>
+                        <input type="text" id="id_corporate_name" name="corporate_name" required placeholder="" value="{{ user_subscription.name|default:'' }}"/>
+                    </p>
+                    <p>
+                        <input type="text" id="id_corporate_name_comment" name="name_corporate_comment" placeholder="ご契約名義が車検証のご名義と異なる場合記入"/>
+                    </p>
+                    <span class="red-text">※ご契約名義が車検証のご名義（車両の所有者様）と異なる場合には、異なる理由を記載してください。</span>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_kana">フリガナ<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_kana" name="corporate_kana" required placeholder="例）カブシキガイシャエリア・パーキング" value="{{ user_subscription.kana|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_post1">所在地<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <div>
+                        〒<input type="text" class="center" required id="txt_corporate_post1" name="txt_corporate_post1" maxlength="3" value="{{ user_subscription.post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" required id="txt_corporate_post2" name="txt_corporate_post2" maxlength="4" value="{{ user_subscription.post_code2|default:'' }}" style="width: 60px;height:20px;"/>
+                    </div>
+                    <input type="text" required id="txt_corporate_address1" name="txt_corporate_address1" value="{{ user_subscription.address1|default:'' }}" />
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_address2">建物名</label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_address2" name="txt_corporate_address2" placeholder="例）○○ビル　１０階" value="{{ user_subscription.address2|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_tel">電話番号<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_tel" name="txt_corporate_tel" required placeholder="例）03-1234-1234" value="{{ user_subscription.tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_fax">FAX番号</label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_fax" name="txt_corporate_fax" placeholder="例）03-1234-1234" value="{{ user_subscription.fax|default:'' }}"/></td>
+            </tr>
+        </table>
+    </div>
+    <div class="row">
+        <div class="card-title">契約担当者</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="txt_corporate_staff_name">ご契約担当者様のお名前<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_name" name="txt_corporate_staff_name" required placeholder="" value="{{ user_subscription.corporate_staff_name|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_staff_tel">TEL<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_tel" name="txt_corporate_staff_tel" required placeholder="例）03-1234-1234" value="{{ user_subscription.corporate_staff_tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_staff_fax">FAX<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_fax" name="txt_corporate_staff_fax" required placeholder="例）03-1234-1234" value="{{ user_subscription.corporate_staff_fax|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_staff_phone">携帯電話<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_staff_phone" name="txt_corporate_staff_phone" required placeholder="例）080-1234-1234" value="{{ user_subscription.corporate_staff_phone|default:'' }}"/></td>
+            </tr>
+        </table>
+    </div>
+    <div class="row">
+        <div class="card-title">緊急連絡先（※ご本人、勤務先以外）</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="txt_corporate_contact_tel">電話番号<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_contact_tel" name="txt_corporate_contact_tel" required placeholder="" value="{{ user_subscription.contact_tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_contact_name">氏名<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_contact_name" name="txt_corporate_contact_name" required placeholder="" value="{{ user_subscription.contact_name|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_contact_relation">契約者との関係<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_contact_relation" name="txt_corporate_contact_relation" required placeholder="例）父" value="{{ user_subscription.contact_relation|default:'' }}"/></td>
+            </tr>
+        </table>
+    </div>
+    <div class="row">
+        <div class="card-title">使用者・使用者所在地</div>
+        <table class="step-info">
+            <tr>
+                <th class="form-field"><label for="txt_corporate_user_kana">フリガナ</label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_user_kana" name="txt_corporate_user_kana" placeholder="" value="{{ user_subscription.corporate_user_kana|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_user_name">氏名</label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_user_name" name="txt_corporate_user_name" placeholder="" value="{{ user_subscription.corporate_user_name|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_user_tel">携帯電話</label></th>
+                <td class="form-field"><input type="text" id="txt_corporate_user_tel" name="txt_corporate_user_tel" placeholder="" value="{{ user_subscription.corporate_user_tel|default:'' }}"/></td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_corporate_user_post1">所在地</label></th>
+                <td class="form-field">
+                    <div>
+                        〒<input type="text" class="center" id="txt_corporate_user_post1" name="txt_corporate_user_post1" maxlength="3" value="{{ user_subscription.corporate_user_post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" id="txt_corporate_user_post2" name="txt_corporate_user_post2" maxlength="4" value="{{ user_subscription.corporate_user_post_code2|default:'' }}" style="width: 60px;height:20px;"/>
+                    </div>
+                    <input type="text" id="txt_corporate_user_address1" name="txt_corporate_user_address1" value="{{ user_subscription.corporate_user_address1|default:'' }}" />
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endif %}
+<div class="row">
+    <div class="card-title">ご契約車両について</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field"><label for="txt_no_plate">車両登録番号<span class="new badge red" data-badge-caption="必須"></span><br/>(ﾅﾝﾊﾞｰﾌﾟﾚｰﾄ)</label></th>
+            <td class="form-field"><input type="text" id="txt_no_plate" name="txt_no_plate" required placeholder="例）練馬 502 ワ 1234" value="{{ user_subscription.car_no_plate|default:'' }}"/></td>
+        </tr>
+        <tr>
+            <th class="form-field">車体の大きさ<span class="new badge red" data-badge-caption="必須"></span></th>
+            <td class="form-field">
+                <label for="txt_car_length" style="margin-right: 15px;">全長</label>
+                <input type="text" id="txt_car_length" name="txt_car_length" required placeholder="例）5000" style="width: 50%;" value="{{ user_subscription.car_length|default:'' }}" />mm
+                <br/>
+                <label for="txt_car_width" style="margin-right: 15px;">全幅</label>
+                <input type="text" id="txt_car_width" name="txt_car_width" required placeholder="例）1750" style="width: 50%;" value="{{ user_subscription.car_width|default:'' }}" />mm
+                <br/>
+                <label for="txt_car_height" style="margin-right: 15px;">全高</label>
+                <input type="text" id="txt_car_height" name="txt_car_height" required placeholder="例）1600" style="width: 50%;" value="{{ user_subscription.car_height|default:'' }}" />mm
+                <br/>
+                <label for="txt_car_weight" style="margin-right: 15px;">重量</label>
+                <input type="text" id="txt_car_weight" name="txt_car_weight" required placeholder="例）1600" style="width: 50%;" value="{{ user_subscription.car_weight|default:'' }}" />kg
+                <p>
+                    <span class="red-text">※タイヤ幅によっては、ご契約いただけないことがあります。</span><br/>
+                    <span class="red-text">※車両をご購入予定の場合は、ご購入予定の車両のサイズをご入力ください。</span>
+                </p>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="row">
+    <div class="card-title">ご提出書類について</div>
+    <table class="step-info">
+        <tr>
+            <th class="form-field"><label for="file_driver_license">免許書の写し<span class="new badge red" data-badge-caption="必須"></span></label></th>
+            <td class="form-field"><input type="file" id="file_driver_license" name="file_driver_license" required placeholder="" /></td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="file_car_inspection">車検書の写し<span class="new badge red" data-badge-caption="必須"></span></label></th>
+            <td class="form-field">
+               <input type="file" id="file_car_inspection" name="file_car_inspection" required />
+                <p class="red-text" style="font-size:13px">
+                    ※車両ご購入予定の方は、ご購入予定の車両サイズが正確にわかるもの（カタログ等）をご提出ください。<br/>
+                    ※納車後、1ヶ月以内に必ず車検証の写しをご提出ください。
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="file_car_mandatory_insurance">自賠責保険証の写し</label></th>
+            <td class="form-field"><input type="file" id="file_car_mandatory_insurance" name="file_car_mandatory_insurance" placeholder="" />
+                <p class="red-text" style="font-size:13px">※車両ご購入予定の方は、手続き完了後、1ヶ月以内に必ず保険証券の写しをご提出ください。</p>
+            </td>
+        </tr>
+        <tr>
+            <th class="form-field"><label for="file_car_voluntary_insurance">任意保険証の写し</label></th>
+            <td class="form-field"><input type="file" id="file_car_voluntary_insurance" name="file_car_voluntary_insurance" placeholder="" />
+                <p class="red-text" style="font-size:13px">※車両ご購入予定の方は、手続き完了後、1ヶ月以内に必ず保険証券の写しをご提出ください。</p>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+// 希望契約期間は「１・２ヶ月契約」の場合、末日は必須です。
+$('input#id_workplace_without').change(function() {
+    if ($(this).is(':checked')) {
+        $("#txt_workplace_name").removeAttr('required');
+        $("#tr_without_workplace").css("display", "table-row");
+        $("#tr_workplace_address").css("display", "none");
+        $("#tr_workplace_tel").css("display", "none");
+        $("#txt_workplace_post1").removeAttr('required');
+        $("#txt_workplace_post2").removeAttr('required');
+        $("#txt_workplace_address1").removeAttr('required');
+        $("#txt_workplace_tel").removeAttr('required');
+    } else {
+        $("#txt_workplace_name").attr('required', 'required');
+        $("#tr_without_workplace").css("display", "none");
+        $("#tr_workplace_address").css("display", "table-row");
+        $("#tr_workplace_tel").css("display", "table-row");
+        $("#txt_workplace_post1").attr('required', 'required');
+        $("#txt_workplace_post2").attr('required', 'required');
+        $("#txt_workplace_address1").attr('required', 'required');
+        $("#txt_workplace_tel").attr('required', 'required');
+    }
+});
+
+$('form').submit(function() {
+    return true;
+});
+</script>
+{% endblock %}

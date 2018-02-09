@@ -69,7 +69,7 @@
                     </div>
                     <div class="collapsible-body">
                         {% if task.category == "010" %}
-                            <!-- 申込書送付 -->
+                            <!-- 申込み用フォーム送付 -->
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s8">
                                     <input type="checkbox" class="filled-in" id="chkSubscriptionConfirm" checked="checked"
@@ -153,7 +153,7 @@
                                 </form>
                             </div>
                         {% elif task.category == "011" %}
-                            <!-- 申込書確認 -->
+                            <!-- 申込み用フォーム確認 -->
                             {% if subscription.status == '01' %}
                                 <div class="row" style="margin-bottom: 5px;">
                                     <div class="col s12">
@@ -170,6 +170,64 @@
                                     </div>
                                 {% endfor %}
                             {% endif %}
+                        {% elif task.category == "012" %}
+                            <!-- 審査用フォーム送付 -->
+                            <!-- 審査用フォーム送信の確認ボックス -->
+                            <div id="send_inspection" class="modal modal-fixed-footer" style="min-height: 500px;">
+                                <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendInspectionMail">
+                                    <div class="modal-content">
+                                        <h4>審査用フォームの送付</h4>
+                                        <div class="row">
+                                            <div class="col s12">
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input readonly value="{{ group.sender }}" id="txtInspectionSender" name="subscription_sender" type="text" />
+                                                        <label for="txtInspectionSender">差出人</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{{ object.email }}" id="txtInspectionTo" name="subscription_to" type="text" />
+                                                        <label for="txtInspectionTo">宛先</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtInspectionCC" name="subscription_cc" type="text" />
+                                                        <label for="txtInspectionCC">ＣＣ</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtInspectionBCC" name="subscription_bcc" type="text" />
+                                                        <label for="txtInspectionBCC">ＢＣＣ</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <input value="{{ template.title }}" id="txtInspectionTitle" name="subscription_title" type="text" />
+                                                        <label for="txtInspectionTitle">件名</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="input-field col s12">
+                                                        <textarea id="txtInspectionContent" name="subscription_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                                                        <label for="txtInspectionContent">メール本文</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
+                                            <i class="material-icons right">send</i>
+                                        </button>
+                                        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+                                    </div>
+                                </form>
+                            </div>
+                        {% elif task.category == "013" %}
+                            <!-- 審査用フォーム確認 -->
                         {% elif task.category == '030' %}
                             <!-- 住所・電話番号 審査・確認 -->
                             <div class="row" style="margin-bottom: 5px;">
@@ -355,7 +413,7 @@
                                                 <div class="row">
                                                     <div class="input-field col s12">
                                                         <textarea id="txtContractContent" name="contract_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
-                                                        <label for="txtSubscriptionContent">メール本文</label>
+                                                        <label for="txtContractContent">メール本文</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -421,6 +479,11 @@
                                     <i class="tiny material-icons">cancel</i></a>
                                 {% if task.category == "010" %}
                                     <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped task {% if subscription and subscription.status != '01' %}disabled{%endif%}" >
+                                        <i class="tiny material-icons">send</i>
+                                    </a>
+                                {% elif task.category == "012" %}
+                                    <a data-target="send_inspection" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
                                        class="waves-effect waves-light btn-floating modal-trigger tooltipped task {% if subscription and subscription.status != '01' %}disabled{%endif%}" >
                                         <i class="tiny material-icons">send</i>
                                     </a>
@@ -499,6 +562,13 @@ $(document).one("turbolinks:load", function() {
         subscription_sent_failure_fn,
         subscription_sent_always_fn
     );
+    // 審査用フォームの送信イベント
+    ebjs.material.send_subscription_mail(
+        "frmSendInspectionMail",
+        inspection_sent_success_fn,
+        subscription_sent_failure_fn,
+        subscription_sent_always_fn
+    );
     // 契約書類の送信イベント
     ebjs.material.send_subscription_mail(
         "frmSendContractMail",
@@ -515,6 +585,25 @@ function subscription_sent_success_fn(result) {
         Materialize.toast('メール送信しました!', 10000);
         $('#send_subscription').modal('close');
         var obj = $("a[data-target=send_subscription]");
+        $(obj).next().addClass('disabled');
+        $(obj).next().next().addClass('disabled');
+        // 次のタスクを実施中にする
+        //ebjs.material.set_task_status($(obj).closest('li').next(), '02');
+        // 進捗更新
+        ebjs.material.update_task_info(obj, '99');
+        // 前回送信時間と送信者
+        obj.closest('li').find('span.updated_date').text(result.updated_date);
+        obj.closest('li').find('span.updated_user').text(result.updated_user);
+    }
+}
+
+function inspection_sent_success_fn(result) {
+    if (result.error) {
+        alert(result.message);
+    } else {
+        Materialize.toast('メール送信しました!', 10000);
+        $('#send_inspection').modal('close');
+        var obj = $("a[data-target=send_inspection]");
         $(obj).next().addClass('disabled');
         $(obj).next().next().addClass('disabled');
         // 次のタスクを実施中にする

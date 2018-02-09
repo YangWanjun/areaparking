@@ -17,6 +17,7 @@ from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, Lease
 from utils import constants, common, errors
 from utils.app_base import get_total_context, \
     get_user_subscription_simple_url, \
+    get_user_subscription_inspection_url, \
     get_user_contract_url, \
     get_parking_lot_context, \
     get_subscription_context, \
@@ -732,7 +733,10 @@ class Task(BaseModel):
         if self.category == '010':
             # 申込書送付
             group = MailGroup.get_subscription_send_group()
-        elif self.category == '100':
+        elif self.category == '012':
+            # 審査用フォーム送付
+            group = MailGroup.get_inspection_send_group()
+        elif self.category == '040':
             # 契約書類一式の送付
             group = MailGroup.get_contract_send_group()
         elif self.category == '310':
@@ -750,7 +754,11 @@ class Task(BaseModel):
                 data.update(get_parking_lot_context(self.process.content_object.parking_lot))
                 data.update(get_subscription_context(self.process.content_object))
                 data.update(get_user_subscription_simple_url(self))
-            elif self.category == '100':
+            elif self.category == '012':
+                data.update(get_parking_lot_context(self.process.content_object.parking_lot))
+                data.update(get_subscription_context(self.process.content_object))
+                data.update(get_user_subscription_inspection_url(self))
+            elif self.category == '040':
                 data.update(get_parking_lot_context(self.process.content_object.parking_lot))
                 data.update(get_subscription_context(self.process.content_object))
                 data.update(get_user_contract_url(self))

@@ -1,0 +1,12 @@
+{% extends 'format/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="row">
+    <div class="card-title">ご申込ありがとうございます！</div>
+    <div class="card-comment">
+        審査のお申し込みを受け付けました。審査結果は追ってお知らせしますので、しばらくお待ちください。
+    </div>
+</div>
+{% include 'format/parking_lot_info.html' %}
+{% endblock %}

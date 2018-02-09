@@ -193,22 +193,22 @@ class ProcessViewSet(BaseModelViewSet):
 class SendSubscriptionMail(BaseView):
     def post(self, request, *args, **kwargs):
         task = get_object_or_404(Task, pk=kwargs.get('task_id'))
-        subscription_url = request.POST.get('subscription_url', None)
-        if not subscription_url:
-            json = {'error': True, 'message': '少なくとも１つの申込書を選択してください。'}
-        else:
-            task.url_links = subscription_url
-            sender = request.POST.get('subscription_sender', None)
-            recipient_list = request.POST.get('subscription_to', None)
-            cc_list = request.POST.get('subscription_cc', None)
-            bcc_list = request.POST.get('subscription_bcc', None)
-            mail_title = request.POST.get('subscription_title', None)
-            mail_body = request.POST.get('subscription_content', None)
-            mail_data = {
-                'sender': sender, 'recipient_list': recipient_list, 'cc_list': cc_list,
-                'bcc_list': bcc_list, 'mail_title': mail_title, 'mail_body': mail_body,
-            }
-            json = biz.send_mail_from_view(task, request, mail_data)
+        # subscription_url = request.POST.get('subscription_url', None)
+        # if not subscription_url:
+        #     json = {'error': True, 'message': '少なくとも１つの申込書を選択してください。'}
+        # else:
+        #     task.url_links = subscription_url
+        sender = request.POST.get('subscription_sender', None)
+        recipient_list = request.POST.get('subscription_to', None)
+        cc_list = request.POST.get('subscription_cc', None)
+        bcc_list = request.POST.get('subscription_bcc', None)
+        mail_title = request.POST.get('subscription_title', None)
+        mail_body = request.POST.get('subscription_content', None)
+        mail_data = {
+            'sender': sender, 'recipient_list': recipient_list, 'cc_list': cc_list,
+            'bcc_list': bcc_list, 'mail_title': mail_title, 'mail_body': mail_body,
+        }
+        json = biz.send_mail_from_view(task, request, mail_data)
         return JsonResponse(json)
 
 

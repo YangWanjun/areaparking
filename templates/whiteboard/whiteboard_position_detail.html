@@ -114,6 +114,7 @@
                 {% if whiteboard_position.position_status != "01" %}
                     <a class="waves-effect waves-light btn white-text">順番待ちへ</a>
                 {% else %}
+                    <button data-target="stop_rent" class="btn modal-trigger">貸止め</button>
                     <button data-target="start_temp_contract" class="btn modal-trigger">契約に進む</button>
                 {% endif %}
             </div>
@@ -190,6 +191,31 @@
             </div>
             <div class="modal-footer">
                 <a href="javascript:void(0)" onclick="save_subscription(this)" class="modal-action waves-effect waves-green btn-flat ">次へ</a>
+                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+            </div>
+        </div>
+        <div id="stop_rent" class="modal modal-fixed-footer" style="min-height: 500px;">
+            <div class="modal-content">
+                <h4>貸止め</h4>
+                <div class="row">
+                    <form class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input type="text" id="id_subscription" name="subscription"/>
+                                <label for="id_subscription">申込者</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="stop_rent_comment" name="stop_rent_comment" class="materialize-textarea"></textarea>
+                                <label for="stop_rent_comment">貸止め理由</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0)" class="modal-action waves-effect waves-green btn-flat ">貸止め</a>
                 <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
             </div>
         </div>

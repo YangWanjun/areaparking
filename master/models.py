@@ -471,7 +471,7 @@ class MailGroup(BaseModel):
         :return:
         """
         try:
-            return MailGroup.objects.get(code='001')
+            return MailGroup.objects.get(code='010')
         except ObjectDoesNotExist:
             return None
 
@@ -482,7 +482,29 @@ class MailGroup(BaseModel):
         :return:
         """
         try:
-            return MailGroup.objects.get(code='002')
+            return MailGroup.objects.get(code='011')
+        except ObjectDoesNotExist:
+            return None
+
+    @classmethod
+    def get_inspection_send_group(cls):
+        """審査用フォーム送付時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='012')
+        except ObjectDoesNotExist:
+            return None
+
+    @classmethod
+    def get_inspection_completed_group(cls):
+        """審査用フォーム完了時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='013')
         except ObjectDoesNotExist:
             return None
 
@@ -493,7 +515,7 @@ class MailGroup(BaseModel):
         :return:
         """
         try:
-            return MailGroup.objects.get(code='011')
+            return MailGroup.objects.get(code='040')
         except ObjectDoesNotExist:
             return None
 
@@ -504,7 +526,7 @@ class MailGroup(BaseModel):
         :return:
         """
         try:
-            return MailGroup.objects.get(code='012')
+            return MailGroup.objects.get(code='041')
         except ObjectDoesNotExist:
             return None
 
