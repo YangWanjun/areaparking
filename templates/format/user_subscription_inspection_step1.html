@@ -148,10 +148,10 @@
                 </td>
             </tr>
             <tr>
-                <th class="form-field"><label for="txt_personal_comment">備考</label></th>
+                <th class="form-field"><label for="id_personal_comment">備考</label></th>
                 <td class="form-field">
                     <p>
-                        <input type="text" id="txt_personal_comment" name="txt_personal_address2" placeholder="" value=""/>
+                        <input type="text" id="id_personal_comment" name="comment" placeholder="" value=""/>
                     </p>
                     <span class="red-text">※ご連絡事項がありましたらご自由にご記入ください。</span>
                 </td>
@@ -201,69 +201,93 @@
                 <th class="form-field"><label for="txt_corporate_fax">FAX番号</label></th>
                 <td class="form-field"><input type="text" id="txt_corporate_fax" name="txt_corporate_fax" placeholder="例）03-1234-1234" value="{{ user_subscription.fax|default:'' }}"/></td>
             </tr>
-        </table>
-    </div>
-    <div class="row">
-        <div class="card-title">契約担当者</div>
-        <table class="step-info">
             <tr>
-                <th class="form-field"><label for="txt_corporate_staff_name">ご契約担当者様のお名前<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <th class="form-field"><label for="txt_corporate_staff_name">ご契約担当者様<span class="new badge red" data-badge-caption="必須"></span><br/>のお名前</label></th>
                 <td class="form-field"><input type="text" id="txt_corporate_staff_name" name="txt_corporate_staff_name" required placeholder="" value="{{ user_subscription.corporate_staff_name|default:'' }}"/></td>
             </tr>
             <tr>
-                <th class="form-field"><label for="txt_corporate_staff_tel">TEL<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_tel" name="txt_corporate_staff_tel" required placeholder="例）03-1234-1234" value="{{ user_subscription.corporate_staff_tel|default:'' }}"/></td>
+                <th class="form-field"><label for="id_corporate_staff_phone">ご契約担当者様<span class="new badge red" data-badge-caption="必須"></span><br/>の携帯番号</label></th>
+                <td class="form-field"><input type="text" id="id_corporate_staff_phone" name="corporate_staff_phone" required placeholder="例）080-1234-5678" value="{{ user_subscription.corporate_staff_phone|default:'' }}"/></td>
             </tr>
             <tr>
-                <th class="form-field"><label for="txt_corporate_staff_fax">FAX<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_fax" name="txt_corporate_staff_fax" required placeholder="例）03-1234-1234" value="{{ user_subscription.corporate_staff_fax|default:'' }}"/></td>
+                <th class="form-field"><label for="id_corporate_staff_email">ご契約担当者様<span class="new badge red" data-badge-caption="必須"></span><br/>のメールアドレス</label></th>
+                <td class="form-field"><input type="text" id="id_corporate_staff_email" name="corporate_staff_email" required placeholder="例）email@example.com" value="{{ user_subscription.corporate_staff_email|default:'' }}"/></td>
             </tr>
             <tr>
-                <th class="form-field"><label for="txt_corporate_staff_phone">携帯電話<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_staff_phone" name="txt_corporate_staff_phone" required placeholder="例）080-1234-1234" value="{{ user_subscription.corporate_staff_phone|default:'' }}"/></td>
-            </tr>
-        </table>
-    </div>
-    <div class="row">
-        <div class="card-title">緊急連絡先（※ご本人、勤務先以外）</div>
-        <table class="step-info">
-            <tr>
-                <th class="form-field"><label for="txt_corporate_contact_tel">電話番号<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_contact_tel" name="txt_corporate_contact_tel" required placeholder="" value="{{ user_subscription.contact_tel|default:'' }}"/></td>
+                <th class="form-field"><label for="txt_corporate_staff_phone">車両使用拠点の住所<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <input type="text" id="txt_corporate_staff_phone" name="txt_corporate_staff_phone" placeholder="" value="{{ user_subscription.corporate_staff_phone|default:'' }}"/>
+                    <p class="red-text">
+                        ※ご契約名義の所在地と異なる場合はご入力ください。<br/>
+                        例）ご契約名義が「本社」で、実際にご契約の車両を使用するのは「支社」である場合
+                    </p>
+                </td>
             </tr>
             <tr>
-                <th class="form-field"><label for="txt_corporate_contact_name">氏名<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_contact_name" name="txt_corporate_contact_name" required placeholder="" value="{{ user_subscription.contact_name|default:'' }}"/></td>
-            </tr>
-            <tr>
-                <th class="form-field"><label for="txt_corporate_contact_relation">契約者との関係<span class="new badge red" data-badge-caption="必須"></span></label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_contact_relation" name="txt_corporate_contact_relation" required placeholder="例）父" value="{{ user_subscription.contact_relation|default:'' }}"/></td>
-            </tr>
-        </table>
-    </div>
-    <div class="row">
-        <div class="card-title">使用者・使用者所在地</div>
-        <table class="step-info">
-            <tr>
-                <th class="form-field"><label for="txt_corporate_user_kana">フリガナ</label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_user_kana" name="txt_corporate_user_kana" placeholder="" value="{{ user_subscription.corporate_user_kana|default:'' }}"/></td>
-            </tr>
-            <tr>
-                <th class="form-field"><label for="txt_corporate_user_name">氏名</label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_user_name" name="txt_corporate_user_name" placeholder="" value="{{ user_subscription.corporate_user_name|default:'' }}"/></td>
-            </tr>
-            <tr>
-                <th class="form-field"><label for="txt_corporate_user_tel">携帯電話</label></th>
-                <td class="form-field"><input type="text" id="txt_corporate_user_tel" name="txt_corporate_user_tel" placeholder="" value="{{ user_subscription.corporate_user_tel|default:'' }}"/></td>
-            </tr>
-            <tr>
-                <th class="form-field"><label for="txt_corporate_user_post1">所在地</label></th>
+                <th class="form-field">希望契約開始日<span class="new badge red" data-badge-caption="必須"></span></th>
                 <td class="form-field">
                     <div>
-                        〒<input type="text" class="center" id="txt_corporate_user_post1" name="txt_corporate_user_post1" maxlength="3" value="{{ user_subscription.corporate_user_post_code1|default:'' }}" style="width: 40px;height:20px;"/>
-                        －<input type="text" class="center" id="txt_corporate_user_post2" name="txt_corporate_user_post2" maxlength="4" value="{{ user_subscription.corporate_user_post_code2|default:'' }}" style="width: 60px;height:20px;"/>
+                        <input name="rdo_contract_start_date" type="radio" id="id_start_shortest" value="shortest" required />
+                        <label for="id_start_shortest">最短</label>
                     </div>
-                    <input type="text" id="txt_corporate_user_address1" name="txt_corporate_user_address1" value="{{ user_subscription.corporate_user_address1|default:'' }}" />
+                    <div>
+                        <input name="rdo_contract_start_date" type="radio" id="id_start_select" value="calendar" required />
+                        <label for="id_start_select">カレンダーから選択</label>
+                        <input type="text" class="datepicker validate" id="id_contract_start_date" name="contract_start_date" required placeholder="例）2018-01-01" value="{{ user_subscription.contract_start_date|default:'' }}" style="width: 200px; height: 30px;"/>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field">希望契約期間<span class="new badge red" data-badge-caption="必須"></span></th>
+                <td class="form-field">
+                    <p>
+                        <input name="rdo_contract_period" type="radio" id="id_contract_period_long" value="long" required {% if user_subscription.contract_period == 'long' %}checked{% endif %}/>
+                        <label for="id_contract_period_long">１年間（その後自動更新）</label>
+                    </p>
+                    <p>
+                        <input name="rdo_contract_period" type="radio" id="id_contract_period_short" value="short" required {% if user_subscription.contract_period == 'short' %}checked{% endif %}/>
+                        <label for="id_contract_period_short">１・２ヶ月契約</label>
+                        （<input type="text" id="txt_contract_end_month" name="txt_contract_end_month" maxlength="2" value="{{ user_subscription.contract_end_month|default:'' }}" {% if user_subscription.contract_period == 'short' %}required{% endif %} style="width: 30px; height: 20px;text-align: right;padding-right:5px;" /><label for="txt_contract_end_month">月末日まで</label>）
+                        ※更新できませんのでご注意ください
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="txt_try_putting_date1">試入れの希望日<span class="new badge red" data-badge-caption="必須"></span></label></th>
+                <td class="form-field">
+                    <p>
+                        <label for="txt_try_putting_date1">第1希望日時</label>
+                        <input type="text" class="datepicker" id="txt_try_putting_date1" name="try_putting_date1" required placeholder="例）2020-01-01" value="" style="width: 200px; height: 30px;"/>
+                        <input type="text" class="timepicker" id="txt_try_putting_time1" name="try_putting_time1" required placeholder="例）10:30" style="width: 200px; height: 30px;">
+                    </p>
+                    <p>
+                        <label for="txt_try_putting_date2">第2希望日時</label>
+                        <input type="text" class="datepicker" id="txt_try_putting_date2" name="try_putting_date2" required placeholder="例）2020-02-01" value="" style="width: 200px; height: 30px;"/>
+                        <input type="text" class="timepicker" id="txt_try_putting_time2" name="try_putting_time2" required placeholder="例）10:30" style="width: 200px; height: 30px;">
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field">保管証発行-車庫証明<span class="new badge red" data-badge-caption="必須"></span><br/>に必要な書類</th>
+                <td class="form-field">
+                    <p>
+                        <input name="rdo_receipt" type="radio" id="rdo_receipt_yes" value="yes" required {% if user_subscription.require_receipt == 'yes' %}checked{% endif %}/>
+                        <label for="rdo_receipt_yes">必要</label>
+                        （発行手数料：消費{% if receipt_without_consumption %}税別{% else %}税込{% endif %}{{ receipt_amount|intcomma }}円）
+                    </p>
+                    <p>
+                        <input name="rdo_receipt" type="radio" id="rdo_receipt_no" value="no" required {% if user_subscription.require_receipt == 'no' %}checked{% endif %}/>
+                        <label for="rdo_receipt_no">不要</label>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"><label for="id_corporate_comment">備考</label></th>
+                <td class="form-field">
+                    <p>
+                        <input type="text" id="id_corporate_comment" name="comment" placeholder="" value=""/>
+                    </p>
+                    <span class="red-text">※ご連絡事項がありましたらご自由にご記入ください。</span>
                 </td>
             </tr>
         </table>

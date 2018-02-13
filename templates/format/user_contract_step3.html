@@ -4,542 +4,139 @@
 {% block content %}
 <div class="row">
     <div class="card-title">{{ title }}</div>
-    <div class="contract_item">
-        {{ company_name }}（以下「甲」という）と、{{ user_subscription.name }}（以下「乙」という）は、<br/>
-        甲を転貸人、乙を転借人として、以下の通り駐車場利用契約（以下「本契約」という）を締結する。
-    </div>
-    <div class="contract_item">
-        <div>第１条（駐車場の表示、車両）</div>
-        <table class="tight_inner">
+    <p>
+        この度は、下記駐車場のご利用申込みを頂きまして、誠に有難うございます。<br/>
+        ご契約にあたり、下記の契約金額のご用意をお願いいたします。
+    </p>
+    <div class="wrapper">
+        <table class="bordered">
             <tr>
-                <td style="width: 150px;">所在地</td>
-                <td>{{ user_subscription.parking_lot.address }}</td>
+                <th class="center" style="width: 200px;">物件名</th>
+                <td>{{ parking_lot }}</td>
             </tr>
-            <tr>
-                <td>名称</td>
-                <td>{{ user_subscription.parking_lot }}</td>
-            </tr>
-            <tr>
-                <td>暗証番号</td>
-                <td>1234</td>
-            </tr>
-            <tr>
-                <td>車両・車名型式</td>
-                <td>{{ user_subscription.car_maker|default:'' }}&nbsp;{{ user_subscription.car_model|default:'' }}</td>
-            </tr>
-            <tr>
-                <td>登録番号</td>
-                <td>{{ user_subscription.car_no_plate|default:'' }}</td>
+            <tr style="border-bottom: 0px;">
+                <th class="center" style="width: 200px;">契約期間</th>
+                <td>{{ user_subscription.get_contract_start_date }}～{{ user_subscription.get_contract_end_date }}</td>
             </tr>
         </table>
     </div>
-    <div class="contract_item">
-        <div>第２条（目的）</div>
-        <div class="contract_content">
-            甲は貸主、*****************（以下、「貸主」という）から賃借中の表記駐車場（以下「本駐車場」という）
-            を自動車の駐車場としてのみ使用する事を目的として乙に転貸し、乙はこれを転借する。
-        </div>
+    <div class="wrapper">
+        <table class="bordered">
+            <thead>
+                <tr>
+                    <th class="center" colspan="2">項目</th>
+                    <th class="center">金額</th>
+                    <th class="center">消費税</th>
+                    <th class="center">摘要</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% with count=user_subscription.get_current_month_payments.count %}
+                {% for payment in user_subscription.get_current_month_payments %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                        <td class="center" rowspan="{{ count|add:1 }}">今月料金</td>
+                        {% endif %}
+                        <td>{{ payment }}</td>
+                        <td>￥{{ payment.amount|intcomma }}円</td>
+                        <td>￥{{ payment.consumption_tax|intcomma }}円</td>
+                        <td>{{ payment.comment|default:'日割日数XX日分' }}</td>
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td>小計①</td>
+                        <td>￥{{ user_subscription.get_current_month_payments_total.amount__sum|intcomma }}円</td>
+                        <td>￥{{ user_subscription.get_current_month_payments_total.consumption_tax__sum|intcomma }}円</td>
+                        <td></td>
+                    </tr>
+                {% endwith %}
+                {% with count=user_subscription.get_monthly_payments.count %}
+                {% for payment in user_subscription.get_monthly_payments %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                        <td class="center" rowspan="{{ count|add:1 }}">翌月料金</td>
+                        {% endif %}
+                        <td>{{ payment }}</td>
+                        <td>￥{{ payment.amount|intcomma }}円</td>
+                        <td>￥{{ payment.consumption_tax|intcomma }}円</td>
+                        <td>{{ payment.comment|default:'' }}</td>
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td>小計②</td>
+                        <td>￥{{ user_subscription.get_monthly_payments_total.amount__sum|intcomma }}円</td>
+                        <td>￥{{ user_subscription.get_monthly_payments_total.consumption_tax__sum|intcomma }}円</td>
+                        <td></td>
+                    </tr>
+                {% endwith %}
+                {% with count=user_subscription.get_contracting_payments.count %}
+                {% for payment in user_subscription.get_contracting_payments %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                        <td class="center" rowspan="{{ count|add:2 }}">契約一時金</td>
+                        {% endif %}
+                        <td>{{ payment }}</td>
+                        <td>￥{{ payment.amount|intcomma }}円</td>
+                        <td>￥{{ payment.consumption_tax|intcomma }}円</td>
+                        <td>{{ payment.comment|default:'' }}</td>
+                    </tr>
+                {% endfor %}
+                {% if count > 0 %}
+                    <tr>
+                        <td>敷金・礼金</td>
+                        <td>￥0円</td>
+                        <td>￥0円</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>小計③</td>
+                        <td>￥{{ user_subscription.get_contracting_payments_total.amount__sum|intcomma }}円</td>
+                        <td>￥{{ user_subscription.get_contracting_payments_total.consumption_tax__sum|intcomma }}円</td>
+                        <td></td>
+                    </tr>
+                {% endif %}
+                {% endwith %}
+                <tr>
+                    <td colspan="2" class="center" style="font-size: 16px;"><span style="margin-right: 35px;">合</span><span style="margin-right: 35px;">計</span><span style="margin-right: 35px;">金</span>額</td>
+                    <td style="font-size: 16px;">￥{{ user_subscription.get_contract_payments_total.amount__sum|intcomma }}円</td>
+                    <td style="font-size: 16px;">￥{{ user_subscription.get_contract_payments_total.consumption_tax__sum|intcomma }}円</td>
+                    <td>小計①+②+③</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="center"><span style="margin-right: 60px;">手</span><span style="margin-right: 60px;">付</span>金</td>
+                    <td colspan="3"></td>
+                </tr>
+                <tr style="border-bottom: 0;">
+                    <td colspan="2" class="center" style="font-size: 25px; font-weight: bold;"><span style="margin-right: 50px;">総</span><span style="margin-right: 50px;">合</span>計</td>
+                    <td colspan="3" style="font-size: 25px; font-weight: bold;">￥{{ user_subscription.get_contract_payments_total.total|intcomma }}円</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="contract_item">
-        <div>第３条（契約期間）</div>
-        <div class="contract_content">
-            本契約の期間は、{{ user_subscription.get_contract_start_date }}から{{ user_subscription.get_contract_end_date }}までの期間とする。<br/>
-            期間満了の1ヶ月前までに甲または乙のいずれからも解約の申し出がない場合、駐車場料金など同一条件で更新したものとみなす。以後も同様とする。
-        </div>
+    <p style="font-size: 18px;">※上記金額を、2018年1月25日までに下記口座へお振込みください。</p>
+    <div class="wrapper">
+        <table class="tight bordered">
+            <tr>
+                <td class="center" style="width: 200px;">金融機関名</td>
+                <td>三井住友銀行</td>
+            </tr>
+            <tr>
+                <td class="center">本 支 店 名</td>
+                <td>＊＊＊＊＊＊＊＊＊＊</td>
+            </tr>
+            <tr>
+                <td class="center">口 座 分 類</td>
+                <td>普通</td>
+            </tr>
+            <tr>
+                <td class="center">口 座 番 号</td>
+                <td>＊＊＊＊＊＊＊＊＊＊</td>
+            </tr>
+            <tr style="border-bottom: 0px;">
+                <td class="center">口 座 名 義</td>
+                <td>カ）エリアパーキング</td>
+            </tr>
+        </table>
     </div>
-    <div class="contract_item">
-        <div>第４条（駐車料金）</div>
-        <div class="contract_content">
-            駐車料金は 月額 {{ user_subscription.get_monthly_payments_total.total|intcomma }}円 （消費税等込）と定め、乙は契約時に当月分の日割り駐車料金と翌月分の
-            駐車場料金を甲の指定する口座に振込み、以降は毎月２５日迄に翌月分を甲の口座へ振り込むものとする。<br/>
-            乙が甲の指定する口座に振込む際の振込手数料は、すべて乙の負担とする。
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第５条（駐車料金の改定）</div>
-        <div class="contract_content">
-            <ol>
-                <li>甲は更新時に賃料の改定が出来るものとする。</li>
-                <li>甲及び乙は経済情勢の激変、物価の変動、公租公課の増、または本駐車場周辺の環境の著しい変化等により、
-                    第４条の賃料が不相当となった場合は料金の改定ができるものとする。また、消費税、地方消費税の税率が
-                    変更となった場合は変更後の税率にて計算した金額をもって駐車場料金とする。
-                </li>
-            </ol>
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第６条（契約の解除、遵守事項）</div>
-        <div class="contract_content">
-            <ol>
-                <li>乙が本契約の１つにでも違反した場合、甲は何らの通知催告を要せず、直ちに契約を解除出来る。</li>
-                <li>甲は、乙に対し１ヶ月以上前に書面で通知する事により、契約期間中でも本契約を解約することができる。</li>
-                <li>本駐車場は入居者優先駐車場となり、甲は本建物の入居者が本駐車場の利用を希望する場合、乙に対して
-                    １ヶ月以上前に書面で通知することにより、契約期間中でも本契約を解約することができる。
-                </li>
-                <li>乙は、甲に対し書面で通知することにより、契約期間中でも本契約を解除することができる。<br/>
-                    但し、解約日は、書面による通知をした月の翌月末日とする。
-                </li>
-                <li>乙は、契約期間満了日をもって本契約を解除する場合は、期間満了日の1ヶ月以上前に、相手方に対し書面にて
-                    通知することとする。通知を怠った場合は、1ヶ月分の駐車場賃貸相当額の違約金を甲に支払わなければ
-                    ならない。
-                </li>
-                <li>乙が契約期間満了前に、乙の都合により本駐車場の利用を中止し契約を解除した場合、甲は、乙から契約時に
-                    一括で受領した賃料の返還はしないものとする。
-                </li>
-                <li>乙が２ヶ月以上の駐車料金の支払いを怠った場合、甲は通知催告せずに本契約は当然に解除され、その効力を
-                    失うものとする。また、乙は賃料に対し支払いを怠った日を起算日として年１４．６％の割合による
-                    遅延損害金を甲に支払わなければならない。
-                </li>
-                <li>乙は新車購入などにより、契約時に車検証の写しを提出できない場合、駐車場を実際に利用開始した後
-                    １ヶ月以内に車検証の写しを甲に提出するものとする。
-                </li>
-                <li>乙は本契約の内容及び本駐車場及び本駐車場建物に関するセキュリティ上の機密を他に漏らしてはならない。</li>
-            </ol>
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第７条（契約の終了）</div>
-        <div class="contract_content">
-            本契約の期間内でも、甲と貸主との駐車場賃貸借契約が終了した場合、本契約も同時に終了する。
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第８条（明け渡し）</div>
-        <div class="contract_content">
-            <ol>
-                <li>本契約が終了した場合、乙は直ちに車両を駐車場外に出し、乙は甲に対し名目の如何を問わず何等の請求もしない。</li>
-                <li>本契約が終了した場合、万一、乙が車両を滞留させた場合は、甲または貸主が公道に撤去することに異議なく、
-                    その費用及び契約終了の翌日から、明渡し完了迄の損害金を支払わねばならない。
-                </li>
-                <li>車両以外でも乙が滞留させた物品がある場合、甲または貸主はそれらを廃棄、売却等により処分しても、乙は異議
-                    なく、処分に要した費用も乙が負担する。
-                </li>
-            </ol>
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第９条（賠償責任）</div>
-        <div class="contract_content">
-            <ol>
-                <li>乙又は、その関係者において、故意、過失、その他事故により貸主の設備、造作その他、本駐車場の他の自動車等
-                    に生じた損害は、乙が直ちにその金額を賠償する責めを負う。
-                </li>
-                <li>乙又は、その関係者において、故意、過失、その他事故により貸主、本建物管理会社、本建物入居者、その他
-                    第三者に損害が生じた場合、乙が直ちにその金額を賠償する責めを負う。</li>
-                <li>乙又は、その関係者において、故意過失により生じた故障・損傷についての緊急対応、修理その他の補修費用に
-                    ついては、乙が負担する。</li>
-            </ol>
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第１０条（免責事項）</div>
-        <div class="contract_content">
-            甲及び貸主は、駐車場内で生じた自動車の盗難、車上荒らし、衝突及び破損、人身事故、火災、天災等による事故被害
-            ならびに全ての間接的損害（営業補償、代車費用、タクシー代等）について、一切の責任を負わない。
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第１１条（連絡先の変更）</div>
-        <div class="contract_content">
-            乙は申込書に記載した連絡先が変更になった場合は、必ず甲に通知しなくてはならない。甲は駐車料金の未納、
-            更新等について、電話、電子メール、郵便等のいずれの方法によっても乙と連絡が取れない場合、乙が本契約を
-            解約するものとみなし、何らの通知催告を要せず、直ちに本契約の解除をすることが出来るものとする。
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第１２条（契約時注意事項）</div>
-        <div class="contract_content">
-            <ol>
-                <li>乙は、本契約締結時、別紙「契約時注意事項」、「駐車場操作説明書」を熟読し、機械操作等を十分理解したうえで、本駐車場を利用するものとする。</li>
-                <li>乙は、以下の場合には、常に最新の「利用方法」を遵守しなければならないものとする。<br/>
-                    ①「契約時注意事項」「駐車場操作説明書」が改訂された場合<br/>
-                    ②現地に掲示されている「利用方法」が改訂された場合
-                </li>
-                <li>乙が以下のいずれかに該当するものと甲が判断した場合、甲は、何らの通知催告を要せず、本契約を直ちに解除することができるものとする。<br/>
-                    ①「契約時注意事項」「駐車場操作説明書」に違反して駐車場の操作を行った場合<br/>
-                    ②貸主、管理者または甲の指示を無視して駐車場の操作を行った場合<br/>
-                    ③「契約時注意事項」「駐車場操作説明書」を十分理解していないことが明らかとなり､今後も改善が見込まれない場合<br/>
-                    ④その他不適切な駐車場の操作を行う危険性があると甲が認めた場合
-                </li>
-            </ol>
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第１３条（駐車場の故障）</div>
-        <div class="contract_content">
-            駐車場が突発的な故障などにより、一時的に利用出来ない場合でも、乙は異議の申し立てをしないものとする。<br/>
-            但し、貸主並びに甲は速やかに問題の解決にあたるものとする。<br/>
-            また、駐車場の円滑な運営・事故防止・故障防止を目的に実施される機器点検、調整、修理作業、改良工事等により
-            一時的もしくは一定期間、駐車場が利用できない場合でも、乙は異議の申し立てをしないものとする。
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第１４条（再転貸の禁止）</div>
-        <div class="contract_content">
-            乙はどのような理由があろうとも、本契約においては再転貸する事は出来ないものとし、再転貸が判明した場合、甲は何らの通知催告を要せず、直ちに本契約を解除することが出来るものとする。
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第１５条（操作鍵の貸与）</div>
-        <div class="contract_content">
-            甲は契約時に、駐車場操作鍵＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊を乙に貸与し、
-            乙は本契約終了と同時に甲に返還するものとする。尚、乙は、この操作鍵を紛失、破損した場合は、直ちに甲に報告し
-            ７,０００円(税別)の交換料を甲に支払うものとする。
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第１６条（管轄裁判所）</div>
-        <div class="contract_content">
-            本契約に関する紛争は、本駐車場の所在地を管轄する裁判所で行うものとする。
-        </div>
-    </div>
-    <div class="contract_item">
-        <div>第１７条（特約事項）</div>
-        <div class="contract_content">
-            <ol>
-                <li>乙が本駐車場の利用に際し当該建物の関係者とトラブルや、迷惑行為等を起こし、管理者、所有者、近隣住民から
-                    苦情があった場合は、甲は契約期間中であっても通知催告を要せずに本契約を解除出来るものとする。
-                    又、集団的または常習的に暴力的不法行為等を行うことを助長する恐れのある団体もしくは当該団体の構成員、
-                    または著しく信用に欠けると判断されるものに対しても甲は契約期間中であっても通知催告を要せずに
-                    本契約を解除出来るものとする。</li>
-                <li>乙は暴力団等の反社会的勢力との関係ないし関与の事実がないことを誓約する。尚、暴力団等反社会的勢力との
-                    関係ないし関与の事実には、次に掲げる場合を含むものとする。<br/>
-                    ①乙の関係者が暴力団、暴力団員又はこれらに準ずる者であること。尚、乙の関係者は、乙、その役員等、乙の関連会社、その役員等を含むものとする。<br/>
-                    ②暴力団等反社会的勢力が乙の関係者の経営に関与していること。<br/>
-                    ③乙の関係者が暴力団等反社会的勢力に資金提供その他の行為を行うことを通じて暴力団等反社会的勢力の維持もしくは運営に協力もしくは関与していること。<br/>
-                    ④乙の関係者が暴力団等反社会的勢力と交流を持っていること。<br/>
-                    ⑤乙の関係者が公益に反し社会的に批判を受ける事業を営んでいること。<br/>
-                    ⑥乙の関係者が市民社会の秩序や安全に脅威を与え健全な経済活動や社会の発展を妨げていること。<br/>
-                    ⑦乙の関係者が無差別大量殺人行為を行った団体の規制等に関する法律に基づき処分を受けていること。<br/>
-                    ⑧乙の関係者が組織的な犯罪の処罰及び犯罪収益の規制に関する法律に定める犯罪収益等隠匿及び犯罪収益等収受を行い又は行っている疑いのあること。<br/>
-                    ⑨乙の関係者が貸金業法第２４条第３項に定義される取立て制限者であること。<br/>
-                    ⑩反社会的勢力に自己の名義を利用させ、本契約を締結すること。</li>
-            </ol>
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-    <div class="contract_item">
-        <div></div>
-        <div class="contract_content">
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="center" style="margin: 30px auto; font-weight: bold; font-size: 25px;">◆◆ 契約時注意事項 ◆◆</div>
-    <div class="wrapper fixed_height" style="height: 400px; padding: 10px 15px 10px 15px;;">
-        <p>本書は、契約の為の補足説明書です。大変重要な書類ですので、よくお読み下さい。</p>
-        <p>以下の内容並びに、契約書の条文をすべてご確認のうえ、契約書に署名捺印をお願い致します。</p>
-        <p>１． 契約期間中の解約について<br/>
-            ①ご契約者様は、弊社に対し、文書により解約を通知する事により、契約期間中でも解約することが出来ます。
-            解約日は、解約通知が弊社に到着した月の翌月末日となります。
-            尚、契約時に一括でお支払いいただいた賃料は、返金致しません。<br/>
-            ②弊社は、ご契約者様に対し１ヶ月前に文書により解約を通知する事により、契約期間中でも解約する事が
-            出来るものとします。
-        </p>
-        <p>２． 契約の更新<br/>
-            ①短期契約では、契約の更新は出来ません。契約期間満了をもって契約は終了致します。<br/>
-            ②年間契約は自動更新です。<br/>
-            契約期間満了でのご解約は、契約期間満了日の１ヶ月前にお届け頂く必要があります。
-            通知をいただけなかった場合、１ヶ月の賃料を頂く事になりますのでご注意下さい。</p>
-        <p>３． 駐車料金の改定<br/>
-            賃料は契約更新時に改定する場合もありますので予めご了承下さい。<br/>
-            また、消費税、地方消費税の税率が変更となった場合、賃料も変更後の税率で計算した金額になります。</p>
-        <p>４． 契約書と契約時注意事項等の厳守<br/>
-            契約書と、契約時にお渡しする諸注意事項の書類全ての厳守をお願いします。これらの内容に違反した場合は、
-            契約期間中でも契約を解約する場合があります。</p>
-        <p>５． 連絡先の変更<br/>
-            申込書にご記入いただいた連絡先が変更になった場合は、必ず連絡を下さいますようお願いします。
-            変更のお届けをいただかず、ご連絡が取れなくなった場合、契約の意志なしとみなし解約手続きを致します。</p>
-        <p>６． 駐車車両について<br/>
-            登録車両以外の車両は、駐車出来ません。</p>
-        <p>７． 駐車場利用について<br/>
-            ① 駐車の際は、ご契約された車室と駐車場に記載してある車室番号や暗証番号を十分確認し、
-            指定された車室に車を止め、車を離れる際には、必ずドアミラーをたたんで下さい。<br/>
-            ② 車によっては、タイヤ止めの位置で駐車すると、車が壁にぶつかる可能性があります。
-            タイヤ止めの位置と壁の位置を十分に確認をしてから車が壁にぶつからないように十分注意して駐車して下さい。</p>
-        <p>８．改造車等の駐車禁止<br/>
-            収納可能寸法以上の車、改造車、キャリアー、エアロパーツが取り付けてある車は、重大な事故を引き起こす
-            原因になりますので、駐車は出来ません。</p>
-        <p>９． 掲示物の確認<br/>
-            駐車場利用に際して重要な注意事項もあります。駐車場内の掲示物は必ず確認をして下さい。</p>
-        <p>10． 迷惑行為等の禁止<br/>
-            所定の車室以外には、当該駐車場（建物）敷地内の空きスペース並びに、周辺路上を含め、絶対に駐車しないで下さい。<br/>
-            駐車場ご利用に際し、当該駐車場（建物）の関係者とのトラブルや、迷惑行為等を起こし、
-            駐車場（建物）管理者、駐車場（建物）所有者、近隣住民から苦情があった場合は、契約を解約する場合があります。</p>
-        <p>11． 駐車施設等の緊急修理、点検作業等<br/>
-            駐車場が突発的な故障などにより、一時的に利用出来ない場合でも、利用者は異議の申し立てをしないものとします。<br/>
-            但し、所有者、管理者並びに弊社は速やかに問題の解決にあたるよう努力致します。また、点検作業等により一時的に
-            利用いただけない場合もあります。貼紙等でお知らせ致しますので、掲示物をご確認のうえ、ご協力お願い致します。</p>
-        <p>12． 車検証写しの提出<br/>
-            新しく車両を購入する等の理由により、ご契約時に車検証の写しをご提出いただけなかった場合、
-            契約後１ヶ月以内に車検証の写しをご提出下さい。<br/>
-            また、契約期間中に車両の買換等により登録車両を変更される場合は、必ず、新しい車両を入庫される前に、
-            車検証の写しをご提出下さい。</p>
-        <p>13． 駐車車両の変更<br/>
-            駐車車両を変更する場合は、必ず弊社にご連絡をお願いします。<br/>
-            万が一、変更車両が契約車室の収容可能寸法より大きいことが判明した場合は、直ちに契約を解約することになります。
-            駐車車両変更の際はご注意下さいますようお願いします。</p>
-        <p>14． 駐車場の故障などによる利用制限<br/>
-            本駐車場は、定期及び緊急点検、補修作業、突発的な故障などにより、一時的にご利用出来ない場合があります。<br/>
-            この場合でも、駐車場の所有者、管理者、及び弊社は、駐車場の速やかな復旧に努める以外には、</p>
-        <p>15. 禁止事項<br/>
-            ① 本駐車場の契約車室に登録車両以外の自動車、その他物品を置くこと。<br/>
-            ② 本駐車場及び建物の空きスペースに登録車両以外の自動車、その他物品を置くこと。<br/>
-            ③ 本駐車場に定着物の設置や改造等の行為をすること。<br/>
-            ④ 本駐車場内に、火気を誘引する物品を持ち込むこと。<br/>
-            ⑤ 有害、危険、騒音、若しくは近隣の迷惑となる行為をすること。<br/>
-            ⑥ 本駐車場の利用に際しやむを得ない場合を除き、建物及び敷地内にみだりに立ち入ること。</p>
-        <p>16. 災害や事故などの時の利用上の注意<br/>
-災害や事故などが発生した場合、駐車場が破損し、それに伴い駐車場利用中のお車が破損してしまう
-おそれがありますので、災害や事故などが発生した場合、もしくは発生する危険性が高い場合は、
-契約者様・利用者様の判断で車を駐車場から出すなどのご対応をお願いします。
-特に、大雨やゲリラ豪雨などの場合はご注意いただき、気象情報をよくご確認下さい。</p>
-        <p>17．手数料について<br/>
-ご契約者様が原因で発生したコインパーキング代は実費の他、振込手数料として200円（税別）を請求致します。また、
-ご契約者様が原因で車室や駐車場設備、通路がオイル漏れなどで汚損した際は、清掃整備費として5,000円（税別）/人の
-請求が発生致します。弊社の清掃整備でも復旧できない汚損の場合は業者手配となるため、別途業者清掃実費を
-契約者の名義変更には2,000円（税別）、車室変更には10,000円（税別）の手数料を請求致します。</p>
-        <p>18．その他の注意事項<br/>
-        入出庫の操作が完了したことを確認してから駐車場を離れるようにして下さい。入出庫操作中に何らかの原因で
-駐車場機械に不具合が生じ、操作が完了しない場合、一時的に駐車場全体が利用不能になり、他の利用者の方に
-多大な迷惑を掛ける事になります。特に入庫作業中に不具合が生じた場合は、機械の復旧作業に、当該車両の持ち主の方の
-ご協力が不可欠になります。入庫作業時は特に操作が完全に終了したことを確認してから駐車場を離れるようにして下さい。
-また、駐車場機械の不具合を発見した場合はそのまま放置せず、現地のメンテナンス会社にお知らせ下さい。
-駐車場設備の故障時連絡先は本駐車場内に貼り付けられているメンテナンス会社となります。
-        メンテナンス会社による緊急対応の必要が発生した場合、緊急対応費用が発生することがあります。
-その際は契約者様・使用者様の負担となります。予めご了承ください。
-        入出庫の際は、十分に安全確認をし、通行人や他の車両、バイク、自転車等にご注意願います。</p>
-        <p>19．お客様情報に関して<br/>
-        ご利用の駐車場が故障などの理由により、貸主及び駐車場管理会社・駐車場メンテナンス会社に緊急の対応を依頼する
-必要が生じるため、上記目的に必要な範囲で弊社より契約者様及び利用者様の情報の一部を貸主及び駐車場管理会社・
-駐車場メンテナンス会社に開示いたします。
-その際、貸主及び駐車場管理会社・駐車場メンテナンス会社から契約者様及び利用者様に直接連絡が入る場合がありますので
-予めご了承下さい。</p>
-    </div>
-</div>
-<div class="row">
-    <div class="right-align">{{ current_date }}</div>
-    <table>
-        <tr>
-            <td style="width: 200px;vertical-align: top;">転貸人【甲】</td>
-            <td>{{ company_name }}<br/>
-                {{ company_address1 }}{{ company_address2 }}
-            </td>
-        </tr>
-    </table>
-</div>
-<div class="row">
-    <table>
-        <tr>
-            <td rowspan="2" style="width: 100px;vertical-align: top;">転借人【乙】</td>
-            <td class="right-align" style="width: 100px;">（住所）</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="right-align" style="width: 100px;">（契約者名）</td>
-            <td></td>
-        </tr>
-    </table>
-</div>
-<div class="row">
-    <table>
-        <tr>
-            <td rowspan="3" style="width: 100px;vertical-align: top;">媒介業者</td>
-            <td class="right-align" style="width: 100px;">（所在地）</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="right-align" style="width: 100px;">（商号）</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="right-align" style="width: 100px;">（代表者）</td>
-            <td></td>
-        </tr>
-    </table>
-</div>
-<div class="row">
-    ●お支払いについて
-    <ol>
-        <li>請求書は発行しません。</li>
-        <li>領収証は発行しません。振込の場合は振込の控えを領収書とします。</li>
-    </ol>
-</div>
-<div class="row">
-    <table class="tight">
-        <tr>
-            <td style="width: 200px;">【振込み口座】</td>
-            <td>＊＊＊＊＊＊＊＊＊＊</td>
-        </tr>
-        <tr>
-            <td>【口座名義】</td>
-            <td>＊＊＊＊＊＊＊＊＊＊</td>
-        </tr>
-        <tr>
-            <td class="2">&nbsp;</td>
-        </tr>
-        <tr>
-            <td colspan="2">【ご注意】銀行での振込人の欄への記入は、契約名義人の名前でお願いします。</td>
-        </tr>
-    </table>
 </div>
 {% endblock %}

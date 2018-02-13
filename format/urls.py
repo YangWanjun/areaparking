@@ -43,6 +43,8 @@ urlpatterns = [
         name="user_contract_step3"),
     url('^user_contract_step4/(?P<signature>[^/]+)\.html$', views.UserContractStep4View.as_view(),
         name="user_contract_step4"),
+    url('^user_contract_step5/(?P<signature>[^/]+)\.html$', views.UserContractStep5View.as_view(),
+        name="user_contract_step5"),
     # 一般解約
     url('^user_contract_cancellation_step1/(?P<signature>[^/]+)\.html$', views.ContractCancellationStep1View.as_view(),
         name="user_contract_cancellation_step1"),

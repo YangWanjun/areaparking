@@ -118,8 +118,8 @@ def get_user_subscription_inspection_steps(signature=None):
     url_kwargs = {'signature': signature}
     step_list = create_steps(
         [
-            ('①', '申込み基本情報'),
-            ('②', '申込み完了'),
+            ('①', '審査用基本情報'),
+            ('②', '審査情報入力完了'),
         ],
         url_pattern=url_pattern,
         url_kwargs=url_kwargs,
@@ -158,9 +158,10 @@ def get_user_contract_steps(signature=None):
     step_list = create_steps(
         [
             ('①', '送付状'),
-            ('②', '契約金計算書'),
-            ('③', '駐車場利用契約書'),
-            ('④', '契約完了'),
+            ('②', '緊急連絡先と支払方法'),
+            ('③', '契約金計算書'),
+            ('④', '駐車場利用契約書'),
+            ('⑤', '契約完了'),
         ],
         url_pattern=url_pattern,
         url_kwargs=url_kwargs,

@@ -228,24 +228,6 @@
                             </div>
                         {% elif task.category == "013" %}
                             <!-- 審査用フォーム確認 -->
-                        {% elif task.category == '030' %}
-                            <!-- 住所・電話番号 審査・確認 -->
-                            <div class="row" style="margin-bottom: 5px;">
-                                <div class="col s4">郵便番号：</div>
-                                <div class="col s8">〒{{ object.post_code1|default:'' }}－{{ object.post_code2|default:'' }}</div>
-                            </div>
-                            <div class="row" style="margin-bottom: 5px;">
-                                <div class="col s4">住所：</div>
-                                <div class="col s8">{{ object.address1|default:'' }}{{ object.address2|default:'' }}</div>
-                            </div>
-                            <div class="row" style="margin-bottom: 5px;">
-                                <div class="col s4">電話番号：</div>
-                                <div class="col s8">{{ object.tel|default:'' }}</div>
-                            </div>
-                            <div class="row" style="margin-bottom: 5px;">
-                                <div class="col s4">ファックス：</div>
-                                <div class="col s8">{{ object.fax|default:'' }}</div>
-                            </div>
                         {% elif task.category == '031' %}
                             <!-- 勤め先審査 -->
                             <div class="row" style="margin-bottom: 5px;">
@@ -344,7 +326,7 @@
                                     </div>
                                 {% endif %}
                             {% endfor %}
-                        {% elif task.category == "100" %}
+                        {% elif task.category == "040" %}
                             <!-- 契約書類送付 -->
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s8">
@@ -359,18 +341,6 @@
                                     <a target="_blank" href="javascript:void(0)" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
                                 </div>
                             </div>
-                            {% for doc in object.parking_lot.docs.all %}
-                                <div class="row" style="margin-bottom: 5px;">
-                                    <div class="col s8">
-                                        <input type="checkbox" class="filled-in" id="id_doc_{{doc.pk}}" checked="checked"
-                                               data-task-url="{% url 'format:report_subscription_confirm' subscription.pk %}" />
-                                        <label for="id_doc_{{doc.pk}}">{{ doc }}</label>
-                                    </div>
-                                    <div class="col s4">
-                                        <a target="_blank" href="{{ MEDIA_URL }}{{ doc.path }}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
-                                    </div>
-                                </div>
-                            {% endfor %}
                             <!-- 契約時メール送信の確認ボックス -->
                             <div id="send_contract" class="modal modal-fixed-footer" style="min-height: 500px;">
                                 <form method="post" action="{% url 'contract:send_contract_mail' task.pk %}" id="frmSendContractMail">
@@ -427,7 +397,17 @@
                                     </div>
                                 </form>
                             </div>
-                        {% elif task.category == '110' %}
+                        {% elif task.category == "042" %}
+                            <div class="row" style="margin-bottom: 5px;">
+                                <div class="col s8">
+                                    <input type="checkbox" class="filled-in" id="id_contract_signed" checked="checked"/>
+                                    <label for="id_contract_signed">ＡＰ捺印後の契約書</label>
+                                </div>
+                                <div class="col s4">
+                                    <a target="_blank" href="javascript:void(0)" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
+                                </div>
+                            </div>
+                        {% elif task.category == '050' %}
                             <!-- 入金確認 -->
                             <table>
                                 <thead>
@@ -460,6 +440,19 @@
                                 </tr>
                                 </tfoot>
                             </table>
+                        {% elif task.category == '060' %}
+                            {% for doc in object.parking_lot.parkinglotdoc_set.all %}
+                                <div class="row" style="margin-bottom: 5px;">
+                                    <div class="col s8">
+                                        <input type="checkbox" class="filled-in" id="id_doc_{{doc.pk}}" checked="checked"
+                                               data-task-url="{% url 'format:report_subscription_confirm' subscription.pk %}" />
+                                        <label for="id_doc_{{doc.pk}}">{{ doc }}</label>
+                                    </div>
+                                    <div class="col s4">
+                                        <a target="_blank" href="{{ MEDIA_URL }}{{ doc.path }}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         {% endif %}
                         {% if task.updated_user %}
                             <div class="row updated_datetime" style="margin-bottom: 5px;">
@@ -487,7 +480,7 @@
                                        class="waves-effect waves-light btn-floating modal-trigger tooltipped task {% if subscription and subscription.status != '01' %}disabled{%endif%}" >
                                         <i class="tiny material-icons">send</i>
                                     </a>
-                                {% elif task.category == "100" %}
+                                {% elif task.category == "040" %}
                                     <a data-target="send_contract" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
                                        class="waves-effect waves-light btn-floating modal-trigger tooltipped task {% if subscription and subscription.status > '03' %}disabled{%endif%}" >
                                         <i class="tiny material-icons">send</i>
