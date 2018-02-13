@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 from employee.models import Member
-from master.models import Config
+# from master.models import Config
 from utils.django_base import BaseModel
 from utils import constants, common
 
@@ -198,10 +198,10 @@ class ParkingLot(BaseModel):
             return [None]
         positions = ParkingPosition.objects.public_filter(parking_lot=self)
         suitable_list = []
-        adjust_length = Config.get_car_length_adjust()
-        adjust_width = Config.get_car_width_adjust()
-        adjust_height = Config.get_car_height_adjust()
-        adjust_weight = Config.get_car_weight_adjust()
+        adjust_length = 0
+        adjust_width = 0
+        adjust_height = 0
+        adjust_weight = 0
         for position in positions:
             is_suitable = True
             length_suitable = True
