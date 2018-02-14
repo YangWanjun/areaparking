@@ -1,0 +1,49 @@
+<div id="send_mail_{{ task.pk }}" class="modal modal-fixed-footer" style="min-height: 500px;">
+    <form method="post" action="{% url 'contract:send_task_mail' task.pk %}" id="frmSendTaskMail">
+        <div class="modal-content">
+            <h4>{{ group }}</h4>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input readonly value="{{ group.sender }}" id="mail_sender" name="mail_sender" type="text" />
+                    <label for="mail_sender">差出人</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input value="{{ object.content_object.contractor.email }}" id="mail_to" name="mail_to" type="text" />
+                    <label for="mail_to">宛先</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="mail_cc" name="mail_cc" type="text" />
+                    <label for="mail_cc">ＣＣ</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="mail_bcc" name="mail_bcc" type="text" />
+                    <label for="mail_bcc">ＢＣＣ</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input value="{{ template.title }}" id="mail_title" name="mail_title" type="text" />
+                    <label for="mail_title">件名</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <textarea id="mail_content" name="mail_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                    <label for="mail_content">メール本文</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
+                <i class="material-icons right">send</i>
+            </button>
+            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+        </div>
+    </form>
+</div>

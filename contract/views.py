@@ -138,7 +138,7 @@ class ContractedParkingLotDetailView(BaseDetailModelView):
 
 class ContractedParkingLotViewSet(BaseModelViewSet):
     model = models.VContractedParkingLot
-    list_display = ('name', 'address', 'staff', 'owner', 'lease_management_company', 'building_management_company', 'is_all_cancellation')
+    list_display = ('name', 'position_count', 'contract_count', 'address', 'staff', 'owner', 'lease_management_company', 'building_management_company', 'is_all_cancellation')
     detail_view_class = ContractedParkingLotDetailView
 
     def has_change_permission(self, request, obj=None):

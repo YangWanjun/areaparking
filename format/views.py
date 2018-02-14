@@ -938,7 +938,7 @@ class UserContractStep4View(BaseUserContractView):
         # self.set_user_subscription(user_subscription)
         # 通知（メールとプッシュ）
         parking_lot = context.get('parking_lot')
-        # mail_group = MailGroup.get_contract_completed_group()
+        # mail_group = MailGroup.get_contract_form_completed_group()
         # data = user_subscription.get_subscription_addressee()
         # mail_group.send_main(user_subscription.get_subscription_email(), data)
         push_notification(

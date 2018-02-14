@@ -109,7 +109,7 @@ def sync_master():
         MailGroup.objects.create(code='013', name="審査用フォーム入力完了", sender='ap.test@e-business.co.jp', template=template)
         print('作成', '審査用フォーム入力完了のメールグループ')
     if MailGroup.objects.public_filter(code='040').count() == 0:
-        template = MailTemplate.objects.create(title='契約書類送付', body="""<!DOCTYPE html>
+        template = MailTemplate.objects.create(title='契約フォーム送付', body="""<!DOCTYPE html>
 <html>
 <head>
 </head>
@@ -121,7 +121,7 @@ def sync_master():
 <p>■契約書類<br /><a title="契約書類" href="{{user_contract_url}}" target="_blank" rel="noopener">{{user_contract_url}}</a></p>
 </body>
 </html>""", comment="契約書類送付用")
-        MailGroup.objects.create(code='040', name="契約書類送付", sender='ap.test@e-business.co.jp', template=template)
+        MailGroup.objects.create(code='040', name="契約フォーム送付", sender='ap.test@e-business.co.jp', template=template)
         print('作成', '契約書類送付のメールグループ')
     if MailGroup.objects.public_filter(code='041').count() == 0:
         template = MailTemplate.objects.create(title='ご契約ありがとうございます！', body="""<!DOCTYPE html>
@@ -134,8 +134,34 @@ def sync_master():
 <p>ご契約は完了しましたので、お知らせいたします。</p>
 </body>
 </html>""", comment="契約書類入力完了用")
-        MailGroup.objects.create(code='041', name="契約完了", sender='ap.test@e-business.co.jp', template=template)
+        MailGroup.objects.create(code='041', name="契約フォーム入力完了", sender='ap.test@e-business.co.jp', template=template)
         print('作成', '契約完了のメールグループ')
+    if MailGroup.objects.public_filter(code='042').count() == 0:
+        template = MailTemplate.objects.create(title='契約書送付', body="""<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>{{ user_name }} {{user_honorific}}：&nbsp;</p>
+<p>いつもお世話になっております、<br />株式会社エリアパーキングです。</p>
+<p>契約書を添付しました。ご確認よろしくお願いします！</p>
+</body>
+</html>""", comment="ＡＰ捺印後の契約書送付")
+        MailGroup.objects.create(code='042', name="契約書送付", sender='ap.test@e-business.co.jp', template=template)
+        print('作成', '契約書送付のメールグループ')
+    if MailGroup.objects.public_filter(code='060').count() == 0:
+        template = MailTemplate.objects.create(title='鍵類、操作説明書、配置図送付', body="""<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>{{ user_name }} {{user_honorific}}：&nbsp;</p>
+<p>いつもお世話になっております、<br />株式会社エリアパーキングです。</p>
+<p>鍵類、操作説明書、配置図送付を添付しました。ご確認よろしくお願いします！</p>
+</body>
+</html>""", comment="鍵類、操作説明書、配置図送付")
+        MailGroup.objects.create(code='060', name="鍵類、操作説明書、配置図送付", sender='ap.test@e-business.co.jp', template=template)
+        print('作成', '鍵類、操作説明書、配置図送付のメールグループ')
     if MailGroup.objects.public_filter(code='310').count() == 0:
         template = MailTemplate.objects.create(title='{{parking_lot_name}}の退出届', body="""<!DOCTYPE html>
 <html>
@@ -150,7 +176,7 @@ def sync_master():
 </html>""", comment="一般解約用")
         MailGroup.objects.create(code='310', name="一般解約書類送付", sender='ap.test@e-business.co.jp', template=template)
         print('作成', '一般解約書類送付のメールグループ')
-    if MailGroup.objects.public_filter(code='320').count() == 0:
+    if MailGroup.objects.public_filter(code='322').count() == 0:
         template = MailTemplate.objects.create(title='{{parking_lot_name}}の退出届', body="""<!DOCTYPE html>
 <html>
 <head>

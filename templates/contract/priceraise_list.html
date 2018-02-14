@@ -122,7 +122,10 @@
                 <span class="card-title" style="font-size: 18px;">フィルター</span>
                 <div class="row" style="margin-top:0px">
                     <div class="input-field col s12" style="padding: 0px;">
-                        {% year_month_filter year month %}
+                        {% year_month_filter year month "開始年" "開始月" %}
+                    </div>
+                    <div class="input-field col s12" style="padding: 0px;margin-top: 15px;">
+                        {% year_month_filter year month "終了年" "終了月" %}
                     </div>
                 </div>
                 <div class="clearfix"></div>

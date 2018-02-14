@@ -28,6 +28,7 @@
                     <th>請求額</th>
                     <th>差額</th>
                     <th>結果</th>
+                    <th style="width: 20px;"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -36,11 +37,12 @@
                            {%elif detail.status == '00'%}untreated
                            {%elif detail.status == '01'%}untreated red-text
                            {%elif detail.status == '02'%}untreated purple-text
+                           {%elif detail.status == '03'%}untreated green-text
                            {%elif detail.status == '11'%}untreated green-text
                            {%endif%}">
                         <td>
                             {% if not detail.is_committed %}
-                            <input type="checkbox" id="chk_{{detail.pk}}" name="selected_detail" {%if detail.status == '11'%}checked{%endif%} class="tiny filled-in detail" value="{{ detail.pk }}"/><label for="chk_{{detail.pk}}" style="height: 15px;"></label>
+                            <input type="checkbox" id="chk_{{detail.pk}}" name="selected_detail" {%if detail.status == '11'%}checked{% elif detail.status == '03' %}checked{%endif%} class="tiny filled-in detail" value="{{ detail.pk }}"/><label for="chk_{{detail.pk}}" style="height: 15px;"></label>
                             {% endif %}
                         </td>
                         <td>{{ detail.nominee_name }}</td>
@@ -73,6 +75,38 @@
                                     </ul>
                                 {% endif %}
                             {% endif %}
+                        </td>
+                        <td class="center"><a href="javascript:void(0)" onclick="expand_request_details(this)"><i class="tiny material-icons">expand_more</i></a></td>
+                    </tr>
+                    <tr class="hide">
+                        <td colspan="11">
+                            <table class="table bordered">
+                                <thead>
+                                <tr>
+                                    <th>契約者</th>
+                                    <th>駐車場</th>
+                                    <th>車室</th>
+                                    <th>請求項目</th>
+                                    <th>金額</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{{ detail.contractor }}</td>
+                                    <td>{{ detail.parking_lot }}</td>
+                                    <td>{{ detail.parking_position }}</td>
+                                    <td>契約手数料</td>
+                                    <td>10,000</td>
+                                </tr>
+                                <tr style="border-bottom: 0px;">
+                                    <td>{{ detail.contractor }}</td>
+                                    <td>{{ detail.parking_lot }}</td>
+                                    <td>{{ detail.parking_position }}</td>
+                                    <td>契約月の日割賃料</td>
+                                    <td>5,000</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </td>
                     </tr>
                 {% endfor %}
@@ -217,6 +251,15 @@ function success_fn(result) {
 }
 function failure_fn(result) {
     debugger;
+}
+
+function expand_request_details(obj) {
+    var row = $(obj).closest('tr').next();
+    if (row.hasClass('hide')) {
+        row.removeClass('hide');
+    } else {
+        row.addClass('hide');
+    }
 }
 </script>
 {% endblock %}

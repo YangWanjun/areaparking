@@ -509,7 +509,7 @@ class MailGroup(BaseModel):
             return None
 
     @classmethod
-    def get_contract_send_group(cls):
+    def get_contract_form_send_group(cls):
         """ユーザー契約時のメール送信に関する情報を取得する。
 
         :return:
@@ -520,13 +520,35 @@ class MailGroup(BaseModel):
             return None
 
     @classmethod
-    def get_contract_completed_group(cls):
+    def get_contract_form_completed_group(cls):
         """ユーザー契約完了時のメール送信に関する情報を取得する。
 
         :return:
         """
         try:
             return MailGroup.objects.get(code='041')
+        except ObjectDoesNotExist:
+            return None
+
+    @classmethod
+    def get_contract_send_group(cls):
+        """ユーザー契約時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='042')
+        except ObjectDoesNotExist:
+            return None
+
+    @classmethod
+    def get_contract_other_send_group(cls):
+        """ユーザー契約時のメール送信に関する情報を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='060')
         except ObjectDoesNotExist:
             return None
 

@@ -96,62 +96,6 @@
                                     <a target="_blank" href="{% url 'format:download_report_subscription' subscription.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
                                 </div>
                             </div>
-                            <!-- 申込時メール送信の確認ボックス -->
-                            <div id="send_subscription" class="modal modal-fixed-footer" style="min-height: 500px;">
-                                <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendSubscriptionMail">
-                                    {{ formset.management_form }}
-                                    <input type="hidden" id="hidSubscriptionUrl" name="subscription_url"/>
-                                    <div class="modal-content">
-                                        <h4>申込書の送付</h4>
-                                        <div class="row">
-                                            <div class="col s12">
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input readonly value="{{ group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
-                                                        <label for="txtSubscriptionSender">差出人</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{{ object.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
-                                                        <label for="txtSubscriptionTo">宛先</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
-                                                        <label for="txtSubscriptionCC">ＣＣ</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
-                                                        <label for="txtSubscriptionBCC">ＢＣＣ</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{{ template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
-                                                        <label for="txtSubscriptionTitle">件名</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
-                                                        <label for="txtSubscriptionContent">メール本文</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
-                                            <i class="material-icons right">send</i>
-                                        </button>
-                                        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
-                                    </div>
-                                </form>
-                            </div>
                         {% elif task.category == "011" %}
                             <!-- 申込み用フォーム確認 -->
                             {% if subscription.status == '01' %}
@@ -172,60 +116,6 @@
                             {% endif %}
                         {% elif task.category == "012" %}
                             <!-- 審査用フォーム送付 -->
-                            <!-- 審査用フォーム送信の確認ボックス -->
-                            <div id="send_inspection" class="modal modal-fixed-footer" style="min-height: 500px;">
-                                <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendInspectionMail">
-                                    <div class="modal-content">
-                                        <h4>審査用フォームの送付</h4>
-                                        <div class="row">
-                                            <div class="col s12">
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input readonly value="{{ group.sender }}" id="txtInspectionSender" name="subscription_sender" type="text" />
-                                                        <label for="txtInspectionSender">差出人</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{{ object.email }}" id="txtInspectionTo" name="subscription_to" type="text" />
-                                                        <label for="txtInspectionTo">宛先</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtInspectionCC" name="subscription_cc" type="text" />
-                                                        <label for="txtInspectionCC">ＣＣ</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtInspectionBCC" name="subscription_bcc" type="text" />
-                                                        <label for="txtInspectionBCC">ＢＣＣ</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{{ template.title }}" id="txtInspectionTitle" name="subscription_title" type="text" />
-                                                        <label for="txtInspectionTitle">件名</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <textarea id="txtInspectionContent" name="subscription_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
-                                                        <label for="txtInspectionContent">メール本文</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
-                                            <i class="material-icons right">send</i>
-                                        </button>
-                                        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
-                                    </div>
-                                </form>
-                            </div>
                         {% elif task.category == "013" %}
                             <!-- 審査用フォーム確認 -->
                         {% elif task.category == '031' %}
@@ -341,62 +231,6 @@
                                     <a target="_blank" href="javascript:void(0)" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
                                 </div>
                             </div>
-                            <!-- 契約時メール送信の確認ボックス -->
-                            <div id="send_contract" class="modal modal-fixed-footer" style="min-height: 500px;">
-                                <form method="post" action="{% url 'contract:send_contract_mail' task.pk %}" id="frmSendContractMail">
-                                    {{ formset.management_form }}
-                                    <input type="hidden" name="subscription_url"/>
-                                    <div class="modal-content">
-                                        <h4>申込書の送付</h4>
-                                        <div class="row">
-                                            <div class="col s12">
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input readonly value="{{ group.sender }}" id="txtContractSender" name="contract_sender" type="text" />
-                                                        <label for="txtContractSender">差出人</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{{ object.email }}" id="txtContractTo" name="contract_to" type="text" />
-                                                        <label for="txtContractTo">宛先</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtContractCC" name="contract_cc" type="text" />
-                                                        <label for="txtContractCC">ＣＣ</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtContractBCC" name="contract_bcc" type="text" />
-                                                        <label for="txtContractBCC">ＢＣＣ</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <input value="{{ template.title }}" id="txtContractTitle" name="contract_title" type="text" />
-                                                        <label for="txtContractTitle">件名</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="input-field col s12">
-                                                        <textarea id="txtContractContent" name="contract_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
-                                                        <label for="txtContractContent">メール本文</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
-                                            <i class="material-icons right">send</i>
-                                        </button>
-                                        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
-                                    </div>
-                                </form>
-                            </div>
                         {% elif task.category == "042" %}
                             <div class="row" style="margin-bottom: 5px;">
                                 <div class="col s8">
@@ -470,19 +304,9 @@
                                    class="waves-effect waves-light btn-floating tooltipped task task-undo red {%if task.is_finished or task.is_skipped%}{%else%}disabled{%endif%}"
                                    onclick="ebjs.material.task_undo(this, '{% url 'task_undo' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">cancel</i></a>
-                                {% if task.category == "010" %}
-                                    <a data-target="send_subscription" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                {% if group %}
+                                    <a data-target="send_mail_{{ task.pk }}" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
                                        class="waves-effect waves-light btn-floating modal-trigger tooltipped task {% if subscription and subscription.status != '01' %}disabled{%endif%}" >
-                                        <i class="tiny material-icons">send</i>
-                                    </a>
-                                {% elif task.category == "012" %}
-                                    <a data-target="send_inspection" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
-                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped task {% if subscription and subscription.status != '01' %}disabled{%endif%}" >
-                                        <i class="tiny material-icons">send</i>
-                                    </a>
-                                {% elif task.category == "040" %}
-                                    <a data-target="send_contract" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
-                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped task {% if subscription and subscription.status > '03' %}disabled{%endif%}" >
                                         <i class="tiny material-icons">send</i>
                                     </a>
                                 {% endif %}
@@ -497,6 +321,57 @@
                             </div>
                         </div>
                     </div>
+                    {% if group %}
+                    <div id="send_mail_{{ task.pk }}" class="modal modal-fixed-footer" style="min-height: 500px;">
+                        <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendTaskMail">
+                            <div class="modal-content">
+                                <h4>{{ group }}</h4>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input readonly value="{{ group.sender }}" id="mail_sender" name="mail_sender" type="text" />
+                                        <label for="mail_sender">差出人</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input value="{{ object.email }}" id="mail_to" name="mail_to" type="text" />
+                                        <label for="mail_to">宛先</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="mail_cc" name="mail_cc" type="text" />
+                                        <label for="mail_cc">ＣＣ</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="mail_bcc" name="mail_bcc" type="text" />
+                                        <label for="mail_bcc">ＢＣＣ</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input value="{{ template.title }}" id="mail_title" name="mail_title" type="text" />
+                                        <label for="mail_title">件名</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <textarea id="mail_content" name="mail_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                                        <label for="mail_content">メール本文</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="modal-action btn-flat waves-effect waves-green" type="submit" onclick="return false;" name="action">送信
+                                    <i class="material-icons right">send</i>
+                                </button>
+                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
                 </li>
                 {% endwith %}
                 {% endfor %}
@@ -508,6 +383,52 @@
                 <a class="waves-effect waves-light btn white-text" href="{% url 'contract:subscription_finish' object.pk %}" onclick="ebjs.material.subscription_finish(this); return false;">契約完了</a>
             </div>
         </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">対応履歴
+                <a class="btn-floating waves-effect waves-light red right modal-trigger" data-target="add_waiting_contact"><i class="material-icons" style="line-height: 41px;">add</i></a>
+            </div>
+            <table class="table bordered highlight" id="tblWaitingContact">
+                <thead>
+                <tr>
+                    <th>連絡日時</th>
+                    <th>受付者</th>
+                    <th>連絡内容</th>
+                    <th>対応日</th>
+                    <th>対応結果</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr class="empty">
+                        <td colspan="5">履歴ありません。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="add_waiting_contact" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>履歴追加</h4>
+        <div class="row">
+            <form method="post" action="/api/waiting-contact/" id="frmAddWaitingContact">
+                <p><label for="id_contact_date">連絡日:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_date"></p>
+                <p><label for="id_contact_user">受付者:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_user"></p>
+                <p><label for="id_contact_1">連絡内容:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_1"></p>
+                <p><label for="id_contact2">対応日:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact2"></p>
+                <p><label for="id_contact_3">対応結果:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_3"></p>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0)" onclick="javascript:void(0)"
+           class="modal-action waves-effect waves-green btn-flat ">追加</a>
+        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
     </div>
 </div>
 {% endblock left-panel %}

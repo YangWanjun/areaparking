@@ -1,5 +1,5 @@
 CREATE OR REPLACE VIEW v_transfer_detail AS
-select td.id
+select distinct td.id
      , td.reference_no
      , td.settlement_ymd
      , td.reckoning_ymd
@@ -28,6 +28,7 @@ select td.id
      , c.parking_position_id
      , case
            when r.id is null then '00'
+           when td.amount != r.amount and (td.amount - ifnull(r.amount, 0)) <= 2000 and (td.amount - ifnull(r.amount, 0)) >= -2000 then '03'
            when td.amount != r.amount then '01'
            when td.nominee_name != cor.kana then '02'
            when td.amount = r.amount then '11'

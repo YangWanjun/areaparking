@@ -738,7 +738,13 @@ class Task(BaseModel):
             group = MailGroup.get_inspection_send_group()
         elif self.category == '040':
             # 契約書類一式の送付
+            group = MailGroup.get_contract_form_send_group()
+        elif self.category == "042":
+            # 契約書の送付
             group = MailGroup.get_contract_send_group()
+        elif self.category == "060":
+            # 鍵類、操作説明書、配置図送付
+            group = MailGroup.get_contract_other_send_group()
         elif self.category == '310':
             # 一般解約の送付
             group = MailGroup.get_contract_cancellation_send_group()
@@ -762,6 +768,12 @@ class Task(BaseModel):
                 data.update(get_parking_lot_context(self.process.content_object.parking_lot))
                 data.update(get_subscription_context(self.process.content_object))
                 data.update(get_user_contract_url(self))
+            elif self.category == '042':
+                data.update(get_parking_lot_context(self.process.content_object.parking_lot))
+                data.update(get_subscription_context(self.process.content_object))
+            elif self.category == '060':
+                data.update(get_parking_lot_context(self.process.content_object.parking_lot))
+                data.update(get_subscription_context(self.process.content_object))
             elif self.category == '310':
                 # 一般解約の送付
                 data.update(get_parking_lot_context(self.process.content_object.parking_lot))
@@ -863,11 +875,11 @@ class ContractCancellation(BaseModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if self.retire_date:
-            if self.retire_date > self.cancellation_date:
-                raise errors.CustomException(constants.ERROR_CONTRACT_WRONG_RETIRE_DATE)
-            elif self.retire_date > self.contract.end_date or self.retire_date < self.contract.start_date:
-                raise errors.CustomException(constants.ERROR_CONTRACT_RETIRE_DATE_RANGE)
+        # if self.retire_date:
+        #     if self.retire_date > self.cancellation_date:
+        #         raise errors.CustomException(constants.ERROR_CONTRACT_WRONG_RETIRE_DATE)
+        #     elif self.retire_date > self.contract.end_date or self.retire_date < self.contract.start_date:
+        #         raise errors.CustomException(constants.ERROR_CONTRACT_RETIRE_DATE_RANGE)
         if self.cancellation_date > self.contract.end_date or self.cancellation_date < self.contract.start_date:
             raise errors.CustomException(constants.ERROR_CONTRACT_CANCELLATION_DATE_RANGE)
         super(ContractCancellation, self).save(force_insert, force_update, using, update_fields)
@@ -1032,6 +1044,8 @@ class VContractedParkingLot(BaseViewModel):
     building_management_company = models.ForeignKey(
         BuildingManagementCompany, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="建物管理会社"
     )
+    position_count = models.IntegerField(default=0, editable=False, verbose_name="車室数")
+    contract_count = models.IntegerField(default=0, editable=False, verbose_name="契約数")
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
     parking_lot_cancellation = models.ForeignKey(ParkingLotCancellation, blank=True, null=True,
                                                  on_delete=models.DO_NOTHING, verbose_name="物件解約")

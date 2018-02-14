@@ -25,6 +25,29 @@
     ebjs.material.load_user_info();
     ebjs.material.save_user_info();
     ebjs.autocomplete.init();
+
+    $("#id_check_all").click(function() {
+        if ($(this).is(':checked')) {
+            $("input[type=checkbox].detail").prop('checked', true);
+        } else {
+            $("input[type=checkbox].detail").prop('checked', false);
+        }
+    });
+
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+        },
+        complete: function(obj) {
+            //alert('Closed');
+        }
+    });
+
     if ( ! $.fn.DataTable.isDataTable( '#table' ) ) {
       var datatable = $('#table').DataTable(config);
       new $.fn.dataTable.FixedHeader(datatable);
@@ -53,6 +76,10 @@
             <table id="table" class="table bordered" data-turbolinks="false" data-form-control="datatable" style="width:100%">
                 <thead>
                     <tr>
+                        <th style="width: 30px;">
+                            <input type="checkbox" id="id_check_all" class="tiny filled-in"/>
+                            <label for="id_check_all" style="height: 15px; padding-left: 20px;"></label>
+                        </th>
                         {% for header, header_title in headers %}
                         <th data-name="{{ header }}" class="{{ header }}">{{ header_title|title }}</th>
                         {% endfor %}
@@ -61,6 +88,10 @@
                 <tbody>
                     {% for item, row in data %}
                     <tr>
+                        <td>
+                            <input type="checkbox" id="chk_{{item.pk}}" name="selected_detail" class="tiny filled-in detail" value="{{ object.pk }}"/>
+                            <label for="chk_{{item.pk}}" style="height: 15px;"></label>
+                        </td>
                         {% for column_name, item in row.items %}
                         <td>
                             {% if column_name in view.datalist.list_display_links %}
@@ -75,7 +106,65 @@
                 </tbody>
             </table>
         </div>
+        <div class="card-action">
+            <div class="right-align">
+                <button class="btn waves-effect waves-light modal-trigger" data-target="divSendMail">一斎送信</button>
+            </div>
+        </div>
     </div>
+</div>
+<div id="divSendMail" class="modal modal-fixed-footer" style="min-height: 500px;">
+    <form method="post" action="?" id="frmSendMail">
+        <div class="modal-content">
+            <h4>メール送信</h4>
+            <div class="row">
+                <div class="col s12">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input readonly value="{{ group.sender }}" id="txtSubscriptionSender" name="subscription_sender" type="text" />
+                            <label for="txtSubscriptionSender">差出人</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input value="{{ object.email }}" id="txtSubscriptionTo" name="subscription_to" type="text" />
+                            <label for="txtSubscriptionTo">宛先</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="txtSubscriptionCC" name="subscription_cc" type="text" />
+                            <label for="txtSubscriptionCC">ＣＣ</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="txtSubscriptionBCC" name="subscription_bcc" type="text" />
+                            <label for="txtSubscriptionBCC">ＢＣＣ</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input value="{{ template.title }}" id="txtSubscriptionTitle" name="subscription_title" type="text" />
+                            <label for="txtSubscriptionTitle">件名</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                            <label for="txtSubscriptionContent">メール本文</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-action btn-flat waves-effect waves-green" onclick="return false" type="submit" name="action">送信
+                <i class="material-icons right">send</i>
+            </button>
+            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+        </div>
+    </form>
 </div>
 {% endblock left-panel %}
 {% block right-panel %}

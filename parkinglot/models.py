@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 from employee.models import Member
-# from master.models import Config
+from master.models import Config
 from utils.django_base import BaseModel
 from utils import constants, common
 
@@ -168,7 +168,6 @@ class ParkingLot(BaseModel):
     time_limit_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="利用時間帯について")
     transit_pass_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="通行許可証について")
 
-
     class Meta:
         db_table = 'ap_parking_lot'
         ordering = ['post_code', 'city_code', 'town_name', 'aza_name', 'other_name']
@@ -198,10 +197,10 @@ class ParkingLot(BaseModel):
             return [None]
         positions = ParkingPosition.objects.public_filter(parking_lot=self)
         suitable_list = []
-        adjust_length = 0
-        adjust_width = 0
-        adjust_height = 0
-        adjust_weight = 0
+        adjust_length = Config.get_car_length_adjust()
+        adjust_width = Config.get_car_width_adjust()
+        adjust_height = Config.get_car_height_adjust()
+        adjust_weight = Config.get_car_weight_adjust()
         for position in positions:
             is_suitable = True
             length_suitable = True

@@ -65,6 +65,33 @@
     </div>
     <div class="card">
         <div class="card-content">
+            <div class="card-title">対応履歴
+                <a class="btn-floating waves-effect waves-light red right modal-trigger" data-target="add_waiting_contact"><i class="material-icons" style="line-height: 41px;">add</i></a>
+            </div>
+            <table class="table bordered highlight" id="tblWaitingContact">
+                <thead>
+                <tr>
+                    <th>連絡日時</th>
+                    <th>受付者</th>
+                    <th>連絡内容</th>
+                    <th>対応日</th>
+                    <th>対応結果</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr class="empty">
+                        <td colspan="5">履歴ありません。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
             <div class="card-title" id="divDemandHistory">督促履歴</div>
             <table id="tblDemandHistory" class="table bordered highlight mdl-data-table" cellspacing="0">
                 <thead>
@@ -106,10 +133,58 @@
         </div>
     </div>
 </div>
+<div id="add_waiting_contact" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>履歴追加</h4>
+        <div class="row">
+            <form method="post" action="/api/waiting-contact/" id="frmAddWaitingContact">
+                <p><label for="id_contact_date">連絡日:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_date"></p>
+                <p><label for="id_contact_user">受付者:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_user"></p>
+                <p><label for="id_contact_1">連絡内容:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_1"></p>
+                <p><label for="id_contact2">対応日:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact2"></p>
+                <p><label for="id_contact_3">対応結果:</label> <input type="text" name="contact_date" class="vDateField" required="" id="id_contact_3"></p>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0)" onclick="javascript:void(0)"
+           class="modal-action waves-effect waves-green btn-flat ">追加</a>
+        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+    </div>
+</div>
 {% endblock left-panel %}
 {% block right-panel %}
 <div class="right-panel">
     {% include 'common/user_info.html' %}
 </div>
 {% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+            var subscription_url = "";
+            if ($("#chkSubscriptionConfirm").prop("checked")) {
+                subscription_url += $("#chkSubscriptionConfirm").attr("data-task-url") + ",";
+            }
+            if ($("#chkSubscription").prop("checked")) {
+                subscription_url += $("#chkSubscription").attr("data-task-url") + ",";
+            }
+            $("#hidSubscriptionUrl").val(subscription_url);
+            ebjs.material.reset_mce_data_href();
+        },
+        complete: function(obj) {
+            //alert('Closed');
+        }
+    });
+});
+</script>
 {% endblock %}

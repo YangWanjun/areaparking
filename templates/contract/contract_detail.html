@@ -182,16 +182,36 @@
                                         </div>
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <i class="material-icons prefix">date_range</i>
-                                                {{ contract_cancellation_form.cancellation_date }}
-                                                {{ contract_cancellation_form.cancellation_date.label_tag }}
+                                                <input type="radio" name="cancellation_type" id="cancellation_type1" value="">
+                                                <label for="cancellation_type1">一般解約</label>
+                                                <input type="radio" name="cancellation_type" id="cancellation_type2" value="">
+                                                <label for="cancellation_type2">契約違反解約</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="input-field col s12">
                                                 <i class="material-icons prefix">date_range</i>
-                                                {{ contract_cancellation_form.retire_date }}
-                                                {{ contract_cancellation_form.retire_date.label_tag }}
+                                                {{ contract_cancellation_form.cancellation_date }}
+                                                {{ contract_cancellation_form.cancellation_date.label_tag }}
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% elif code == '20' %}
+                                    <!-- 支払方法変更 -->
+                                    <form method="post" action="/api/process/" class="col s12 new_process_form">
+                                        <div style="display:none">
+                                            <input type="hidden" name="name" value="{{code}}">
+                                            {{ process_form.content_type }}
+                                            {{ process_form.object_id }}
+                                        </div>
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <input type="radio" name="pay_method" id="pay_method_1" value="transfer_in">
+                                                <label for="pay_method_1">振込み</label>
+                                                <input type="radio" name="pay_method" id="pay_method_2" value="transfer_in">
+                                                <label for="pay_method_2">振替</label>
+                                                <input type="radio" name="pay_method" id="pay_method_3" value="transfer_in">
+                                                <label for="pay_method_3">クレジット</label>
                                             </div>
                                         </div>
                                     </form>
