@@ -12,53 +12,19 @@
 <div class="left-panel">
     <div class="card">
         <div class="card-content">
-            {% block card %}
-            <div class="card-title">請求一覧: {{ object }}</div>
-            <table class="table bordered highlight" id="tblTransferDetails">
-                <thead>
+            <div class="card-title">{{ view.model|verbose_name|title }}: {{ object }}</div>
+            <table class="table bordered">
+                {% for field_name, value in object_data %}
                 <tr>
-                    <th>請求年月</th>
-                    <th>請求金額</th>
-                    <th>駐車場</th>
-                    <th>車室</th>
-                    <th>請求項目</th>
-                    <th>入金金額</th>
-                    <th>状態</th>
+                    <th>{{ field_name }}</th>
+                    {% if value.get_absolute_url %}
+                    <td><a href="{{ value.get_absolute_url }}">{{ value }}</a></td>
+                    {% else %}
+                    <td>{{ value }}</td>
+                    {% endif %}
                 </tr>
-                </thead>
-                <tbody>
-                {% for contractor_request in contractor_request_list %}
-                    <tr class="">
-                        <td>{{ contractor_request.request.year }}年{{ contractor_request.request.month }}月</td>
-                        <td>{{ contractor_request.request.amount|intcomma }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
-                        <td>2017年12月賃料</td>
-                        <td>{{ contractor_request.request.amount|intcomma }}</td>
-                        <td><span class="new badge left grey" data-badge-caption="入金済" style="margin-left: 0px;"></span></td>
-                    </tr>
-                    <tr class="">
-                        <td>2018年01月</td>
-                        <td>{{ contractor_request.request.amount|intcomma }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
-                        <td>2018年01月賃料</td>
-                        <td>0</td>
-                        <td><span class="new badge left red" data-badge-caption="滞納" style="margin-left: 0px;"></span></td>
-                    </tr>
-                    <tr class="">
-                        <td>2018年02月</td>
-                        <td>{{ contractor_request.request.amount|intcomma }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
-                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
-                        <td>2018年02月賃料</td>
-                        <td>0</td>
-                        <td><span class="new badge left green" data-badge-caption="未入金" style="margin-left: 0px;"></span></td>
-                    </tr>
                 {% endfor %}
-                </tbody>
             </table>
-            {% endblock %}
         </div>
         <div class="card-action">
             <div class="right-align">
@@ -71,7 +37,68 @@
     </div>
     <div class="card">
         <div class="card-content">
-            <div class="card-title" id="divDemandHistory">督促履歴</div>
+            <div class="card-title">請求一覧: {{ object }}</div>
+            <table class="table bordered highlight" id="tblTransferDetails">
+                <thead>
+                <tr>
+                    <th>請求年月</th>
+                    <th>請求金額</th>
+                    <th>駐車場</th>
+                    <th>車室</th>
+                    <th>請求項目</th>
+                    <th>入金金額</th>
+                    <th>入金日</th>
+                    <th>状態</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for contractor_request in contractor_request_list %}
+                    <tr class="">
+                        <td>{{ contractor_request.request.year }}年{{ contractor_request.request.month }}月</td>
+                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
+                        <td>2017年12月賃料</td>
+                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td>2017年11月25日</td>
+                        <td><span class="new badge left grey" data-badge-caption="入金済" style="margin-left: 0px;"></span></td>
+                    </tr>
+                    <tr class="">
+                        <td>2018年01月</td>
+                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
+                        <td>2018年01月賃料</td>
+                        <td>0</td>
+                        <td></td>
+                        <td><span class="new badge left red" data-badge-caption="滞納" style="margin-left: 0px;"></span></td>
+                    </tr>
+                    <tr class="">
+                        <td>2018年02月</td>
+                        <td>{{ contractor_request.request.amount|intcomma }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_lot }}</td>
+                        <td>{{ contractor_request.request.contract_payment.contract.parking_position }}</td>
+                        <td>2018年02月賃料</td>
+                        <td>0</td>
+                        <td></td>
+                        <td><span class="new badge left green" data-badge-caption="未入金" style="margin-left: 0px;"></span></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
+                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title" id="divDemandHistory">督促履歴
+                <a class="btn-floating waves-effect waves-light red right modal-trigger" data-target="add_waiting_contact"><i class="material-icons" style="line-height: 41px;">add</i></a>
+            </div>
             <table id="tblDemandHistory" class="table bordered highlight mdl-data-table" cellspacing="0">
                 <thead>
                     <tr>
@@ -112,6 +139,32 @@
         </div>
     </div>
 </div>
+<div id="add_waiting_contact" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>督促履歴追加</h4>
+        <div class="row">
+            <form method="post" action="/api/waiting-contact/" id="frmAddWaitingContact">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input type="text" id="id_1" />
+                        <label for="id_1">督促方式</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea class="materialize-textarea" id="id_2"></textarea>
+                        <label for="id_2">備考</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0)" onclick="add_waiting_contact()"
+           class="modal-action waves-effect waves-green btn-flat ">追加</a>
+        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+    </div>
+</div>
 {% endblock left-panel %}
 {% block right-panel %}
 <div class="right-panel">
@@ -122,7 +175,20 @@
 
 {% block footer %}
 <script type="text/javascript">
-    $(document).one("turbolinks:load", function() {
+$(document).one("turbolinks:load", function() {
+    $('.modal').modal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+        },
+        complete: function(obj) {
+            //alert('Closed');
+        } // Callback for Modal close
     });
+});
 </script>
 {% endblock %}

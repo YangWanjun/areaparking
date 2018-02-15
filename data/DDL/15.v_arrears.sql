@@ -3,6 +3,11 @@ select r.id
      , r.id as request_id
      , r.amount as request_amount
      , DATE_FORMAT(r.limit_date, '%y.%m.%d') as limit_date
+     , DATEDIFF(current_date(), r.limit_date) as date_diff
+     , case
+           when r.id <= 15 then true
+           else false
+	   end as is_sent
 	 , r.payment_kbn
      , cor.code as contractor_id
      , cor.kana

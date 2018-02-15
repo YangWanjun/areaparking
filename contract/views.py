@@ -316,18 +316,6 @@ class PriceRaisingListView(BaseTemplateView):
         return context
 
 
-class TroubleListView(BaseTemplateView):
-    template_name = 'contract/trouble_list.html'
-
-
-class TroubleDetailView(BaseTemplateView):
-    template_name = 'contract/trouble_detail.html'
-
-
-class TroubleAddView(BaseTemplateView):
-    template_name = 'contract/trouble_add.html'
-
-
 class DefectListView(BaseTemplateView):
     template_name = 'contract/defect_list.html'
 

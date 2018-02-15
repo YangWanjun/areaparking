@@ -71,7 +71,7 @@
                                     <a href="#" class="right dropdown-button" data-activates="id_action_{{detail.pk}}"><i class="material-icons tiny">more_vert</i></a>
                                     <ul id="id_action_{{detail.pk}}" class='dropdown-content'>
                                         <li style="min-height: inherit;"><a href="javascript:void(0)" onclick="carry_over(this)" style="font-size: 13px;padding: 0px;"><i class="material-icons tiny" style="margin-right: 0px;">call_missed_outgoing</i>繰越</a></li>
-                                        <li style="min-height: inherit;"><a href="javascript:void(0)" style="font-size: 13px;padding: 0px;"><i class="material-icons tiny" style="margin-right: 0px;">history</i>滞納</a></li>
+                                        <li style="min-height: inherit;"><a href="javascript:void(0)" style="font-size: 13px;padding: 0px;"><i class="material-icons tiny" style="margin-right: 0px;">history</i>返金</a></li>
                                     </ul>
                                 {% endif %}
                             {% endif %}
@@ -172,7 +172,58 @@
         </div>
         </form>
     </div>
+    <div class="card filters-card">
+        <div class="card-content">
+            <span class="card-title" style="font-size: 18px;">名議人検索</span>
+            <div class="row" style="margin-top:-10px">
+                <div class="input-field col s12" style="padding: 0px;">
+                    <input type="text" id="id_nominee_name" value="ｹｲ" class="autocomplete">
+                    <label for="id_nominee_name" style="left: 0;">名義人</label>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
     {% include 'common/user_info.html' %}
+
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>契約者情報：契約者００１</h4>
+            <table class="table bordered">
+                <tr>
+                    <th>名前</th>
+                    <td>契約者００１</td>
+                </tr>
+                <tr>
+                    <th>フリガナ</th>
+                    <td>ケイヤクシャ００１</td>
+                </tr>
+                <tr>
+                    <th>電話番号</th>
+                    <td>080-1234-5678</td>
+                </tr>
+                <tr>
+                    <th>メールアドレス</th>
+                    <td>yangwanjun@e-business.co.jp</td>
+                </tr>
+                <tr>
+                    <th>住所</th>
+                    <td>東京都港区芝２丁目ビル</td>
+                </tr>
+                <tr>
+                    <th>契約中駐車場</th>
+                    <td>ダイアパレス代官山</td>
+                </tr>
+                <tr>
+                    <th>契約中車室</th>
+                    <td>Ｎｏ．０１</td>
+                </tr>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-green btn-flat">閉じる</a>
+        </div>
+    </div>
 </div>
 {% endblock right-panel %}
 {% endblock %}
@@ -234,6 +285,29 @@ $(document).one("turbolinks:load", function() {
         stopPropagation: false // Stops event propagation
         }
     );
+
+    $('.modal').modal();
+
+    var availableTags = [
+        "ｹｲﾔｸｼｬ001",
+        "ｹｲﾔｸｼｬ002",
+        "ｹｲﾔｸｼｬ003",
+        "ｹｲﾔｸｼｬ004",
+        "ｹｲﾔｸｼｬ005",
+        "ｹｲﾔｸｼｬ006",
+        "ｹｲﾔｸｼｬ007",
+        "ｹｲﾔｸｼｬ008",
+        "ｹｲﾔｸｼｬ009",
+        "ｹｲﾔｸｼｬ010"
+    ];
+
+    ebjs.$('input.autocomplete').autocomplete({
+        source: availableTags,
+        select: function(event, ui) {
+            $('#modal1').modal('open');
+        },
+    });
+
 });
 
 function carry_over(obj) {

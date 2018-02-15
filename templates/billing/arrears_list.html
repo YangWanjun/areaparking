@@ -10,7 +10,7 @@
 <div class="left-panel">
     <div class="card">
         <div class="card-content">
-            <div class="card-title">滞納金一覧</div>
+            <div class="card-title">滞納一覧</div>
             <div>
                 <table class="table bordered highlight" id="tblArrears">
                     <thead>
@@ -26,13 +26,14 @@
                         <th>車室</th>
                         <th>契約開始</th>
                         <th>支払期限</th>
+                        <th>経過日数</th>
                         <th>支払区分</th>
                         <th>差引滞納額</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for object in object_list %}
-                        <tr>
+                        <tr class="{% if object.date_diff > 60 %}arrears_deep{% elif object.is_sent %}arrears_sent{% else %}arrears_normal{% endif %}">
                             <td>
                                 <input type="checkbox" id="chk_{{object.pk}}" name="selected_detail" class="tiny filled-in detail" checked value="{{ object.pk }}"/>
                                 <label for="chk_{{object.pk}}" style="height: 15px;"></label>
@@ -44,6 +45,7 @@
                             <td>{{ object.contract.parking_position }}</td>
                             <td>{{ object.contract_start_date }}</td>
                             <td>{{ object.limit_date }}</td>
+                            <td>{{ object.date_diff }}</td>
                             <td>{{ object.get_payment_kbn_display }}</td>
                             <td class="right-align">{{ object.amount|intcomma }}</td>
                         </tr>
@@ -115,6 +117,22 @@
 {% endblock left-panel %}
 {% block right-panel %}
 <div class="right-panel">
+    <div class="card filters-card">
+        <div class="card-content">
+            <span class="card-title" style="font-size: 18px;">選択</span>
+            <div class="row" style="margin-top:-10px">
+                <div class="input-field col s12" style="padding: 0px;">
+                    <input type="checkbox" class="filled-in" id="id_during" value="arrears_sent" name="chk_level" />
+                    <label for="id_during" class="arrears_sent">手続き中</label>
+                    <input type="checkbox" class="filled-in" id="id_normal" value="arrears_normal" name="chk_level" />
+                    <label for="id_normal" class="arrears_normal">一般滞納者</label>
+                    <input type="checkbox" class="filled-in" id="id_deep" value="arrears_deep" name="chk_level" />
+                    <label for="id_deep" class="arrears_deep">重度滞納者</label>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
     {% include 'common/user_info.html' %}
 </div>
 {% endblock right-panel %}
@@ -135,14 +153,41 @@
     .all_green {
         color: #4CAF50 !important;
     }
+    .arrears_deep {
+        color: red !important;
+    }
+    .arrears_normal {
+        color: rgba(0, 0, 0, 0.87) !important;
+    }
+    .arrears_sent {
+        color: blue !important;
+    }
 </style>
 <script type="text/javascript">
 $(document).one("turbolinks:load", function() {
     $("#id_check_all").click(function() {
         if ($(this).is(':checked')) {
             $("input[type=checkbox].detail").prop('checked', true);
+            $("input[name=chk_level]").prop('checked', false);
         } else {
             $("input[type=checkbox].detail").prop('checked', false);
+        }
+    });
+
+    $("input[name=chk_level]").click(function() {
+        // 初期化
+        $("#id_check_all").prop('checked', false);
+        $("input[type=checkbox].detail").prop('checked', false);
+        var chk_id = $(this).attr("id");
+        $("input[name=chk_level]").each(function(i, obj) {
+            if (obj.id != chk_id) {
+                $(obj).prop('checked', false);
+            }
+        });
+
+        if ($(this).is(':checked')) {
+            $("tr." + $(this).val() + " input[type=checkbox].detail").prop('checked', true);
+        } else {
         }
     });
 

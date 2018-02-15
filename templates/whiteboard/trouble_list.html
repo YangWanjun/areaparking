@@ -30,7 +30,7 @@
                     <tr>
                         <td>2017/7/28</td>
                         <td>受付者1</td>
-                        <td><a href="{% url 'contract:trouble_detail' 1 %}">管理員</a></td>
+                        <td><a href="{% url 'whiteboard:trouble_detail' 1 %}">管理員</a></td>
                         <td>シティタワー池袋</td>
                         <td>10</td>
                         <td>契約者001</td>
@@ -40,7 +40,7 @@
                     <tr>
                         <td>2017/12/10</td>
                         <td>受付者2</td>
-                        <td><a href="{% url 'contract:trouble_detail' 2 %}">野村不動産　中山様</a></td>
+                        <td><a href="{% url 'whiteboard:trouble_detail' 2 %}">野村不動産　中山様</a></td>
                         <td>プラウド弦巻アベニュー</td>
                         <td>22,23,24,29</td>
                         <td>契約者002</td>
@@ -50,7 +50,7 @@
                     <tr>
                         <td>2018/1/10</td>
                         <td>受付者3</td>
-                        <td><a href="{% url 'contract:trouble_detail' 3 %}">レジディア六本木檜町公園　管理人様</a></td>
+                        <td><a href="{% url 'whiteboard:trouble_detail' 3 %}">レジディア六本木檜町公園　管理人様</a></td>
                         <td>プラウド弦巻アベニュー</td>
                         <td>全体</td>
                         <td>契約者003</td>
@@ -70,7 +70,7 @@
     </div>
 </div>
 <div class="fixed-action-btn">
-    <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="{% url 'contract:trouble_add' %}"><i class="large material-icons">add</i></a>
+    <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="{% url 'whiteboard:trouble_add' %}"><i class="large material-icons">add</i></a>
 </div>
 {% endblock left-panel %}
 {% block right-panel %}

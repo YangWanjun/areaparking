@@ -359,6 +359,8 @@ class VArrears(BaseViewModel):
     request = models.ForeignKey(Request, on_delete=models.DO_NOTHING, verbose_name="請求")
     request_amount = models.IntegerField(verbose_name="請求金額")
     limit_date = models.DateField(max_length=8, verbose_name="支払期限日")
+    date_diff = models.IntegerField(verbose_name="日数")
+    is_sent = models.BooleanField(default=False, verbose_name="督促済")
     payment_kbn = models.CharField(max_length=2, default='01', choices=constants.CHOICE_PAYMENT_KBN,
                                    verbose_name="入金区分")
     contractor = models.ForeignKey(Contractor, on_delete=models.DO_NOTHING, verbose_name="契約者")

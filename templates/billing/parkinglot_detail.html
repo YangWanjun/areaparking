@@ -14,52 +14,141 @@
         <div class="card-content">
             {% block card %}
             <div class="card-title">車室別請求: {{ object }}</div>
-            <table class="table bordered" id="tblTransferDetails">
+            <table class="table bordered highlight" id="tblTransferDetails">
                 <thead>
                 <tr>
                     <th>車室</th>
-                    <th>請求年月</th>
                     <th>契約者</th>
-                    <th>請求項目</th>
-                    <th>請求金額</th>
-                    <th>状態</th>
+                    <th>2017/10月分</th>
+                    <th>2017/11月分</th>
+                    <th>2017/12月分</th>
+                    <th>2018/01月分</th>
+                    <th>2018/02月分</th>
+                    <th>2018/03月分</th>
                 </tr>
                 </thead>
                 <tbody>
-                    <tr class="">
-                        <td rowspan="3">Ｎｏ１</td>
-                        <td>2017-11</td>
+                    <tr>
+                        <td>Ｎｏ１</td>
                         <td>契約者００１</td>
-                        <td>駐車料金</td>
-                        <td>21600</td>
-                        <td><span class="new badge left grey" data-badge-caption="入金済" style="margin-left: 0px;"></span></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="green-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
                     </tr>
-                    <tr class="">
-                        <td>2017-12</td>
-                        <td>契約者００１</td>
-                        <td>駐車料金</td>
-                        <td>21600</td>
-                        <td><span class="new badge left red" data-badge-caption="滞納" style="margin-left: 0px;"></span></td>
+                    <tr>
+                        <td>Ｎｏ２</td>
+                        <td>契約者００２</td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="green-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
                     </tr>
-                    <tr class="">
-                        <td>2018-01</td>
-                        <td>契約者００１</td>
-                        <td>駐車料金</td>
-                        <td>21600</td>
-                        <td><span class="new badge left green" data-badge-caption="未入金" style="margin-left: 0px;"></span></td>
+                    <tr>
+                        <td>Ｎｏ３</td>
+                        <td>契約者００３</td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="green-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                    </tr>
+                    <tr>
+                        <td>Ｎｏ４</td>
+                        <td>契約者００４</td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="green-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                    </tr>
+                    <tr>
+                        <td>Ｎｏ５</td>
+                        <td>契約者００５</td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="green-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                    </tr>
+                    <tr>
+                        <td>Ｎｏ６</td>
+                        <td>契約者００６</td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="blue-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="red-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
+                        <td class="green-text"><a class="modal-trigger" style="color: inherit;" href="#modal1">21,600</a></td>
                     </tr>
                 </tbody>
             </table>
             {% endblock %}
         </div>
         <div class="card-action">
-            <div class="right-align">
-                {% block actions_row %}
-                {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
-                {% if change_url %}<a class="waves-effect waves-light btn white-text" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
-                {% endblock actions_row %}
+            <div class="row" style="margin-bottom: 0px;">
+                <fieldset>
+                    <legend>請求額の色分け:</legend>
+                    <div class="example blue-text">入金済</div>
+                    <div class="example red-text">滞納</div>
+                    <div class="example green-text">未入金</div>
+                </fieldset>
             </div>
         </div>
+    </div>
+</div>
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <h4>入金詳細</h4>
+        <table class="bordered highlight">
+            <thead>
+            <tr>
+                <th>入金項目</th>
+                <th>請求額</th>
+                <th>入金日</th>
+                <th>入金区分</th>
+                <th>入金額</th>
+                <th>期限日</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>駐車料金</td>
+                <td>5,000</td>
+                <td>2017/10/25</td>
+                <td>振込</td>
+                <td>5,000</td>
+                <td>2017/10/25</td>
+            </tr>
+            <tr>
+                <td>契約時事務手数料</td>
+                <td>10,800</td>
+                <td>2017/10/25</td>
+                <td>振込</td>
+                <td>10,800</td>
+                <td>2017/10/25</td>
+            </tr>
+            <tr>
+                <td>保管場所承諾証明書</td>
+                <td>10,800</td>
+                <td>2017/10/25</td>
+                <td>振込</td>
+                <td>10,800</td>
+                <td>2017/10/25</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-green btn-flat">閉じる</a>
     </div>
 </div>
 {% endblock left-panel %}
@@ -71,8 +160,18 @@
 {% endblock %}
 
 {% block footer %}
+<style type="text/css">
+div.example {
+    border: 1px solid gray;
+    float: left;
+    margin-right: 10px;
+    width: 80px;
+    text-align: center;
+}
+</style>
 <script type="text/javascript">
-    $(document).one("turbolinks:load", function() {
-    });
+$(document).one("turbolinks:load", function() {
+    $('.modal').modal();
+});
 </script>
 {% endblock %}

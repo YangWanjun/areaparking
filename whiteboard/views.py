@@ -165,6 +165,9 @@ class InquiryViewSet(BaseModelViewSet):
 
     get_gender_display.short_description = '性別'
 
+    def has_add_permission(self, request):
+        return True
+
 
 class HandbillDistributionView(BaseTemplateView):
     template_name = 'whiteboard/handbilldistribution_list.html'
@@ -176,6 +179,18 @@ class HandbillCompanyViewSet(BaseModelViewSet):
 
     def has_add_permission(self, request):
         return True
+
+
+class TroubleListView(BaseTemplateView):
+    template_name = 'whiteboard/trouble_list.html'
+
+
+class TroubleDetailView(BaseTemplateView):
+    template_name = 'whiteboard/trouble_detail.html'
+
+
+class TroubleAddView(BaseTemplateView):
+    template_name = 'whiteboard/trouble_add.html'
 
 
 class ConstructionListView(BaseTemplateView):
