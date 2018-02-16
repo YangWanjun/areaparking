@@ -28,6 +28,7 @@ from material import frontend
 from material.frontend.apps import ModuleMixin
 from material.frontend.registry import modules
 
+from address import views_api as address_api
 from contract import views_api as contract_api
 from parkinglot import views_api as parking_lot_api
 from master import views_api as master_api
@@ -43,7 +44,7 @@ router.register(r'parking-lot-cancellation', contract_api.ParkingLotCancellation
 
 router.register(r'parking-lot', parking_lot_api.ParkingLotViewSet)
 router.register(r'parking-position-size-grouped', parking_lot_api.ParkingPositionSizeGrouped, base_name='size-grouped')
-router.register(r'geocode', parking_lot_api.GeocodeViewSet, base_name='geocode')
+router.register(r'geocode', address_api.GeocodeViewSet, base_name='geocode')
 
 router.register(r'car-maker', master_api.CarMakerViewSet)
 router.register(r'car-model', master_api.CarModelViewSet)

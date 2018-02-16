@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'format.apps.FormatConfig',
     'billing.apps.BillingConfig',
     'management_dep.apps.ManagementDepConfig',
+    'address.apps.AddressConfig',
     # 'turnover.apps.TurnoverConfig',
     'rest_framework',
     'django_filters',

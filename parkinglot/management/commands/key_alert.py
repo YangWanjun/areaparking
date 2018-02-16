@@ -16,7 +16,7 @@ class Command(BaseBatch):
             ))
         if lacking_keys:
             # メール通知
-            group = self.get_mail_group()
+            group = MailGroup.get_batch_key_alert_group()
             context = {'lacking_keys': lacking_keys}
             group.send_main('yangwanjun@e-business.co.jp', context)
             # プッシュ通知
@@ -29,7 +29,3 @@ class Command(BaseBatch):
         :return:
         """
         return BatchManage.get_batch_by_name(self.BATCH_NAME)
-
-    def get_mail_group(self):
-        return MailGroup.get_batch_key_alert_group()
-
