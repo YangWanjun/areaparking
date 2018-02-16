@@ -17,18 +17,28 @@ logger = common.get_ap_logger()
 
 # Create your models here.
 class Config(BaseModel):
-    group = models.CharField(max_length=50, blank=False, null=True, verbose_name=u"グループ")
-    name = models.CharField(max_length=50, unique=True, verbose_name=u"設定名")
-    value = models.CharField(max_length=2000, verbose_name=u"設定値")
-    comment = models.TextField(max_length=255, blank=True, null=True, verbose_name=u"備考")
+    group = models.CharField(max_length=50, verbose_name="グループ")
+    name = models.CharField(max_length=50, unique=True, verbose_name="設定名")
+    value = models.CharField(max_length=2000, verbose_name="設定値")
+    comment = models.TextField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
         ordering = ['group', 'name']
-        verbose_name = verbose_name_plural = u"システム設定"
+        verbose_name = verbose_name_plural = "システム設定"
         db_table = 'mst_config'
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_value_by_name(cls, group, name, default_value=None):
+        try:
+            value = Config.objects.get(ame=name).value
+            return value
+        except ObjectDoesNotExist:
+            if default_value:
+                Config.objects.create(group=group, name=name, value=default_value)
+            return default_value
 
     @classmethod
     def get_circle_radius(cls):
@@ -237,17 +247,33 @@ class Config(BaseModel):
                                   value=default)
             return default
 
+    @classmethod
+    def get_parking_lot_key_alert_percent(cls):
+        """駐車場の残り鍵警告比率
+
+        :return:
+        """
+        default = 0.3
+        try:
+            value = cls.get_value_by_name(
+                constants.CONFIG_GROUP_SYSTEM, constants.CONFIG_PARKING_LOT_KEY_ALERT_PERCENT, default_value=default
+            )
+            return float(value)
+        except Exception as ex:
+            logger.error(ex)
+            return default
+
 
 class Company(BaseModel):
-    name = models.CharField(unique=True, max_length=30, verbose_name=u"会社名")
-    kana = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"フリカナ")
-    president = models.CharField(blank=True, null=True, max_length=30, verbose_name=u"代表者名")
-    post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name=u"郵便番号")
-    address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所１")
-    address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"住所２")
-    tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号",
+    name = models.CharField(unique=True, max_length=30, verbose_name="会社名")
+    kana = models.CharField(blank=True, null=True, max_length=30, verbose_name="フリカナ")
+    president = models.CharField(blank=True, null=True, max_length=30, verbose_name="代表者名")
+    post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="郵便番号")
+    address1 = models.CharField(blank=True, null=True, max_length=200, verbose_name="住所１")
+    address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name="住所２")
+    tel = models.CharField(blank=True, null=True, max_length=15, verbose_name="電話番号",
                            validators=(RegexValidator(regex=constants.REG_TEL),))
-    fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"ファックス",
+    fax = models.CharField(blank=True, null=True, max_length=15, verbose_name="ファックス",
                            validators=(RegexValidator(regex=constants.REG_TEL),))
     email = models.EmailField(blank=True, null=True, verbose_name="メール")
 
@@ -422,30 +448,30 @@ class ReportFormat(BaseModel):
 
 
 class MailTemplate(BaseModel):
-    title = models.CharField(max_length=50, verbose_name=u"送信メールのタイトル")
-    body = models.TextField(verbose_name=u"メール本文")
-    password = models.TextField(blank=True, null=True, verbose_name=u"パスワードお知らせ本文")
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name=u"説明")
+    title = models.CharField(max_length=50, verbose_name="送信メールのタイトル")
+    body = models.TextField(verbose_name="メール本文")
+    password = models.TextField(blank=True, null=True, verbose_name="パスワードお知らせ本文")
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="説明")
 
     class Meta:
         db_table = 'mst_mail_template'
         ordering = ['title']
-        verbose_name = verbose_name_plural = u"メールテンプレート"
+        verbose_name = verbose_name_plural = "メールテンプレート"
 
     def __str__(self):
         return self.title
 
 
 class MailGroup(BaseModel):
-    code = models.CharField(max_length=3, primary_key=True, choices=constants.CHOICE_MAIL_GROUP, verbose_name=u"コード")
-    name = models.CharField(max_length=50, blank=False, null=True, verbose_name=u"名称")
-    sender = models.EmailField(verbose_name=u"メール差出人")
-    template = models.ForeignKey(MailTemplate, on_delete=models.CASCADE, verbose_name=u"メールテンプレート")
+    code = models.CharField(max_length=3, primary_key=True, choices=constants.CHOICE_MAIL_GROUP, verbose_name="コード")
+    name = models.CharField(max_length=50, blank=False, null=True, verbose_name="名称")
+    sender = models.EmailField(verbose_name="メール差出人")
+    template = models.ForeignKey(MailTemplate, on_delete=models.CASCADE, verbose_name="メールテンプレート")
 
     class Meta:
         db_table = 'mst_mail_group'
         ordering = ['code']
-        verbose_name = verbose_name_plural = u"メールグループ"
+        verbose_name = verbose_name_plural = "メールグループ"
 
     def __str__(self):
         return self.name
@@ -574,6 +600,18 @@ class MailGroup(BaseModel):
         except ObjectDoesNotExist:
             return None
 
+    @classmethod
+    def get_batch_key_alert_group(cls):
+        """駐車場の予備鍵数が足り場合のメール送信設定を取得する。
+
+        :return:
+        """
+        try:
+            return MailGroup.objects.get(code='800')
+        except ObjectDoesNotExist:
+            return None
+
+
     def get_template_content(self, context):
         """メールテンプレートの内容を取得する。
 
@@ -613,22 +651,74 @@ class MailGroup(BaseModel):
 
 
 class MailCcList(BaseModel):
-    group = models.ForeignKey(MailGroup, on_delete=models.CASCADE, verbose_name=u"メールグループ")
-    email = models.EmailField(verbose_name=u"メールアドレス")
+    group = models.ForeignKey(MailGroup, on_delete=models.CASCADE, verbose_name="メールグループ")
+    email = models.EmailField(verbose_name="メールアドレス")
     is_bcc = models.BooleanField(default=False, verbose_name="ＢＣＣ")
 
     class Meta:
         db_table = 'mst_mail_cc'
         ordering = ['group', 'email']
-        verbose_name = verbose_name_plural = u"メールＣＣリスト"
+        verbose_name = verbose_name_plural = "メールＣＣリスト"
 
     def __str__(self):
         return self.email
 
 
+class BatchManage(BaseModel):
+    name = models.CharField(max_length=50, unique=True, verbose_name="バッチＩＤ")
+    title = models.CharField(max_length=50, verbose_name="タイトル")
+    cron_tab = models.CharField(blank=True, null=True, max_length=100, verbose_name="実行タイミング")
+    is_active = models.BooleanField(default=True, verbose_name="有効フラグ")
+    comment = models.CharField(blank=True, null=True, max_length=255, verbose_name="説明")
+
+    class Meta:
+        db_table = 'mst_batch_manage'
+        verbose_name = "バッチ管理"
+        verbose_name_plural = "バッチ管理"
+
+    def __str__(self):
+        return self.title
+
+    def get_logger(self):
+        """バッチのロガーを取得する。
+
+        :return:
+        """
+        return common.get_batch_logger(self.name)
+
+    @classmethod
+    def get_log_entry_user(cls, username='batch'):
+        """ログエントリーにログを記録するにはログインユーザが必要
+
+        :return:
+        """
+        try:
+            user = User.objects.get(username=username)
+            return user
+        except ObjectDoesNotExist:
+            try:
+                user = User.objects.get(username='admin')
+                return user
+            except ObjectDoesNotExist:
+                return None
+
+    @classmethod
+    def get_batch_by_name(cls, name):
+        """指定した名前のバッチを取得する。
+
+        :param name:
+        :return:
+        """
+        try:
+            batch = BatchManage.objects.get(name=name)
+        except ObjectDoesNotExist:
+            batch = BatchManage(name=name)
+        return batch
+
+
 class PushNotification(BaseModel):
-    user = models.ForeignKey(User, verbose_name=u"ユーザー")
-    registration_id = models.CharField(max_length=1000, verbose_name=u"デバイスの登録ＩＤ")
+    user = models.ForeignKey(User, verbose_name="ユーザー")
+    registration_id = models.CharField(max_length=1000, verbose_name="デバイスの登録ＩＤ")
     key_auth = models.CharField(max_length=100)
     key_p256dh = models.CharField(max_length=256)
     title = models.CharField(blank=True, null=True, max_length=100)

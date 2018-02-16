@@ -46,7 +46,9 @@ self.addEventListener("push", function(event) {
 
 if (typeof window === "undefined") {
     self.addEventListener('notificationclick', function(event) {
-        event.notification.close();
-        clients.openWindow(event.notification.data.url);
+        if (event.notification.data.url) {
+            event.notification.close();
+            clients.openWindow(event.notification.data.url);
+        }
     }, false);
 }

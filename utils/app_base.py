@@ -9,7 +9,7 @@ from django.core.signing import TimestampSigner
 from django.urls import reverse
 
 from . import common
-from master.models import Company, Config, Payment, PushNotification
+from master.models import Company, Config, Payment, PushNotification, BatchManage
 
 
 def get_total_context(parking_lot=None, contractor=None, subscription=None):
@@ -262,7 +262,7 @@ def get_unsigned_value(signature, salt=None):
     return signer.unsign(signature, max_age=datetime.timedelta(seconds=timeout))
 
 
-def push_notification(users, title, message, url=None, gcm_url=None):
+def push_notification(title, message, url=None, gcm_url=None, users=None):
     """プッシュ通知を各端末に送信する。
 
     :param users:

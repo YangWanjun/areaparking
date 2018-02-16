@@ -34,6 +34,7 @@ CONFIG_URL_TIMEOUT = 'url_timeout'
 CONFIG_GCM_URL = 'gcm_url'
 CONFIG_FIREBASE_SERVERKEY = 'firebase_serverkey'
 CONFIG_GOOGLE_MAP_KEY = 'google_map_key'
+CONFIG_PARKING_LOT_KEY_ALERT_PERCENT = 'parking_lot_key_alert_percent'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
@@ -93,7 +94,8 @@ CHOICE_KEY_CATEGORY = (
     ('01', '鍵'),
     ('02', 'カード'),
     ('03', 'リモコン'),
-    ('04', 'その他の鍵'),
+    ('04', 'パスワード'),
+    ('05', 'その他の鍵'),
 )
 CHOICE_PAY_TIMING = (
     ('10', '契約時'),
@@ -134,6 +136,7 @@ CHOICE_MAIL_GROUP = (
     ('060', '鍵類、操作説明書、配置図送付'),
     ('310', '一般解約書類送付'),
     ('322', '物件解約書類送付'),
+    ('800', 'バッチ：鍵残件数アラート'),
 )
 CHOICE_REPORT_KBN = (
     ('001', REPORT_SUBSCRIPTION),

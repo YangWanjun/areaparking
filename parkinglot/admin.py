@@ -29,6 +29,11 @@ class ParkingLotCommentInline(admin.TabularInline):
     extra = 1
 
 
+class ParkingLotKeyInline(admin.TabularInline):
+    model = models.ParkingLotKey
+    extra = 0
+
+
 class ParkingLotStaffHistoryInline(admin.TabularInline):
     model = models.ParkingLotStaffHistory
     extra = 0
@@ -77,7 +82,8 @@ class ParkingLotAdmin(BaseAdmin):
     icon = '<i class="material-icons">local_parking</i>'
     list_display = ('code', 'name', 'category', 'address')
     search_fields = ('code', 'name',)
-    inlines = (ParkingLotCommentInline, ParkingLotStaffHistoryInline, ParkingLotDocInline, ParkingLotImageInline)
+    inlines = (ParkingLotCommentInline, ParkingLotStaffHistoryInline, ParkingLotDocInline, ParkingLotImageInline,
+               ParkingLotKeyInline)
 
     def address(self, obj):
         return obj.address()

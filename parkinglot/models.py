@@ -1,5 +1,7 @@
 import os
 import datetime
+import math
+from collections import defaultdict
 
 from django.core.validators import RegexValidator
 from django.db import models
@@ -240,6 +242,54 @@ class ParkingLot(BaseModel):
         ).annotate(position_count=models.Count('length'))
         return queryset
 
+    def get_lacking_keys(self):
+        """鍵の足りない本数を取得する。
+
+        :return:
+        """
+        # 駐車場の残り鍵警告比率
+        alert_percent = Config.get_parking_lot_key_alert_percent()
+        # 予備鍵本数
+        reserve_keys = dict()
+        reserve_queryset = ParkingLotKey.objects.public_filter(parking_lot=self).exclude(category='04').values(
+            'category', 'key_count'
+        )
+        for parking_lot_key in reserve_queryset:
+            reserve_keys[parking_lot_key.get('category')] = parking_lot_key.get('key_count')
+        # 各車室の鍵数
+        position_queryset = ParkingPosition.objects.public_filter(parking_lot=self)
+        keys_with_position = defaultdict(lambda: 0)
+        position_key_queryset = ParkingPositionKey.objects.public_filter(
+                parking_position__in=position_queryset,
+        ).exclude(category='04')
+        for position_key in position_key_queryset:
+            keys_with_position[position_key.category] += position_key.key_count
+        # 足りない分の鍵本数
+        lacking_keys = dict()
+        for category, count in keys_with_position.items():
+            required_count = math.ceil(count * alert_percent)
+            reserve_count = reserve_keys.get(category, 0)
+            if required_count > reserve_count:
+                lacking_keys[category] = required_count - reserve_count
+        return lacking_keys.items()
+
+
+class ParkingLotKey(BaseModel):
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    category = models.CharField(max_length=2, choices=constants.CHOICE_KEY_CATEGORY, verbose_name="種類")
+    key_count = models.SmallIntegerField(default=1, verbose_name="本数")
+    comment = models.CharField(blank=True, null=True, max_length=250, verbose_name="備考")
+
+    class Meta:
+        db_table = 'ap_parking_lot_key'
+        unique_together = ('parking_lot', 'category')
+        ordering = ['parking_lot', 'category']
+        verbose_name = "駐車場予備鍵"
+        verbose_name_plural = "駐車場予備鍵一覧"
+
+    def __str__(self):
+        return self.category
+
 
 class ParkingLotStaffHistory(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
@@ -342,48 +392,16 @@ class ParkingPosition(BaseModel):
 class ParkingPositionKey(BaseModel):
     parking_position = models.ForeignKey(ParkingPosition, verbose_name="車室")
     category = models.CharField(max_length=2, choices=constants.CHOICE_KEY_CATEGORY, verbose_name="種類")
-    key_count = models.SmallIntegerField(verbose_name="本数")
-    comment = models.CharField(max_length=250, verbose_name="備考")
+    key_count = models.SmallIntegerField(default=1, verbose_name="本数")
+    password = models.CharField(blank=True, null=True, max_length=20, verbose_name="パスワード")
+    comment = models.CharField(blank=True, null=True, max_length=250, verbose_name="備考")
 
     class Meta:
         db_table = 'ap_parking_position_key'
         unique_together = ('parking_position', 'category')
         ordering = ['parking_position', 'category']
-        verbose_name = "鍵情報"
-        verbose_name_plural = "鍵情報一覧"
+        verbose_name = "車室鍵情報"
+        verbose_name_plural = "車室鍵情報一覧"
 
     def __str__(self):
         return self.category
-
-
-# class ParkingLotManagement(BaseModel):
-#     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-#
-#     class Meta:
-#         db_table = 'ap_parking_lot_management'
-#         ordering = ['parking_lot', 'start_date', 'end_date']
-#         verbose_name = "駐車場管理情報"
-#         verbose_name_plural = "駐車場管理一覧"
-#
-#     def __str__(self):
-#         return "{}（{}～{}）".format(str(self.parking_lot), self.start_date, self.end_date)
-
-
-# class VParkingLotSummary(BaseModel):
-#     name = models.CharField(max_length=100, blank=True, null=True, verbose_name="名称")
-#     lng = models.FloatField(blank=True, null=True, verbose_name="経度")
-#     lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
-#     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
-#     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
-#     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
-#     position_count = models.IntegerField(verbose_name="車室数")
-#     contract_count = models.IntegerField(verbose_name="契約数")
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'v_parking_lot_summary'
-#         verbose_name = "駐車場概要"
-#         verbose_name_plural = "駐車場概要一覧"
-#
-#     def __str__(self):
-#         return self.name

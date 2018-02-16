@@ -212,11 +212,11 @@ LOGGING = {
         },
     },
     'handlers': {
-        'batch': {
-            'level': 'INFO',
+        'batch.key_alert': {
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'formatter': 'standard',
-            'filename': os.path.join(LOG_ROOT, "batch.log"),
+            'filename': os.path.join(LOG_ROOT, "batch.key_alert.log"),
         },
         'area_parking': {
             'level': 'INFO',
@@ -226,9 +226,9 @@ LOGGING = {
         },
     },
     'loggers': {
-        'revolution.management.commands': {
-            'handlers': ['batch'],
-            'level': 'INFO',
+        'batch.key_alert': {
+            'handlers': ['batch.key_alert'],
+            'level': 'DEBUG',
             'propagate': True,
         },
         'area_parking': {

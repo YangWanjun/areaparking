@@ -1,9 +1,9 @@
-# -*- coding: utf8 -*-
-from __future__ import unicode_literals
+import traceback
 
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
+from django.core.management.base import BaseCommand
 from django.db import models
 from django.forms import widgets
 from django.http import HttpResponse
@@ -19,7 +19,7 @@ from rest_framework.views import exception_handler
 
 from material.frontend.views import ModelViewSet, DetailModelView, ListModelView, UpdateModelView
 
-from utils import errors, common
+from utils import errors
 
 
 class PublicManager(models.Manager):
@@ -268,6 +268,47 @@ class BaseModelViewSet(ModelViewSet):
 
 class BaseModelSerializer(serializers.ModelSerializer):
     pass
+
+
+class BaseBatch(BaseCommand):
+
+    BATCH_NAME = ''
+    BATCH_TITLE = ''
+
+    def __init__(self, *args, **kwargs):
+        super(BaseBatch, self).__init__(*args, **kwargs)
+        self.batch = self.get_batch_manager()
+        self.logger = self.batch.get_logger()
+        if not self.batch.id:
+            self.batch.title = self.BATCH_TITLE
+            self.batch.save()
+
+    def get_batch_manager(self):
+        pass
+
+    def handle(self, *args, **options):
+        pass
+
+    def execute(self, *args, **options):
+        self.logger.info("============== %s実行開始 ==============" % self.BATCH_TITLE)
+        try:
+            if self.batch.is_active:
+                super(BaseBatch, self).execute(*args, **options)
+            else:
+                self.logger.error(u"%s が有効になっていません。" % (self.BATCH_TITLE,))
+        except Exception as ex:
+            self.logger.error(ex)
+            self.logger.error(traceback.format_exc())
+        finally:
+            self.logger.info("============== %s実行終了 ==============" % self.BATCH_TITLE)
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--username',
+            action='store',
+            dest='username',
+            default='batch'
+        )
 
 
 def custom_exception_handler(exc, context):

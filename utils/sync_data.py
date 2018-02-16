@@ -191,6 +191,19 @@ def sync_master():
 </html>""", comment="物件解約用")
         MailGroup.objects.create(code='322', name="物件解約書類送付", sender='ap.test@e-business.co.jp', template=template)
         print('作成', '物件解約書類送付のメールグループ')
+    if MailGroup.objects.public_filter(code='800').count() == 0:
+        template = MailTemplate.objects.create(title='鍵残件数アラートバッチ', body="""<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>下記の駐車場について、予備の鍵数は足りなくなっているので<br />ご確認よろしくお願いします。</p>
+<div><span style="display: inline-block; width: 300px;">駐車場</span> <span style="display: inline-block; width: 80px;">鍵分類</span> <span style="display: inline-block; width: 70px; clear: right;">本数</span></div>
+<div>{%for parking_lot,category,name,count in lacking_keys%} <span style="display: inline-block; width: 300px;">{{parking_lot}}</span> <span style="display: inline-block; width: 80px;">{{name}}</span> <span style="display: inline-block; width: 70px;">{{count}}本</span> {%endfor%}</div>
+</body>
+</html>""", comment="鍵残件数アラートバッチ")
+        MailGroup.objects.create(code='800', name="バッチ：鍵残件数アラート", sender='ap.test@e-business.co.jp', template=template)
+        print('作成', 'バッチ：鍵残件数アラートのメールグループ')
     # 媒体を作成
     if TransmissionRoute.objects.public_all().count() == 0:
         TransmissionRoute.objects.create(name='チラシ', price_kbn='01')

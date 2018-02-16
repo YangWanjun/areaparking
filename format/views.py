@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404, redirect, reverse
 from . import biz
 from contract.serializers import SubscriptionSerializer, ContractCancellationSerializer
 from contract.models import Contract, Subscription, ContractCancellation, Contractor
-from master.models import TransmissionRoute, MailGroup
 from parkinglot.models import ParkingLot, ParkingPosition
 from utils import common
 from utils.app_base import get_unsigned_value, get_total_context, push_notification
@@ -137,7 +136,6 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
             self.set_user_subscription(user_subscription)
             # 通知（メールとプッシュ）
             push_notification(
-                None,
                 '%s 申込み完了' % str(parking_lot),
                 '',
                 url=reverse('contract:subscription_detail', args=(user_subscription.pk,)),
@@ -192,7 +190,6 @@ class UserSubscriptionInspectionStep1View(BaseUserSubscriptionInspectionView):
         current_step = context.get('current_step')
         parking_lot = context.get('parking_lot')
         push_notification(
-            None,
             '%s 審査フォーム入力完了' % str(parking_lot),
             '',
             url=reverse('contract:subscription_detail', args=(user_subscription.pk,)),
@@ -942,7 +939,6 @@ class UserContractStep4View(BaseUserContractView):
         # data = user_subscription.get_subscription_addressee()
         # mail_group.send_main(user_subscription.get_subscription_email(), data)
         push_notification(
-            None,
             '%s 契約完了' % str(parking_lot),
             '',
             url=reverse('contract:subscription_detail', args=(user_subscription.pk,)),

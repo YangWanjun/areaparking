@@ -92,6 +92,12 @@ class MailGroupAdmin(BaseAdmin):
     inlines = (MailCcListInline,)
 
 
+@admin.register(models.BatchManage)
+class BatchManageAdmin(BaseAdmin):
+    list_display = ('name', 'title', 'cron_tab', 'is_active')
+    readonly_fields = ('name',)
+
+
 class LogEntryAdmin(BaseAdminReadOnly):
     list_display = ['user', 'content_type', 'object_repr', 'get_action_flag_name', 'action_time']
 

@@ -71,16 +71,21 @@ def get_num_from_str(value):
         return 0
 
 
-def get_batch_logger():
-    return logging.getLogger('revolution.management.commands')
-
-
 def get_ap_logger():
     """営業システムのロガーを取得する。
 
     :return:
     """
     return logging.getLogger('area_parking')
+
+
+def get_batch_logger(name):
+    """バッチのロガーを取得する。
+
+    :param name: バッチ名（ＩＤ）
+    :return:
+    """
+    return logging.getLogger('batch.%s' % name)
 
 
 def generate_pdf_from_string(html, out_path):
@@ -255,3 +260,18 @@ def get_consumption_tax(amount, tax_rate, decimal_type):
     if not amount:
         return 0
     return get_integer(amount * tax_rate, decimal_type)
+
+
+def get_choice_name_by_key(choices, key):
+    """２次元のTupleからキーによって、名称を取得する。
+
+    :param choices:
+    :param key:
+    :return:
+    """
+    if choices and key:
+        if isinstance(choices, tuple):
+            for k, v in choices:
+                if k == key:
+                    return v
+    return ''
