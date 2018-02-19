@@ -33,7 +33,7 @@ class Config(BaseModel):
     @classmethod
     def get_value_by_name(cls, group, name, default_value=None):
         try:
-            value = Config.objects.get(ame=name).value
+            value = Config.objects.get(name=name).value
             return value
         except ObjectDoesNotExist:
             if default_value:
@@ -63,7 +63,7 @@ class Config(BaseModel):
 
     @classmethod
     def get_domain_name(cls):
-        default = 'http://ap.mopa.jp'
+        default = 'https://ap.mopa.jp'
         try:
             return Config.objects.get(name=constants.CONFIG_DOMAIN_NAME).value
         except ObjectDoesNotExist:

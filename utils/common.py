@@ -321,3 +321,32 @@ def to_full_size(ustring):
             inside_code += 0xfee0
         rstring += chr(inside_code)
     return rstring
+
+
+class Setting(object):
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = object.__new__(cls)
+        return cls.__instance
+
+    def __init__(self):
+        self.email_address = None
+        self.email_smtp_host = None
+        self.email_smtp_port = None
+        self.email_password = None
+        self.circle_radius = None
+        self.domain_name = None
+        self.page_size = None
+        self.decimal_type = None
+        self.consumption_tax_rate = None
+        self.car_length_adjust = None
+        self.car_width_adjust = None
+        self.car_height_adjust = None
+        self.car_weight_adjust = None
+        self.url_timeout = None
+        self.gcm_url = None
+        self.firebase_serverkey = None
+        self.google_map_key = None
+        self.parking_lot_key_alert_percent = None

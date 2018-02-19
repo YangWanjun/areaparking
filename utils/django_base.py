@@ -20,6 +20,7 @@ from rest_framework.views import exception_handler
 from material.frontend.views import ModelViewSet, DetailModelView, ListModelView, UpdateModelView
 
 from utils import errors
+from utils.common import Setting
 
 
 class PublicManager(models.Manager):
@@ -312,7 +313,10 @@ class BaseBatch(BaseCommand):
 
 
 class BaseApiPagination(pagination.PageNumberPagination):
-    page_size = 25
+
+    def get_page_size(self, request):
+        s = Setting()
+        return s.page_size if s.page_size else 25
 
 
 def custom_exception_handler(exc, context):
