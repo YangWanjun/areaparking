@@ -1,24 +1,40 @@
-import googlemaps
-
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from master.models import Config
+from . import biz, models, serializer
+from utils.django_base import BaseApiPagination
+
+
+class PrefViewSet(viewsets.ModelViewSet):
+    queryset = models.Pref.objects.public_all()
+    serializer_class = serializer.PrefSerializer
+    filter_fields = ('code', 'name')
+
+
+class CityViewSet(viewsets.ModelViewSet):
+    queryset = models.City.objects.public_all()
+    serializer_class = serializer.CitySerializer
+    filter_fields = ('code', 'name')
+    pagination_class = BaseApiPagination
+
+
+class AzaViewSet(viewsets.ModelViewSet):
+    queryset = models.Aza.objects.public_all()
+    serializer_class = serializer.AzaSerializer
+    filter_fields = ('code', 'name', 'city__code')
+    pagination_class = BaseApiPagination
+
+
+class PostcodeViewSet(viewsets.ModelViewSet):
+    queryset = models.Postcode.objects.public_all()
+    serializer_class = serializer.PostcodeSerializer
+    filter_fields = ('post_code',)
+    pagination_class = BaseApiPagination
 
 
 class GeocodeViewSet(viewsets.ViewSet):
 
     def list(self, request, format=None):
         address = request.GET.get('address', None)
-        coordinate = {'lng': 0, 'lat': 0}
-        api_key = Config.get_google_map_key()
-        if address and api_key:
-            gmap = googlemaps.Client(key=api_key)
-            geocode_result = gmap.geocode(address)
-            if len(geocode_result) > 0 and 'geometry' in geocode_result[0]:
-                geometry = geocode_result[0].get('geometry')
-                address_components = geocode_result[0].get('address_components')
-                countries = [item for item in address_components if item.get('short_name').upper() == "JP"]
-                if len(countries) > 0:
-                    coordinate = geometry.get('location')
+        coordinate = biz.geocode(address)
         return Response(coordinate)

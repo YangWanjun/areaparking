@@ -9,3 +9,6 @@ mysql -h 127.0.0.1 -u root -proot areaparking < 13.v_transfer_detail.sql
 mysql -h 127.0.0.1 -u root -proot areaparking < 14.v_contractor_request.sql
 mysql -h 127.0.0.1 -u root -proot areaparking < 15.v_arrears.sql
 mysql -h 127.0.0.1 -u root -proot areaparking < 16.v_price_raise.sql
+mysql -h 127.0.0.1 -u root -proot areaparking < 17.v_contracted_parking_lot.sql
+mysql -h 127.0.0.1 -u root -proot areaparking < 18.v_bank_account.sql
+mysql -h 127.0.0.1 -u root -proot areaparking < 90.index.sql

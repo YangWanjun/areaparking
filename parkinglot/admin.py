@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 
 from . import models, forms
+from address.biz import geocode
 from utils.django_base import BaseAdmin
 
 
@@ -85,10 +86,23 @@ class ParkingLotAdmin(BaseAdmin):
     inlines = (ParkingLotCommentInline, ParkingLotStaffHistoryInline, ParkingLotDocInline, ParkingLotImageInline,
                ParkingLotKeyInline)
 
-    def address(self, obj):
-        return obj.address()
-
-    address.short_description = "所在地"
+    def save_model(self, request, obj, form, change):
+        if change is False or (
+            'pref_name' in form.changed_data or
+            'city_name' in form.changed_data or
+            'town_name' in form.changed_data or
+            'aza_name' in form.changed_data or
+            'other_name' in form.changed_data
+        ):
+            # 新規の場合、または住所変更した場合、座標を取得しなおします。
+            coordinate = geocode(obj.address)
+            if coordinate.get('lng', None):
+                obj.lng = coordinate.get('lng', None)
+            if coordinate.get('lat', None):
+                obj.lat = coordinate.get('lat', None)
+            if coordinate.get('post_code', None):
+                obj.post_code = coordinate.get('post_code', None)
+        super(ParkingLotAdmin, self).save_model(request, obj, form, change)
 
 
 @admin.register(models.ParkingPosition)

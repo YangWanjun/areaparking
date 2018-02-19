@@ -12,7 +12,7 @@ from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe, format_html
 
-from rest_framework import serializers, status
+from rest_framework import serializers, status, pagination
 from rest_framework.compat import set_rollback
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
@@ -309,6 +309,10 @@ class BaseBatch(BaseCommand):
             dest='username',
             default='batch'
         )
+
+
+class BaseApiPagination(pagination.PageNumberPagination):
+    page_size = 25
 
 
 def custom_exception_handler(exc, context):

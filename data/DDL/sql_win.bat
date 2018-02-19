@@ -7,3 +7,6 @@ mysql -u root -proot areaparking < 13.v_transfer_detail.sql
 mysql -u root -proot areaparking < 14.v_contractor_request.sql
 mysql -u root -proot areaparking < 15.v_arrears.sql
 mysql -u root -proot areaparking < 16.v_price_raise.sql
+mysql -u root -proot areaparking < 17.v_contracted_parking_lot.sql
+mysql -u root -proot areaparking < 18.v_bank_account.sql
+mysql -u root -proot areaparking < 90.index.sql

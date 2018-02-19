@@ -44,6 +44,11 @@ router.register(r'parking-lot-cancellation', contract_api.ParkingLotCancellation
 
 router.register(r'parking-lot', parking_lot_api.ParkingLotViewSet)
 router.register(r'parking-position-size-grouped', parking_lot_api.ParkingPositionSizeGrouped, base_name='size-grouped')
+
+router.register(r'pref_list', address_api.PrefViewSet)
+router.register(r'city_list', address_api.CityViewSet)
+router.register(r'aza_list', address_api.AzaViewSet)
+router.register(r'postcode_list', address_api.PostcodeViewSet)
 router.register(r'geocode', address_api.GeocodeViewSet, base_name='geocode')
 
 router.register(r'car-maker', master_api.CarMakerViewSet)

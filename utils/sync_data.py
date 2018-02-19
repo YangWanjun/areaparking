@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import os
+import csv
 import re
+import io
 import xlrd
 import datetime
 import requests
+import zipfile
+from urllib.parse import urljoin
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -13,6 +17,10 @@ from master.models import CarModel, CarMaker, Config, Company, Payment, MailTemp
 from parkinglot.models import ParkingLot, ParkingLotType, ParkingPosition, ParkingLotStaffHistory
 from employee.models import Department, Member, MemberShip
 from whiteboard.models import HandbillCompany
+from utils.errors import SettingException, FileNotExistException
+
+
+HOST_NAME = Config.get_domain_name()
 
 
 def sync_master():
@@ -591,10 +599,134 @@ def sync_config():
         ('email', 'email_smtp_host', 'smtp.e-business.co.jp', None),
         ('email', 'email_smtp_port', '587', None),
         ('system', 'circle_radius', '2000', None),
-        ('system', 'domain_name', 'http://ap.mopa.jp', None),
+        ('system', 'domain_name', 'https://ap.mopa.jp', None),
         ('system', 'page_size', '25', None),
         ('system', 'url_timeout', '24', "ＵＲＬのタイムアウト時間（単位：時間）"),
     ]
     for group, name, value, comment in configs:
         if Config.objects.public_filter(name=name).count() == 0:
             Config.objects.create(group=group, name=name, value=value, comment=comment)
+
+
+def sync_pref():
+    if not HOST_NAME:
+        raise SettingException('HOST_NAME')
+    url_add_pref = urljoin(HOST_NAME, '/api/pref_list/')
+    path = os.path.join(common.get_data_path(), 'ADDRESS', 'pref.zip')
+    if not os.path.exists(path):
+        raise FileNotExistException(path)
+    zip_file = zipfile.ZipFile(path, 'r')
+    for file_name in zip_file.namelist():
+        text = zip_file.read(file_name)
+        reader = csv.reader(io.StringIO(text.decode('UTF-8')))
+        header = next(reader)  # without header
+        print(header)
+        for row in reader:
+            code, name = row[0], row[1]
+            print(code, name)
+            code = '%02d' % int(code)
+            save_data({'code': code, 'name': name}, url_add_pref)
+
+
+def sync_city():
+    if not HOST_NAME:
+        raise SettingException('HOST_NAME')
+    path = os.path.join(common.get_data_path(), 'ADDRESS', 'city_code')
+    if not os.path.exists(path):
+        raise FileNotExistException(path)
+
+    url_add_city = urljoin(HOST_NAME, '/api/city_list/')
+    url_add_aza = urljoin(HOST_NAME, '/api/aza_list/')
+    for zip_name in os.listdir(path):
+        if os.path.splitext(zip_name)[-1] != '.zip':
+            continue
+        zip_path = os.path.join(path, zip_name)
+        zip_file = zipfile.ZipFile(zip_path, 'r')
+        for file_name in zip_file.namelist():
+            if os.path.splitext(file_name)[-1] != '.csv':
+                continue
+            text = zip_file.read(file_name)
+            reader = csv.reader(io.StringIO(text.decode('cp932')))
+            header = next(reader)  # without header
+            print(header)
+            prev_city_code = ''
+            for row in reader:
+                if prev_city_code != row[2]:
+                    city = dict()
+                    city['pref'] = row[0]
+                    city['code'] = row[2]
+                    city['name'] = row[3]
+                    save_data(city, url_add_city)
+                    prev_city_code = row[2]
+                aza = dict()
+                aza['pref'] = row[0]
+                aza['city'] = row[2]
+                aza['code'] = row[4]
+                aza['name'] = row[5]
+                aza['point'] = 'POINT (%s %s)' % (row[7], row[6])
+                save_data(aza, url_add_aza)
+
+
+def sync_post_code():
+    if not HOST_NAME:
+        raise SettingException('HOST_NAME')
+    url_add_post_code = urljoin(HOST_NAME, '/api/postcode_list/')
+    path = os.path.join(common.get_data_path(), 'ADDRESS', 'ken_all.zip')
+    if not os.path.exists(path):
+        raise FileNotExistException(path)
+    zip_file = zipfile.ZipFile(path, 'r')
+    for file_name in zip_file.namelist():
+        if os.path.splitext(file_name)[-1].lower() != '.csv':
+            continue
+        text = zip_file.read(file_name)
+        reader = csv.reader(io.StringIO(text.decode('cp932')))
+        for row in reader:
+            post_code = dict()
+            post_code['city_code'] = row[0]
+            post_code['post_code'] = row[2]
+            post_code['pref_kana'] = row[3]
+            post_code['pref_name'] = row[6]
+            post_code['city_kana'] = row[4]
+            post_code['city_name'] = row[7]
+            if row[8] != "以下に掲載がない場合":
+                post_code['town_kana'] = re.sub(r'\(.+\)', '', row[5])
+                post_code['town_name'] = re.sub(r'（.+）', '', row[8])
+                m = re.search(r"（([0-9０-９]+)〜([0-9０-９]+).+）", row[8])
+                if m:
+                    start_chome, end_chome = m.groups()
+                    try:
+                        start_chome = int(common.to_half_size(start_chome))
+                        end_chome = int(common.to_half_size(end_chome))
+                        chome_list = ",".join([str(i) for i in range(start_chome, end_chome + 1)])
+                        if len(chome_list) > 200:
+                            print(post_code['post_code'], post_code['city_name'],
+                                  row[8], "丁目リストが多すぎ。")
+                        else:
+                            post_code['chome_list'] = chome_list
+                    except Exception as ex:
+                        print(row[2], m.group(), ex)
+            post_code['is_partial'] = row[9]
+            post_code['is_multi_chome'] = row[11]
+            post_code['is_multi_town'] = row[12]
+            save_data(post_code, post_url=url_add_post_code)
+
+
+def save_data(data, post_url=None, put_url=None):
+    if post_url:
+        r = requests.post(post_url, data=data)
+    elif put_url:
+        r = requests.put(put_url, data=data)
+    else:
+        return
+    if 200 <= r.status_code < 300:
+        # 2xx Success 成功
+        pass
+    elif 300 <= r.status_code < 400:
+        # 3xx Redirection リダイレクション
+        pass
+    elif 400 <= r.status_code < 500:
+        # 4xx Client Error クライアントエラー
+        print(r.content)
+    elif 500 <= r.status_code:
+        # 5xx Server Error サーバエラー
+        print(r.content)

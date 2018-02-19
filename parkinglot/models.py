@@ -5,6 +5,7 @@ from collections import defaultdict
 
 from django.core.validators import RegexValidator
 from django.db import models
+from django.utils.functional import cached_property
 
 from employee.models import Member
 from master.models import Config
@@ -111,17 +112,16 @@ class ParkingLot(BaseModel):
     category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
     post_code = models.CharField(blank=True, null=True, max_length=8, verbose_name="郵便番号",
                                  validators=(RegexValidator(regex=constants.REG_POST_CODE),))
-    pref_code = models.CharField(max_length=2, verbose_name="都道府県コード")
+    pref_code = models.CharField(max_length=2, blank=True, null=True, editable=False, verbose_name="都道府県コード")
     pref_name = models.CharField(max_length=15, verbose_name="都道府県名称")
-    city_code = models.CharField(max_length=5, verbose_name="市区町村コード")
+    city_code = models.CharField(max_length=5, blank=True, null=True, editable=False, verbose_name="市区町村コード")
     city_name = models.CharField(max_length=15, verbose_name="市区町村名称")
     town_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="町域名称")
     aza_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="丁番地")
     other_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="その他")
-    lng = models.FloatField(blank=True, null=True, verbose_name="経度")
-    lat = models.FloatField(blank=True, null=True, verbose_name="緯度")
+    lng = models.FloatField(blank=True, null=True, editable=False, verbose_name="経度")
+    lat = models.FloatField(blank=True, null=True, editable=False, verbose_name="緯度")
     # 交通情報
-    # traffic = models.CharField(max_length=200, blank=True, null=True, verbose_name="交通")
     nearest_station_line1 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅① 沿線名")
     nearest_station_name1 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅① 駅名")
     nearest_station_walk1 = models.SmallIntegerField(blank=True, null=True, verbose_name="最寄駅① 徒歩（分）")
@@ -179,6 +179,7 @@ class ParkingLot(BaseModel):
     def __str__(self):
         return self.name
 
+    @cached_property
     def address(self):
         return "{}{}{}{}{}".format(
             self.pref_name, self.city_name, self.town_name or '', self.aza_name or '', self.other_name or ''

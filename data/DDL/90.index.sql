@@ -1,0 +1,1 @@
+CREATE INDEX idx_post_code ON gis_post_code(post_code);
