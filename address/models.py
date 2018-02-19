@@ -92,3 +92,7 @@ class Postcode(BaseModel):
 
     def __str__(self):
         return self.post_code
+
+    @property
+    def address(self):
+        return "{}{}{}".format(self.pref_name, self.city_name, self.town_name or '')

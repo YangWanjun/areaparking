@@ -11,6 +11,8 @@ import zipfile
 from urllib.parse import urljoin
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.gis.gdal import DataSource
+from django.contrib.gis.gdal.geometries import Polygon, OGRGeometry, OGRGeomType
 
 from . import common
 from master.models import CarModel, CarMaker, Config, Company, Payment, MailTemplate, MailGroup, TransmissionRoute
@@ -21,6 +23,17 @@ from utils.errors import SettingException, FileNotExistException
 
 
 HOST_NAME = Config.get_domain_name()
+
+
+def get_temp_dir():
+    path = os.path.join(common.get_data_path(), 'temp_{}'.format(datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')))
+    if not os.path.exists(path):
+        os.mkdir(path)
+    return path
+
+
+def del_temp_dir(path):
+    os.removedirs(path)
 
 
 def sync_master():
@@ -709,6 +722,52 @@ def sync_post_code():
             post_code['is_multi_chome'] = row[11]
             post_code['is_multi_town'] = row[12]
             save_data(post_code, post_url=url_add_post_code)
+
+
+def sync_city_polygon():
+    if not HOST_NAME:
+        raise SettingException('HOST_NAME')
+    url_get_city = urljoin(HOST_NAME, '/api/city_list/')
+    path = os.path.join(common.get_data_path(), 'ADDRESS', 'japan_ver81.zip')
+    if not os.path.exists(path):
+        raise FileNotExistException(path)
+    temp_dir = get_temp_dir()
+    try:
+        zip_file = zipfile.ZipFile(path, 'r')
+        zip_file.extractall(temp_dir)
+        for file_name in os.listdir(temp_dir):
+            if os.path.splitext(file_name)[-1] == ".shp":
+                ds = DataSource(os.path.join(temp_dir, file_name))
+                for layer in ds:
+                    for i, feature in enumerate(layer):
+                        city_code = feature.get('JCODE')
+                        if not city_code:
+                            print(i, '市区町村コードがシェープファイルから取得できません。')
+                            continue
+                        city_name_en = feature.get('CITY_ENG').split('-')[0] if feature.get('CITY_ENG') else None
+                        people_count = feature.get('P_NUM') or 0
+                        home_count = feature.get('H_NUM') or 0
+                        if feature.geom and isinstance(feature.geom, Polygon):
+                            mpoly = OGRGeometry(OGRGeomType('MultiPolygon'))
+                            mpoly.add(feature.geom)
+                        else:
+                            mpoly = feature.geom
+                        json = requests.get(url_get_city, {'code': city_code}).json()
+                        if json['results']:
+                            city = json['results'][0]
+                            city.update({
+                                'name_en': city_name_en,
+                                'people_count': people_count,
+                                'home_count': home_count,
+                                'mpoly': mpoly.wkt,
+                            })
+                            url_put_city = urljoin(HOST_NAME, '/api/city_list/%s/' % city_code)
+                            save_data(city, put_url=url_put_city)
+                        else:
+                            print(city_code, "市区町村コードがＤＢから取得できません。")
+    except Exception as ex:
+        del_temp_dir(temp_dir)
+        print(ex)
 
 
 def save_data(data, post_url=None, put_url=None):

@@ -22,6 +22,11 @@ class AzaSerializer(serializers.ModelSerializer):
 
 
 class PostcodeSerializer(serializers.ModelSerializer):
+    address = serializers.SerializerMethodField(source='get_address')
+
     class Meta:
         model = models.Postcode
         fields = '__all__'
+
+    def get_address(self, obj):
+        return obj.address
