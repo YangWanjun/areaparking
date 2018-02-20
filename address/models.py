@@ -96,3 +96,50 @@ class Postcode(BaseModel):
     @property
     def address(self):
         return "{}{}{}".format(self.pref_name, self.city_name, self.town_name or '')
+
+
+class AzaPolygon(BaseModel):
+    KEY_CODE = models.CharField(max_length=11, blank=True, null=True)
+    PREF = models.CharField(max_length=2, blank=True, null=True)
+    CITY = models.CharField(max_length=3, blank=True, null=True)
+    S_AREA = models.CharField(max_length=6, blank=True, null=True)
+    PREF_NAME = models.CharField(max_length=12, blank=True, null=True)
+    CITY_NAME = models.CharField(max_length=14, blank=True, null=True)
+    S_NAME = models.CharField(max_length=96, blank=True, null=True)
+    KIGO_E = models.CharField(max_length=3, blank=True, null=True)
+    HCODE = models.IntegerField(blank=True, null=True)
+    AREA = models.FloatField(blank=True, null=True)
+    PERIMETER = models.FloatField(blank=True, null=True)
+    H27KAxx = models.IntegerField(blank=True, null=True, db_column='H27KAxx_')
+    H27KAxx_ID = models.IntegerField(blank=True, null=True)
+    KEN = models.CharField(max_length=2, blank=True, null=True)
+    KEN_NAME = models.CharField(max_length=12, blank=True, null=True)
+    SITYO_NAME = models.CharField(max_length=22, blank=True, null=True)
+    GST_NAME = models.CharField(max_length=14, blank=True, null=True)
+    CSS_NAME = models.CharField(max_length=14, blank=True, null=True)
+    KIHON1 = models.CharField(max_length=4, blank=True, null=True)
+    DUMMY1 = models.CharField(max_length=1, blank=True, null=True)
+    KIHON2 = models.CharField(max_length=2, blank=True, null=True)
+    KEYCODE1 = models.CharField(max_length=9, blank=True, null=True)
+    KEYCODE2 = models.CharField(max_length=9, blank=True, null=True)
+    AREA_MAX_F = models.CharField(max_length=1, blank=True, null=True)
+    KIGO_D = models.CharField(max_length=2, blank=True, null=True)
+    N_KEN = models.CharField(max_length=2, blank=True, null=True)
+    N_CITY = models.CharField(max_length=3, blank=True, null=True)
+    KIGO_I = models.CharField(max_length=1, blank=True, null=True)
+    MOJI = models.CharField(max_length=96, blank=True, null=True)
+    KBSUM = models.IntegerField(blank=True, null=True)
+    JINKO = models.BigIntegerField(blank=True, null=True)
+    SETAI = models.BigIntegerField(blank=True, null=True)
+    X_CODE = models.FloatField(blank=True, null=True)
+    Y_CODE = models.FloatField(blank=True, null=True)
+    KCODE1 = models.CharField(max_length=7, blank=True, null=True)
+    mpoly = models.MultiPolygonField(srid=4326, blank=True, null=True)
+
+    class Meta:
+        db_table = 'gis_aza_polygon'
+        verbose_name = "町丁字境界データ"
+        verbose_name_plural = "町丁字境界データ"
+
+    def __str__(self):
+        return self.KEY_CODE
