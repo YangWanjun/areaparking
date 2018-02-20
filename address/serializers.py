@@ -30,3 +30,25 @@ class PostcodeSerializer(serializers.ModelSerializer):
 
     def get_address(self, obj):
         return obj.address
+
+
+class TargetCitySerializer(serializers.ModelSerializer):
+    """空き待ち時の希望アリア
+    """
+    id = serializers.ReadOnlyField(source='code')
+    label = serializers.ReadOnlyField(source='name')
+
+    class Meta:
+        model = models.City
+        fields = ('id', 'label')
+
+
+class TargetAzaSerializer(serializers.ModelSerializer):
+    """空き待ち時の希望アリア
+    """
+    id = serializers.ReadOnlyField(source='code')
+    label = serializers.ReadOnlyField(source='name')
+
+    class Meta:
+        model = models.Aza
+        fields = ('id', 'label')

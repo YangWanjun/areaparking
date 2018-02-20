@@ -128,7 +128,12 @@ class Inquiry(BaseModel):
 
 
 class Waiting(BaseModel):
-    parking_lot_name = models.CharField(max_length=100, verbose_name="希望場所")
+    target_parking_lot_code = models.IntegerField(blank=True, null=True, editable=False, verbose_name="希望駐車場コード")
+    target_parking_lot_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="希望駐車場名")
+    target_city_code = models.CharField(max_length=5, blank=True, null=True, editable=False, verbose_name="希望市区町村コード")
+    target_city_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="希望市区町村名")
+    target_aza_code = models.CharField(max_length=12, blank=True, null=True, editable=False, verbose_name="希望町丁目コード")
+    target_aza_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="希望町丁目名")
     staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.PROTECT, verbose_name="担当者")
     user_name = models.CharField(max_length=50, verbose_name="氏名")
     tel = models.CharField(max_length=20, blank=True, null=True, verbose_name="電話番号")

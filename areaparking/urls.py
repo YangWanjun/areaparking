@@ -42,7 +42,10 @@ router.register(r'process', contract_api.ProcessViewSet)
 router.register(r'contract-cancellation', contract_api.ContractCancellation)
 router.register(r'parking-lot-cancellation', contract_api.ParkingLotCancellationViewSet)
 
-router.register(r'parking-lot', parking_lot_api.ParkingLotViewSet)
+router.register(r'target-area', address_api.TargetAreaViewSet, base_name='target-area')
+router.register(r'target-city', address_api.TargetCityViewSet)
+router.register(r'target-aza', address_api.TargetAzaViewSet)
+router.register(r'target-parking-lot', parking_lot_api.TargetParkingLotViewSet)
 router.register(r'parking-position-size-grouped', parking_lot_api.ParkingPositionSizeGrouped, base_name='size-grouped')
 
 router.register(r'pref_list', address_api.PrefViewSet)

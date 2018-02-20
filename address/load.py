@@ -1,7 +1,8 @@
 import os
 from django.contrib.gis.utils import LayerMapping
+from django.db import connection
 
-from .models import AzaPolygon
+from .models import AzaTest
 from utils import common
 
 
@@ -52,7 +53,15 @@ def run(verbose=True):
         if name[-4:] == ".shp":
             shp_path = os.path.join(root_path, name)
             lm = LayerMapping(
-                AzaPolygon, shp_path, aza_mapping,
+                AzaTest, shp_path, aza_mapping,
                 transform=False, encoding='UTF-8',
             )
             lm.save(strict=True, verbose=verbose)
+    with connection.cursor() as cursor:
+        cursor.execute("truncate gis_aza")
+        cursor.execute("insert into areaparking.gis_aza (code, name, full_name, point, mpoly, people_count, home_count, city_id, pref_id, created_date, updated_date, is_deleted, deleted_date) "
+                       "select key_code as code, s_name as name, concat(PREF_NAME, CITY_NAME, S_NAME) as full_name, POINT(X_CODE, Y_CODE), mpoly, jinko, setai, concat(PREF, CITY) as city_id, PREF as pref_id"
+                       "     , created_date, updated_date, is_deleted, deleted_date"
+                       "  from areaparking.gis_aza_polygon"
+                       " where exists (select 1 from gis_city where concat(gis_aza_polygon.PREF, gis_aza_polygon.CITY) = gis_city.code)")
+        cursor.execute("truncate gis_aza_test")

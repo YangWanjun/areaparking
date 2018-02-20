@@ -39,11 +39,16 @@ class City(BaseModel):
 
 
 class Aza(BaseModel):
-    code = models.CharField(max_length=12, primary_key=True, verbose_name="大字町丁目コード")
+    code = models.CharField(max_length=12, verbose_name="大字町丁目コード")
     name = models.CharField(max_length=30, verbose_name="大字町丁目名称")
     city = models.ForeignKey(City, verbose_name="市区町村")
     pref = models.ForeignKey(Pref, verbose_name="都道府県")
     point = models.PointField(blank=True, null=True, verbose_name="座標")
+    full_name = models.CharField(max_length=120, verbose_name="名称")
+    mpoly = models.MultiPolygonField(srid=4326, blank=True, null=True)
+    people_count = models.IntegerField(blank=True, null=True, verbose_name="人口")
+    home_count = models.IntegerField(blank=True, null=True, verbose_name="世帯数")
+
 
     class Meta:
         db_table = 'gis_aza'
@@ -98,7 +103,7 @@ class Postcode(BaseModel):
         return "{}{}{}".format(self.pref_name, self.city_name, self.town_name or '')
 
 
-class AzaPolygon(BaseModel):
+class AzaTest(BaseModel):
     KEY_CODE = models.CharField(max_length=11, blank=True, null=True)
     PREF = models.CharField(max_length=2, blank=True, null=True)
     CITY = models.CharField(max_length=3, blank=True, null=True)
@@ -137,7 +142,7 @@ class AzaPolygon(BaseModel):
     mpoly = models.MultiPolygonField(srid=4326, blank=True, null=True)
 
     class Meta:
-        db_table = 'gis_aza_polygon'
+        db_table = 'gis_aza_test'
         verbose_name = "町丁字境界データ"
         verbose_name_plural = "町丁字境界データ"
 

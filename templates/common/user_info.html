@@ -21,7 +21,7 @@
                 <label for="is_tenant" style="margin-top: -10px;">入居者</label>
             </div>
             <div class="input-field col s8">
-                <input type="text" value="" id="tel" name="tel" class="eb-autocomplete" eb-autocomplete-url="/api/search-tel/"/>
+                <input type="text" value="" id="tel" name="tel" class="eb-autocomplete" data-eb-autocomplete-url="/api/search-tel/"/>
                 <label for="tel">ＴＥＬ</label>
             </div>
         </div>
@@ -33,9 +33,21 @@
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <input type="hidden" id="parking_lot_id" name="parking_lot_id"/>
-                <input type="text" value="" id="parking_lot_name" name="parking_lot_name" class="eb-autocomplete" eb-autocomplete-url="/api/parking-lot/" eb-autocomplete-target-id="id_parking_lot_code">
-                <label for="parking_lot_name">希望エリア／駐車場</label>
+                <input type="hidden" id="target_parking_lot_code" name="target_parking_lot_code"/>
+                <input type="text" value="" id="target_parking_lot_name" name="target_parking_lot_name" class="eb-autocomplete" data-eb-autocomplete-url="/api/target-parking-lot/" data-eb-autocomplete-target-id="target_parking_lot_code">
+                <label for="target_parking_lot_name">希望駐車場</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6">
+                <input type="hidden" id="target_city_code" name="target_city_code"/>
+                <input type="text" value="" id="target_city_name" name="target_city_name" class="eb-autocomplete" data-eb-autocomplete-url="/api/target-city/" data-eb-autocomplete-target-id="target_city_code">
+                <label for="target_city_name">希望市区町村</label>
+            </div>
+            <div class="input-field col s6">
+                <input type="hidden" id="target_aza_code" name="target_aza_code"/>
+                <input type="text" value="" id="target_aza_name" name="target_aza_name" class="eb-autocomplete" data-eb-autocomplete-url="/api/target-aza/" data-eb-autocomplete-target-id="target_aza_code">
+                <label for="target_aza_name">希望町丁目</label>
             </div>
         </div>
         <div class="row">

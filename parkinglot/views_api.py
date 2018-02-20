@@ -8,9 +8,9 @@ from . import models, serializers
 
 
 # Create your views here.
-class ParkingLotViewSet(viewsets.ModelViewSet):
+class TargetParkingLotViewSet(viewsets.ModelViewSet):
     queryset = models.ParkingLot.objects.public_all()
-    serializer_class = serializers.ParkingLotSerializer
+    serializer_class = serializers.TargetParkingLotSerializer
     filter_backends = [SearchFilter]
     search_fields = ('name',)
 
