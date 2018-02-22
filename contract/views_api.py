@@ -63,14 +63,13 @@ def task_finish(request, pk):
     task = get_object_or_404(models.Task, pk=pk)
     prev_task = task.get_prev_task()
 
-    if request.method == 'PUT':
-        if prev_task is None or prev_task.can_continue():
-            task.status = '99'
-            task.save()
-            serializer = serializers.TaskSerializer(task)
-            return Response(serializer.data)
-        else:
-            return Response({'detail': constants.ERROR_PREV_TASK_UNFINISHED}, status=400)
+    if prev_task is None or prev_task.can_continue():
+        task.status = '99'
+        task.save()
+        serializer = serializers.TaskSerializer(task)
+        return Response(serializer.data)
+    else:
+        return Response({'detail': constants.ERROR_PREV_TASK_UNFINISHED}, status=400)
 
 
 @api_view(['PUT'])
@@ -84,14 +83,13 @@ def task_skip(request, pk):
     task = get_object_or_404(models.Task, pk=pk)
     prev_task = task.get_prev_task()
 
-    if request.method == 'PUT':
-        if prev_task is None or prev_task.can_continue():
-            task.status = '10'
-            task.save()
-            serializer = serializers.TaskSerializer(task)
-            return Response(serializer.data)
-        else:
-            return Response({'detail': constants.ERROR_PREV_TASK_UNFINISHED}, status=400)
+    if prev_task is None or prev_task.can_continue():
+        task.status = '10'
+        task.save()
+        serializer = serializers.TaskSerializer(task)
+        return Response(serializer.data)
+    else:
+        return Response({'detail': constants.ERROR_PREV_TASK_UNFINISHED}, status=400)
 
 
 @api_view(['PUT'])
@@ -104,7 +102,7 @@ def task_undo(request, pk):
     """
     task = get_object_or_404(models.Task, pk=pk)
 
-    if request.method == 'PUT' and task.status != '01':
+    if task.status != '01':
         task.status = '01'
         task.save()
         serializer = serializers.TaskSerializer(task)
@@ -121,7 +119,7 @@ def task_cancel(request, pk):
     """
     task = get_object_or_404(models.Task, pk=pk)
 
-    if request.method == 'PUT' and task.is_end:
+    if task.is_end:
         task.status = '91'
         task.save()
         serializer = serializers.TaskSerializer(task)

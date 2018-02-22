@@ -17,7 +17,13 @@ select lot.code as code
            and c.is_deleted = 0
        ) as contract_count
      , (select count(1) from ap_subscription s where s.parking_lot_id = lot.code and s.status < '11' and s.is_deleted = 0) as temp_contract_count
-     , 0 as waiting_count
+     , (select count(1) from ap_parking_position pos where pos.parking_lot_id = lot.code and is_lock = 1 and is_deleted = 0) as lock_count
+     , (select count(1) 
+		  from ap_waiting_parking_lot s1
+          join ap_waiting_list w1 on w1.id = s1.waiting_id
+		 where s1.parking_lot_id = lot.code
+           and w1.status = '01'					-- 01:新規  02:成約 03:キャンセル
+	   ) as waiting_count
      , lot.is_existed_contractor_allowed        -- 既契約者
      , lot.is_new_contractor_allowed            -- 新テナント
      , lot.free_end_date                        -- フリーレント終了日

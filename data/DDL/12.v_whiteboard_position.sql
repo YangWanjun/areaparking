@@ -7,7 +7,8 @@ select pos.id
      , CONCAT(lot.pref_name, lot.city_name, ifnull(lot.town_name, ''), ifnull(lot.aza_name, ''), ifnull(lot.other_name, '')) as address
      , CASE
            WHEN c.id is not null THEN '03' 		-- 空き無
-           WHEN tc.code is not null THEN '02'     -- 手続き中
+           WHEN tc.code is not null THEN '02'   -- 手続き中
+           WHEN pos.is_lock THEN '05'		-- 貸止め
            ELSE '01'							-- 空き
        END as position_status
 	 , c.end_date as contract_end_date			-- 契約終了日
@@ -29,6 +30,7 @@ select pos.id
      , pos.min_height_ap
      , pos.f_value
      , pos.r_value
+     , pos.is_lock
      , pos.comment as position_comment          -- 車室の備考
   from ap_parking_lot lot
   join ap_parking_position pos on pos.parking_lot_id = lot.code

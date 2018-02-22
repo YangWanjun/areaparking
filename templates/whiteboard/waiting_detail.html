@@ -1,5 +1,6 @@
 {% extends current_module.base_template %}
 {% load i18n material_form material_frontend %}
+{% load humanize %}
 
 {% block breadcrumbs_items %}
 <a href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
@@ -67,39 +68,59 @@
     </div>
     <div class="card">
         <div class="card-content">
-            <div class="card-title">マッチング結果</div>
-            <table class="table bordered highlight">
+            <div class="card-title" id="divPositionTitle">マッチング結果</div>
+            <table id="tblWaitingPositions" class="table bordered highlight mdl-data-table" data-turbolinks="false" cellspacing="0" data-form-control="datatable">
                 <thead>
                 <tr>
                     <th>駐車場</th>
                     <th>車室</th>
+                    <!-- 賃料 -->
+                    <th>HP(込)</th>
+                    <th>HP(別)</th>
+                    <th>ﾁﾗｼ(込)</th>
+                    <th>ﾁﾗｼ(別)</th>
+                    <!-- サイズ -->
+                    <th>全長</th>
+                    <th>全幅</th>
+                    <th>全高</th>
+                    <th>重量</th>
                     <th>待ち数</th>
                     <th>状態</th>
-                    <th style="width: 100px;"></th>
+                    <th style="width: 70px;"></th>
                 </tr>
                 </thead>
                 <tbody>
+                {% for parking_lot in object.parking_lots.all %}
+                {% for parking_position in parking_lot.parkingposition_set.all %}
                 <tr>
-                    <td>アデニウム田端</td>
-                    <td>No.446</td>
-                    <td>3</td>
-                    <td><span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span></td>
-                    <td></td>
+                    <td><a href="{% url 'whiteboard:whiteboard_detail' parking_lot.pk %}">{{ parking_lot }}</a></td>
+                    <td><a href="{% url 'whiteboard:whiteboard_position_detail' parking_position.pk %}">{{ parking_position }}</a></td>
+                    <td class="right-align">{{ parking_position.price_homepage|default:''|intcomma }}</td>
+                    <td class="right-align">{{ parking_position.price_homepage_no_tax|default:''|intcomma }}</td>
+                    <td class="right-align">{{ parking_position.price_handbill|default:''|intcomma }}</td>
+                    <td class="right-align">{{ parking_position.price_handbill_no_tax|default:''|intcomma }}</td>
+                    <td class="right-align">{{ parking_position.length|default:''|intcomma }}</td>
+                    <td class="right-align">{{ parking_position.width|default:''|intcomma }}</td>
+                    <td class="right-align">{{ parking_position.height|default:''|intcomma }}</td>
+                    <td class="right-align">{{ parking_position.weight|default:''|intcomma }}</td>
+                    <td class="right-align">{{ parking_lot.waiting_count }}</td>
+                    <td>
+                        {% if parking_position.status == '01' %}
+                            <span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>
+                        {% elif parking_position.status == '02' %}
+                            <span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>
+                        {% elif parking_position.status == '03' %}
+                            <span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 0px;">
+                        {% if parking_position.status == '01' %}
+                            <a href="javascript:void(0)">契約へ</a>
+                        {% endif %}
+                    </td>
                 </tr>
-                <tr>
-                    <td>アデニウム田端</td>
-                    <td>No.447</td>
-                    <td>3</td>
-                    <td><span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>アデニウム田端</td>
-                    <td>No.448</td>
-                    <td>3</td>
-                    <td><span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span></td>
-                    <td style="padding: 0px;"><button class="btn waves-effect waves-light" style="font-size: 12px;padding: 0 18px;height: 30px;line-height: inherit;">契約に進む</button></td>
-                </tr>
+                {% endfor %}
+                {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -129,6 +150,12 @@
 {% endblock %}
 
 {% block footer %}
+<link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.material.min.css" />
+<style type="text/css">
+    table[data-form-control="datatable"] {
+        margin-bottom: 30px;
+    }
+</style>
 <script type="text/javascript">
 $(document).one("turbolinks:load", function() {
     $('.modal').modal({
@@ -144,6 +171,24 @@ $(document).one("turbolinks:load", function() {
             //alert('Closed');
         } // Callback for Modal close
     });
+
+    if ( ! $.fn.DataTable.isDataTable( '#tblWaitingPositions' ) ) {
+        var datatable = $('#tblWaitingPositions').DataTable({
+            "searching": false,
+            "paging": true,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Japanese.json"
+            },
+            "initComplete": function(settings, json) {
+                // PageSizeのドロップダウンをタイトル欄に移動する。
+                ebjs.material.remove_paging_dropdown("tblWaitingPositions", "divPositionTitle");
+            }
+        });
+
+        $(document).one("turbolinks:before-cache", function() {
+            datatable.destroy();
+        });
+    }
 
     var form_obj = $("#frmAddWaitingContact")
     form_obj.submit(function(){

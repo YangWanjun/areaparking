@@ -201,6 +201,7 @@ div.loading .preloader-wrapper {
 /***************** Auto Complete ***************/
 ul.ui-autocomplete {
     white-space: nowrap;
+    z-index: 2000;
 }
 .ui-state-default,
 .ui-state-hover,
@@ -212,5 +213,4 @@ ul.ui-autocomplete {
 .ui-state-active:hover,
 .ui-menu-item-wrapper:hover {
     font-weight: inherit !important;
-    white-sp
 }

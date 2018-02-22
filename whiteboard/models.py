@@ -1,7 +1,9 @@
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.validators import validate_comma_separated_integer_list
 from django.contrib.auth.models import User
 from django.db import models
 
+from address.models import City, Aza
 from contract.models import Contractor
 from parkinglot.models import ParkingPosition, ParkingLotType, ParkingLot
 from employee.models import Member
@@ -23,6 +25,7 @@ class WhiteBoard(BaseViewModel):
     position_count = models.IntegerField(default=0, editable=False, verbose_name="車室数")
     contract_count = models.IntegerField(default=0, editable=False, verbose_name="契約数")
     temp_contract_count = models.IntegerField(default=0, editable=False, verbose_name="手続中")
+    lock_count = models.IntegerField(default=0, editable=False, verbose_name="貸止数")
     waiting_count = models.IntegerField(default=0, editable=False, verbose_name="待ち数")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
@@ -44,6 +47,8 @@ class WhiteBoard(BaseViewModel):
         elif self.position_count == (self.contract_count + self.temp_contract_count):
             # 手続中
             return '02'
+        elif self.position_count == (self.contract_count + self.temp_contract_count + self.lock_count):
+            return '05'
         else:
             # 空き
             return '01'
@@ -80,6 +85,7 @@ class WhiteBoardPosition(BaseViewModel):
     min_height_ap = models.IntegerField(blank=True, null=True, verbose_name="AP計測の地上最低高")
     f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
     r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
+    is_lock = models.BooleanField(default=False, verbose_name="貸止め")
     position_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
@@ -98,10 +104,12 @@ class Inquiry(BaseModel):
     tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"電話番号")
     email = models.EmailField(blank=True, null=True, verbose_name="メールアドレス")
     is_tenant = models.BooleanField(default=False, verbose_name="入居者")
-    parking_lot_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="希望駐車場コード")
-    parking_lot_name = models.CharField(blank=True, null=True, max_length=100, verbose_name="希望駐車場")
-    area_code = models.CharField(blank=True, null=True, max_length=20, verbose_name="希望エリアコード")
-    area_name = models.CharField(blank=True, null=True, max_length=50, verbose_name="希望エリア")
+    target_parking_lot_code = models.IntegerField(blank=True, null=True, verbose_name="希望駐車場コード")
+    target_parking_lot_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="希望駐車場名")
+    target_city_code = models.CharField(max_length=5, blank=True, null=True, verbose_name="希望市区町村コード")
+    target_city_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="希望市区町村名")
+    target_aza_code = models.CharField(max_length=12, blank=True, null=True, verbose_name="希望町丁目コード")
+    target_aza_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="希望町丁目名")
     transmission_routes = models.CharField(blank=True, null=True, max_length=20, verbose_name="媒体",
                                            validators=[validate_comma_separated_integer_list],
                                            help_text='どのようにして､この駐車場を知りましたか？')
@@ -126,14 +134,24 @@ class Inquiry(BaseModel):
     def __str__(self):
         return self.user_name
 
+    def target(self):
+        """希望エリア／駐車場
+
+        :return:
+        """
+        return self.target_parking_lot_name or self.target_city_name or self.target_aza_name or ''
+
+    target.short_description = "希望エリア／駐車場"
+
 
 class Waiting(BaseModel):
-    target_parking_lot_code = models.IntegerField(blank=True, null=True, editable=False, verbose_name="希望駐車場コード")
+    target_parking_lot_code = models.IntegerField(blank=True, null=True, verbose_name="希望駐車場コード")
     target_parking_lot_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="希望駐車場名")
-    target_city_code = models.CharField(max_length=5, blank=True, null=True, editable=False, verbose_name="希望市区町村コード")
+    target_city_code = models.CharField(max_length=5, blank=True, null=True, verbose_name="希望市区町村コード")
     target_city_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="希望市区町村名")
-    target_aza_code = models.CharField(max_length=12, blank=True, null=True, editable=False, verbose_name="希望町丁目コード")
+    target_aza_code = models.CharField(max_length=12, blank=True, null=True, verbose_name="希望町丁目コード")
     target_aza_name = models.CharField(max_length=30, blank=True, null=True, verbose_name="希望町丁目名")
+    parking_lots = models.ManyToManyField(ParkingLot, through='WaitingParkingLot', editable=False, verbose_name="待ち対象駐車場")
     staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.PROTECT, verbose_name="担当者")
     user_name = models.CharField(max_length=50, verbose_name="氏名")
     tel = models.CharField(max_length=20, blank=True, null=True, verbose_name="電話番号")
@@ -162,7 +180,47 @@ class Waiting(BaseModel):
         verbose_name_plural = "空き待ちリスト"
 
     def __str__(self):
-        return "%s-%s" % (self.user_name, self.parking_lot_name)
+        return "%s-%s" % (self.user_name, self.target_parking_lot_name or self.target_city_name or self.target_aza_name)
+
+    def target(self):
+        """希望エリア／駐車場
+
+        :return:
+        """
+        return self.target_parking_lot_name or self.target_city_name or self.target_aza_name or ''
+
+    target.short_description = "希望エリア／駐車場"
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Waiting, self).save(force_insert, force_update, using, update_fields)
+        # 既存の空き待ち情報を消す
+        WaitingParkingLot.objects.public_filter(waiting=self).delete()
+        # 希望駐車場の場合
+        if self.target_parking_lot_code:
+            try:
+                parking_lot = ParkingLot.objects.get(pk=self.target_parking_lot_code)
+                WaitingParkingLot.objects.create(waiting=self, parking_lot=parking_lot)
+            except ObjectDoesNotExist:
+                pass
+        # 希望市区町村
+        if self.target_city_code:
+            try:
+                polygon = City.objects.get(code=self.target_city_code).mpoly
+                queryset = ParkingLot.objects.public_filter(point__intersects=polygon)
+                for parking_lot in queryset:
+                    WaitingParkingLot.objects.create(waiting=self, parking_lot=parking_lot)
+            except ObjectDoesNotExist:
+                pass
+        # 希望町丁目
+        if self.target_aza_code:
+            try:
+                polygon = Aza.objects.get(code=self.target_aza_code).mpoly
+                queryset = ParkingLot.objects.public_filter(point__intersects=polygon)
+                for parking_lot in queryset:
+                    WaitingParkingLot.objects.create(waiting=self, parking_lot=parking_lot)
+            except (ObjectDoesNotExist, MultipleObjectsReturned):
+                pass
 
 
 class WaitingContact(BaseModel):
@@ -184,6 +242,16 @@ class WaitingContact(BaseModel):
             return '%s %s' % ((self.contact_user.last_name or ''), (self.contact_user.first_name or ''))
         else:
             return self.contact_user.username
+
+
+class WaitingParkingLot(BaseModel):
+    waiting = models.ForeignKey(Waiting, verbose_name="空き待ち")
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+
+    class Meta:
+        db_table = 'ap_waiting_parking_lot'
+        verbose_name = "空き駐車場"
+        verbose_name_plural = "空き駐車場一覧"
 
 
 class HandbillCompany(BaseModel):

@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.shortcuts import reverse
 
@@ -22,6 +23,59 @@ class WhiteBoardPositionViewSet(viewsets.ReadOnlyModelViewSet):
 class InquiryViewSet(viewsets.ModelViewSet):
     queryset = models.Inquiry.objects.public_all()
     serializer_class = serializers.InquirySerializer
+
+
+class SearchEndUserViewSet(viewsets.ViewSet):
+
+    def list(self, request):
+        name = request.GET.get('search', None)
+        name_list = []
+        if name:
+            # 申込者
+            queryset = Subscription.objects.public_filter(name__icontains=name)
+            content_type = ContentType.objects.get(app_label="contract", model="subscription")
+            for obj in queryset:
+                d = {
+                    'id': obj.pk,
+                    'label': obj.name,
+                    'content_type_id': content_type.pk,
+                    'content_type_name': Subscription._meta.verbose_name,
+                }
+                name_list.append(d)
+            # 契約者
+            queryset = Contractor.objects.public_filter(name__icontains=name)
+            content_type = ContentType.objects.get(app_label="contract", model="contractor")
+            for obj in queryset:
+                d = {
+                    'id': obj.pk,
+                    'label': obj.name,
+                    'content_type_id': content_type.pk,
+                    'content_type_name': Contractor._meta.verbose_name,
+                }
+                name_list.append(d)
+            # 空き待ち
+            queryset = models.Waiting.objects.public_filter(user_name__icontains=name)
+            content_type = ContentType.objects.get(app_label="whiteboard", model="waiting")
+            for obj in queryset:
+                d = {
+                    'id': obj.pk,
+                    'label': obj.user_name,
+                    'content_type_id': content_type.pk,
+                    'content_type_name': models.Waiting._meta.verbose_name,
+                }
+                name_list.append(d)
+            # 問い合わせ履歴
+            queryset = models.Inquiry.objects.public_filter(user_name__icontains=name)
+            content_type = ContentType.objects.get(app_label="whiteboard", model="inquiry")
+            for obj in queryset:
+                d = {
+                    'id': obj.pk,
+                    'label': obj.user_name,
+                    'content_type_id': content_type.pk,
+                    'content_type_name': models.Inquiry._meta.verbose_name,
+                }
+                name_list.append(d)
+        return Response(name_list)
 
 
 class SearchTel(viewsets.ViewSet):

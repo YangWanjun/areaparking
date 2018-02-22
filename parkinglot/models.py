@@ -4,7 +4,9 @@ import math
 from collections import defaultdict
 
 from django.core.validators import RegexValidator
-from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.gis.db import models
 from django.utils.functional import cached_property
 
 from employee.models import Member
@@ -121,6 +123,7 @@ class ParkingLot(BaseModel):
     other_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="その他")
     lng = models.FloatField(blank=True, null=True, editable=False, verbose_name="経度")
     lat = models.FloatField(blank=True, null=True, editable=False, verbose_name="緯度")
+    point = models.PointField(blank=True, null=True, editable=False, verbose_name="座標")
     # 交通情報
     nearest_station_line1 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅① 沿線名")
     nearest_station_name1 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅① 駅名")
@@ -186,6 +189,14 @@ class ParkingLot(BaseModel):
         )
 
     address.short_description = '所在地'
+
+    @cached_property
+    def waiting_count(self):
+        """この駐車場の空き待ち数
+
+        :return:
+        """
+        return self.waitingparkinglot_set.count()
 
     def get_suitable_positions(self, length, width, height, weight):
         """指定した車のサイズによって、該当する車室リストを取得する。
@@ -371,7 +382,12 @@ class ParkingPosition(BaseModel):
     min_height_ap = models.IntegerField(blank=True, null=True, verbose_name="AP計測の地上最低高")
     f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
     r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
-    # 鍵情報
+    # 貸止め
+    is_lock = models.BooleanField(default=False, verbose_name="貸止め")
+    lock_content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.PROTECT)
+    lock_object_id = models.PositiveIntegerField(blank=True, null=True)
+    lock_content_object = GenericForeignKey('lock_content_type', 'lock_object_id')
+    lock_reason = models.CharField(max_length=100, blank=True, null=True, verbose_name="貸止め理由")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
@@ -388,6 +404,16 @@ class ParkingPosition(BaseModel):
         today = datetime.date.today()
         queryset = self.contract_set.filter(start_date__lte=today, end_date__gte=today)
         return queryset.first()
+
+    @cached_property
+    def status(self):
+        if self.get_current_contract():
+            # 空き無
+            return '03'
+        else:
+            # TODO:貸止め等他のステータス
+            # 空き
+            return '01'
 
 
 class ParkingPositionKey(BaseModel):

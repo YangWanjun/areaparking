@@ -63,6 +63,7 @@ router.register(r'inquiry', whiteboard_api.InquiryViewSet)
 router.register(r'search-tel', whiteboard_api.SearchTel, base_name='search-tel')
 router.register(r'waiting', whiteboard_api.WaitingViewSet)
 router.register(r'waiting-contact', whiteboard_api.WaitingContactViewSet)
+router.register(r'search-name', whiteboard_api.SearchEndUserViewSet, base_name='search-name')
 
 
 class Home(ModuleMixin):
@@ -105,6 +106,11 @@ urlpatterns = [
     url(r'^api/task/(?P<pk>[0-9]+)/skip.html$', contract_api.task_skip, name='task_skip'),
     url(r'^api/task/(?P<pk>[0-9]+)/cancel.html$', contract_api.task_cancel, name='task_cancel'),
     url(r'^api/task/(?P<pk>[0-9]+)/undo.html$', contract_api.task_undo, name='task_undo'),
+
+    url(r'^api/parking_position/(?P<pk>[0-9]+)/lock.html$', parking_lot_api.parking_position_lock,
+        name='parking_position_lock'),
+    url(r'^api/parking_position/(?P<pk>[0-9]+)/unlock.html$', parking_lot_api.parking_position_unlock,
+        name='parking_position_unlock'),
 ]
 
 handler500 = 'whiteboard.views.handler500'

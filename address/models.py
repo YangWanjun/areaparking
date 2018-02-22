@@ -49,7 +49,6 @@ class Aza(BaseModel):
     people_count = models.IntegerField(blank=True, null=True, verbose_name="人口")
     home_count = models.IntegerField(blank=True, null=True, verbose_name="世帯数")
 
-
     class Meta:
         db_table = 'gis_aza'
         ordering = ['code']

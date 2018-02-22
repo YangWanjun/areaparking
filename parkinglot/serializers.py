@@ -14,3 +14,9 @@ class TargetParkingLotSerializer(serializers.ModelSerializer):
         model = models.ParkingLot
         fields = ('id', 'label')
 
+
+class ParkingPositionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.ParkingPosition
+        fields = '__all__'

@@ -20,11 +20,24 @@
                 <tr>
                     <th style="width: 30%;">空き状況：</th>
                     <td>
-                        <span class="new badge left {%if whiteboard_position.position_status == '01'%}green{% else %}{%if whiteboard_position.position_status == '02' %}deep-orange{%else%}grey{%endif%}{%endif%}"
+                        <span class="new badge left {% if whiteboard_position.position_status == '01' %}green
+                                                {% elif whiteboard_position.position_status == '02' %}deep-orange
+                                                {% elif whiteboard_position.position_status == '05' %}red
+                                                {% else %}grey{%endif%}"
                               data-badge-caption="{{ whiteboard_position.get_position_status_display }}"
                               style="margin-left: 0px;"></span>
                     </td>
                 </tr>
+                {% if whiteboard_position.is_lock %}
+                <tr>
+                    <th>申込者</th>
+                    <td>{{ whiteboard_position.parking_position.lock_content_object }}</td>
+                </tr>
+                <tr>
+                    <th>貸止め理由</th>
+                    <td>{{ whiteboard_position.parking_position.lock_reason }}</td>
+                </tr>
+                {% endif %}
                 <tr>
                     <th>駐車場名称：</th>
                     <td>{{ whiteboard_position.whiteboard }}</td>
@@ -111,11 +124,14 @@
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% endblock actions_row %}
-                {% if whiteboard_position.position_status != "01" %}
-                    <a class="waves-effect waves-light btn white-text">順番待ちへ</a>
+                {% if whiteboard_position.position_status == "01" %}
+                    <!-- 空き -->
+                    <button data-target="lock_parking_position" class="waves-effect waves-green btn modal-trigger">貸止め</button>
+                    <button data-target="start_temp_contract" class="waves-effect waves-green btn modal-trigger">契約に進む</button>
+                {% elif whiteboard_position.position_status == '05' %}
+                    <button class="waves-effect waves-green btn" onclick="unlock_parking_position(this)">貸止め解除</button>
                 {% else %}
-                    <button data-target="stop_rent" class="btn modal-trigger">貸止め</button>
-                    <button data-target="start_temp_contract" class="btn modal-trigger">契約に進む</button>
+                    <a class="waves-effect waves-light btn white-text">順番待ちへ</a>
                 {% endif %}
             </div>
         </div>
@@ -194,28 +210,31 @@
                 <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
             </div>
         </div>
-        <div id="stop_rent" class="modal modal-fixed-footer" style="min-height: 500px;">
+        <div id="lock_parking_position" class="modal modal-fixed-footer" style="min-height: 500px;">
             <div class="modal-content">
                 <h4>貸止め</h4>
                 <div class="row">
-                    <form class="col s12">
+                    <form method="put" action="{% url 'parking_position_lock' whiteboard_position.pk %}" class="col s12" id="frmLockParkingPosition">
                         <div class="row">
                             <div class="input-field col s12">
-                                <input type="text" id="id_subscription" name="subscription"/>
-                                <label for="id_subscription">申込者</label>
+                                <input type="hidden" id="lock_object_id" name="lock_object_id"/>
+                                <input type="hidden" id="lock_content_type_id" name="lock_content_type_id"/>
+                                <input type="text" id="id_lock_content_object_name" name="lock_content_object_name" class="eb-autocomplete"
+                                       data-eb-autocomplete-url="/api/search-name/" data-eb-autocomplete-target-id="lock_object_id" data-eb-autocomplete-target-contenttype-id="lock_content_type_id"/>
+                                <label for="id_lock_content_object_name">申込者</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <textarea id="stop_rent_comment" name="stop_rent_comment" class="materialize-textarea"></textarea>
-                                <label for="stop_rent_comment">貸止め理由</label>
+                                <textarea id="id_lock_reason" name="lock_reason" class="materialize-textarea"></textarea>
+                                <label for="id_lock_reason">貸止め理由</label>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="javascript:void(0)" class="modal-action waves-effect waves-green btn-flat ">貸止め</a>
+                <a href="javascript:void(0)" class="modal-action waves-effect waves-green btn-flat " onclick="lock_parking_position(this)">貸止め</a>
                 <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
             </div>
         </div>
@@ -282,11 +301,43 @@ $(document).one("turbolinks:load", function() {
         });
         return false;
     });
+
+    ebjs.utils.ajax_form(
+        $("#frmLockParkingPosition"),
+        function(result) {
+            // success
+            ebjs.material.toast("車室：{{ whiteboard_position }}を貸止めしました。");
+            $('#lock_parking_position').modal('close');
+            window.location.reload();
+        },
+        function(result) {
+            // failure
+            ebjs.material.reflection_form_errors($("#frmLockParkingPosition"), result.responseJSON);
+        },
+    );
 });
 
 function save_subscription(obj) {
-    var form_obj = $("#new_subscription_form")
+    var form_obj = $("#new_subscription_form");
     form_obj.submit();
 }
+
+function lock_parking_position(obj) {
+    $("#frmLockParkingPosition").submit();
+}
+
+function unlock_parking_position(obj) {
+    if (window.confirm("貸止めを解除する、よろしいですか？")) {
+        ebjs.utils.ajax_put(
+            '{% url "parking_position_unlock" whiteboard_position.pk %}',
+            {}
+        ).done(function(result){
+            window.location.reload();
+        }).fail(function(result){
+            console.log(result);
+        });
+    }
+}
+
 </script>
 {% endblock %}

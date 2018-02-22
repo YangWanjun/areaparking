@@ -106,7 +106,8 @@ class WaitingListView(BaseListModelView):
         queryset = super(WaitingListView, self).get_queryset()
         q = self.request.GET.get('datatable-search[value]', None)
         if q:
-            orm_lookups = ['parking_lot_name__icontains', 'user_name__icontains', 'tel', 'phone']
+            orm_lookups = ['target_parking_lot_name__icontains', 'target_city_name__icontains',
+                           'target_aza_name__icontains', 'user_name__icontains', 'tel', 'phone']
             for bit in q.split():
                 or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
                 queryset = queryset.filter(reduce(operator.or_, or_queries))
@@ -134,7 +135,7 @@ class WaitingDetailView(BaseDetailModelView):
 
 class WaitingViewSet(BaseModelViewSet):
     model = models.Waiting
-    list_display = ('user_name', 'parking_lot_name', 'tel', 'phone', 'address1', 'email', 'created_date')
+    list_display = ('user_name', 'target', 'tel', 'phone', 'address1', 'email', 'created_date')
     list_view_class = WaitingListView
     detail_view_class = WaitingDetailView
 
@@ -158,7 +159,7 @@ class WhiteBoardMapView(BaseTemplateView):
 
 class InquiryViewSet(BaseModelViewSet):
     model = models.Inquiry
-    list_display = ('user_name', 'get_gender_display', 'tel', 'parking_lot_name', 'area_name', 'created_date')
+    list_display = ('user_name', 'get_gender_display', 'tel', 'target', 'created_date')
 
     def get_gender_display(self, obj):
         return obj.get_gender_display()

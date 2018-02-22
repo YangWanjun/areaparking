@@ -3,8 +3,9 @@ import traceback
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
+from django.contrib.gis.db import models
 from django.core.management.base import BaseCommand
-from django.db import models
+# from django.db import models
 from django.forms import widgets
 from django.http import HttpResponse
 from django.views.generic import View

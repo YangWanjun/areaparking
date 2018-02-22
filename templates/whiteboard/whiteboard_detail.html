@@ -69,7 +69,7 @@
                 {% for doc in object.parking_lot.parkinglotdoc_set.all %}
                     <tr>
                         <td>{{ doc }}</td>
-                        <td>{{ doc.comment }}</td>
+                        <td>{{ doc.comment|default:'' }}</td>
                         <td><a target="_blank" href="{{ doc.path.url }}"><i class="material-icons">file_download</i></a></td>
                     </tr>
                 {% empty %}
@@ -82,7 +82,7 @@
     <div class="card">
         <div class="card-content">
             <div class="card-title" id="divPositionTitle">車室一覧</div>
-            <table id="tblPosition" class="table bordered highlight mdl-data-table" cellspacing="0">
+            <table id="tblPosition" class="table bordered highlight mdl-data-table" cellspacing="0" data-form-control="datatable">
                 <thead>
                     <tr>
                         <th>車室</th>
@@ -106,7 +106,7 @@
                     {% for position in object.whiteboardposition_set.all %}
                         <tr>
                             <td><a href="{% url 'whiteboard:whiteboard_position_detail' position.pk %}" data-turbolinks="false">{{ position }}</a></td>
-                            <td>{{ position.get_position_status_display }}</td>
+                            <td>{{ position.position_status }}</td>
                             <td>{{ position.price_homepage|default:''|intcomma }}</td>
                             <td>{{ position.price_homepage_no_tax|default:''|intcomma }}</td>
                             <td>{{ position.price_handbill|default:''|intcomma }}</td>
@@ -143,6 +143,9 @@
     div.portfolio-holder div.left {
         overflow: hidden;
     }
+    table[data-form-control="datatable"] {
+        margin-bottom: 30px;
+    }
 </style>
 <script type="text/javascript">
     ebjs.material.popup_anchor();
@@ -160,29 +163,14 @@
                         targets: 1,
                         className: 'mdl-data-table__cell--non-numeric',
                         "createdCell": function (td, cellData, rowData, row, col) {
-                            var html;
-                            if (cellData === '空き') {
-                                html = '<span class="new badge left green" data-badge-caption="空き" style="margin-left: 0px;"></span>';
-                            } else if (cellData === '手続中') {
-                                html = '<span class="new badge left deep-orange" data-badge-caption="手続中" style="margin-left: 0px;"></span>';
-                            } else if (cellData === '空無') {
-                                html = '<span class="new badge left grey" data-badge-caption="空無" style="margin-left: 0px;"></span>';
-                            } else {
-                                html = cellData;
-                            }
-                            $(td).html(html);
+                            $(td).html(ebjs.material.get_contract_status_html(cellData));
                             $(td).css("padding", "0px");
                         }
                     }
                 ],
                 "initComplete": function(settings, json) {
                     // PageSizeのドロップダウンをタイトル欄に移動する。
-                    $("#tblPosition_length").appendTo("#divPositionTitle");
-                    $("#tblPosition_length").addClass("right");
-                    $("#tblPosition_length select").addClass("browser-default");
-                    $("#tblPosition_length select").css("width", "60px");
-                    $("#tblPosition_length select").css("height", "25px");
-                    $("#tblPosition_length select").css("display", "inherit");
+                    ebjs.material.remove_paging_dropdown("tblPosition", "divPositionTitle");
                 }
             });
             new $.fn.dataTable.FixedHeader(datatable);
