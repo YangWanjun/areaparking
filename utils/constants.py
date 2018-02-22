@@ -260,9 +260,12 @@ CHOICE_CONTRACT_STATUS = (
 )
 CHOICE_SUBSCRIPTION_STATUS = (
     ('01', '新規申込'),
-    ('02', '申込完了'),
-    ('03', '契約手続中'),
-    ('04', 'ユーザーサイン済み'),
+    ('02', '申込フォーム送付'),
+    ('03', '申込フォーム入力完了'),
+    ('04', '審査フォーム送付'),
+    ('05', '審査フォーム入力完了'),
+    ('06', '契約フォーム送付'),
+    ('07', '契約フォーム入力完了'),
     ('11', '成約'),
     ('12', '破棄'),
 )
@@ -307,6 +310,9 @@ ERROR_SETTING_NO_SUBSCRIPTION_CONFIRM = "申込確認書の出力書式が設定
 ERROR_REQUEST_SIGNATURE = "サインしてください。"
 ERROR_PREV_TASK_UNFINISHED = '前のタスクは処理していないので、完了できません！'
 ERROR_SUBSCRIPTION_NO_CAR = '車情報がありません。'
+ERROR_SUBSCRIPTION_LOCKED = '貸止めになっているため、申込みはできません。'
+ERROR_SUBSCRIPTION_CONTRACTED = "既に契約中なので、申込みはできません。"
+ERROR_SUBSCRIPTION_PROCESS_NOT_FINISHED = "契約手続きはまだ完了されていません。"
 ERROR_CONTRACT_WRONG_RETIRE_DATE = "退居予定日は解約日の前に選択してください。"
 ERROR_CONTRACT_RETIRE_DATE_RANGE = "退居予定日は契約期間内に選択してください。"
 ERROR_CONTRACT_CANCELLATION_DATE_RANGE = "解約日は契約期間内に選択してください。"

@@ -32,7 +32,11 @@ def subscription_to_contract(subscription):
     :param subscription:
     :return:
     """
+    if subscription.process and not subscription.process.is_finished:
+        # プロセスの完了チェック
+        raise CustomException(constants.ERROR_SUBSCRIPTION_PROCESS_NOT_FINISHED)
     if not subscription.car_maker or not subscription.car_model:
+        # 契約車両必須
         raise CustomException(constants.ERROR_SUBSCRIPTION_NO_CAR)
     # 申込者情報を契約者情報に変更する
     contractor = models.Contractor()

@@ -206,10 +206,10 @@ class Subscription(AbstractUser, AbstractCar):
                               verbose_name="ステータス")
     subscription_confirm_format_id = models.PositiveIntegerField(blank=True, null=True,
                                                                  default=get_default_subscription_confirm_format_id,
-                                                                 verbose_name="申込確認書のフォーマットＩＤ")
+                                                                 verbose_name="申込確認書のフォーマット")
     subscription_format_id = models.PositiveIntegerField(blank=True, null=True,
                                                          default=get_default_subscription_format_id,
-                                                         verbose_name="申込書のフォーマットＩＤ")
+                                                         verbose_name="申込書のフォーマット")
     reports = GenericRelation(ReportFile, related_query_name='subscriptions')
     created_date = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=u"作成日時")
     updated_date = models.DateTimeField(auto_now=True, editable=False, verbose_name=u"更新日時")
@@ -222,8 +222,8 @@ class Subscription(AbstractUser, AbstractCar):
     class Meta:
         db_table = 'ap_subscription'
         ordering = ['name']
-        verbose_name = "ユーザー申込"
-        verbose_name_plural = "ユーザー申込一覧"
+        verbose_name = "契約手続き"
+        verbose_name_plural = "契約手続き一覧"
 
     @cached_property
     def parking_lot(self):
@@ -240,6 +240,26 @@ class Subscription(AbstractUser, AbstractCar):
         if self.parking_position_id:
             try:
                 return ParkingPosition.objects.get(pk=self.parking_position_id)
+            except ObjectDoesNotExist:
+                return None
+        else:
+            return None
+
+    @cached_property
+    def subscription_confirm_format(self):
+        if self.subscription_confirm_format_id:
+            try:
+                return ReportSubscriptionConfirm.objects.get(pk=self.subscription_confirm_format_id)
+            except ObjectDoesNotExist:
+                return None
+        else:
+            return None
+
+    @cached_property
+    def subscription_format(self):
+        if self.subscription_format_id:
+            try:
+                return ReportSubscription.objects.get(pk=self.subscription_format_id)
             except ObjectDoesNotExist:
                 return None
         else:
@@ -463,6 +483,12 @@ class Subscription(AbstractUser, AbstractCar):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         is_new = True if self.pk is None else False
+        if is_new:
+            # 貸止、空き無の場合は作成できない。
+            if self.parking_position.is_lock:
+                raise errors.CustomException(constants.ERROR_SUBSCRIPTION_LOCKED)
+            if self.parking_position.get_current_contract():
+                raise errors.CustomException(constants.ERROR_SUBSCRIPTION_CONTRACTED)
         super(Subscription, self).save(force_insert, force_update, using, update_fields)
         if is_new:
             # 進捗のプロセス作成
@@ -494,6 +520,16 @@ class Subscription(AbstractUser, AbstractCar):
             if ContractPayment.objects.public_filter(timing='41').count() == 0:
                 contract_payment = ContractPayment(subscription=self, timing='41', payment=payment)
                 # TODO: 保管証発行-車庫証明の入金項目作成
+
+    def delete(self, using=None, keep_parents=False):
+        # プロセスを削除する
+        if self.process:
+            Task.objects.public_filter(process=self.process).delete()
+            self.process.delete()
+        # 入金項目を削除
+        ContractPayment.objects.public_filter(subscription=self).delete()
+        # 申込み情報を削除
+        super(Subscription, self).delete(using, keep_parents)
 
     parking_lot.short_description = '駐車場'
     parking_position.short_description = '車室'
@@ -690,6 +726,18 @@ class Process(BaseModel):
     @cached_property
     def parking_position(self):
         return self.content_object.parking_position
+
+    @cached_property
+    def is_finished(self):
+        """プロセスは完了したかどうかを判断する。
+
+        :return:
+        """
+        # 完了またはスキップしたタスク数
+        finished_count = Task.objects.public_filter(process=self, status=['10', '99']).count()
+        # 総タスク数
+        all_count = Task.objects.public_filter(process=self).count()
+        return finished_count == all_count
 
     percent.short_description = '進捗'
     contractor.short_description = '契約者'

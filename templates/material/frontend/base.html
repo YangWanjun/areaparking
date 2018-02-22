@@ -41,7 +41,7 @@
                 <li class="{% if current_module == module %}active{% endif %}">
                     <ul class="collapsible collapsible-accordion">
                         <li>
-                            <a {% if module.index_url %}href="{{ module.index_url }}"{% endif %} class="collapsible-header active" data-turbolinks="false">{{ module.verbose_name }}{{ module.icon|safe }}</a>
+                            <a {% if module.index_url %}href="{{ module.index_url }}"{% endif %} class="collapsible-header active">{{ module.verbose_name }}{{ module.icon|safe }}</a>
                             <div class="collapsible-body" style="display:block">
                                 {% include module.menu %}
                             </div>
@@ -66,9 +66,9 @@
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
                         {% block topbar_links %}
                         {% if user.is_authenticated %}
-                        <li><a href="{% url 'logout' %}" data-turbolinks="false"><i class="material-icons right">exit_to_app</i>{% trans "Log out" %}</a></li>
+                        <li><a href="{% url 'logout' %}"><i class="material-icons right">exit_to_app</i>{% trans "Log out" %}</a></li>
                         {% else %}
-                        <li><a href="{% url 'login' %}?next=/" data-turbolinks="false"><i class="material-icons right">lock_open</i>{% trans "Log in" %}</a></li>
+                        <li><a href="{% url 'login' %}?next=/"><i class="material-icons right">lock_open</i>{% trans "Log in" %}</a></li>
                         {% endif %}
                         {% endblock %}
                     </ul>

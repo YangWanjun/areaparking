@@ -7,6 +7,7 @@ from django.core.validators import RegexValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
+from django.shortcuts import reverse
 from django.utils.functional import cached_property
 
 from employee.models import Member
@@ -285,6 +286,9 @@ class ParkingLot(BaseModel):
                 lacking_keys[category] = required_count - reserve_count
         return lacking_keys.items()
 
+    def get_absolute_url(self):
+        return reverse('whiteboard:whiteboard_detail', args=(self.pk,))
+
 
 class ParkingLotKey(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
@@ -415,6 +419,8 @@ class ParkingPosition(BaseModel):
             # 空き
             return '01'
 
+    def get_absolute_url(self):
+        return reverse('whiteboard:whiteboard_position_detail', args=(self.pk,))
 
 class ParkingPositionKey(BaseModel):
     parking_position = models.ForeignKey(ParkingPosition, verbose_name="車室")

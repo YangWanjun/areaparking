@@ -305,73 +305,73 @@
                                    onclick="ebjs.material.task_undo(this, '{% url 'task_undo' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">cancel</i></a>
                                 {% if group %}
-                                    <a data-target="send_mail_{{ task.pk }}" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
-                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped task {% if subscription and subscription.status != '01' %}disabled{%endif%}" >
+                                    <a data-target="send_mail_{{ task.pk }}" onclick="$('#send_mail_{{ task.pk }}').modal('open')" data-position="left" data-delay="50" data-tooltip="メール送信のダイアログが表示されます。"
+                                       class="waves-effect waves-light btn-floating modal-trigger tooltipped task task-mail {%if task.can_continue %}disabled{% endif %}" >
                                         <i class="tiny material-icons">send</i>
                                     </a>
                                 {% endif %}
                                 <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします。"
-                                   class="waves-effect waves-light btn-floating tooltipped task {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                   class="waves-effect waves-light btn-floating tooltipped task {%if task.can_continue %}disabled{% endif %}"
                                    onclick="ebjs.material.task_skip(this, '{% url 'task_skip' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">call_missed_outgoing</i></a>
                                 <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします。"
-                                   class="waves-effect waves-light btn-floating btn-tiny tooltipped task {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                   class="waves-effect waves-light btn-floating btn-tiny tooltipped task {%if task.can_continue %}disabled{% endif %}"
                                    onclick="ebjs.material.task_finish(this, '{% url 'task_finish' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">done</i></a>
                             </div>
                         </div>
+                        {% if group %}
+                        <div id="send_mail_{{ task.pk }}" class="modal modal-fixed-footer" style="min-height: 500px;">
+                            <form method="post" action="{% url 'contract:send_task_mail' task.pk %}" class="send_mail" id="frmSendTaskMail{{ task.pk }}">
+                                <div class="modal-content">
+                                    <h4>{{ group }}</h4>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input readonly value="{{ group.sender }}" id="mail_sender_{{ task.pk }}" name="mail_sender" type="text" />
+                                            <label for="mail_sender_{{ task.pk }}">差出人</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="{{ object.email }}" id="mail_to_{{ task.pk }}" name="mail_to" type="text" />
+                                            <label for="mail_to_{{ task.pk }}">宛先</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="mail_cc_{{ task.pk }}" name="mail_cc" type="text" />
+                                            <label for="mail_cc_{{ task.pk }}">ＣＣ</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="mail_bcc_{{ task.pk }}" name="mail_bcc" type="text" />
+                                            <label for="mail_bcc_{{ task.pk }}">ＢＣＣ</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="{{ template.title }}" id="mail_title_{{ task.pk }}" name="mail_title" type="text" />
+                                            <label for="mail_title_{{ task.pk }}">件名</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <textarea id="mail_content_{{ task.pk }}" name="mail_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
+                                            <label for="mail_content_{{ task.pk }}">メール本文</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="modal-action btn-flat waves-effect waves-green" type="submit" name="action">送信
+                                        <i class="material-icons right">send</i>
+                                    </button>
+                                    <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
+                                </div>
+                            </form>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% if group %}
-                    <div id="send_mail_{{ task.pk }}" class="modal modal-fixed-footer" style="min-height: 500px;">
-                        <form method="post" action="{% url 'contract:send_subscription_mail' task.pk %}" id="frmSendTaskMail">
-                            <div class="modal-content">
-                                <h4>{{ group }}</h4>
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input readonly value="{{ group.sender }}" id="mail_sender" name="mail_sender" type="text" />
-                                        <label for="mail_sender">差出人</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input value="{{ object.email }}" id="mail_to" name="mail_to" type="text" />
-                                        <label for="mail_to">宛先</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input value="{%for cc in group.get_cc_list%}{{cc.email}}{%endfor%}" id="mail_cc" name="mail_cc" type="text" />
-                                        <label for="mail_cc">ＣＣ</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input value="{%for bcc in group.get_bcc_list%}{{bcc.email}}{%endfor%}" id="mail_bcc" name="mail_bcc" type="text" />
-                                        <label for="mail_bcc">ＢＣＣ</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input value="{{ template.title }}" id="mail_title" name="mail_title" type="text" />
-                                        <label for="mail_title">件名</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <textarea id="mail_content" name="mail_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
-                                        <label for="mail_content">メール本文</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="modal-action btn-flat waves-effect waves-green" type="submit" onclick="return false;" name="action">送信
-                                    <i class="material-icons right">send</i>
-                                </button>
-                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
-                            </div>
-                        </form>
-                    </div>
-                    {% endif %}
                 </li>
                 {% endwith %}
                 {% endfor %}
@@ -379,7 +379,7 @@
         </div>
         <div class="card-action">
             <div class="right-align">
-                <a class="waves-effect waves-light btn red white-text" href="{% url 'contract:subscription_destroy' object.pk %}" onclick="alert('未完成');return false">破棄</a>
+                <a class="waves-effect waves-light btn red white-text" href="/api/subscription/{{ object.pk }}/" data-target-href="{% url 'contract:subscription_list' %}" onclick="ebjs.material.subscription_destroy(this);return false">破棄</a>
                 <a class="waves-effect waves-light btn white-text" href="{% url 'contract:subscription_finish' object.pk %}" onclick="ebjs.material.subscription_finish(this); return false;">契約完了</a>
             </div>
         </div>
@@ -444,8 +444,15 @@
 <script type="text/javascript" src="/static/tinymce/tinymce.init.js"></script>
 <script type="text/javascript">
 ebjs.material.popup_anchor();
+$(document).one("turbolinks:request-start", function() {
+    tinymce.remove();
+});
+$(document).one("turbolinks:request-end", function() {
+    tinymce.remove();
+});
 $(document).one("turbolinks:load", function() {
     $('.collapsible').collapsible();
+    $('.tooltipped').tooltip({delay: 50});
     $('.modal').modal({
         dismissible: true, // Modal can be dismissed by clicking outside of the modal
         opacity: .5, // Opacity of modal background
@@ -469,27 +476,16 @@ $(document).one("turbolinks:load", function() {
         }
     });
 
-    // 申込書の送信イベント
-    ebjs.material.send_subscription_mail(
-        "frmSendSubscriptionMail",
-        subscription_sent_success_fn,
-        subscription_sent_failure_fn,
-        subscription_sent_always_fn
-    );
-    // 審査用フォームの送信イベント
-    ebjs.material.send_subscription_mail(
-        "frmSendInspectionMail",
-        inspection_sent_success_fn,
-        subscription_sent_failure_fn,
-        subscription_sent_always_fn
-    );
-    // 契約書類の送信イベント
-    ebjs.material.send_subscription_mail(
-        "frmSendContractMail",
-        contract_sent_success_fn,
-        subscription_sent_failure_fn,
-        subscription_sent_always_fn
-    );
+    // 送信イベント
+    $("form.send_mail").each(function(i, frm) {
+        ebjs.material.send_task_mail(
+            frm.id,
+            function (result) {
+                // 成功時
+                $(frm).closest("div").modal('close');
+            },
+        );
+    });
 });
 
 function subscription_sent_success_fn(result) {

@@ -105,7 +105,7 @@
                 <tbody>
                     {% for position in object.whiteboardposition_set.all %}
                         <tr>
-                            <td><a href="{% url 'whiteboard:whiteboard_position_detail' position.pk %}" data-turbolinks="false">{{ position }}</a></td>
+                            <td><a href="{% url 'whiteboard:whiteboard_position_detail' position.pk %}">{{ position }}</a></td>
                             <td>{{ position.position_status }}</td>
                             <td>{{ position.price_homepage|default:''|intcomma }}</td>
                             <td>{{ position.price_homepage_no_tax|default:''|intcomma }}</td>

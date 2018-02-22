@@ -129,7 +129,7 @@
                         <div class="row">
                             <div class="col s12 right-align">
                                 <a data-position="left" data-delay="50" data-tooltip="タスクを取り消して、未実施の状態に戻します。"
-                                   class="waves-effect waves-light btn-floating tooltipped task task-undo red {%if task.is_finished or task.is_skipped%}{%else%}disabled{%endif%}"
+                                   class="waves-effect waves-light btn-floating tooltipped task task-undo red {%if task.can_continue%}{%else%}disabled{%endif%}"
                                    onclick="ebjs.material.task_undo(this, '{% url 'task_undo' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">cancel</i></a>
                                 {% if group %}
@@ -139,11 +139,11 @@
                                 </a>
                                 {% endif %}
                                 <a data-position="left" data-delay="50" data-tooltip="タスクをスキップします"
-                                   class="waves-effect waves-light btn-floating tooltipped task task-skip {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                   class="waves-effect waves-light btn-floating tooltipped task task-skip {%if task.can_continue%}disabled{%endif%}"
                                    onclick="ebjs.material.task_skip(this, '{% url 'task_skip' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">call_missed_outgoing</i></a>
                                 <a data-position="left" data-delay="50" data-tooltip="タスクを完了とします"
-                                   class="waves-effect waves-light btn-floating btn-tiny tooltipped task task-finish {%if task.is_finished or task.is_skipped%}disabled{%endif%}"
+                                   class="waves-effect waves-light btn-floating btn-tiny tooltipped task task-finish {%if task.can_continue%}disabled{%endif%}"
                                    onclick="ebjs.material.task_finish(this, '{% url 'task_finish' task.pk %}', '{{ task }}')">
                                     <i class="tiny material-icons">done</i></a>
                             </div>

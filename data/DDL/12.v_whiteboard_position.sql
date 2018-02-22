@@ -8,7 +8,7 @@ select pos.id
      , CASE
            WHEN c.id is not null THEN '03' 		-- 空き無
            WHEN tc.code is not null THEN '02'   -- 手続き中
-           WHEN pos.is_lock THEN '05'		-- 貸止め
+           WHEN pos.is_lock THEN '05'			-- 貸止め
            ELSE '01'							-- 空き
        END as position_status
 	 , c.end_date as contract_end_date			-- 契約終了日
@@ -41,6 +41,7 @@ select pos.id
                          and c.is_deleted = 0
   left join ap_subscription tc on tc.parking_position_id = pos.id
 							  and tc.is_deleted = 0
+                              and tc.status >= '03'
 							  and tc.status < '11' 	-- 仮契約
  where lot.is_deleted = 0
    and pos.is_deleted = 0

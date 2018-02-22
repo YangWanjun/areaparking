@@ -60,7 +60,7 @@
                     <td>{{ position_cancellation.contract.end_date }}</td>
                     <td>{{ position_cancellation.replacement|default:'' }}</td>
                     <td>
-                        <a href="{% url 'contract:process_detail' process.pk %}" data-turbolinks="false">
+                        <a href="{% url 'contract:process_detail' process.pk %}">
                         <div style="background: linear-gradient(90deg, transparent 0%, transparent 0.0%, #9adaaf 0.0%, #9adaaf {{ process.percent }}%, transparent {{ process.percent }}%);">
                             {{ process.percent }}%</div>
                         </a>

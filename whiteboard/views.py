@@ -41,7 +41,7 @@ class WhiteBoardListView(BaseListModelView):
         queryset = super(WhiteBoardListView, self).get_queryset()
         q = self.request.GET.get('datatable-search[value]', None)
         if q:
-            orm_lookups = ['name__icontains', 'address__icontains',
+            orm_lookups = ['parking_lot__name__icontains', 'address__icontains',
                            'staff__first_name__icontains', 'staff__last_name__icontains']
             for bit in q.split():
                 or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
@@ -68,11 +68,11 @@ class WhiteBoardDetailView(BaseDetailModelView):
 class WhiteBoardViewSet(BaseModelViewSet):
     model = models.WhiteBoard
     list_display = (
-        'code', 'name', 'staff', 'category', 'address', 'is_empty', 'position_count',
+        'code', 'parking_lot', 'staff', 'category', 'address', 'is_empty', 'position_count',
         'waiting_count', 'is_existed_contractor_allowed', 'is_new_contractor_allowed',
         'free_end_date', 'operation',
     )
-    list_display_links = ('id', 'name')
+    list_display_links = ('id', 'parking_lot')
     list_view_class = WhiteBoardListView
     detail_view_class = WhiteBoardDetailView
 

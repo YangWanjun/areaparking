@@ -246,6 +246,32 @@ class BaseDetailModelView(DetailModelView):
         })
         return context
 
+    def get_object_data(self):
+        """List of object fields to display.
+
+        Choice fields values are expanded to readable choice label.
+        """
+        for field in self.object._meta.fields:
+            if isinstance(field, models.AutoField):
+                continue
+            elif field.auto_created:
+                continue
+            elif field.name in ('is_deleted',):
+                continue
+            else:
+                choice_display_attr = "get_{}_display".format(field.name)
+            if hasattr(self.object, choice_display_attr):
+                value = getattr(self.object, choice_display_attr)()
+            elif isinstance(field, models.PositiveIntegerField) \
+                    and field.name[-3:] == '_id' \
+                    and hasattr(self.object, field.name[:-3]):
+                value = getattr(self.object, field.name[:-3])
+            else:
+                value = getattr(self.object, field.name)
+
+            if value is not None:
+                yield (field.verbose_name.title(), value)
+
 
 class BaseUpdateModelView(UpdateModelView):
     def get_context_data(self, **kwargs):

@@ -16,7 +16,7 @@ select lot.code as code
            and c.end_date >= current_date()
            and c.is_deleted = 0
        ) as contract_count
-     , (select count(1) from ap_subscription s where s.parking_lot_id = lot.code and s.status < '11' and s.is_deleted = 0) as temp_contract_count
+     , (select count(1) from ap_subscription s where s.parking_lot_id = lot.code and s.status >= '03' and s.status < '11' and s.is_deleted = 0) as temp_contract_count
      , (select count(1) from ap_parking_position pos where pos.parking_lot_id = lot.code and is_lock = 1 and is_deleted = 0) as lock_count
      , (select count(1) 
 		  from ap_waiting_parking_lot s1

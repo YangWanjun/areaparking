@@ -3,6 +3,9 @@
 {% load humanize %}
 
 {% block breadcrumbs_items %}
+<a href="/whiteboard/whiteboard/">駐車場一覧</a>
+<a href="{% url 'whiteboard:whiteboard_detail' whiteboard_position.whiteboard.pk %}">{{ whiteboard_position.whiteboard }}</a>
+<a class="active">{{ whiteboard_position }}</a>
 {% endblock %}
 
 {% block content %}
@@ -114,7 +117,6 @@
                     <th>備考：</th>
                     <td>{{ whiteboard_position.position_comment|default:'' }}</td>
                 </tr>
-
                 {% endblock %}
             </table>
         </div>
@@ -126,8 +128,8 @@
                 {% endblock actions_row %}
                 {% if whiteboard_position.position_status == "01" %}
                     <!-- 空き -->
-                    <button data-target="lock_parking_position" class="waves-effect waves-green btn modal-trigger">貸止め</button>
-                    <button data-target="start_temp_contract" class="waves-effect waves-green btn modal-trigger">契約に進む</button>
+                    <button data-target="lock_parking_position" class="waves-effect waves-green btn modal-trigger" onclick="$('#lock_parking_position').modal('open')">貸止め</button>
+                    <button data-target="start_temp_contract" class="waves-effect waves-green btn modal-trigger" onclick="$('#start_temp_contract').modal('open')">契約に進む</button>
                 {% elif whiteboard_position.position_status == '05' %}
                     <button class="waves-effect waves-green btn" onclick="unlock_parking_position(this)">貸止め解除</button>
                 {% else %}
@@ -295,8 +297,11 @@ $(document).one("turbolinks:load", function() {
             window.location = '/contract/subscription/' + result.code + '/detail/';
             $('#start_temp_contract').modal('close');
         }).fail(function(result){
-            ebjs.material.reflection_form_errors(form_obj, result.responseJSON);
-            alert("エラー発生しました。");
+            if (result.responseJSON) {
+                ebjs.material.reflection_form_errors(form_obj, result.responseJSON);
+            } else {
+                alert("エラーが発生しました。");
+            }
         }).always(function(result){
         });
         return false;
