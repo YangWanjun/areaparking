@@ -65,6 +65,7 @@ def task_finish(request, pk):
 
     if prev_task is None or prev_task.can_continue():
         task.status = '99'
+        task.updated_user = request.user
         task.save()
         serializer = serializers.TaskSerializer(task)
         return Response(serializer.data)
@@ -85,6 +86,7 @@ def task_skip(request, pk):
 
     if prev_task is None or prev_task.can_continue():
         task.status = '10'
+        task.updated_user = request.user
         task.save()
         serializer = serializers.TaskSerializer(task)
         return Response(serializer.data)
@@ -104,23 +106,6 @@ def task_undo(request, pk):
 
     if task.status != '01':
         task.status = '01'
-        task.save()
-        serializer = serializers.TaskSerializer(task)
-        return Response(serializer.data)
-
-
-@api_view(['PUT'])
-def task_cancel(request, pk):
-    """タスクを完了するＡＰＩ
-
-    :param request:
-    :param pk:
-    :return:
-    """
-    task = get_object_or_404(models.Task, pk=pk)
-
-    if task.is_end:
-        task.status = '91'
         task.save()
         serializer = serializers.TaskSerializer(task)
         return Response(serializer.data)

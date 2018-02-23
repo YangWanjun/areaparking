@@ -30,7 +30,6 @@ table.table td {
 table.table tr td:first-child {
     border-left: 0px;
 }
-}
 /**************** サイドバー *****************/
 div.content {
     height: calc(100% - 110px);
@@ -130,9 +129,11 @@ div.loading {
     left: 0;
     top: 0;
     background: rgba(211, 211, 211, 0.7);
-    z-index: 10000;
+    z-index: 9999;
 }
 div.loading .preloader-wrapper {
+    top: calc(50% - 32px) !important;
+    left: calc(50% - 32px) !important;
     top: 50%;
     left: 50%;
 }

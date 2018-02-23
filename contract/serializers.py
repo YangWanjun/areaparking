@@ -26,9 +26,17 @@ class ContractSerializer(BaseModelSerializer):
 
 
 class TaskSerializer(BaseModelSerializer):
+    updated_user_name = serializers.SerializerMethodField(source='get_updated_user_name')
+
     class Meta:
         model = models.Task
         fields = '__all__'
+
+    def get_updated_user_name(self, obj):
+        if obj.updated_user:
+            return '%s %s' % (obj.updated_user.last_name, obj.updated_user.first_name)
+        else:
+            return ''
 
 
 class ProcessSerializer(BaseModelSerializer):

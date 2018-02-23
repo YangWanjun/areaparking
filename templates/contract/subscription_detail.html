@@ -76,10 +76,7 @@
                                            data-task-url="{% url 'format:report_subscription_confirm' subscription.pk %}" />
                                     <label for="chkSubscriptionConfirm">申込確認書</label>
                                 </div>
-                                <div class="col s2">
-                                    <a target="_blank" href="{% url 'format:report_subscription_confirm' subscription.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
-                                </div>
-                                <div class="col s2">
+                                <div class="col s4">
                                     <a target="_blank" href="{% url 'format:download_report_subscription_confirm' subscription.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
                                 </div>
                             </div>
@@ -89,10 +86,7 @@
                                            data-task-url="{% url 'format:report_subscription' subscription.pk %}" />
                                     <label for="chkSubscription">申込書</label>
                                 </div>
-                                <div class="col s2">
-                                    <a target="_blank" href="{% url 'format:report_subscription' subscription.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="プレビュー"><i class="material-icons">find_in_page</i></a>
-                                </div>
-                                <div class="col s2">
+                                <div class="col s4">
                                     <a target="_blank" href="{% url 'format:download_report_subscription' subscription.pk %}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="ダウンロード"><i class="material-icons">file_download</i></a>
                                 </div>
                             </div>
@@ -288,16 +282,18 @@
                                 </div>
                             {% endfor %}
                         {% endif %}
-                        {% if task.updated_user %}
-                            <div class="row updated_datetime" style="margin-bottom: 5px;">
-                                <div class="col s8">
-                                    <span style="font-weight: bold;">前回実施日時：</span><span class="updated_date">{{ task.updated_date|default:'' }}</span><br/>
-                                </div>
-                                <div class="col s4">
-                                    <span style="font-weight: bold;">実施者：</span><span class="updated_user">{{ task.updated_user.first_name }}&nbsp;{{ task.updated_user.last_name }}</span>
-                                </div>
+                        <div class="row updated_datetime" style="margin-bottom: 5px;">
+                            <div class="col s8">
+                                {% if task.updated_user %}
+                                    <span style="font-weight: bold;">前回実施日時：</span><span class="updated_date">{{ task.updated_date|default:'' }}</span>
+                                {% endif %}
                             </div>
-                        {% endif %}
+                            <div class="col s4">
+                                {% if task.updated_user %}
+                                    <span style="font-weight: bold;">実施者：</span><span class="updated_user">{{ task.updated_user.last_name }}&nbsp;{{ task.updated_user.first_name }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
                         <div>
                             <div class="col s12 right-align">
                                 <a data-position="left" data-delay="50" data-tooltip="タスクを取り消して、未実施の状態に戻します。"
