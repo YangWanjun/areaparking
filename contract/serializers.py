@@ -68,3 +68,14 @@ class ParkingLotCancellationSerializer(BaseModelSerializer):
     class Meta:
         model = models.ParkingLotCancellation
         fields = '__all__'
+
+
+class ContactHistorySerializer(BaseModelSerializer):
+    contact_user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.ContactHistory
+        fields = '__all__'
+
+    def get_contact_user_name(self, obj):
+        return obj.get_contact_user_name()

@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.db import models
 from django.db.models import Sum
+from django.utils import timezone
 from django.utils.functional import cached_property
 
 from employee.models import Member
@@ -211,6 +212,7 @@ class Subscription(AbstractUser, AbstractCar):
                                                          default=get_default_subscription_format_id,
                                                          verbose_name="申込書のフォーマット")
     reports = GenericRelation(ReportFile, related_query_name='subscriptions')
+    contacts = GenericRelation('ContactHistory', related_query_name='subscription_set')
     created_date = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=u"作成日時")
     updated_date = models.DateTimeField(auto_now=True, editable=False, verbose_name=u"更新日時")
     is_deleted = models.BooleanField(default=False, editable=False, verbose_name=u"削除フラグ")
@@ -1041,6 +1043,35 @@ class PriceRaising(BaseModel):
         return str(self.contractor)
 
 
+class ContactHistory(BaseModel):
+    contact_date = models.DateField(default=timezone.now, verbose_name="連絡日")
+    contact_user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="連絡者")
+    content = models.CharField(max_length=255, verbose_name="連絡内容")
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考・特記")
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        db_table = 'ap_contact_history'
+        verbose_name = "連絡履歴"
+        verbose_name_plural = "連絡履歴"
+
+    def __str__(self):
+        return self.content[:10] + "..." if len(str(self.content)) > 10 else self.content
+
+    def get_contact_user_name(self):
+        """連絡者の名前を取得する。
+
+        :return:
+        """
+        if self.contact_user.first_name or self.contact_user.last_name:
+            return '%s %s' % ((self.contact_user.last_name or ''), (self.contact_user.first_name or ''))
+        else:
+            return self.contact_user.username
+
+
 class VPriceRaise(BaseViewModel):
     year = models.CharField(max_length=4, verbose_name="更新年")
     month = models.CharField(max_length=2, verbose_name="更新月")
@@ -1095,9 +1126,10 @@ class VContractedParkingLot(BaseViewModel):
     position_count = models.IntegerField(default=0, editable=False, verbose_name="車室数")
     contract_count = models.IntegerField(default=0, editable=False, verbose_name="契約数")
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
-    parking_lot_cancellation = models.ForeignKey(ParkingLotCancellation, blank=True, null=True,
-                                                 on_delete=models.DO_NOTHING, verbose_name="物件解約")
-    is_all_cancellation = models.BooleanField(default=False, verbose_name="全件解約")
+    # parking_lot_cancellation = models.ForeignKey(ParkingLotCancellation, blank=True, null=True,
+    #                                              on_delete=models.DO_NOTHING, verbose_name="物件解約")
+    # is_all_cancellation = models.BooleanField(default=False, verbose_name="全件解約")
+    cancellation_count = models.IntegerField(default=0, editable=False, verbose_name="解約数")
 
     class Meta:
         managed = False
@@ -1109,11 +1141,11 @@ class VContractedParkingLot(BaseViewModel):
         return self.name
 
     def get_cancellation_positions(self):
-        if self.is_all_cancellation:
+        if self.cancellation_count == self.position_count:
             return list()
-        elif self.parking_lot_cancellation:
+        if self.cancellation_count:
             positions = [cancellation.parking_position.pk for cancellation in
-                         ParkingPositionCancellation.objects.public_filter(cancellation=self.parking_lot_cancellation)]
+                         ParkingPositionCancellation.objects.public_filter(parking_lot=self.parking_lot)]
             return self.parking_lot.parkingposition_set.exclude(pk__in=positions)
         else:
             return self.parking_lot.parkingposition_set.all()

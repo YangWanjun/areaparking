@@ -19,8 +19,6 @@ select lot.code
      , lot.building_management_company_id     	-- 既契約者
      , lot.lease_management_company_id         	-- 新テナント
      , lot.code as parking_lot_id
-     , lot_c.id as parking_lot_cancellation_id	-- 物件解約
-     , lot_c.is_all as is_all_cancellation		-- 全件解約
+     , (select count(1) from ap_parking_position_cancellation pos_c where pos_c.parking_lot_id = lot.code ) as cancellation_count
   from ap_parking_lot lot
-  left join ap_parking_lot_cancellation lot_c on lot_c.parking_lot_id = lot.code
  order by lot.pref_code, lot.city_code, lot.town_name, lot.aza_name, lot.other_name

@@ -41,6 +41,7 @@ router.register(r'temp-contract', contract_api.TempContractViewSet)
 router.register(r'process', contract_api.ProcessViewSet)
 router.register(r'contract-cancellation', contract_api.ContractCancellation)
 router.register(r'parking-lot-cancellation', contract_api.ParkingLotCancellationViewSet)
+router.register(r'contact-history', contract_api.ContactHistoryViewSet)
 
 router.register(r'target-area', address_api.TargetAreaViewSet, base_name='target-area')
 router.register(r'target-city', address_api.TargetCityViewSet)
@@ -62,7 +63,6 @@ router.register(r'whiteboard-position', whiteboard_api.WhiteBoardPositionViewSet
 router.register(r'inquiry', whiteboard_api.InquiryViewSet)
 router.register(r'search-tel', whiteboard_api.SearchTel, base_name='search-tel')
 router.register(r'waiting', whiteboard_api.WaitingViewSet)
-router.register(r'waiting-contact', whiteboard_api.WaitingContactViewSet)
 router.register(r'search-name', whiteboard_api.SearchEndUserViewSet, base_name='search-name')
 
 

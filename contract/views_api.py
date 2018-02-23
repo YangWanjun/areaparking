@@ -52,6 +52,11 @@ class ParkingLotCancellationViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+class ContactHistoryViewSet(viewsets.ModelViewSet):
+    queryset = models.ContactHistory.objects.public_all()
+    serializer_class = serializers.ContactHistorySerializer
+
+
 @api_view(['PUT'])
 def task_finish(request, pk):
     """タスクを完了するＡＰＩ

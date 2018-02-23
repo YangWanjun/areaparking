@@ -1,10 +1,11 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.validators import validate_comma_separated_integer_list
 from django.contrib.auth.models import User
 from django.db import models
 
 from address.models import City, Aza
-from contract.models import Contractor
+from contract.models import Contractor, ContactHistory
 from parkinglot.models import ParkingPosition, ParkingLotType, ParkingLot
 from employee.models import Member
 from master.models import TransmissionRoute
@@ -173,6 +174,7 @@ class Waiting(BaseModel):
     created_user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="入力者")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="AP備考・特記")
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_WAITING_STATUS, verbose_name="状態")
+    contacts = GenericRelation(ContactHistory, related_query_name='waiting_set')
 
     class Meta:
         db_table = 'ap_waiting_list'

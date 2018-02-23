@@ -4,13 +4,14 @@ import operator
 
 from functools import reduce
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
-from . import models, forms
-from contract.forms import SubscriptionForm
+from . import models
+from contract.forms import SubscriptionForm, ContactHistoryForm
 from utils import errors
 from utils.django_base import BaseTemplateView, BaseView, BaseViewWithoutLogin, BaseModelViewSet, BaseListModelView, \
     BaseDetailModelView
@@ -123,12 +124,14 @@ class WaitingDetailView(BaseDetailModelView):
 
     def get_context_data(self, **kwargs):
         context = super(WaitingDetailView, self).get_context_data(**kwargs)
-        waiting_contact_form = forms.WaitingContactForm(initial={
-            'waiting': self.object,
+        content_type = ContentType.objects.get_for_model(self.object)
+        contact_history_form = ContactHistoryForm(initial={
+            'content_type': content_type,
+            'object_id': self.object.pk,
             'contact_user': self.request.user,
         })
         context.update({
-            'waiting_contact_form': waiting_contact_form,
+            'contact_history_form': contact_history_form,
         })
         return context
 

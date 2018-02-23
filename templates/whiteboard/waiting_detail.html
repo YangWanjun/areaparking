@@ -37,35 +37,7 @@
             </div>
         </div>
     </div>
-    <div class="card">
-        <div class="card-content">
-            <div class="card-title">連絡履歴
-                <a class="btn-floating waves-effect waves-light red right modal-trigger" data-target="add_waiting_contact"><i class="material-icons" style="line-height: 41px;">add</i></a>
-            </div>
-            <table class="table bordered highlight" id="tblWaitingContact">
-                <thead>
-                <tr>
-                    <th>連絡日</th>
-                    <th>連絡者</th>
-                    <th>備考・特記</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for contact in object.waitingcontact_set.all %}
-                    <tr>
-                        <td>{{ contact.contact_date }}</td>
-                        <td>{{ contact.get_contact_user_name }}</td>
-                        <td>{{ contact.comment }}</td>
-                    </tr>
-                {% empty %}
-                    <tr class="empty">
-                        <td colspan="3">履歴ありません。</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    {% include 'common/contact_history.html' %}
     <div class="card">
         <div class="card-content">
             <div class="card-title" id="divPositionTitle">マッチング結果</div>
@@ -126,21 +98,6 @@
         </div>
     </div>
 </div>
-<div id="add_waiting_contact" class="modal modal-fixed-footer">
-    <div class="modal-content">
-        <h4>連絡履歴追加</h4>
-        <div class="row">
-            <form method="post" action="/api/waiting-contact/" id="frmAddWaitingContact">
-                {{ waiting_contact_form.as_p }}
-            </form>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <a href="javascript:void(0)" onclick="add_waiting_contact()"
-           class="modal-action waves-effect waves-green btn-flat ">次へ</a>
-        <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">キャンセル</a>
-    </div>
-</div>
 {% endblock left-panel %}
 {% block right-panel %}
 <div class="right-panel">
@@ -157,6 +114,7 @@
     }
 </style>
 <script type="text/javascript">
+var api_get_contact = "";
 $(document).one("turbolinks:load", function() {
     $('.modal').modal({
         dismissible: true, // Modal can be dismissed by clicking outside of the modal
@@ -166,6 +124,17 @@ $(document).one("turbolinks:load", function() {
         startingTop: '4%', // Starting top style attribute
         endingTop: '10%', // Ending top style attribute
         ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+            if (modal.attr('id') === "edit_contact_history") {
+                // 編集の場合
+                if (trigger) {
+                    api_get_contact = trigger.attr('data-init-url');
+                }
+                if (api_get_contact) {
+                    var form_obj = $("#frmEditContactHistory");
+                    form_obj.attr("action", api_get_contact);
+                    get_for_edit_contact_history();
+                }
+            }
         },
         complete: function(obj) {
             //alert('Closed');
@@ -190,23 +159,7 @@ $(document).one("turbolinks:load", function() {
         });
     }
 
-    var form_obj = $("#frmAddWaitingContact")
-    form_obj.submit(function(){
-        ebjs.utils.ajax_request(
-            $(this).attr('action'),
-            $(this).attr('method'),
-            $(this).serialize()
-        ).done(function(result){
-            // 「履歴ありません」のレコード削除
-            $("#tblWaitingContact tbody tr:last").after("<tr><td>" + result.contact_date + "</td><td>" + result.contact_user_name + "</td><td>" + result.comment + "</td></tr>");
-            $("#tblWaitingContact tr.empty").remove();
-            $('#add_waiting_contact').modal('close');
-        }).fail(function(result){
-            ebjs.material.reflection_form_errors(form_obj, result.responseJSON);
-        }).always(function(result){
-        });
-        return false;
-    });
+    init_add_contact_history();
 
     ebjs.$('.vDateField').datetimepicker({
         timepicker:false,
@@ -214,8 +167,5 @@ $(document).one("turbolinks:load", function() {
     });
 });
 
-function add_waiting_contact() {
-    $('#frmAddWaitingContact').submit();
-}
 </script>
 {% endblock %}

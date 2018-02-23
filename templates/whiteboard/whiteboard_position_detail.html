@@ -287,25 +287,22 @@ $(document).one("turbolinks:load", function() {
         } // Callback for Modal close
     });
 
-    var form_obj = $("#new_subscription_form")
-    form_obj.submit(function(){
-        ebjs.utils.ajax_request(
-            $(this).attr('action'),
-            $(this).attr('method'),
-            $(this).serialize()
-        ).done(function(result){
+    ebjs.utils.ajax_form(
+        $("#new_subscription_form"),
+        function(result) {
+            // success
             window.location = '/contract/subscription/' + result.code + '/detail/';
             $('#start_temp_contract').modal('close');
-        }).fail(function(result){
+        },
+        function(result) {
+            // failure
             if (result.responseJSON) {
-                ebjs.material.reflection_form_errors(form_obj, result.responseJSON);
+                ebjs.material.reflection_form_errors($("#new_subscription_form"), result.responseJSON);
             } else {
                 alert("エラーが発生しました。");
             }
-        }).always(function(result){
-        });
-        return false;
-    });
+        },
+    );
 
     ebjs.utils.ajax_form(
         $("#frmLockParkingPosition"),
@@ -323,8 +320,7 @@ $(document).one("turbolinks:load", function() {
 });
 
 function save_subscription(obj) {
-    var form_obj = $("#new_subscription_form");
-    form_obj.submit();
+    $("#new_subscription_form").submit();
 }
 
 function lock_parking_position(obj) {
@@ -333,6 +329,7 @@ function lock_parking_position(obj) {
 
 function unlock_parking_position(obj) {
     if (window.confirm("貸止めを解除する、よろしいですか？")) {
+        ebjs.utils.loading();
         ebjs.utils.ajax_put(
             '{% url "parking_position_unlock" whiteboard_position.pk %}',
             {}
@@ -340,6 +337,8 @@ function unlock_parking_position(obj) {
             window.location.reload();
         }).fail(function(result){
             console.log(result);
+        }).always(function(result){
+            utils.loaded();
         });
     }
 }

@@ -26,7 +26,14 @@ class Index(BaseView):
 class SubscriptionDetailView(BaseDetailModelView):
     def get_context_data(self, **kwargs):
         context = super(SubscriptionDetailView, self).get_context_data(**kwargs)
+        content_type = ContentType.objects.get_for_model(self.object)
+        contact_history_form = forms.ContactHistoryForm(initial={
+            'content_type': content_type,
+            'object_id': self.object.pk,
+            'contact_user': self.request.user,
+        })
         context.update({
+            'contact_history_form': contact_history_form,
             'subscription_confirm_template': ReportSubscriptionConfirm.get_default_report(),
             'subscription_template': ReportSubscription.get_default_report(),
         })
@@ -126,7 +133,7 @@ class ContractedParkingLotDetailView(BaseDetailModelView):
 
 class ContractedParkingLotViewSet(BaseModelViewSet):
     model = models.VContractedParkingLot
-    list_display = ('name', 'position_count', 'contract_count', 'address', 'staff', 'owner', 'lease_management_company', 'building_management_company', 'is_all_cancellation')
+    list_display = ('name', 'position_count', 'contract_count', 'address', 'staff', 'owner', 'lease_management_company', 'building_management_company', 'cancellation_count')
     detail_view_class = ContractedParkingLotDetailView
 
     def has_change_permission(self, request, obj=None):
