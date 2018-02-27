@@ -1,4 +1,4 @@
-if (tinymce) {
+function tinymce_init() {
     tinymce.init({
       selector: 'textarea.vLargeTextField',
       height: 500,
@@ -16,4 +16,11 @@ if (tinymce) {
       ],
       language: 'ja'
     });
+}
+
+if (typeof tinymce === "undefined") {
+    // turbolinks 対策
+    setTimeout(tinymce_init, 1000);
+} else {
+    tinymce_init();
 }

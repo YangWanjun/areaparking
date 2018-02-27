@@ -160,3 +160,42 @@ div.card-comment li {
   opacity: 1;
   right: 0;
 }
+
+/********************** 吹き出し ***************************/
+.balloon_wrapper {
+    padding: 30px;
+    position: absolute;
+}
+
+.balloon_box {
+    position: relative;
+    background: #fcfcfc;
+    height: 40px;
+    width: 280px;
+    margin-bottom: 20px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    box-shadow: 2px 2px 17px 0px rgba(0, 0, 0, 0.4);
+    line-height: 40px;
+    padding-left: 15px;
+}
+
+.balloon_box:after {
+    content: '';
+    position: absolute;
+    border-top: 10px solid #fcfcfc;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+    bottom: -9px;
+    left: 5px;
+}
+
+.balloon_box:before {
+    content: '';
+    position: absolute;
+    border-top: 10px solid #999;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+    bottom: -11px;
+    left: 5px;
+}

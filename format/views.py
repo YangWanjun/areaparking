@@ -128,9 +128,23 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
         # ご契約予定車両の車種
         car_model = request.POST.get('car_model') or None
         user_subscription.car_model = car_model
-        # 順番待ち
+        # 希望契約開始日
+        rdo_contract_start_date = request.POST.get('rdo_contract_start_date') or None
+        if rdo_contract_start_date == "shortest":
+            user_subscription.is_contract_start_shortest = True
+        elif rdo_contract_start_date == "calendar":
+            user_subscription.is_contract_start_shortest = False
+            contract_start_date = request.POST.get('contract_start_date') or None
+            user_subscription.contract_start_date = contract_start_date
+        # 任意保険の加入
+        rdo_insurance = request.POST.get('rdo_insurance') or None
+        user_subscription.insurance_limit_type = rdo_insurance
+        # 空き待ち
         rdo_waiting = request.POST.get('rdo_waiting') or None
         user_subscription.require_waiting = rdo_waiting
+        # 備考
+        comment = request.POST.get('comment') or None
+        user_subscription.comment = comment
         if email == email_confirm:
             user_subscription.email = email
             self.set_user_subscription(user_subscription)

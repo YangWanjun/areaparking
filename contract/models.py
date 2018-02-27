@@ -190,6 +190,7 @@ class Subscription(AbstractUser, AbstractCar):
     workplace_post_code2 = models.CharField(blank=True, null=True, max_length=4, verbose_name=u"勤務先郵便番号２")
     corporate_user_post_code1 = models.CharField(blank=True, null=True, max_length=3, verbose_name=u"使用者所在地郵便番号１")
     corporate_user_post_code2 = models.CharField(blank=True, null=True, max_length=4, verbose_name=u"使用者所在地郵便番号２")
+    is_contract_start_shortest = models.BooleanField(default=False, verbose_name="最短で契約開始")
     contract_start_date = models.DateField(blank=True, null=True, verbose_name='希望契約開始日')
     contract_period = models.CharField(blank=True, null=True, max_length=5, choices=constants.CHOICE_CONTRACT_PERIOD,
                                        verbose_name="希望契約期間")
