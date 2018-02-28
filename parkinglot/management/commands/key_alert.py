@@ -18,7 +18,8 @@ class Command(BaseBatch):
             # メール通知
             group = MailGroup.get_batch_key_alert_group()
             context = {'lacking_keys': lacking_keys}
-            group.send_main('yangwanjun@e-business.co.jp', context)
+            batch_user = self.get_batch_manager().get_log_entry_user()
+            group.send_main('yangwanjun@e-business.co.jp', context, user=batch_user)
             # プッシュ通知
             push_notification(self.BATCH_TITLE, "鍵が足りない")
 

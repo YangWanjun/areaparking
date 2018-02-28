@@ -2,13 +2,9 @@
 from __future__ import unicode_literals
 import os
 import mimetypes
-import datetime
 # import pyminizip
 import traceback
-import random
-import string
 import subprocess
-import shutil
 
 from email import encoders
 from email.header import Header
@@ -27,10 +23,8 @@ logger = common.get_ap_logger()
 
 
 class EbMail(object):
-
-    def __init__(self, sender=None, recipient_list=None, cc_list=None, bcc_list=None, attachment_list=None, is_encrypt=True,
-                 mail_title=None, mail_body=None, pass_body=None, addressee=None):
-        self.addressee = addressee
+    def __init__(self, sender=None, recipient_list=None, cc_list=None, bcc_list=None, attachment_list=None,
+                 is_encrypt=True, mail_title=None, mail_body=None, pass_body=None):
         self.sender = sender
         self.recipient_list = EbMail.str_to_list(recipient_list)
         self.cc_list = EbMail.str_to_list(cc_list)
@@ -137,7 +131,7 @@ class EbMail(object):
     #     self.password = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(length))
     #     return self.password
 
-    def send_email(self):
+    def send_email(self, user=None):
         try:
             self.check_recipient()
             self.check_attachment()
@@ -168,6 +162,20 @@ class EbMail(object):
                 ','.join(self.recipient_list) if self.recipient_list else '',
                 ','.join(self.cc_list) if self.cc_list else ''
             ))
+
+            if user:
+                # 送信ログ
+                from master.models import EMailLogEntry
+                EMailLogEntry.objects.create(
+                    user=user,
+                    sender=self.sender,
+                    recipient=",".join(self.recipient_list),
+                    cc=",".join(self.cc_list) if self.cc_list else None,
+                    bcc=",".join(self.bcc_list) if self.bcc_list else None,
+                    title=self.mail_title,
+                    body=self.mail_body,
+                    attachment=",".join(self.attachment_list) if self.attachment_list else None
+                )
         except subprocess.CalledProcessError as e:
             logger.error(e.output)
         finally:

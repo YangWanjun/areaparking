@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
+from django.contrib.auth.models import User
 
 from . import models, forms
 from utils import constants
@@ -13,6 +11,13 @@ from utils.django_base import BaseAdmin, BaseAdminEditor, BaseAdminReadOnly
 class MailCcListInline(admin.TabularInline):
     model = models.MailCcList
     extra = 1
+
+
+class RelatedUserFilter(admin.RelatedOnlyFieldListFilter):
+    def field_choices(self, field, request, model_admin):
+        pk_list = set(model_admin.get_queryset(request).values_list(field.name, flat=True))
+        user_list = User.objects.filter(pk__in=pk_list)
+        return [(u.pk, u"%s %s" % (u.first_name, u.last_name)) for u in user_list]
 
 
 @admin.register(models.Config)
@@ -110,6 +115,15 @@ class LogEntryAdmin(BaseAdminReadOnly):
             return u"削除"
     get_action_flag_name.short_description = u"操作種別"
     get_action_flag_name.admin_order_field = 'action_flag'
+
+
+@admin.register(models.EMailLogEntry)
+class EMailLogEntryAdmin(BaseAdminReadOnly):
+    form = forms.EMailLogEntryForm
+    list_display = ('title', 'user', 'sender', 'action_time')
+    # list_filter = (
+    #     ('user', RelatedUserFilter),
+    # )
 
 
 admin.site.register(LogEntry, LogEntryAdmin)

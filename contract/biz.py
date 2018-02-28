@@ -8,7 +8,7 @@ from utils.mail import EbMail
 
 def send_mail_from_view(task, request, mail_data):
     mail = EbMail(**mail_data)
-    mail.send_email()
+    mail.send_email(user=request.user)
     task.status = '99'  # タスク完了
     task.updated_user = request.user
     task.save()

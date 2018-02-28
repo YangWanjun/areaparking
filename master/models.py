@@ -7,6 +7,8 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template import Context, Template
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 from utils import constants, common
 from utils.django_base import BaseModel
@@ -630,10 +632,11 @@ class MailGroup(BaseModel):
             'comment': comment,
         }
 
-    def send_main(self, recipient_list, context):
+    def send_main(self, recipient_list, context, user=None):
         """メール送信する
 
         :param context:
+        :param user:
         :return:
         """
         content = self.get_template_content(context)
@@ -647,7 +650,7 @@ class MailGroup(BaseModel):
         }
 
         mail = EbMail(**mail_data)
-        mail.send_email()
+        mail.send_email(user)
 
 
 class MailCcList(BaseModel):
@@ -732,3 +735,23 @@ class PushNotification(BaseModel):
 
     def __str__(self):
         return self.registration_id
+
+
+class EMailLogEntry(models.Model):
+    action_time = models.DateTimeField(_('action time'), default=timezone.now, editable=False)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name=_('user'))
+    sender = models.EmailField(verbose_name="差出人")
+    recipient = models.CharField(max_length=1000, verbose_name="宛先")
+    cc = models.CharField(max_length=1000, blank=True, null=True, verbose_name="ＣＣ")
+    bcc = models.CharField(max_length=1000, blank=True, null=True, verbose_name="ＢＣＣ")
+    title = models.CharField(max_length=50, verbose_name="件名")
+    body = models.TextField(verbose_name="メール本文")
+    attachment = models.CharField(max_length=255, blank=True, null=True, verbose_name="添付ファイル名")
+
+    objects = models.Manager()
+
+    class Meta:
+        app_label = 'admin'
+        db_table = 'ap_email_log'
+        ordering = ['-action_time']
+        verbose_name = verbose_name_plural = "メール送信履歴"

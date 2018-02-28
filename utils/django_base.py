@@ -127,6 +127,9 @@ class BaseAdminReadOnly(BaseAdminChangeOnly):
         js = (
             '/static/js/readonly.js',
         )
+        css = {
+            'all': ('/static/css/readonly.css',)
+        }
 
     def get_readonly_fields(self, request, obj=None):
         return list(set(

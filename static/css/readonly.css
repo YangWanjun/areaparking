@@ -1,0 +1,5 @@
+@CHARSET "utf-8";
+
+div[contenteditable=true]:focus {
+    outline: 0;
+}
