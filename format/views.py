@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.core import signing
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
+from django.utils import timezone
 
 from . import biz
 from contract.serializers import SubscriptionSerializer, ContractCancellationSerializer
@@ -11,18 +12,24 @@ from parkinglot.models import ParkingLot, ParkingPosition
 from utils import common, constants
 from utils.app_base import get_unsigned_value, get_total_context, push_notification
 from utils.django_base import BaseView, BaseTemplateViewWithoutLogin
+from utils.errors import OperationFinishedException
 
 logger = common.get_ap_logger()
 
 
 # Create your views here
 class BaseUserOperationView(BaseTemplateViewWithoutLogin):
+    # ステップ完了後のＵＲＬ
+    finished_url = None
 
     def dispatch(self, request, *args, **kwargs):
         try:
             return super(BaseUserOperationView, self).dispatch(request, *args, **kwargs)
         except signing.BadSignature:
             return redirect('format:url_timeout')
+        except OperationFinishedException:
+            if self.finished_url:
+                return redirect(self.finished_url)
 
     def get_context_data(self, **kwargs):
         context = super(BaseUserOperationView, self).get_context_data(**kwargs)
@@ -63,10 +70,13 @@ class BaseUserSubscriptionView(BaseUserOperationView):
         :return:
         """
         subscription = get_object_or_404(Subscription, pk=subscription_id)
+        if self.is_subscription_finished(subscription):
+            # 既に入力済みであれば、終了する
+            raise OperationFinishedException()
         if 'user_subscription' in self.request.session:
             data = self.request.session['user_subscription']
-            if str(data.get('code', 0)) != str(subscription_id):
-                data = self.set_user_subscription(subscription)
+            # if str(data.get('code', 0)) != str(subscription_id):
+            #     data = self.set_user_subscription(subscription)
         else:
             data = self.set_user_subscription(subscription)
         return Subscription(**data)
@@ -81,6 +91,9 @@ class BaseUserSubscriptionView(BaseUserOperationView):
         self.request.session['user_subscription'] = serializer.data
         return serializer.data
 
+    def is_subscription_finished(self, subscription):
+        pass
+
 
 class BaseUserSubscriptionSimpleView(BaseUserSubscriptionView):
 
@@ -90,11 +103,26 @@ class BaseUserSubscriptionSimpleView(BaseUserSubscriptionView):
         :param signature:
         :return:
         """
-        return biz.get_user_subscription_simple_steps(signature)
+        steps = biz.get_user_subscription_simple_steps(signature)
+        # ステップ完了後のＵＲＬ
+        self.finished_url = steps[-1].get('url', None)
+        return steps
 
 
 class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
     template_name = 'format/user_subscription_simple_step1.html'
+
+    def is_subscription_finished(self, subscription):
+        """申込フォーム入力は完了したかどうか
+
+        :param subscription:
+        :return:
+        """
+        if subscription and subscription.status >= '03':
+            # 申込フォーム入力完了
+            return True
+        else:
+            return False
 
     def get_context_data(self, **kwargs):
         context = super(UserSubscriptionSimpleStep1View, self).get_context_data(**kwargs)
@@ -157,7 +185,7 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
             messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "希望契約開始日")
         # 保険加入の状況
         rdo_insurance = request.POST.get('rdo_insurance') or None
-        user_subscription.insurance_limit_type = rdo_insurance
+        user_subscription.insurance_join_status = rdo_insurance
         if not rdo_insurance:
             messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "保険加入の状況")
         # 空き待ち
@@ -176,6 +204,7 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
             user_subscription.email = email
             # 申込フォーム入力完了
             user_subscription.status = '03'
+            user_subscription.simple_form_completed_date = timezone.now()
             user_subscription.save()
             self.set_user_subscription(user_subscription)
             # 通知（メールとプッシュ）
@@ -350,7 +379,7 @@ class UserSubscriptionInspectionStep2View(BaseUserSubscriptionInspectionView):
 #         rdo_insurance = request.POST.get('rdo_insurance') or None
 #         txt_insurance_limit_amount = request.POST.get('txt_insurance_limit_amount') or None
 #         txt_insurance_expiration = request.POST.get('txt_insurance_expiration') or None
-#         user_subscription.insurance_limit_type = rdo_insurance
+#         user_subscription.insurance_join_status = rdo_insurance
 #         user_subscription.insurance_limit_amount = txt_insurance_limit_amount
 #         user_subscription.insurance_expire_date = txt_insurance_expiration
 #         # 希望契約開始日

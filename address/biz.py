@@ -36,14 +36,16 @@ def get_furigana(name):
         url = Config.get_furigana_service()
         response = requests.post(url, data={'appid': app_id, 'sentence': name, 'output': 'json'})
         root = ElementTree.fromstring(response.content.decode('utf-8'))
-        hiragana = ''
-        roman = ''
+        hiragana_list = []
+        roman_list = []
         for word in root.iter('{urn:yahoo:jp:jlp:FuriganaService}Word'):
             furiganaNode = word.find('{urn:yahoo:jp:jlp:FuriganaService}Furigana')
             romanNode = word.find('{urn:yahoo:jp:jlp:FuriganaService}Roman')
-            hiragana += furiganaNode.text if furiganaNode is not None else ''
-            roman += romanNode.text if romanNode is not None else ''
-        json['hiragana'] = hiragana
-        json['katakana'] = hira_to_kata(hiragana)
-        json['roman'] = roman
+            if furiganaNode is not None and furiganaNode.text:
+                hiragana_list.append(furiganaNode.text)
+            if romanNode is not None and romanNode.text:
+                roman_list.append(romanNode.text)
+        json['hiragana'] = "".join(hiragana_list)
+        json['katakana'] = hira_to_kata(json['hiragana'])
+        json['roman'] = " ".join(roman_list)
     return json

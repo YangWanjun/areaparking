@@ -33,13 +33,13 @@ class Config(BaseModel):
         return self.name
 
     @classmethod
-    def get_value_by_name(cls, group, name, default_value=None):
+    def get_value_by_name(cls, group, name, default_value=None, comment=None):
         try:
             value = Config.objects.get(name=name).value
             return value
         except ObjectDoesNotExist:
             if default_value is not None:
-                Config.objects.create(group=group, name=name, value=default_value)
+                Config.objects.create(group=group, name=name, value=default_value, comment=comment)
             return default_value
 
     @classmethod
@@ -261,7 +261,6 @@ class Config(BaseModel):
         return cls.get_value_by_name(constants.CONFIG_GROUP_YAHOO, name=constants.CONFIG_FURIGANA_SERVICE_URL,
                                      default_value=default)
 
-
     @classmethod
     def get_parking_lot_key_alert_percent(cls):
         """駐車場の残り鍵警告比率
@@ -274,6 +273,23 @@ class Config(BaseModel):
                 constants.CONFIG_GROUP_SYSTEM, constants.CONFIG_PARKING_LOT_KEY_ALERT_PERCENT, default_value=default
             )
             return float(value)
+        except Exception as ex:
+            logger.error(ex)
+            return default
+
+    @classmethod
+    def get_simple_subscription_persist_time(cls):
+        """申込みフォーム入力完了後の仮押さえ時間
+
+        :return:
+        """
+        default = 24
+        value = cls.get_value_by_name(constants.CONFIG_GROUP_SYSTEM,
+                                      name=constants.CONFIG_SIMPLE_SUBSCRIPTION_PERSIST_TIME,
+                                      default_value=default,
+                                      comment='申込みフォーム入力完了後の仮押さえ時間')
+        try:
+            return int(value)
         except Exception as ex:
             logger.error(ex)
             return default

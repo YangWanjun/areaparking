@@ -20,5 +20,12 @@ class SettingException(MyBaseException):
 
 
 class CustomException(MyBaseException):
+
+    def __init__(self, message=""):
+        MyBaseException.__init__(self, message)
+
+
+class OperationFinishedException(MyBaseException):
+
     def __init__(self, message=""):
         MyBaseException.__init__(self, message)

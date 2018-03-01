@@ -92,21 +92,68 @@
                             </div>
                         {% elif task.category == "011" %}
                             <!-- 申込み用フォーム確認 -->
-                            {% if subscription.status == '01' %}
+                            {% if subscription.status < '03' %}
                                 <div class="row" style="margin-bottom: 5px;">
                                     <div class="col s12">
                                         <span class="red-text">ユーザーはまだ申込みされていません。</span>
                                     </div>
                                 </div>
                             {% else %}
-                                {% for report_file in subscription.reports.all %}
-                                    <div class="row" style="margin-bottom: 5px;">
-                                        <div class="col s4">
-                                            <a target="_blank" href="{{ MEDIA_URL }}{{ report_file.path }}">{{ report_file.name }}</a>
-                                        </div>
-                                        <div class="col s8">申込み日時：{{ report_file.updated_date }} </div>
+                                <div class="row" style="margin-bottom: 5px;">
+                                    <table class="table bordered">
+                                        <tr>
+                                            <th>契約者分類：</th>
+                                            <td>{{ subscription.get_category_display }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>お名前</th>
+                                            <td>{{ subscription.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>フリガナ</th>
+                                            <td>{{ subscription.kana }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>電話番号</th>
+                                            <td>{{ subscription.tel }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>メールアドレス</th>
+                                            <td>{{ subscription.email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>車種</th>
+                                            <td>{{ subscription.car_model }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>希望契約開始日</th>
+                                            <td>
+                                                {% if subscription.is_contract_start_shortest  %}
+                                                    最短
+                                                {% else %}
+                                                    {{ subscription.contract_start_date }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>保険加入状況</th>
+                                            <td>{{ subscription.get_insurance_join_status_display }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>空き待ち</th>
+                                            <td>{{ subscription.get_require_waiting_display }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>備考</th>
+                                            <td>{{ subscription.comment|default:'' }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="row" style="margin-bottom: 5px;margin-top: 15px;">
+                                    <div class="col s12">
+                                        <span style="font-weight: bold;">申込み日時：</span>{{ subscription.simple_form_completed_date }}
                                     </div>
-                                {% endfor %}
+                                </div>
                             {% endif %}
                         {% elif task.category == "012" %}
                             <!-- 審査用フォーム送付 -->

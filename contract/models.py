@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.db import models
 from django.db.models import Sum
-from django.utils import timezone
+from django.utils import timezone, dateparse
 from django.utils.functional import cached_property
 
 from employee.models import Member
@@ -74,7 +74,7 @@ class AbstractUser(BaseModel):
     workplace_address2 = models.CharField(blank=True, null=True, max_length=200, verbose_name=u"勤務先住所２")
     workplace_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"勤務先電話番号")
     workplace_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"勤務先ファックス")
-    workplace_comment = models.CharField(blank=True, null=True, max_length=255, verbose_name=u"備考",
+    workplace_comment = models.CharField(blank=True, null=True, max_length=255, verbose_name=u"勤務先備考",
                                          help_text='勤務先のない方は、ご家族の勤務先と、その方のお名前・関係性をお知らせください。')
     # 連絡先
     contact_name = models.CharField(blank=True, null=True, max_length=15, verbose_name="連絡先名称")
@@ -107,7 +107,7 @@ class AbstractUser(BaseModel):
     guarantor_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"保証人電話番号")
     guarantor_fax = models.CharField(blank=True, null=True, max_length=15, verbose_name=u"保証人ファックス")
     guarantor_relation = models.CharField(blank=True, null=True, max_length=20, verbose_name="保証人との間柄")
-    guarantor_comment = models.CharField(blank=True, null=True, max_length=255, verbose_name="備考")
+    guarantor_comment = models.CharField(blank=True, null=True, max_length=255, verbose_name="保証人備考")
     # 仮契約であるかどうかのステータス
     status = models.CharField(max_length=2, default='01', choices=constants.CHOICE_CONTRACT_STATUS, editable=False,
                               verbose_name="ステータス")
@@ -139,8 +139,8 @@ class AbstractCar(BaseModel):
     car_f_value = models.IntegerField(blank=True, null=True, verbose_name="F値")
     car_r_value = models.IntegerField(blank=True, null=True, verbose_name="R値")
     car_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name="車の備考")
-    insurance_limit_type = models.CharField(blank=True, null=True, max_length=10,
-                                            choices=constants.CHOICE_INSURANCE_TYPE, verbose_name="保険制限")
+    insurance_join_status = models.CharField(blank=True, null=True, max_length=10,
+                                             choices=constants.CHOICE_INSURANCE_JOIN_STATUS, verbose_name="保険加入状況")
     insurance_limit_amount = models.IntegerField(blank=True, null=True, verbose_name="対物限度額")
     insurance_expire_date = models.DateField(blank=True, null=True, verbose_name='保険の有効期限')
 
@@ -199,7 +199,7 @@ class Subscription(AbstractUser, AbstractCar):
     require_receipt = models.CharField(blank=True, null=True, max_length=3, choices=constants.CHOICE_IS_REQUIRED,
                                        verbose_name="保管証発行-車庫証明")
     require_waiting = models.CharField(blank=True, null=True, max_length=3, choices=constants.CHOICE_IS_REQUIRED,
-                                       verbose_name="順番待ち", help_text='申込書の到着時点で当駐車場が満車になっていた場合､順番待ちを希望しますか？')
+                                       verbose_name="空き待ち", help_text='申込書の到着時点で当駐車場が満車になっていた場合､順番待ちを希望しますか？')
     transmission_routes = models.CharField(blank=True, null=True, max_length=20, verbose_name="媒体",
                                            validators=[validate_comma_separated_integer_list],
                                            help_text='どのようにして､この駐車場を知りましたか？')
@@ -219,6 +219,12 @@ class Subscription(AbstractUser, AbstractCar):
     updated_date = models.DateTimeField(auto_now=True, editable=False, verbose_name=u"更新日時")
     is_deleted = models.BooleanField(default=False, editable=False, verbose_name=u"削除フラグ")
     deleted_date = models.DateTimeField(blank=True, null=True, editable=False, verbose_name=u"削除年月日")
+    simple_form_completed_date = models.DateTimeField(blank=True, null=True, editable=False,
+                                                      verbose_name="申込フォーム入力完了日時")
+    inspection_form_completed_date = models.DateTimeField(blank=True, null=True, editable=False,
+                                                          verbose_name="審査フォーム入力完了日時")
+    contract_form_completed_date = models.DateTimeField(blank=True, null=True, editable=False,
+                                                        verbose_name="契約フォーム入力完了日時")
 
     objects = PublicManager(is_deleted=False)
     temp_objects = PublicManager(is_deleted=False, status__lt='11')
@@ -483,6 +489,20 @@ class Subscription(AbstractUser, AbstractCar):
         summary = queryset.aggregate(Sum('amount'), Sum('consumption_tax'))
         summary['total'] = (summary.get('amount__sum', 0) or 0) + (summary.get('consumption_tax__sum', 0) or 0)
         return summary
+
+    def get_simple_subscription_limit(self):
+        """申込みフォーム入力完了後、仮押さえの期限日時
+
+        :return:
+        """
+        persist_time = Config.get_simple_subscription_persist_time()
+        if self.simple_form_completed_date:
+            if isinstance(self.simple_form_completed_date, str):
+                return dateparse.parse_datetime(self.simple_form_completed_date) + datetime.timedelta(hours=persist_time)
+            else:
+                return self.simple_form_completed_date + datetime.timedelta(hours=persist_time)
+        else:
+            return None
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

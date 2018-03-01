@@ -116,7 +116,7 @@ def subscription_to_contract(subscription):
     car.car_f_value = subscription.car_f_value
     car.car_r_value = subscription.car_r_value
     car.car_comment = subscription.car_comment
-    car.insurance_limit_type = subscription.insurance_limit_type
+    car.insurance_join_status = subscription.insurance_join_status
     car.insurance_limit_amount = subscription.insurance_limit_amount
     car.insurance_expire_date = subscription.insurance_expire_date
     car.save()

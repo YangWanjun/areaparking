@@ -17,7 +17,7 @@
         </tr>
         <tr>
             <th class="form-field"><label for="id_name">お名前<span class="new badge red" data-badge-caption="必須"></span></label></th>
-            <td class="form-field"><input type="text" id="id_name" name="name" required placeholder="例）株式会社エリア・パーキング" value="{{ user_subscription.name|default:'' }}"/></td>
+            <td class="form-field"><input type="text" id="id_name" name="name" onchange="set_furigana(this, 'id_kana')" required placeholder="例）株式会社エリア・パーキング" value="{{ user_subscription.name|default:'' }}"/></td>
         </tr>
         <tr>
             <th class="form-field"><label for="id_kana">フリガナ<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
@@ -62,16 +62,16 @@
             <th class="form-field">保険加入の状況<span class="new badge red" data-badge-caption="必須"></span></th>
             <td class="form-field">
                 <div>
-                    <input name="rdo_insurance" type="radio" id="id_insurance_within" value="within" required {% if user_subscription.insurance_limit_type == 'within' %}checked{% endif %}/>
+                    <input name="rdo_insurance" type="radio" id="id_insurance_within" value="within" required {% if user_subscription.insurance_join_status == 'within' %}checked{% endif %}/>
                     <label for="id_insurance_within">加入中</label>
                 </div>
                 <div>
-                    <input name="rdo_insurance" type="radio" id="id_insurance_plans" value="plans" required {% if user_subscription.insurance_limit_type == 'plans' %}checked{% endif %}/>
+                    <input name="rdo_insurance" type="radio" id="id_insurance_plans" value="plans" required {% if user_subscription.insurance_join_status == 'plans' %}checked{% endif %}/>
                     <label for="id_insurance_plans">加入予定</label>
                 </div>
                 {% if not parking_lot.required_insurance %}
                 <div>
-                    <input name="rdo_insurance" type="radio" id="id_insurance_without" value="without" required {% if user_subscription.insurance_limit_type == 'without' %}checked{% endif %}/>
+                    <input name="rdo_insurance" type="radio" id="id_insurance_without" value="without" required {% if user_subscription.insurance_join_status == 'without' %}checked{% endif %}/>
                     <label for="id_insurance_without">加入なし</label>
                 </div>
                 {% endif %}
@@ -182,6 +182,12 @@ $('input.questionnaire').change(function() {
         }
     }
 });
+
+// 名前を入力後、フリガナを自動設定する。
+function set_furigana(obj, target_id) {
+    var furigana = ebjs.material.get_furigana($(obj).val());
+    $("#" + target_id).val(furigana);
+}
 
 $('form').submit(function() {
     return checkContractStartDate();

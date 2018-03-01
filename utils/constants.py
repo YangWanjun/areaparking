@@ -38,6 +38,7 @@ CONFIG_GOOGLE_MAP_KEY = 'google_map_key'
 CONFIG_YAHOO_APP_KEY = 'yahoo_app_id'
 CONFIG_FURIGANA_SERVICE_URL = 'furigana_service_url'
 CONFIG_PARKING_LOT_KEY_ALERT_PERCENT = 'parking_lot_key_alert_percent'
+CONFIG_SIMPLE_SUBSCRIPTION_PERSIST_TIME = 'simple_subscription_persist_time'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
@@ -271,7 +272,7 @@ CHOICE_SUBSCRIPTION_STATUS = (
     ('11', '成約'),
     ('12', '破棄'),
 )
-CHOICE_INSURANCE_TYPE = (
+CHOICE_INSURANCE_JOIN_STATUS = (
     ('within', '加入中'),
     ('without', '加入なし'),
     ('plans', '加入予定'),

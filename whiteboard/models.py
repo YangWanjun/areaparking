@@ -16,7 +16,7 @@ from utils.django_base import BaseViewModel, BaseModel
 # Create your models here.
 class WhiteBoard(BaseViewModel):
     code = models.IntegerField(primary_key=True, verbose_name="コード")
-    # name = models.CharField(max_length=100, verbose_name="駐車場名称")
+    name = models.CharField(max_length=100, verbose_name="駐車場名称")
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
     category = models.ForeignKey(ParkingLotType, on_delete=models.DO_NOTHING, verbose_name="分類")
     staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="担当者")
