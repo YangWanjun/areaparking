@@ -54,6 +54,7 @@ router.register(r'city_list', address_api.CityViewSet)
 router.register(r'aza_list', address_api.AzaViewSet)
 router.register(r'postcode_list', address_api.PostcodeViewSet)
 router.register(r'geocode', address_api.GeocodeViewSet, base_name='geocode')
+router.register(r'furigana', address_api.FuriganaViewSet, base_name='furigana')
 
 router.register(r'car-maker', master_api.CarMakerViewSet)
 router.register(r'car-model', master_api.CarModelViewSet)

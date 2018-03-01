@@ -72,3 +72,14 @@ class TargetAzaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.TargetAzaSerializer
     filter_backends = [SearchFilter]
     search_fields = ('name',)
+
+
+class FuriganaViewSet(viewsets.ViewSet):
+
+    def list(self, request, format=None):
+        search = request.GET.get('search', None)
+        if search:
+            r = biz.get_furigana(search)
+            return Response(r)
+        else:
+            return Response(dict())

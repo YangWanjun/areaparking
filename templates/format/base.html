@@ -150,5 +150,16 @@
         </div>
     </div>
 </footer>
+{% block messages %}
+{% if messages %}
+<script id="messages" type="text/javascript">
+    $(document).ready(function () {
+        {% for message in messages %}
+            ebjs.material.toast_error('{{ message|capfirst }}');
+        {% endfor %}
+    });
+</script>
+{% endif %}
+{% endblock messages %}
 </body>
 </html>

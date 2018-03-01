@@ -15,6 +15,7 @@ MIME_TYPE_HTML = 'text/html'
 
 CONFIG_GROUP_SYSTEM = 'system'
 CONFIG_GROUP_GOOGLE = 'google'
+CONFIG_GROUP_YAHOO = 'yahoo'
 CONFIG_GROUP_EMAIL = 'email'
 CONFIG_GROUP_ADJUST_SIZE = 'size'
 CONFIG_EMAIL_ADDRESS = 'email_address'
@@ -34,6 +35,8 @@ CONFIG_URL_TIMEOUT = 'url_timeout'
 CONFIG_GCM_URL = 'gcm_url'
 CONFIG_FIREBASE_SERVERKEY = 'firebase_serverkey'
 CONFIG_GOOGLE_MAP_KEY = 'google_map_key'
+CONFIG_YAHOO_APP_KEY = 'yahoo_app_id'
+CONFIG_FURIGANA_SERVICE_URL = 'furigana_service_url'
 CONFIG_PARKING_LOT_KEY_ALERT_PERCENT = 'parking_lot_key_alert_percent'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
@@ -259,11 +262,11 @@ CHOICE_CONTRACT_STATUS = (
 )
 CHOICE_SUBSCRIPTION_STATUS = (
     ('01', '新規申込'),
-    ('02', '申込フォーム送付'),
+    ('02', '申込フォーム送付済'),
     ('03', '申込フォーム入力完了'),
-    ('04', '審査フォーム送付'),
+    ('04', '審査フォーム送付済'),
     ('05', '審査フォーム入力完了'),
-    ('06', '契約フォーム送付'),
+    ('06', '契約フォーム送付済'),
     ('07', '契約フォーム入力完了'),
     ('11', '成約'),
     ('12', '破棄'),
@@ -312,6 +315,8 @@ ERROR_SUBSCRIPTION_NO_CAR = '車情報がありません。'
 ERROR_SUBSCRIPTION_LOCKED = '貸止めになっているため、申込みはできません。'
 ERROR_SUBSCRIPTION_CONTRACTED = "既に契約中なので、申込みはできません。"
 ERROR_SUBSCRIPTION_PROCESS_NOT_FINISHED = "契約手続きはまだ完了されていません。"
+ERROR_SUBSCRIPTION_EMAIL_CONFIRM = "メールアドレスとメールアドレス（確認）は不一致です。"
+ERROR_SUBSCRIPTION_PRIVACY_AGREEMENT = "プライバシーポリシーおよび利用規約に承諾してください。"
 ERROR_CONTRACT_WRONG_RETIRE_DATE = "退居予定日は解約日の前に選択してください。"
 ERROR_CONTRACT_RETIRE_DATE_RANGE = "退居予定日は契約期間内に選択してください。"
 ERROR_CONTRACT_CANCELLATION_DATE_RANGE = "解約日は契約期間内に選択してください。"
@@ -319,3 +324,4 @@ ERROR_PARKING_LOT_CANCELLATION_NO_POSITIONS = "物件解約の場合全体解約
 ERROR_FORMAT_BANK_TRANSFER = "全銀フォーマットエラー。"
 ERROR_FORMAT_BANK_TRANSFER_CANNOT_IMPORT = "ファイル読み込みできません。"
 ERROR_REQUIRE_TRANSFER_DATA = "入金データを選択してください。"
+ERROR_REQUIRED_FIELD = "%s は必須項目です。"

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib import messages
 from django.core import signing
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
@@ -7,7 +8,7 @@ from . import biz
 from contract.serializers import SubscriptionSerializer, ContractCancellationSerializer
 from contract.models import Contract, Subscription, ContractCancellation, Contractor
 from parkinglot.models import ParkingLot, ParkingPosition
-from utils import common
+from utils import common, constants
 from utils.app_base import get_unsigned_value, get_total_context, push_notification
 from utils.django_base import BaseView, BaseTemplateViewWithoutLogin
 
@@ -113,21 +114,37 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
         # 契約者分類
         contractor_category = request.POST.get('contractor_category')
         user_subscription.category = contractor_category
+        if not contractor_category:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "契約者分類")
         # お名前
         name = request.POST.get('name') or None
         user_subscription.name = name
+        if not name:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "お名前")
         # フリガナ
         kana = request.POST.get('kana') or None
         user_subscription.kana = kana
+        if not kana:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "フリガナ")
         # 電話番号
         tel = request.POST.get('tel') or None
         user_subscription.tel = tel
+        if not tel:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "電話番号")
         # メールアドレス
         email = request.POST.get('email') or None
         email_confirm = request.POST.get('email_confirm') or None
+        user_subscription.email = email
+        user_subscription.email_confirm = email_confirm
+        if not email:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "メールアドレス")
+        if not email_confirm:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "メールアドレス（確認）")
         # ご契約予定車両の車種
         car_model = request.POST.get('car_model') or None
         user_subscription.car_model = car_model
+        if not car_model:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "ご契約予定車両の車種")
         # 希望契約開始日
         rdo_contract_start_date = request.POST.get('rdo_contract_start_date') or None
         if rdo_contract_start_date == "shortest":
@@ -136,17 +153,30 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
             user_subscription.is_contract_start_shortest = False
             contract_start_date = request.POST.get('contract_start_date') or None
             user_subscription.contract_start_date = contract_start_date
-        # 任意保険の加入
+        if not rdo_contract_start_date:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "希望契約開始日")
+        # 保険加入の状況
         rdo_insurance = request.POST.get('rdo_insurance') or None
         user_subscription.insurance_limit_type = rdo_insurance
+        if not rdo_insurance:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "保険加入の状況")
         # 空き待ち
         rdo_waiting = request.POST.get('rdo_waiting') or None
         user_subscription.require_waiting = rdo_waiting
+        if not rdo_waiting:
+            messages.add_message(request, messages.ERROR, constants.ERROR_REQUIRED_FIELD % "空き待ち")
         # 備考
         comment = request.POST.get('comment') or None
         user_subscription.comment = comment
+        # 承諾チェックボックス
+        chk_agreement = request.POST.get('chk_agreement') or None
+        if chk_agreement != 'on':
+            messages.add_message(request, messages.ERROR, constants.ERROR_SUBSCRIPTION_PRIVACY_AGREEMENT)
         if email == email_confirm:
             user_subscription.email = email
+            # 申込フォーム入力完了
+            user_subscription.status = '03'
+            user_subscription.save()
             self.set_user_subscription(user_subscription)
             # 通知（メールとプッシュ）
             push_notification(
@@ -156,7 +186,9 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
             )
             return redirect(current_step.get('next_step').get('url'))
         else:
-            return self.render_to_response(context)
+            messages.add_message(request, messages.ERROR, constants.ERROR_SUBSCRIPTION_EMAIL_CONFIRM)
+
+        return self.render_to_response(context)
 
 
 class UserSubscriptionSimpleStep2View(BaseUserSubscriptionSimpleView):

@@ -1,6 +1,10 @@
 import googlemaps
+import requests
+
+from xml.etree import ElementTree
 
 from master.models import Config
+from utils.character import hira_to_kata
 
 
 def geocode(address):
@@ -23,3 +27,23 @@ def geocode(address):
             if country:
                 coordinate.update(geometry.get('location'))
     return coordinate
+
+
+def get_furigana(name):
+    json = {'hiragana': '', 'katakana': '', 'roman': ''}
+    if name:
+        app_id = Config.get_yahoo_app_id()
+        url = Config.get_furigana_service()
+        response = requests.post(url, data={'appid': app_id, 'sentence': name, 'output': 'json'})
+        root = ElementTree.fromstring(response.content.decode('utf-8'))
+        hiragana = ''
+        roman = ''
+        for word in root.iter('{urn:yahoo:jp:jlp:FuriganaService}Word'):
+            furiganaNode = word.find('{urn:yahoo:jp:jlp:FuriganaService}Furigana')
+            romanNode = word.find('{urn:yahoo:jp:jlp:FuriganaService}Roman')
+            hiragana += furiganaNode.text if furiganaNode is not None else ''
+            roman += romanNode.text if romanNode is not None else ''
+        json['hiragana'] = hiragana
+        json['katakana'] = hira_to_kata(hiragana)
+        json['roman'] = roman
+    return json

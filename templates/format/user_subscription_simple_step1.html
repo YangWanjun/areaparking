@@ -34,11 +34,11 @@
         </tr>
         <tr>
             <th class="form-field"><label for="id_email">メールアドレス<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
-            <td class="form-field"><input type="text" id="id_email" name="email" required placeholder="例）プリウス" value="{{ user_subscription.email|default:'' }}"/></td>
+            <td class="form-field"><input type="text" id="id_email" name="email" required placeholder="例）test@example.com" value="{{ user_subscription.email|default:'' }}"/></td>
         </tr>
         <tr>
             <th class="form-field"><label for="id_email_confirm">メールアドレス（確認）<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
-            <td class="form-field"><input type="text" id="id_email_confirm" name="email_confirm" required placeholder="例）プリウス" value="{{ user_subscription.email|default:'' }}"/></td>
+            <td class="form-field"><input type="text" id="id_email_confirm" name="email_confirm" required placeholder="例）test@example.com" value="{{ user_subscription.email_confirm|default:'' }}"/></td>
         </tr>
         <tr>
             <th class="form-field"><label for="id_car_model">ご契約予定車両の車種<span class="new badge red" data-badge-caption="必須"></span><br/></label></th>
@@ -48,13 +48,13 @@
             <th class="form-field">希望契約開始日<span class="new badge red" data-badge-caption="必須"></span></th>
             <td class="form-field">
                 <div>
-                    <input name="rdo_contract_start_date" type="radio" id="id_start_shortest" value="shortest" required />
+                    <input name="rdo_contract_start_date" type="radio" id="id_start_shortest" value="shortest" required {% if user_subscription.is_contract_start_shortest %}checked{% endif %}/>
                     <label for="id_start_shortest">最短</label>
                 </div>
                 <div>
-                    <input name="rdo_contract_start_date" type="radio" id="id_start_select" value="calendar" required />
+                    <input name="rdo_contract_start_date" type="radio" id="id_start_select" value="calendar" required {% if user_subscription.contract_start_date %}checked{% endif %}/>
                     <label for="id_start_select">カレンダーから選択</label>
-                    <input type="text" class="datepicker validate" id="id_contract_start_date" name="contract_start_date" required placeholder="例）2018-01-01" value="{{ user_subscription.contract_start_date|default:'' }}" style="width: 200px; height: 30px;"/>
+                    <input type="text" class="datepicker" id="id_contract_start_date" name="contract_start_date" required placeholder="例）2018-01-01" value="{{ user_subscription.contract_start_date|default:'' }}" style="width: 200px; height: 30px;"/>
                 </div>
             </td>
         </tr>
@@ -147,37 +147,29 @@
     </div>
 </div>
 <script type="text/javascript">
+$(document).ready(function () {
+    ebjs.utils.disableCopyPaste("#id_email");
+    ebjs.utils.disableCopyPaste("#id_email_confirm");
+
+    // 希望契約開始日
+    $('input[name=rdo_contract_start_date]').change(function() {
+        if ($('#id_start_select').is(':checked')) {
+            $("#id_contract_start_date").attr('required', 'required');
+        } else {
+            $("#id_contract_start_date").removeAttr('required');
+        }
+    });
+});
+
+// 希望契約開始日をカレンダーから選択の場合
 function checkContractStartDate() {
-  if ($('#txt_contract_start_date').val() == '') {
-    $('#txt_contract_start_date').addClass('invalid');
-    return false;
-  } else {
-    $('#txt_contract_start_date').removeClass('invalid');
-    return true;
-  }
+    if ($('#id_start_select').is(':checked') && $('#id_contract_start_date').val() == '') {
+        ebjs.material.toast_error("希望契約開始日を選択してください。");
+        return false;
+    } else {
+        return true;
+    }
 }
-
-$('#txt_contract_start_date').change(function() {
-    checkContractStartDate();
-});
-
-// 希望契約期間は「１・２ヶ月契約」の場合、末日は必須です。
-$('input[name=rdo_contract_period]').change(function() {
-    if ($('#id_contract_period_short').is(':checked')) {
-        $("#txt_contract_end_month").attr('required', 'required');
-    } else {
-        $("#txt_contract_end_month").removeAttr('required');
-    }
-});
-
-// 希望契約期間は「１・２ヶ月契約」の場合、末日は必須です。
-$('input[name=rdo_insurance]').change(function() {
-    if ($('#id_insurance_limit_with').is(':checked')) {
-        $("#txt_insurance_limit_amount").attr('required', 'required');
-    } else {
-        $("#txt_insurance_limit_amount").removeAttr('required');
-    }
-});
 
 // アンケート「その他」が選択された場合
 $('input.questionnaire').change(function() {

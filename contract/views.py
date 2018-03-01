@@ -201,6 +201,12 @@ class SendTaskMail(BaseView):
         }
         try:
             json = biz.send_mail_from_view(task, request, mail_data)
+            if isinstance(task.process.content_object, models.Subscription):
+                subscription = task.process.content_object
+                if task.category == '010':
+                    # 申込フォーム送付済
+                    subscription.status = '02'
+                    subscription.save()
             return JsonResponse(json)
         except Exception as ex:
             return JsonResponse({'detail': str(ex)}, status=400)

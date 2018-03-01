@@ -38,7 +38,7 @@ class Config(BaseModel):
             value = Config.objects.get(name=name).value
             return value
         except ObjectDoesNotExist:
-            if default_value:
+            if default_value is not None:
                 Config.objects.create(group=group, name=name, value=default_value)
             return default_value
 
@@ -248,6 +248,19 @@ class Config(BaseModel):
             Config.objects.create(group=constants.CONFIG_GROUP_GOOGLE, name=constants.CONFIG_GOOGLE_MAP_KEY,
                                   value=default)
             return default
+
+    @classmethod
+    def get_yahoo_app_id(cls):
+        default = ''
+        return cls.get_value_by_name(constants.CONFIG_GROUP_YAHOO, name=constants.CONFIG_YAHOO_APP_KEY,
+                                     default_value=default)
+
+    @classmethod
+    def get_furigana_service(cls):
+        default = ''
+        return cls.get_value_by_name(constants.CONFIG_GROUP_YAHOO, name=constants.CONFIG_FURIGANA_SERVICE_URL,
+                                     default_value=default)
+
 
     @classmethod
     def get_parking_lot_key_alert_percent(cls):

@@ -182,6 +182,7 @@ def get_default_subscription_confirm_format_id():
 
 
 class Subscription(AbstractUser, AbstractCar):
+    email_confirm = models.EmailField(blank=True, null=True, verbose_name="メールアドレス（確認）")
     parking_lot_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="申込みする駐車場")
     parking_position_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="申込みする車室")
     post_code1 = models.CharField(blank=True, null=True, max_length=3, verbose_name="郵便番号１")
