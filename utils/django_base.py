@@ -222,7 +222,11 @@ class BaseListModelView(ListModelView):
     paginate_by = 25
 
     def format_column(self, item, field_name, value):
-        if isinstance(value, bool):
+        if field_name == 'chk_selected':
+            return '<input type="checkbox" id="chk_{0}" name="selected_detail" ' \
+                   '       class="tiny filled-in detail" value="{0}"/>' \
+                   '<label for="chk_{0}" style="height: 15px;"></label>'.format(value)
+        elif isinstance(value, bool):
             return format_html('<i class="material-icons">{}</i>'.format(
                 'panorama_fish_eye' if value else 'close'
             ))

@@ -183,12 +183,6 @@ $('input.questionnaire').change(function() {
     }
 });
 
-// 名前を入力後、フリガナを自動設定する。
-function set_furigana(obj, target_id) {
-    var furigana = ebjs.material.get_furigana($(obj).val());
-    $("#" + target_id).val(furigana);
-}
-
 $('form').submit(function() {
     return checkContractStartDate();
 });

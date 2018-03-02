@@ -371,13 +371,13 @@
                                     <div class="row">
                                         <div class="input-field col s12">
                                             <input readonly value="{{ group.sender }}" id="mail_sender_{{ task.pk }}" name="mail_sender" type="text" />
-                                            <label for="mail_sender_{{ task.pk }}">差出人</label>
+                                            <label for="mail_sender_{{ task.pk }}" class="active">差出人</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="input-field col s12">
                                             <input value="{{ object.email }}" id="mail_to_{{ task.pk }}" name="mail_to" type="text" />
-                                            <label for="mail_to_{{ task.pk }}">宛先</label>
+                                            <label for="mail_to_{{ task.pk }}" class="active">宛先</label>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -395,13 +395,12 @@
                                     <div class="row">
                                         <div class="input-field col s12">
                                             <input value="{{ template.title }}" id="mail_title_{{ task.pk }}" name="mail_title" type="text" />
-                                            <label for="mail_title_{{ task.pk }}">件名</label>
+                                            <label for="mail_title_{{ task.pk }}" class="active">件名</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="input-field col s12">
                                             <textarea id="mail_content_{{ task.pk }}" name="mail_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
-                                            <label for="mail_content_{{ task.pk }}">メール本文</label>
                                         </div>
                                     </div>
                                 </div>

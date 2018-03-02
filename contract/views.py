@@ -207,6 +207,19 @@ class SendTaskMail(BaseView):
                     # 申込フォーム送付済
                     subscription.status = '02'
                     subscription.save()
+                elif task.category == '012':
+                    # 審査フォーム送付済
+                    subscription.status = '04'
+                    subscription.save()
+                elif task.category == '040':
+                    # 契約フォーム送付済
+                    subscription.status = '06'
+                elif task.category == '042':
+                    # 契約書送付済
+                    subscription.status = '08'
+                # elif task.category == '060':
+                    # 鍵類、操作説明書、配置図送付済
+                    subscription.status = '09'
             return JsonResponse(json)
         except Exception as ex:
             return JsonResponse({'detail': str(ex)}, status=400)

@@ -21,6 +21,7 @@ logger = common.get_ap_logger()
 class BaseUserOperationView(BaseTemplateViewWithoutLogin):
     # ステップ完了後のＵＲＬ
     finished_url = None
+    is_last_step = False
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -64,6 +65,11 @@ class BaseUserSubscriptionView(BaseUserOperationView):
     def get_steps(self, signature=None):
         pass
 
+    def get_session_key(self):
+        signature = self.kwargs.get('signature')
+        pk = get_unsigned_value(signature)
+        return 'user_subscription_%s' % pk
+
     def get_user_subscription(self, subscription_id):
         """ユーザー申込み情報を取得する。
 
@@ -71,15 +77,19 @@ class BaseUserSubscriptionView(BaseUserOperationView):
         """
         subscription = get_object_or_404(Subscription, pk=subscription_id)
         if self.is_subscription_finished(subscription):
+            self.clear_session()
             # 既に入力済みであれば、終了する
             raise OperationFinishedException()
-        if 'user_subscription' in self.request.session:
-            data = self.request.session['user_subscription']
-            # if str(data.get('code', 0)) != str(subscription_id):
-            #     data = self.set_user_subscription(subscription)
+        if self.is_last_step:
+            # 最後ステップの場合セッションをクリアする
+            self.clear_session()
+            return subscription
+        elif self.get_session_key() in self.request.session:
+            data = self.request.session[self.get_session_key()]
+            return Subscription(**data)
         else:
             data = self.set_user_subscription(subscription)
-        return Subscription(**data)
+            return Subscription(**data)
 
     def set_user_subscription(self, user_subscription):
         """ユーザー申込み情報をセッションに保存する
@@ -88,11 +98,19 @@ class BaseUserSubscriptionView(BaseUserOperationView):
         :return:
         """
         serializer = SubscriptionSerializer(user_subscription)
-        self.request.session['user_subscription'] = serializer.data
+        self.request.session[self.get_session_key()] = serializer.data
         return serializer.data
 
     def is_subscription_finished(self, subscription):
         pass
+
+    def clear_session(self):
+        """セッションに保存されているユーザー申込み情報をクリアする。
+
+        :return:
+        """
+        if self.get_session_key() in self.request.session:
+            del self.request.session[self.get_session_key()]
 
 
 class BaseUserSubscriptionSimpleView(BaseUserSubscriptionView):
@@ -213,6 +231,8 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
                 '',
                 url=reverse('contract:subscription_detail', args=(user_subscription.pk,)),
             )
+            # セッションに保存された一時情報を削除する。
+            self.clear_session()
             return redirect(current_step.get('next_step').get('url'))
         else:
             messages.add_message(request, messages.ERROR, constants.ERROR_SUBSCRIPTION_EMAIL_CONFIRM)
@@ -222,6 +242,7 @@ class UserSubscriptionSimpleStep1View(BaseUserSubscriptionSimpleView):
 
 class UserSubscriptionSimpleStep2View(BaseUserSubscriptionSimpleView):
     template_name = 'format/user_subscription_simple_step2.html'
+    is_last_step = True
 
     def get_context_data(self, **kwargs):
         context = super(UserSubscriptionSimpleStep2View, self).get_context_data(**kwargs)
@@ -243,7 +264,10 @@ class BaseUserSubscriptionInspectionView(BaseUserSubscriptionView):
         :param signature:
         :return:
         """
-        return biz.get_user_subscription_inspection_steps(signature)
+        steps = biz.get_user_subscription_inspection_steps(signature)
+        # ステップ完了後のＵＲＬ
+        self.finished_url = steps[-1].get('url', None)
+        return steps
 
 
 class UserSubscriptionInspectionStep1View(BaseUserSubscriptionInspectionView):
@@ -274,6 +298,7 @@ class UserSubscriptionInspectionStep1View(BaseUserSubscriptionInspectionView):
 
 class UserSubscriptionInspectionStep2View(BaseUserSubscriptionInspectionView):
     template_name = 'format/user_subscription_inspection_step2.html'
+    is_last_step = True
 
     def get_context_data(self, **kwargs):
         context = super(UserSubscriptionInspectionStep2View, self).get_context_data(**kwargs)

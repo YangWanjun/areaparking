@@ -7,6 +7,8 @@
 
 
 {% block footer %}
+<script type="text/javascript" src="/static/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="/static/tinymce/tinymce.init.js"></script>
 <script type="text/javascript">
   config = {{ datatable_config|safe }};
   config['ajax']['data'] = function(data) {
@@ -65,6 +67,17 @@
     }
 
   });
+
+$(document).one("turbolinks:request-start", function() {
+    if (tinymce) {
+        tinymce.remove();
+    }
+});
+$(document).one("turbolinks:request-end", function() {
+    if (tinymce) {
+        tinymce.remove();
+    }
+});
 </script>
 {% endblock %}
 
@@ -76,22 +89,21 @@
             <table id="table" class="table bordered" data-form-control="datatable" style="width:100%">
                 <thead>
                     <tr>
-                        <th style="width: 30px;">
-                            <input type="checkbox" id="id_check_all" class="tiny filled-in"/>
-                            <label for="id_check_all" style="height: 15px; padding-left: 20px;"></label>
-                        </th>
                         {% for header, header_title in headers %}
-                        <th data-name="{{ header }}" class="{{ header }}">{{ header_title|title }}</th>
+                            {% if header == "chk_selected" %}
+                                <th data-name="{{ header }}" style="width: 30px;">
+                                    <input type="checkbox" id="id_check_all" class="tiny filled-in"/>
+                                    <label for="id_check_all" style="height: 15px; padding-left: 20px;"></label>
+                                </th>
+                            {% else %}
+                                <th data-name="{{ header }}" class="{{ header }}">{{ header_title|title }}</th>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for item, row in data %}
                     <tr>
-                        <td>
-                            <input type="checkbox" id="chk_{{item.pk}}" name="selected_detail" class="tiny filled-in detail" value="{{ object.pk }}"/>
-                            <label for="chk_{{item.pk}}" style="height: 15px;"></label>
-                        </td>
                         {% for column_name, item in row.items %}
                         <td>
                             {% if column_name in view.datalist.list_display_links %}
@@ -108,7 +120,7 @@
         </div>
         <div class="card-action">
             <div class="right-align">
-                <button class="btn waves-effect waves-light modal-trigger" data-target="divSendMail">一斎送信</button>
+                <button class="btn waves-effect waves-light modal-trigger" onclick="$('#divSendMail').modal('open')" data-target="divSendMail">一斎送信</button>
             </div>
         </div>
     </div>
@@ -152,7 +164,6 @@
                     <div class="row">
                         <div class="input-field col s12">
                             <textarea id="txtSubscriptionContent" name="subscription_content" class="materialize-textarea vLargeTextField" style="min-height: 300px;">{{ template.body|safe }}</textarea>
-                            <label for="txtSubscriptionContent">メール本文</label>
                         </div>
                     </div>
                 </div>

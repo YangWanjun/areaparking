@@ -57,6 +57,21 @@
             });
             {% endif %}
         });
+
+        // 名前を入力後、フリガナを自動設定する。
+        function set_furigana(obj, target_id) {
+            var furigana = ebjs.material.get_furigana($(obj).val());
+            $("#" + target_id).val(furigana);
+        }
+
+        // 郵便番号によって、住所を取得する
+        function get_address_by_postcode(id_post1, id_post2, target_id) {
+            var post1 = $("#" + id_post1).val();
+            var post2 = $("#" + id_post2).val();
+            var address = ebjs.address.get_address_by_postcode(post1 + post2);
+            $("#" + target_id).val(address);
+        }
+
     </script>
     <style type="text/css">
         div.wrapper {

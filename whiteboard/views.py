@@ -138,7 +138,8 @@ class WaitingDetailView(BaseDetailModelView):
 
 class WaitingViewSet(BaseModelViewSet):
     model = models.Waiting
-    list_display = ('user_name', 'target', 'tel', 'phone', 'address1', 'email', 'created_date')
+    list_display = ('chk_selected', 'user_name', 'target', 'tel', 'phone', 'address1', 'email', 'created_date')
+    list_display_links = ('user_name',)
     list_view_class = WaitingListView
     detail_view_class = WaitingDetailView
 
@@ -147,6 +148,9 @@ class WaitingViewSet(BaseModelViewSet):
 
     def has_delete_permission(self, request, obj=None):
         return True
+
+    def chk_selected(self, obj):
+        return obj.pk
 
 
 class WhiteBoardMapView(BaseTemplateView):

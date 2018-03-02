@@ -11,12 +11,13 @@
             <tr>
                 <th class="form-field"><label for="id_personal_name">ご契約名義<span class="new badge red" data-badge-caption="必須"></span></label></th>
                 <td class="form-field">
-                    <p>
-                        <input type="text" id="id_personal_name" name="personal_name" required placeholder="" value="{{ user_subscription.name|default:'' }}"/>
-                    </p>
-                    <p>
-                        <input type="text" id="id_personal_name_comment" name="name_personal_comment" placeholder="ご契約名義が車検証のご名義と異なる場合記入"/>
-                    </p>
+                        <input type="text" id="id_personal_name" name="personal_name" onchange="set_furigana(this, 'id_personal_kana')" required placeholder="" value="{{ user_subscription.name|default:'' }}"/>
+                </td>
+            </tr>
+            <tr>
+                <th class="form-field"></th>
+                <td class="form-field">
+                    <input type="text" id="id_personal_name_comment" name="name_personal_comment" placeholder="ご契約名義が車検証のご名義と異なる場合記入"/>
                     <span class="red-text">※ご契約名義が車検証のご名義（車両の所有者様）と異なる場合には、異なる理由を記載してください。</span>
                 </td>
             </tr>
@@ -32,8 +33,10 @@
                 <th class="form-field"><label for="txt_personal_post1">住所<span class="new badge red" data-badge-caption="必須"></span></label></th>
                 <td class="form-field">
                     <div>
-                        〒<input type="text" class="center" required id="txt_personal_post1" name="txt_personal_post1" maxlength="3" value="{{ user_subscription.post_code1|default:'' }}" style="width: 40px;height:20px;"/>
-                        －<input type="text" class="center" required id="txt_personal_post2" name="txt_personal_post2" maxlength="4" value="{{ user_subscription.post_code2|default:'' }}" style="width: 60px;height:20px;"/>
+                        〒<input type="text" class="center" required id="txt_personal_post1" name="txt_personal_post1" maxlength="3" onchange="get_address_by_postcode('txt_personal_post1', 'txt_personal_post2', 'txt_personal_address1')"
+                                value="{{ user_subscription.post_code1|default:'' }}" style="width: 40px;height:20px;"/>
+                        －<input type="text" class="center" required id="txt_personal_post2" name="txt_personal_post2" maxlength="4" onchange="get_address_by_postcode('txt_personal_post1', 'txt_personal_post2', 'txt_personal_address1')"
+                                value="{{ user_subscription.post_code2|default:'' }}" style="width: 60px;height:20px;"/>
                     </div>
                     <input type="text" required id="txt_personal_address1" name="txt_personal_address1" value="{{ user_subscription.address1|default:'' }}" />
                 </td>

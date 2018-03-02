@@ -24,7 +24,8 @@
                     <td><a style="cursor: pointer;" data-init-url="/api/contact-history/{{contact.pk}}/"
                            data-target="edit_contact_history" class="modal-trigger"
                            onclick="api_get_contact='/api/contact-history/{{contact.pk}}/';$('#edit_contact_history').modal('open');">
-                        <i class="material-icons tiny">edit</i></a></td>
+                        <i class="material-icons tiny">edit</i></a>
+                    </td>
                 </tr>
             {% empty %}
                 <tr class="empty">
@@ -120,7 +121,13 @@ function init_add_contact_history() {
                     "<td data-name='contact_user_name'>" + result.contact_user_name + "</td>"+
                     "<td data-name='content'>" + result.content + "</td>" +
                     "<td data-name='comment'>" + result.comment + "</td>" +
-                    '<td><a href="/api/contact-history/' + result.id + '/"><i class="material-icons tiny">edit</i></a></td>' +
+                    '<td><a style="cursor: pointer;"' +
+                    '       data-init-url="/api/contact-history/' + result.id + '/"' +
+                    '       data-target="edit_contact_history"' +
+                    '       class="modal-trigger"' +
+                    '       onclick="api_get_contact=\'/api/contact-history/' + result.id + '/\';$(\'#edit_contact_history\').modal(\'open\');">' +
+                    '        <i class="material-icons tiny">edit</i>' +
+                    '</a></td>' +
                 "</tr>"
             );
             $("#tblContactHistory tr.empty").remove();
