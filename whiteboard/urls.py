@@ -16,10 +16,11 @@ urlpatterns = [
     url('^inquiry/', include(views.InquiryViewSet().urls)),
     url('^distribution/', views.HandbillDistributionView.as_view(), name='distribution_list'),
     url('^handbill/', include(views.HandbillCompanyViewSet().urls)),
+    url('^trouble/', include(views.TroubleViewSet().urls)),
 
-    url('^trouble/$', views.TroubleListView.as_view(), name='trouble_list'),
-    url('^trouble/(?P<pk>\d+)/detail/$', views.TroubleDetailView.as_view(), name='trouble_detail'),
-    url('^trouble/add/$', views.TroubleAddView.as_view(), name='trouble_add'),
+    # url('^trouble/$', views.TroubleListView.as_view(), name='trouble_list'),
+    # url('^trouble/(?P<pk>\d+)/detail/$', views.TroubleDetailView.as_view(), name='trouble_detail'),
+    # url('^trouble/add/$', views.TroubleAddView.as_view(), name='trouble_add'),
 
     url('^construction/$', views.ConstructionListView.as_view(), name='construction_list'),
     url('^construction/(?P<pk>\d+)/detail/$', views.ConstructionDetailView.as_view(), name='construction_detail'),

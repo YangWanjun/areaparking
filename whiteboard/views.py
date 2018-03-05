@@ -1,6 +1,7 @@
 import sys
 import json
 import operator
+import datetime
 
 from functools import reduce
 
@@ -10,11 +11,12 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
-from . import models
+from . import models, forms
+from parkinglot.models import ParkingPosition
 from contract.forms import SubscriptionForm, ContactHistoryForm
 from utils import errors
 from utils.django_base import BaseTemplateView, BaseView, BaseViewWithoutLogin, BaseModelViewSet, BaseListModelView, \
-    BaseDetailModelView
+    BaseDetailModelView, BaseCreateModelView
 from master.models import Config, PushNotification
 
 
@@ -189,16 +191,51 @@ class HandbillCompanyViewSet(BaseModelViewSet):
         return True
 
 
-class TroubleListView(BaseTemplateView):
-    template_name = 'whiteboard/trouble_list.html'
+# class TroubleListView(BaseTemplateView):
+#     template_name = 'whiteboard/trouble_list.html'
+#
+#
+# class TroubleDetailView(BaseTemplateView):
+#     template_name = 'whiteboard/trouble_detail.html'
+#
+#
+# class TroubleAddView(BaseTemplateView):
+#     template_name = 'whiteboard/trouble_add.html'
 
 
-class TroubleDetailView(BaseTemplateView):
-    template_name = 'whiteboard/trouble_detail.html'
+class TroubleCreateView(BaseCreateModelView):
+    form_class = forms.TroubleForm
+
+    def get_form(self, form_class=None):
+        form = forms.TroubleForm(initial={
+            'trouble_date': datetime.date.today(),
+            'created_user': self.request.user,
+        })
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super(TroubleCreateView, self).get_context_data(**kwargs)
+        return context
 
 
-class TroubleAddView(BaseTemplateView):
-    template_name = 'whiteboard/trouble_add.html'
+class TroubleViewSet(BaseModelViewSet):
+    model = models.Trouble
+    list_display = ('trouble_date', 'created_user', 'inquiry_source', 'parking_lot', 'trouble_positions', 'status')
+    list_display_links = ('inquiry_source',)
+    create_view_class = TroubleCreateView
+
+    def has_add_permission(self, request):
+        return True
+
+    def trouble_positions(self, obj):
+        if obj.is_all:
+            return '全件'
+        elif obj.parking_positions:
+            parking_positions = ParkingPosition.objects.public_filter(pk__in=obj.parking_positions.split(','))
+            return ','.join([pos.name for pos in parking_positions])
+        else:
+            return ''
+    trouble_positions.short_description = '車室'
 
 
 class ConstructionListView(BaseTemplateView):

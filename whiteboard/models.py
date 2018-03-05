@@ -5,11 +5,11 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from address.models import City, Aza
-from contract.models import Contractor, ContactHistory
+from contract.models import Contractor, ContactHistory, Contract
 from parkinglot.models import ParkingPosition, ParkingLotType, ParkingLot
 from employee.models import Member
 from master.models import TransmissionRoute
-from utils import constants
+from utils import constants, errors
 from utils.django_base import BaseViewModel, BaseModel
 
 
@@ -274,3 +274,63 @@ class HandbillCompany(BaseModel):
 #     handbill_company = models.ForeignKey(HandbillCompany, verbose_name="チラシ業者")
 #     unit_price = models.DecimalField(max_digits=5, decimal_places=1, verbose_name="配布単価")
 #     distribute_count = models.IntegerField(verbose_name="配布枚数")
+
+
+class Trouble(BaseModel):
+    trouble_date = models.DateField(verbose_name="発生日")
+    inquiry_source = models.CharField(max_length=50, verbose_name="問い合わせ元")
+    parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
+    parking_positions = models.CharField(max_length=100, blank=True, null=True,
+                                         validators=[validate_comma_separated_integer_list], verbose_name="車室")
+    is_all = models.BooleanField(default=False, verbose_name="全件")
+    created_user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="受付者")
+    status = models.CharField(max_length=2, choices=constants.CHOICE_TROUBLE_STATUS, default='01', verbose_name="状態")
+
+    class Meta:
+        db_table = 'ap_trouble'
+        verbose_name = "トラブル"
+        verbose_name_plural = "トラブル一覧"
+
+    def __str__(self):
+        return str(self.parking_lot)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.pk:
+            is_add = False
+        else:
+            is_add = True
+        if not self.is_all and not self.parking_positions:
+            raise errors.CustomException(constants.ERROR_PARKING_LOT_CANCELLATION_NO_POSITIONS)
+        super(Trouble, self).save(force_insert, force_update, using, update_fields)
+        if is_add:
+            # 新規の場合、トラブル対象の車室を新規追加する。
+            if self.is_all:
+                parking_positions = ParkingPosition.objects.public_filter(parking_lot=self.parking_lot)
+            else:
+                parking_positions = ParkingPosition.objects.public_filter(pk__in=self.parking_positions.split(','))
+            for parking_position in parking_positions:
+                contract = parking_position.get_current_contract()
+                TroublePosition.objects.create(
+                    trouble=self,
+                    parking_lot=self.parking_lot,
+                    parking_position=parking_position,
+                    contract=contract,
+                    contractor=contract.contractor,
+                )
+
+
+class TroublePosition(BaseModel):
+    trouble = models.ForeignKey(Trouble, verbose_name="トラブル")
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.PROTECT, verbose_name="駐車場")
+    parking_position = models.ForeignKey(ParkingPosition, on_delete=models.PROTECT, verbose_name="車室")
+    contract = models.OneToOneField(Contract, on_delete=models.PROTECT, verbose_name="契約情報")
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name="契約者")
+
+    class Meta:
+        db_table = 'ap_trouble_position'
+        verbose_name = "トラブルの車室"
+        verbose_name_plural = "トラブルの車室一覧"
+
+    def __str__(self):
+        return '%s-%s' % (str(self.trouble), str(self.parking_position))

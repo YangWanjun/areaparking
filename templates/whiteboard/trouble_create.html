@@ -1,0 +1,38 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+
+{% block content %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">トラブル追加</div>
+            <form>
+                {{ form.as_p }}
+            </form>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <a class="waves-effect waves-light btn white-text popup">保存</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    ebjs.$('.vDateField').datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+});
+</script>
+{% endblock %}

@@ -781,6 +781,7 @@ class EMailLogEntry(models.Model):
 
     class Meta:
         app_label = 'admin'
+        managed = False
         db_table = 'ap_email_log'
         ordering = ['-action_time']
         verbose_name = verbose_name_plural = "メール送信履歴"

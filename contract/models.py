@@ -1123,12 +1123,6 @@ class VPriceRaise(BaseViewModel):
         return str(self.contractor)
 
 
-# class Trouble(BaseModel):
-#     reception = models.ForeignKey(Member, on_delete=models.PROTECT, related_name='trouble_reception_set', verbose_name="受付者")
-#     staff = models.ForeignKey(Member, blank=True, null=True, on_delete=models.PROTECT, related_name='trouble_staff_set', verbose_name="対応者")
-#     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-
-
 class VContractedParkingLot(BaseViewModel):
     code = models.IntegerField(primary_key=True, verbose_name="コード")
     name = models.CharField(max_length=100, verbose_name="駐車場名称")

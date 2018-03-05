@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'billing.apps.BillingConfig',
     'management_dep.apps.ManagementDepConfig',
     'address.apps.AddressConfig',
-    # 'turnover.apps.TurnoverConfig',
+    'turnover.apps.TurnoverConfig',
     'rest_framework',
     'django_filters',
     'corsheaders',
@@ -78,6 +78,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'areaparking.urls'
+
+MIGRATION_MODULES = {
+    'admin': 'master.admin_migrations',
+}
 
 TEMPLATES = [
     {

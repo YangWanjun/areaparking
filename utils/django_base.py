@@ -5,20 +5,21 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.db import models
 from django.core.management.base import BaseCommand
-# from django.db import models
 from django.forms import widgets
 from django.http import HttpResponse
+from django.shortcuts import reverse
 from django.views.generic import View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe, format_html
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers, status, pagination
 from rest_framework.compat import set_rollback
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
-from material.frontend.views import ModelViewSet, DetailModelView, ListModelView, UpdateModelView
+from material.frontend.views import ModelViewSet, DetailModelView, ListModelView, UpdateModelView, CreateModelView
 
 from utils import errors
 from utils.common import Setting
@@ -183,6 +184,36 @@ class DynamicListWidget(widgets.Widget):
         return mark_safe('\n'.join(output))
 
 
+class SearchSelect(forms.Select):
+    def __init__(self, clsModel, attrs=None, choices=()):
+        self.clsModel = clsModel
+        super(SearchSelect, self).__init__(attrs, choices)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        output = ['<div class="related-widget-wrapper">']
+        html = super(SearchSelect, self).render(name, value, attrs, renderer)
+        output.append(html)
+        return html
+
+        # from django.contrib import admin
+        # related_url = reverse(
+        #     'admin:%s_%s_changelist' % (
+        #         self.clsModel._meta.app_label,
+        #         self.clsModel._meta.model_name,
+        #     ),
+        #     current_app=admin.site.name,
+        # )
+        # output.append('<a href="%s%s" class="related-lookup selector search-label-icon" id="lookup_id_%s" title="%s">'
+        #               '</a>' %
+        #               (related_url, '?is_deleted__exact=0&is_retired__exact=0', name, _('Lookup')))
+        # output.append(u'<a class="related-widget-wrapper-link change-related" id="change_id_%s"'
+        #               u' data-href-template="/admin/eb/%s/__fk__/?_to_field=id&_popup=1" title="%s">'
+        #               u'  <img src="/static/admin/img/icon-changelink.svg" width="15" height="15" style="margin-top: -4px;" '
+        #               u'   alt="%s"/></a>' % (name, self.clsModel._meta.model_name, _("Change"), _("Change")))
+        # output.append('</div>')
+        # return mark_safe('\n'.join(output))
+
+
 class BaseViewWithoutLogin(View, ContextMixin):
 
     def get_context_data(self, **kwargs):
@@ -223,9 +254,10 @@ class BaseListModelView(ListModelView):
 
     def format_column(self, item, field_name, value):
         if field_name == 'chk_selected':
-            return '<input type="checkbox" id="chk_{0}" name="selected_detail" ' \
+            html = '<input type="checkbox" id="chk_{0}" name="selected_detail" ' \
                    '       class="tiny filled-in detail" value="{0}"/>' \
                    '<label for="chk_{0}" style="height: 15px;"></label>'.format(value)
+            return format_html(html)
         elif isinstance(value, bool):
             return format_html('<i class="material-icons">{}</i>'.format(
                 'panorama_fish_eye' if value else 'close'
@@ -289,10 +321,20 @@ class BaseUpdateModelView(UpdateModelView):
         return context
 
 
+class BaseCreateModelView(CreateModelView):
+    def get_context_data(self, **kwargs):
+        context = super(BaseCreateModelView, self).get_context_data(**kwargs)
+        context.update({
+            'debug': True,
+        })
+        return context
+
+
 class BaseModelViewSet(ModelViewSet):
     list_view_class = BaseListModelView
     detail_view_class = BaseDetailModelView
     update_view_class = BaseUpdateModelView
+    create_view_class = BaseCreateModelView
 
     def has_add_permission(self, request):
         return False
