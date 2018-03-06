@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
 
 from . import models
-from utils import constants
+from utils import constants, common, errors
 from utils.django_base import BaseForm
 
 
@@ -32,6 +32,7 @@ class ParkingLotForm(BaseForm):
                     self.add_error('staff_start_date', constants.ERROR_PARKING_LOT_INVALID_STAFF_START_DATE)
             except ObjectDoesNotExist:
                 self.add_error('code', constants.ERROR_PARKING_LOT_NOT_EXISTS)
+        return cleaned_data
 
 
 class ParkingPositionForm(BaseForm):
@@ -45,6 +46,7 @@ class ParkingPositionForm(BaseForm):
             self.fields['parking_lot'].queryset = models.ParkingLot.objects.filter(pk=self.instance.parking_lot.pk)
         else:
             self.fields['parking_lot'].queryset = models.ParkingLot.objects.public_all().order_by('-created_date')
+        # 税金自動計算
         self.fields['price_recruitment_no_tax'].widget.attrs.update({
             'onchange': "ebjs.material.set_tax_included(this, 'id_price_recruitment')"
         })
@@ -54,6 +56,20 @@ class ParkingPositionForm(BaseForm):
         self.fields['price_handbill_no_tax'].widget.attrs.update({
             'onchange': "ebjs.material.set_tax_included(this, 'id_price_handbill')"
         })
+
+    def clean(self):
+        cleaned_data = super(ParkingPositionForm, self).clean()
+        name = cleaned_data.get('name', None)
+        if self.instance and self.instance.pk:
+            # 変更の場合
+            if not common.is_number(name):
+                self.add_error('name', constants.ERROR_PARKING_POSITION_NAME_NUMBER)
+        else:
+            try:
+                common.get_continued_positions(name)
+            except errors.CustomException as ex:
+                self.add_error('name', ex.message)
+        return cleaned_data
 
 
 class ParkingLotDocForm(BaseForm):

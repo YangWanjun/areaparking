@@ -3,7 +3,7 @@ import datetime
 import math
 from collections import defaultdict
 
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
@@ -354,7 +354,13 @@ class ParkingLotImage(BaseModel):
 
 class ParkingPosition(BaseModel):
     parking_lot = models.ForeignKey(ParkingLot, verbose_name="駐車場")
-    name = models.CharField(max_length=30, verbose_name="車室番号")
+    name = models.CharField(max_length=30,
+                            validators=(
+                                RegexValidator(regex=constants.REG_MULTI_POSITIONS),
+                            ),
+                            verbose_name="車室番号",
+                            help_text='新規追加時、連番で追加したい場合：1-10（車室番号は１から１０まで追加される）；'
+                                      '連番出ない場合：1,3,5,7（車室番号は１、３、５、７が追加される）。')
     category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
     # 賃料
     price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")

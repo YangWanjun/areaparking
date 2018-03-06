@@ -13,6 +13,9 @@ from calendar import monthrange
 
 from django.conf import settings
 
+from . import constants
+from .errors import CustomException
+
 
 def get_root_path():
     """アプリのルートパスを取得する
@@ -69,6 +72,28 @@ def get_num_from_str(value):
         return int(re.sub(r'[^\d]*', '', value))
     except ValueError:
         return 0
+
+
+def is_number(string):
+    """数字であるかどうかを判断する。
+
+    :param string:
+    :return:
+    """
+    if re.match(constants.REG_NUMBER, string):
+        return True
+    else:
+        return False
+
+
+def is_match(string, pattern):
+    """
+
+    :param string:
+    :param pattern:
+    :return:
+    """
+    return re.match(pattern, string)
 
 
 def get_ap_logger():
@@ -321,6 +346,23 @@ def to_full_size(ustring):
             inside_code += 0xfee0
         rstring += chr(inside_code)
     return rstring
+
+
+def get_continued_positions(string):
+    """連続の車室番号を取得する。
+
+    :param string:
+    :return:
+    """
+    if is_match(string, constants.REG_CONTINUED_POSITIONS):
+        m = re.search(constants.REG_CONTINUED_POSITIONS, string)
+        start, end = m.groups()
+        if int(start) > int(end):
+            raise CustomException(constants.ERROR_PARKING_POSITION_RANGE)
+        else:
+            return range(int(start), int(end) + 1)
+    else:
+        return []
 
 
 class Setting(object):

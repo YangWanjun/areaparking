@@ -42,6 +42,9 @@ CONFIG_SIMPLE_SUBSCRIPTION_PERSIST_TIME = 'simple_subscription_persist_time'
 
 REG_TEL = r'^\d+[0-9-]+\d+$'
 REG_POST_CODE = r"\d{3}[-]?\d{4}"
+REG_NUMBER = r'^[0-9]+$'
+REG_MULTI_POSITIONS = r"^[0-9]+$|^[0-9]+-[0-9]+$|^\d+(?:,\d+)*\Z"
+REG_CONTINUED_POSITIONS = r"^([0-9]+)-([0-9]+)$"
 
 REPORT_SUBSCRIPTION_CONFIRM = "申込確認書"
 REPORT_SUBSCRIPTION = "申込書"
@@ -331,6 +334,8 @@ ERROR_CONTRACT_CANCELLATION_DATE_RANGE = "解約日は契約期間内に選択�
 ERROR_PARKING_LOT_NOT_EXISTS = "駐車場は存在しません。"
 ERROR_PARKING_LOT_INVALID_STAFF_START_DATE = "担当者の担当開始日は間違っている、履歴の最終日以降に設定してください。"
 ERROR_PARKING_LOT_CANCELLATION_NO_POSITIONS = "物件解約の場合全体解約または車室を選択してください。"
+ERROR_PARKING_POSITION_NAME_NUMBER = "車室番号は数字だけを入力してください。"
+ERROR_PARKING_POSITION_RANGE = "範囲指定は間違っています。"
 ERROR_FORMAT_BANK_TRANSFER = "全銀フォーマットエラー。"
 ERROR_FORMAT_BANK_TRANSFER_CANNOT_IMPORT = "ファイル読み込みできません。"
 ERROR_REQUIRE_TRANSFER_DATA = "入金データを選択してください。"
