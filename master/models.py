@@ -20,7 +20,7 @@ logger = common.get_ap_logger()
 # Create your models here.
 class Config(BaseModel):
     group = models.CharField(max_length=50, verbose_name="グループ")
-    name = models.CharField(max_length=50, unique=True, verbose_name="設定名")
+    name = models.CharField(max_length=50, primary_key=True, verbose_name="設定名")
     value = models.CharField(max_length=2000, verbose_name="設定値")
     comment = models.TextField(max_length=255, blank=True, null=True, verbose_name="備考")
 

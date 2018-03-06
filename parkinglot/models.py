@@ -92,17 +92,6 @@ class TryPuttingOperator(BaseModel):
         verbose_name = "試し入れ"
         verbose_name_plural = "試し入れ一覧"
 
-
-class ParkingTimeLimit(BaseModel):
-    name = models.CharField(max_length=30, verbose_name="名称")
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
-
-    class Meta:
-        db_table = 'ap_parking_time_limit'
-        ordering = ['name']
-        verbose_name = "時間制限"
-        verbose_name_plural = "時間制限一覧"
-
     def __str__(self):
         return self.name
 
@@ -170,7 +159,6 @@ class ParkingLot(BaseModel):
                                                        help_text='月単位です、１年の場合は１２を入力してください。')
     staff = models.ForeignKey(Member, blank=True, null=True, verbose_name="担当者")
     staff_start_date = models.DateField(blank=True, null=True, verbose_name="担当開始日")
-    # time_limit = models.ForeignKey(ParkingTimeLimit, blank=True, null=True, verbose_name="時間制限")
     time_limit_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="利用時間帯について")
     transit_pass_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="通行許可証について")
 
@@ -421,6 +409,7 @@ class ParkingPosition(BaseModel):
 
     def get_absolute_url(self):
         return reverse('whiteboard:whiteboard_position_detail', args=(self.pk,))
+
 
 class ParkingPositionKey(BaseModel):
     parking_position = models.ForeignKey(ParkingPosition, verbose_name="車室")

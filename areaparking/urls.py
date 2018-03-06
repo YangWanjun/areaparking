@@ -58,6 +58,7 @@ router.register(r'furigana', address_api.FuriganaViewSet, base_name='furigana')
 
 router.register(r'car-maker', master_api.CarMakerViewSet)
 router.register(r'car-model', master_api.CarModelViewSet)
+router.register(r'config', master_api.ConfigViewSet)
 
 router.register(r'whiteboard', whiteboard_api.WhiteBoardViewSet)
 router.register(r'whiteboard-position', whiteboard_api.WhiteBoardPositionViewSet)

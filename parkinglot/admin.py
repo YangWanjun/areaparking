@@ -1,7 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import datetime
 
 from django.contrib import admin
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 
 from . import models, forms
 from address.biz import geocode
@@ -17,17 +18,17 @@ class ParkingPositionInline(admin.TabularInline):
 class ParkingLotDocInline(admin.TabularInline):
     model = models.ParkingLotDoc
     form = forms.ParkingLotDocForm
-    extra = 1
+    extra = 0
 
 
 class ParkingLotImageInline(admin.TabularInline):
     model = models.ParkingLotImage
-    extra = 1
+    extra = 0
 
 
 class ParkingLotCommentInline(admin.TabularInline):
     model = models.ParkingLotComment
-    extra = 1
+    extra = 0
 
 
 class ParkingLotKeyInline(admin.TabularInline):
@@ -42,8 +43,8 @@ class ParkingLotStaffHistoryInline(admin.TabularInline):
     def has_add_permission(self, request):
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 class ParkingPositionKeyInline(admin.TabularInline):
@@ -55,11 +56,6 @@ class ParkingPositionKeyInline(admin.TabularInline):
 class ParkingLotTypeAdmin(BaseAdmin):
     list_display = ('code', 'name')
     list_display_links = ('code', 'name')
-
-
-@admin.register(models.ParkingTimeLimit)
-class ParkingTimeLimitAdmin(BaseAdmin):
-    pass
 
 
 @admin.register(models.LeaseManagementCompany)
@@ -102,6 +98,22 @@ class ParkingLotAdmin(BaseAdmin):
                 obj.lat = coordinate.get('lat', None)
             if coordinate.get('post_code', None):
                 obj.post_code = coordinate.get('post_code', None)
+        # 担当者変更時、駐車場担当者履歴追加
+        if change and 'staff' in form.changed_data:
+            queryset = models.ParkingLotStaffHistory.objects.public_filter(parking_lot=obj)
+            try:
+                last_staff = models.ParkingLot.objects.get(pk=obj.pk).staff
+                last_start_date = models.ParkingLot.objects.get(pk=obj.pk).staff_start_date
+                history_end_date = queryset.aggregate(Max('end_date')).get('end_date__max', None)
+                if (history_end_date is None or history_end_date < obj.staff_start_date) and last_start_date != obj.staff_start_date:
+                    models.ParkingLotStaffHistory.objects.create(
+                        parking_lot=obj,
+                        member=last_staff,
+                        start_date=last_start_date,
+                        end_date=(obj.staff_start_date + datetime.timedelta(days=-1))
+                    )
+            except ObjectDoesNotExist:
+                pass
         super(ParkingLotAdmin, self).save_model(request, obj, form, change)
 
 
@@ -121,9 +133,9 @@ class ParkingPosition(BaseAdmin):
         ("賃料", {
             'classes': ('collapse',),
             'fields': (
-                ('price_recruitment', 'price_recruitment_no_tax'),
-                ('price_homepage', 'price_homepage_no_tax'),
-                ('price_handbill', 'price_handbill_no_tax',),
+                ('price_recruitment_no_tax', 'price_recruitment'),
+                ('price_homepage_no_tax', 'price_homepage'),
+                ('price_handbill_no_tax', 'price_handbill'),
             )
         }),
         ("サイズ", {

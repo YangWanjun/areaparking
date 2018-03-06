@@ -41,7 +41,7 @@
                 <li class="{% if current_module == module %}active{% endif %}">
                     <ul class="collapsible collapsible-accordion">
                         <li>
-                            <a {% if module.index_url %}href="{{ module.index_url }}"{% endif %} class="collapsible-header active">{{ module.verbose_name }}{{ module.icon|safe }}</a>
+                            <a {% if module.index_url %}href="{{ module.index_url }}"{% endif %} class="collapsible-header active" {% if module.name == 'material.admin' %}data-turbolinks="false"{% endif %}>{{ module.verbose_name }}{{ module.icon|safe }}</a>
                             <div class="collapsible-body" style="display:block">
                                 {% include module.menu %}
                             </div>

@@ -140,7 +140,8 @@ class BaseAdminReadOnly(BaseAdminChangeOnly):
 
 
 class BaseForm(forms.ModelForm):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(BaseForm, self).__init__(*args, **kwargs)
 
 
 class DynamicListWidget(widgets.Widget):

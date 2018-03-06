@@ -18,3 +18,8 @@ class CarModelViewSet(viewsets.ModelViewSet):
     filter_backends = [SearchFilter, DjangoFilterBackend]
     filter_fields = ('maker__name',)
     search_fields = ('name', 'grade_name')
+
+
+class ConfigViewSet(viewsets.ModelViewSet):
+    queryset = models.Config.objects.public_all()
+    serializer_class = serializers.ConfigSerializer

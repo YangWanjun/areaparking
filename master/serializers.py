@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from rest_framework import serializers
 
 from . import models
+from utils.django_base import BaseModelSerializer
 
 
-class CarMakerSerializer(serializers.ModelSerializer):
+class CarMakerSerializer(BaseModelSerializer):
     label = serializers.CharField(source='name')
 
     class Meta:
@@ -14,7 +12,7 @@ class CarMakerSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'label')
 
 
-class CarModelSerializer(serializers.ModelSerializer):
+class CarModelSerializer(BaseModelSerializer):
     label = serializers.SerializerMethodField()
 
     class Meta:
@@ -25,3 +23,10 @@ class CarModelSerializer(serializers.ModelSerializer):
 
     def get_label(self, obj):
         return '%s%s' % (obj.name, (' - ' + obj.grade_name) if obj.grade_name else '')
+
+
+class ConfigSerializer(BaseModelSerializer):
+
+    class Meta:
+        model = models.Config
+        fields = '__all__'
