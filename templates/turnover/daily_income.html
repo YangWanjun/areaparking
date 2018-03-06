@@ -1,0 +1,268 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% load humanize %}
+{% load contract_tags %}
+
+{% block breadcrumbs_items %}
+{% endblock %}
+
+{% block content %}
+{% now "Y-m-d" as today %}
+{% block left-panel %}
+<div class="left-panel">
+    <div class="card">
+        <div class="card-content">
+            <div class="card-title">入金日計表</div>
+            <div>
+                <table class="table bordered highlight" id="tblPriceRaise">
+                    <thead>
+                    <tr>
+                        <th>入金日</th>
+                        <th>駐車場</th>
+                        <th>車室</th>
+                        <th>契約者</th>
+                        <th>駐車料金</th>
+                        <th>事務手数料</th>
+                        <th>車庫証明</th>
+                        <th>鍵紛失</th>
+                        <th>返金</th>
+                        <th>合計</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td rowspan="15">{{ today }}</td>
+                        <td rowspan="3"><a href="/whiteboard/whiteboard/102191/detail/">アデニウム田端</a></td>
+                        <td>10</td>
+                        <td>契約者001</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">10,000</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">22,960</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>契約者002</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">10,000</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">22,960</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>契約者003</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">10,000</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">22,960</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><a href="/whiteboard/whiteboard/102360/detail/">コスモフェスタ日暮里</a></td>
+                        <td>10</td>
+                        <td>契約者004</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">10,000</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">22,960</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>契約者005</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">10,000</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">22,960</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>契約者006</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">10,000</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">22,960</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="9"><a href="/whiteboard/whiteboard/102367/detail/">マイキャッスル田端さくら通り</a></td>
+                        <td>21</td>
+                        <td>契約者021</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>契約者022</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>契約者023</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>契約者024</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>契約者025</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>契約者026</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>契約者027</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>契約者028</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>契約者029</td>
+                        <td class="right-align">12,960</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">12,960</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="center">合計：</td>
+                        <td class="right-align">194,400</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">0</td>
+                        <td class="right-align">194,400</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-action">
+            <div class="right-align">
+                <!--<a class="waves-effect waves-light btn white-text popup">一時保存</a>-->
+                <!--<a class="waves-effect waves-light btn white-text popup">最終決定</a>-->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock left-panel %}
+{% block right-panel %}
+<div class="right-panel">
+    <div class="card filters-card tight-card">
+        <form method="get">
+            <div class="card-content">
+                <span class="card-title" style="font-size: 18px;">フィルター</span>
+                <div class="row" style="margin-top:0px">
+                    <div class="input-field col s6">
+                        <input type="text" class="vDateField" id="id_start_date" value="{{ today }}"/>
+                        <label for="id_start_date" class="active">開始日付</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input type="text" class="vDateField" id="id_end_date" value="{{ today }}"/>
+                        <label for="id_end_date" class="active">終了日付</label>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="input-field col s3">
+                        <input type="checkbox" class="filled-in" checked id="id_chk1"/>
+                        <label for="id_chk1">振込</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input type="checkbox" class="filled-in" checked id="id_chk2"/>
+                        <label for="id_chk2">振替</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input type="checkbox" class="filled-in" checked id="id_chk3"/>
+                        <label for="id_chk3">クレジットカード</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input type="checkbox" class="filled-in" checked id="id_chk4"/>
+                        <label for="id_chk4">その他</label>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-action">
+                <div class="right-align">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">検索
+                        <i class="material-icons right">search</i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% include 'common/user_info.html' %}
+</div>
+{% endblock right-panel %}
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).one("turbolinks:load", function() {
+    ebjs.$('.vDateField').datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+});
+</script>
+{% endblock %}

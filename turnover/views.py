@@ -19,3 +19,7 @@ class RequestMonthlyView(BaseTemplateView):
             'month': '%02d' % datetime.date.today().month,
         })
         return context
+
+
+class DailyIncomeView(BaseTemplateView):
+    template_name = 'turnover/daily_income.html'
