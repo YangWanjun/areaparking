@@ -46,8 +46,10 @@ router.register(r'contact-history', contract_api.ContactHistoryViewSet)
 router.register(r'target-area', address_api.TargetAreaViewSet, base_name='target-area')
 router.register(r'target-city', address_api.TargetCityViewSet)
 router.register(r'target-aza', address_api.TargetAzaViewSet)
+
 router.register(r'target-parking-lot', parking_lot_api.TargetParkingLotViewSet)
 router.register(r'parking-position-size-grouped', parking_lot_api.ParkingPositionSizeGrouped, base_name='size-grouped')
+router.register(r'management-company', parking_lot_api.ManagementCompanyViewSet)
 
 router.register(r'pref_list', address_api.PrefViewSet)
 router.register(r'city_list', address_api.CityViewSet)

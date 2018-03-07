@@ -360,7 +360,7 @@ def get_continued_positions(string):
         if int(start) > int(end):
             raise CustomException(constants.ERROR_PARKING_POSITION_RANGE)
         else:
-            return range(int(start), int(end) + 1)
+            return list(range(int(start), int(end) + 1))
     else:
         return []
 

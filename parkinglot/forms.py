@@ -17,6 +17,27 @@ class ParkingLotForm(BaseForm):
         self.fields['name'].widget.attrs.update({'onchange': "ebjs.material.set_furigana(this, 'id_kana')"})
         self.fields['time_limit_comment'].widget = forms.Textarea()
         self.fields['transit_pass_comment'].widget = forms.Textarea()
+        self.fields['lease_management_company'].widget.attrs.update({
+            'data-initial': "true",
+            'onchange': "ebjs.material.set_related_management_company_staff(this, 'id_lease_management_company_staff')"
+        })
+        self.fields['building_management_company'].widget.attrs.update({
+            'data-initial': "true",
+            'onchange': "ebjs.material.set_related_management_company_staff(this, 'id_building_management_company_staff')"
+        })
+        # if self.instance:
+        #     # 賃貸管理会社
+        #     if self.instance.lease_management_company:
+        #         self.fields['lease_management_company_staff'].queryset \
+        #             = models.ManagementCompanyStaff.objects.public_filter(company=self.instance.lease_management_company)
+        #     else:
+        #         self.fields['lease_management_company_staff'].queryset = models.ManagementCompanyStaff.objects.none()
+        #     # 建物管理会社
+        #     if self.instance.building_management_company:
+        #         self.fields['building_management_company_staff'].queryset \
+        #             = models.ManagementCompanyStaff.objects.public_filter(company=self.instance.building_management_company)
+        #     else:
+        #         self.fields['building_management_company_staff'].queryset = models.ManagementCompanyStaff.objects.none()
 
     def clean(self):
         cleaned_data = super(ParkingLotForm, self).clean()
@@ -61,11 +82,13 @@ class ParkingPositionForm(BaseForm):
         cleaned_data = super(ParkingPositionForm, self).clean()
         name = cleaned_data.get('name', None)
         if self.instance and self.instance.pk:
-            # 変更の場合
+            # 変更の場合、数字しかン入力できないように
             if not common.is_number(name):
                 self.add_error('name', constants.ERROR_PARKING_POSITION_NAME_NUMBER)
         else:
+            # 追加の場合
             try:
+                # 連番の場合、終了番号は開始番号より小さい場合エラー発生する。
                 common.get_continued_positions(name)
             except errors.CustomException as ex:
                 self.add_error('name', ex.message)

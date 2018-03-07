@@ -3,7 +3,7 @@ import datetime
 import math
 from collections import defaultdict
 
-from django.core.validators import RegexValidator, validate_comma_separated_integer_list
+from django.core.validators import RegexValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
@@ -33,51 +33,99 @@ class ParkingLotType(BaseModel):
         return self.name
 
 
-class LeaseManagementCompany(BaseModel):
+# class LeaseManagementCompany(BaseModel):
+#     name = models.CharField(max_length=100, verbose_name="会社名")
+#     department = models.CharField(max_length=30, blank=True, null=True, verbose_name="部署")
+#     position = models.CharField(max_length=30, blank=True, null=True, verbose_name="役職")
+#     staff = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者")
+#     address = models.CharField(max_length=100, blank=True, null=True, verbose_name="所在地")
+#     tel = models.CharField(max_length=15, blank=True, null=True, verbose_name="電話番号",
+#                            validators=(RegexValidator(regex=constants.REG_TEL),))
+#     fax = models.CharField(max_length=15, blank=True, null=True, verbose_name="FAX番号",
+#                            validators=(RegexValidator(regex=constants.REG_TEL),))
+#     phone = models.CharField(max_length=15, blank=True, null=True, verbose_name="FAX番号",
+#                              validators=(RegexValidator(regex=constants.REG_TEL),))
+#     email = models.EmailField(blank=True, null=True, verbose_name="メール")
+#     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+#
+#     class Meta:
+#         db_table = 'ap_lease_management_company'
+#         ordering = ['name']
+#         verbose_name = "賃貸管理会社"
+#         verbose_name_plural = "賃貸管理会社一覧"
+#
+#     def __str__(self):
+#         return self.name
+#
+#
+# class BuildingManagementCompany(BaseModel):
+#     name = models.CharField(max_length=100, verbose_name="会社名")
+#     department = models.CharField(max_length=30, blank=True, null=True, verbose_name="部署")
+#     position = models.CharField(max_length=30, blank=True, null=True, verbose_name="役職")
+#     staff = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者")
+#     address = models.CharField(max_length=100, blank=True, null=True, verbose_name="所在地")
+#     tel = models.CharField(max_length=20, blank=True, null=True, verbose_name="電話番号",
+#                            validators=(RegexValidator(regex=constants.REG_TEL),))
+#     fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="FAX番号",
+#                            validators=(RegexValidator(regex=constants.REG_TEL),))
+#     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="FAX番号",
+#                              validators=(RegexValidator(regex=constants.REG_TEL),))
+#     email = models.EmailField(blank=True, null=True, verbose_name="メール")
+#     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
+#
+#     class Meta:
+#         db_table = 'ap_building_management_company'
+#         ordering = ['name']
+#         verbose_name = "建物管理会社"
+#         verbose_name_plural = "建物管理会社一覧"
+#
+#     def __str__(self):
+#         return self.name
+
+
+class ManagementCompany(BaseModel):
     name = models.CharField(max_length=100, verbose_name="会社名")
-    department = models.CharField(max_length=30, blank=True, null=True, verbose_name="部署")
-    position = models.CharField(max_length=30, blank=True, null=True, verbose_name="役職")
-    staff = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者")
+    # department = models.CharField(max_length=30, blank=True, null=True, verbose_name="部署")
+    # position = models.CharField(max_length=30, blank=True, null=True, verbose_name="役職")
+    # staff = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者")
     address = models.CharField(max_length=100, blank=True, null=True, verbose_name="所在地")
     tel = models.CharField(max_length=15, blank=True, null=True, verbose_name="電話番号",
                            validators=(RegexValidator(regex=constants.REG_TEL),))
     fax = models.CharField(max_length=15, blank=True, null=True, verbose_name="FAX番号",
                            validators=(RegexValidator(regex=constants.REG_TEL),))
-    phone = models.CharField(max_length=15, blank=True, null=True, verbose_name="FAX番号",
+    phone = models.CharField(max_length=15, blank=True, null=True, verbose_name="携帯番号",
                              validators=(RegexValidator(regex=constants.REG_TEL),))
     email = models.EmailField(blank=True, null=True, verbose_name="メール")
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
-        db_table = 'ap_lease_management_company'
+        db_table = 'ap_management_company'
         ordering = ['name']
-        verbose_name = "賃貸管理会社"
-        verbose_name_plural = "賃貸管理会社一覧"
+        verbose_name = "管理会社"
+        verbose_name_plural = "管理会社一覧"
 
     def __str__(self):
         return self.name
 
 
-class BuildingManagementCompany(BaseModel):
-    name = models.CharField(max_length=100, verbose_name="会社名")
+class ManagementCompanyStaff(BaseModel):
+    company = models.ForeignKey(ManagementCompany, related_name='staff_set', verbose_name="管理会社")
+    name = models.CharField(max_length=30, verbose_name="名前")
     department = models.CharField(max_length=30, blank=True, null=True, verbose_name="部署")
     position = models.CharField(max_length=30, blank=True, null=True, verbose_name="役職")
-    staff = models.CharField(max_length=30, blank=True, null=True, verbose_name="担当者")
-    address = models.CharField(max_length=100, blank=True, null=True, verbose_name="所在地")
-    tel = models.CharField(max_length=20, blank=True, null=True, verbose_name="電話番号",
+    tel = models.CharField(max_length=15, blank=True, null=True, verbose_name="電話番号",
                            validators=(RegexValidator(regex=constants.REG_TEL),))
-    fax = models.CharField(max_length=20, blank=True, null=True, verbose_name="FAX番号",
+    fax = models.CharField(max_length=15, blank=True, null=True, verbose_name="FAX番号",
                            validators=(RegexValidator(regex=constants.REG_TEL),))
-    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="FAX番号",
+    phone = models.CharField(max_length=15, blank=True, null=True, verbose_name="携帯番号",
                              validators=(RegexValidator(regex=constants.REG_TEL),))
     email = models.EmailField(blank=True, null=True, verbose_name="メール")
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="備考")
 
     class Meta:
-        db_table = 'ap_building_management_company'
+        db_table = 'ap_management_company_staff'
         ordering = ['name']
-        verbose_name = "建物管理会社"
-        verbose_name_plural = "建物管理会社一覧"
+        verbose_name = "管理会社担当者"
+        verbose_name_plural = "管理会社担当者一覧"
 
     def __str__(self):
         return self.name
@@ -125,10 +173,22 @@ class ParkingLot(BaseModel):
     owner = models.CharField(max_length=50, blank=True, null=True, verbose_name="所有者")
     lender = models.CharField(max_length=50, blank=True, null=True, verbose_name="貸主")
     lease_management_company = models.ForeignKey(
-        LeaseManagementCompany, blank=True, null=True, verbose_name="賃貸管理会社"
+        ManagementCompany, blank=True, null=True, related_name='lease_parking_lot_set', verbose_name="賃貸管理会社"
+    )
+    lease_management_company_staff = models.ManyToManyField(
+        ManagementCompanyStaff, blank=True,
+        related_name='lease_staff_parking_lot_set', verbose_name="賃貸管理会社担当者"
     )
     building_management_company = models.ForeignKey(
-        BuildingManagementCompany, blank=True, null=True, verbose_name="建物管理会社"
+        ManagementCompany, blank=True, null=True, related_name='building_parking_lot_set', verbose_name="建物管理会社"
+    )
+    building_management_company_staff = models.ManyToManyField(
+        ManagementCompanyStaff, blank=True,
+        related_name='building_staff_parking_lot_set', verbose_name="建物管理会社担当者"
+    )
+    subscription_list_send_type = models.CharField(
+        max_length=2, blank=True, null=True, default='01', choices=constants.CHOICE_SUBSCRIPTION_LIST_SEND_TYPE,
+        verbose_name="申込者送付先"
     )
     # 駐車場概要
     is_condominium = models.BooleanField(default=False, verbose_name="分譲マンション")
@@ -364,7 +424,7 @@ class ParkingPosition(BaseModel):
     category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
     # 賃料
     price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
-    price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税抜）")
+    price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税別）")
     price_homepage = models.IntegerField(blank=True, null=True, verbose_name="ホームページ価格（税込）")
     price_homepage_no_tax = models.IntegerField(blank=True, null=True, verbose_name="ホームページ価格（税別）")
     price_handbill = models.IntegerField(blank=True, null=True, verbose_name="チラシ価格（税込）")
@@ -396,7 +456,7 @@ class ParkingPosition(BaseModel):
         verbose_name_plural = "車室一覧"
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     def get_current_contract(self):
         today = datetime.date.today()

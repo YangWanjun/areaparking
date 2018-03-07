@@ -6,6 +6,7 @@ from django.db.models import Max
 
 from . import models, forms
 from address.biz import geocode
+from utils import common
 from utils.django_base import BaseAdmin
 
 
@@ -52,20 +53,31 @@ class ParkingPositionKeyInline(admin.TabularInline):
     extra = 0
 
 
+class ManagementCompanyStaffInline(admin.TabularInline):
+    model = models.ManagementCompanyStaff
+    extra = 0
+
+
 @admin.register(models.ParkingLotType)
 class ParkingLotTypeAdmin(BaseAdmin):
     list_display = ('code', 'name')
     list_display_links = ('code', 'name')
 
 
-@admin.register(models.LeaseManagementCompany)
-class LeaseManagementCompanyAdmin(BaseAdmin):
-    list_display = ('name', 'department', 'position', 'staff', 'address', 'tel', 'email')
+# @admin.register(models.LeaseManagementCompany)
+# class LeaseManagementCompanyAdmin(BaseAdmin):
+#     list_display = ('name', 'department', 'position', 'staff', 'address', 'tel', 'email')
+#
+#
+# @admin.register(models.BuildingManagementCompany)
+# class BuildingManagementCompanyAdmin(BaseAdmin):
+#     list_display = ('name', 'department', 'position', 'staff', 'address', 'tel', 'email')
 
 
-@admin.register(models.BuildingManagementCompany)
-class BuildingManagementCompanyAdmin(BaseAdmin):
-    list_display = ('name', 'department', 'position', 'staff', 'address', 'tel', 'email')
+@admin.register(models.ManagementCompany)
+class ManagementCompanyAdmin(BaseAdmin):
+    list_display = ('name', 'address', 'tel', 'email')
+    inlines = (ManagementCompanyStaffInline,)
 
 
 @admin.register(models.TryPuttingOperator)
@@ -77,7 +89,7 @@ class TryPuttingOperatorAdmin(BaseAdmin):
 class ParkingLotAdmin(BaseAdmin):
     form = forms.ParkingLotForm
     icon = '<i class="material-icons">local_parking</i>'
-    list_display = ('code', 'name', 'category', 'address')
+    list_display = ('code', 'name', 'category', 'address', 'subscription_list_send_type')
     search_fields = ('code', 'name',)
     inlines = (ParkingLotCommentInline, ParkingLotStaffHistoryInline, ParkingLotDocInline, ParkingLotImageInline,
                ParkingLotKeyInline)
@@ -154,3 +166,20 @@ class ParkingPosition(BaseAdmin):
     )
     inlines = (ParkingPositionKeyInline,)
     save_as = True
+
+    def save_model(self, request, obj, form, change):
+        continued_positions = common.get_continued_positions(obj.name)
+        if continued_positions:
+            split_positions = []
+        else:
+            split_positions = [s for s in obj.name.split(',') if s]
+        continued_positions.extend(split_positions)
+        if not change and continued_positions:
+            # 複数の車室を追加の場合
+            for name in continued_positions:
+                if models.ParkingPosition.objects.public_filter(parking_lot=obj.parking_lot, name=name).count() == 0:
+                    obj.pk = None
+                    obj.name = name
+                    obj.save()
+        else:
+            super(ParkingPosition, self).save_model(request, obj, form, change)

@@ -317,6 +317,11 @@ CHOICE_TROUBLE_STATUS = (
     ('02', '対応中'),
     ('03', '完了'),
 )
+CHOICE_SUBSCRIPTION_LIST_SEND_TYPE = (
+    ('01', '両方'),
+    ('02', '賃貸管理会社'),
+    ('03', '建物管理会社'),
+)
 
 ERROR_SETTING_NO_SUBSCRIPTION = "申込書の出力書式が設定されていません、管理サイトで「出力書式」->「申込書一覧」にて設定してください。"
 ERROR_SETTING_NO_SUBSCRIPTION_CONFIRM = "申込確認書の出力書式が設定されていません、管理サイトで「出力書式」->「申込確認書一覧」にて設定してください。"

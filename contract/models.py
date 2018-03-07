@@ -13,8 +13,7 @@ from django.utils.functional import cached_property
 from employee.models import Member
 from format.models import ReportFile, ReportSubscription, ReportSubscriptionConfirm
 from master.models import Mediation, BankAccount, Config, Payment, MailGroup, TransmissionRoute
-from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, LeaseManagementCompany, \
-    BuildingManagementCompany
+from parkinglot.models import ParkingLot, ParkingPosition, ParkingLotType, ManagementCompany
 from utils import constants, common, errors
 from utils.app_base import get_total_context, \
     get_user_subscription_simple_url, \
@@ -1134,10 +1133,12 @@ class VContractedParkingLot(BaseViewModel):
     owner = models.CharField(max_length=50, blank=True, null=True, verbose_name="所有者")
     lender = models.CharField(max_length=50, blank=True, null=True, verbose_name="貸主")
     lease_management_company = models.ForeignKey(
-        LeaseManagementCompany, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="賃貸管理会社"
+        ManagementCompany, blank=True, null=True, on_delete=models.DO_NOTHING,
+        related_name='lease_contracted_parking_lot_set', verbose_name="賃貸管理会社"
     )
     building_management_company = models.ForeignKey(
-        BuildingManagementCompany, blank=True, null=True, on_delete=models.DO_NOTHING, verbose_name="建物管理会社"
+        ManagementCompany, blank=True, null=True, on_delete=models.DO_NOTHING,
+        related_name='building_contracted_parking_lot_set', verbose_name="建物管理会社"
     )
     position_count = models.IntegerField(default=0, editable=False, verbose_name="車室数")
     contract_count = models.IntegerField(default=0, editable=False, verbose_name="契約数")

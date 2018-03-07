@@ -68,6 +68,11 @@ class ParkingPositionSizeGrouped(viewsets.ViewSet):
         return Response(positions)
 
 
+class ManagementCompanyViewSet(viewsets.ModelViewSet):
+    queryset = models.ManagementCompany.objects.public_all()
+    serializer_class = serializers.ManagementCompanySerializer
+
+
 @api_view(['PUT'])
 def parking_position_lock(request, pk):
     """貸止め
