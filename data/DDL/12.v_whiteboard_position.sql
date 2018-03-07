@@ -4,6 +4,7 @@ select pos.id
      /* 車室情報 */
      , pos.id as parking_position_id
      , pos.name
+     , IFNULL(pos.category_id, lot.category_id) as category_id
      , CONCAT(lot.pref_name, lot.city_name, ifnull(lot.town_name, ''), ifnull(lot.aza_name, ''), ifnull(lot.other_name, '')) as address
      , CASE
            WHEN c.id is not null THEN '03' 		-- 空き無

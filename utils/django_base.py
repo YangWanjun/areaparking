@@ -7,12 +7,10 @@ from django.contrib.gis.db import models
 from django.core.management.base import BaseCommand
 from django.forms import widgets
 from django.http import HttpResponse
-from django.shortcuts import reverse
 from django.views.generic import View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe, format_html
-from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers, status, pagination
 from rest_framework.compat import set_rollback

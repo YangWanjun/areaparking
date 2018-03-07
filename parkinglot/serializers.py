@@ -33,3 +33,10 @@ class ManagementCompanySerializer(BaseModelSerializer):
     class Meta:
         model = models.ManagementCompany
         fields = '__all__'
+
+
+class ParkingLotTypeSerializer(BaseModelSerializer):
+
+    class Meta:
+        model = models.ParkingLotType
+        fields = '__all__'

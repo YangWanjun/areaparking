@@ -5,6 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySe
 
 from . import models
 from employee.serializers import MemberSerializer
+from parkinglot.serializers import ParkingLotTypeSerializer
 from utils.django_base import BaseModelSerializer
 
 
@@ -31,6 +32,7 @@ class WhiteBoardSerializer(GeoFeatureModelSerializer):
 
 
 class WhiteBoardPositionSerializer(BaseModelSerializer):
+    category = ParkingLotTypeSerializer()
 
     class Meta:
         model = models.WhiteBoardPosition

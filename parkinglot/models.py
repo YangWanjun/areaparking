@@ -210,10 +210,11 @@ class ParkingLot(BaseModel):
     lease_count = models.SmallIntegerField(default=0, verbose_name="サブリース台数")
     has_tenant_sign = models.BooleanField(default=False, verbose_name="ＡＰ募集看板の設置")
     has_call_center = models.BooleanField(default=False, verbose_name="コールセンターの設置")
+    is_required_try_putting = models.BooleanField(default=False, verbose_name="試し入れ必須")
     try_putting_operator = models.ForeignKey(TryPuttingOperator, blank=True, null=True, verbose_name="試入れの対応者")
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
-    required_insurance = models.BooleanField(default=True, verbose_name="任意保険回収必須")
+    required_insurance = models.BooleanField(default=True, verbose_name="保険回収必須")
     # その他の情報
     default_contract_months = models.SmallIntegerField(default=12, verbose_name="契約期間初期値",
                                                        help_text='月単位です、１年の場合は１２を入力してください。')
@@ -421,7 +422,8 @@ class ParkingPosition(BaseModel):
                             verbose_name="車室番号",
                             help_text='新規追加時、連番で追加したい場合：1-10（車室番号は１から１０まで追加される）；'
                                       '連番出ない場合：1,3,5,7（車室番号は１、３、５、７が追加される）。')
-    category = models.ForeignKey(ParkingLotType, verbose_name="駐車場分類")
+    category = models.ForeignKey(ParkingLotType, blank=True, null=True, verbose_name="駐車場分類")
+    cost = models.IntegerField(default=0, verbose_name="借上賃料")
     # 賃料
     price_recruitment = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税込）")
     price_recruitment_no_tax = models.IntegerField(blank=True, null=True, verbose_name="募集賃料（税別）")

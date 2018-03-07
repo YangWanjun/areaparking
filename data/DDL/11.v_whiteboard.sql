@@ -27,5 +27,8 @@ select lot.code as code
      , lot.is_existed_contractor_allowed        -- 既契約者
      , lot.is_new_contractor_allowed            -- 新テナント
      , lot.free_end_date                        -- フリーレント終了日
+     , lot.required_insurance					-- 保険回収必須
+     , IF(IFNULL(lot.time_limit_comment, '') = '', 0, 1) as has_time_limit	-- 時間制限有無 
+     , lot.is_required_try_putting				-- 試し入れ必須
   from ap_parking_lot lot
  where lot.is_deleted = 0

@@ -10,11 +10,12 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.utils.html import format_html
 
 from . import models, forms
 from parkinglot.models import ParkingPosition
 from contract.forms import SubscriptionForm, ContactHistoryForm
-from utils import errors
+from utils import errors, common, constants
 from utils.django_base import BaseTemplateView, BaseView, BaseViewWithoutLogin, BaseModelViewSet, BaseListModelView, \
     BaseDetailModelView, BaseCreateModelView
 from master.models import Config, PushNotification
@@ -34,8 +35,16 @@ class WhiteBoardListView(BaseListModelView):
         """Readable column titles."""
         for field_name in self.get_list_display():
             attr = self.get_data_attr(field_name)
-            if field_name == 'free_end_date':
-                label = 'フリー'
+            if field_name == 'required_insurance':
+                label = '保険'
+            elif field_name == 'has_time_limit':
+                label = '時間'
+            elif field_name == 'is_new_contractor_allowed':
+                label = '新'
+            elif field_name == 'is_existed_contractor_allowed':
+                label = '既'
+            elif field_name == 'is_required_try_putting':
+                label = '試'
             else:
                 label = attr.label
             yield field_name, label
@@ -44,8 +53,8 @@ class WhiteBoardListView(BaseListModelView):
         queryset = super(WhiteBoardListView, self).get_queryset()
         q = self.request.GET.get('datatable-search[value]', None)
         if q:
-            orm_lookups = ['parking_lot__name__icontains', 'address__icontains',
-                           'staff__first_name__icontains', 'staff__last_name__icontains']
+            orm_lookups = ['code__icontains', 'parking_lot__name__icontains', 'address__icontains',
+                           'category__name__icontains']
             for bit in q.split():
                 or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
                 queryset = queryset.filter(reduce(operator.or_, or_queries))
@@ -55,6 +64,22 @@ class WhiteBoardListView(BaseListModelView):
         config = super(WhiteBoardListView, self).get_datatable_config()
         config['searching'] = True
         return config
+
+    def format_column(self, item, field_name, value):
+        if field_name == 'is_empty':
+            display_name = common.get_choice_name_by_key(constants.CHOICE_PARKING_STATUS, value)
+            cls_dict = {
+                '01': 'green',
+                '02': 'deep-orange',
+                '03': 'grey',
+                '04': 'blue',
+                '05': 'red',
+            }
+            html = '<span class="new badge left {0}" data-badge-caption="{1}" style="margin-left: 0px;">' \
+                   '</span>'.format(cls_dict.get(value), display_name)
+            return format_html(html)
+        else:
+            return super(WhiteBoardListView, self).format_column(item, field_name, value)
 
 
 class WhiteBoardDetailView(BaseDetailModelView):
@@ -71,11 +96,10 @@ class WhiteBoardDetailView(BaseDetailModelView):
 class WhiteBoardViewSet(BaseModelViewSet):
     model = models.WhiteBoard
     list_display = (
-        'code', 'parking_lot', 'staff', 'category', 'address', 'is_empty', 'position_count',
+        'parking_lot', 'category', 'address', 'is_empty', 'position_count',
         'waiting_count', 'is_existed_contractor_allowed', 'is_new_contractor_allowed',
-        'free_end_date', 'operation',
+        'required_insurance', 'has_time_limit', 'is_required_try_putting', 'operation',
     )
-    list_display_links = ('id', 'parking_lot')
     list_view_class = WhiteBoardListView
     detail_view_class = WhiteBoardDetailView
 

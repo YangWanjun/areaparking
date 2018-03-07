@@ -15,7 +15,7 @@ from utils.django_base import BaseViewModel, BaseModel
 
 # Create your models here.
 class WhiteBoard(BaseViewModel):
-    code = models.IntegerField(primary_key=True, verbose_name="コード")
+    code = models.CharField(max_length=10, primary_key=True, verbose_name="コード")
     name = models.CharField(max_length=100, verbose_name="駐車場名称")
     parking_lot = models.ForeignKey(ParkingLot, on_delete=models.DO_NOTHING, verbose_name="駐車場")
     category = models.ForeignKey(ParkingLotType, on_delete=models.DO_NOTHING, verbose_name="分類")
@@ -31,6 +31,9 @@ class WhiteBoard(BaseViewModel):
     is_existed_contractor_allowed = models.BooleanField(default=False, verbose_name="既契約者")
     is_new_contractor_allowed = models.BooleanField(default=False, verbose_name="新テナント")
     free_end_date = models.DateField(blank=True, null=True, verbose_name="フリーレント終了日")
+    required_insurance = models.BooleanField(default=True, verbose_name="保険回収必須")
+    has_time_limit = models.BooleanField(verbose_name="時間制限")
+    is_required_try_putting = models.BooleanField(default=False, verbose_name="試し入れ必須")
 
     class Meta:
         managed = False
@@ -55,7 +58,7 @@ class WhiteBoard(BaseViewModel):
             return '01'
 
     def operation(self):
-        return ''
+        return self.code
 
     is_empty.short_description = '空き'
     operation.short_description = ''
@@ -65,6 +68,7 @@ class WhiteBoardPosition(BaseViewModel):
     whiteboard = models.ForeignKey(WhiteBoard, on_delete=models.DO_NOTHING, verbose_name="ホワイトボード")
     parking_position = models.ForeignKey(ParkingPosition, on_delete=models.DO_NOTHING, verbose_name="車室")
     name = models.CharField(max_length=30, verbose_name="車室番号")
+    category = models.ForeignKey(ParkingLotType, on_delete=models.DO_NOTHING, verbose_name="分類")
     address = models.CharField(max_length=255, blank=True, null=True, verbose_name="所在地")
     position_status = models.CharField(max_length=2, choices=constants.CHOICE_PARKING_STATUS, verbose_name="空き")
     contract_end_date = models.DateField(blank=True, null=True, verbose_name="契約終了日")

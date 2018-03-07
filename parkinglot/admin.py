@@ -139,7 +139,7 @@ class ParkingPosition(BaseAdmin):
         (None, {
             'fields': (
                 'parking_lot',
-                'name', 'category',
+                'name', 'category', 'cost',
             )
         }),
         ("賃料", {
