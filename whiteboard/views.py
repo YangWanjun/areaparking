@@ -190,9 +190,29 @@ class WhiteBoardMapView(BaseTemplateView):
         return context
 
 
+class InquiryListView(BaseListModelView):
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(InquiryListView, self).get_queryset()
+        q = self.request.GET.get('datatable-search[value]', None)
+        if q:
+            orm_lookups = ['user_name__icontains', 'tel__endswith', 'target_parking_lot_name__icontains',
+                           'target_city_name__icontains', 'target_aza_name__icontains']
+            for bit in q.split():
+                or_queries = [Q(**{orm_lookup: bit}) for orm_lookup in orm_lookups]
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
+        return queryset
+
+    def get_datatable_config(self):
+        config = super(InquiryListView, self).get_datatable_config()
+        config['searching'] = True
+        return config
+
+
 class InquiryViewSet(BaseModelViewSet):
     model = models.Inquiry
     list_display = ('user_name', 'get_gender_display', 'tel', 'target', 'created_date')
+    list_view_class = InquiryListView
 
     def get_gender_display(self, obj):
         return obj.get_gender_display()
@@ -213,18 +233,6 @@ class HandbillCompanyViewSet(BaseModelViewSet):
 
     def has_add_permission(self, request):
         return True
-
-
-# class TroubleListView(BaseTemplateView):
-#     template_name = 'whiteboard/trouble_list.html'
-#
-#
-# class TroubleDetailView(BaseTemplateView):
-#     template_name = 'whiteboard/trouble_detail.html'
-#
-#
-# class TroubleAddView(BaseTemplateView):
-#     template_name = 'whiteboard/trouble_add.html'
 
 
 class TroubleCreateView(BaseCreateModelView):

@@ -30,5 +30,14 @@ select lot.code as code
      , lot.required_insurance					-- 保険回収必須
      , IF(IFNULL(lot.time_limit_comment, '') = '', 0, 1) as has_time_limit	-- 時間制限有無 
      , lot.is_required_try_putting				-- 試し入れ必須
+     , lot.try_putting_operator_id
+     , lot.time_limit_comment
+     , lot.transit_pass_comment
+     , lot.nearest_station_line1
+     , lot.nearest_station_name1
+     , lot.nearest_station_walk1
+     , lot.nearest_station_line2
+     , lot.nearest_station_name2
+     , lot.nearest_station_walk2
   from ap_parking_lot lot
  where lot.is_deleted = 0

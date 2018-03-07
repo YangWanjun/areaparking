@@ -335,6 +335,24 @@ class ParkingLot(BaseModel):
                 lacking_keys[category] = required_count - reserve_count
         return lacking_keys.items()
 
+    def get_category_names(self):
+        """分類が2つ以上ある場合、分類名を並んで表示される
+
+        :return:
+        """
+        if ParkingPosition.objects.public_filter(parking_lot=self, category__isnull=False).count() == 0:
+            # 車室に分類が設定されてない場合、駐車場の分類を返す
+            return self.category.name
+        else:
+            ids = [item.get('category') for item in
+                   ParkingPosition.objects.public_filter(parking_lot=self).values('category')]
+            ids = list(set(ids))
+            categories = ParkingLotType.objects.public_filter(pk__in=[id for id in ids if id is not None])
+            names = [category.name for category in categories]
+            if len([id for id in ids if id is None]) > 0:
+                names.append(self.category.name)
+            return "、".join(list(set(names)))
+
     def get_absolute_url(self):
         return reverse('whiteboard:whiteboard_detail', args=(self.pk,))
 

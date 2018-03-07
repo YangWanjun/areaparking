@@ -6,7 +6,7 @@ from django.db import models
 
 from address.models import City, Aza
 from contract.models import Contractor, ContactHistory, Contract
-from parkinglot.models import ParkingPosition, ParkingLotType, ParkingLot
+from parkinglot.models import ParkingPosition, ParkingLotType, ParkingLot, TryPuttingOperator
 from employee.models import Member
 from master.models import TransmissionRoute
 from utils import constants, errors
@@ -34,6 +34,16 @@ class WhiteBoard(BaseViewModel):
     required_insurance = models.BooleanField(default=True, verbose_name="保険回収必須")
     has_time_limit = models.BooleanField(verbose_name="時間制限")
     is_required_try_putting = models.BooleanField(default=False, verbose_name="試し入れ必須")
+    try_putting_operator = models.ForeignKey(TryPuttingOperator, blank=True, null=True, verbose_name="試入れの対応者")
+    time_limit_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="利用時間帯について")
+    transit_pass_comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="通行許可証について")
+    # 交通情報
+    nearest_station_line1 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅① 沿線名")
+    nearest_station_name1 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅① 駅名")
+    nearest_station_walk1 = models.SmallIntegerField(blank=True, null=True, verbose_name="最寄駅① 徒歩（分）")
+    nearest_station_line2 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅② 沿線名")
+    nearest_station_name2 = models.CharField(max_length=30, blank=True, null=True, verbose_name="最寄駅② 駅名")
+    nearest_station_walk2 = models.SmallIntegerField(blank=True, null=True, verbose_name="最寄駅② 徒歩（分）")
 
     class Meta:
         managed = False

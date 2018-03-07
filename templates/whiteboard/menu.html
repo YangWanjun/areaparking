@@ -1,6 +1,6 @@
 <ul>
     <li><a href="{% url 'whiteboard:index' %}">駐車場一覧</a></li>
-    <li><a href="{% url 'whiteboard:whiteboard_map' %}" onclick="window.location='{% url 'whiteboard:whiteboard_map' %}';return false;">地図上検索</a></li>
+    <li><a href="{% url 'whiteboard:whiteboard_map' %}" data-turbolinks="false">地図上検索</a></li>
     <li><a href="{% url 'whiteboard:inquiry_list' %}">問い合わせ履歴</a></li>
     <li><a href="{% url 'whiteboard:waiting_list' %}">空き待ちリスト</a></li>
     <li><a href="{% url 'whiteboard:distribution_list' %}">チラシ配布資料</a></li>

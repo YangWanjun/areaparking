@@ -16,14 +16,19 @@
             <div class="card-title">{{ view.model|verbose_name|title }}: {{ object }}</div>
             <table class="table bordered">
                 {% for field_name, value in object_data %}
+                {% if field_name == "駐車場" %}
+                {% else %}
                 <tr>
                     <th>{{ field_name }}</th>
                     {% if value.get_absolute_url %}
                     <td><a href="{{ value.get_absolute_url }}">{{ value }}</a></td>
+                    {% elif field_name == "分類" %}
+                    <td>{{ object.parking_lot.get_category_names }}</td>
                     {% else %}
                     <td>{{ value }}</td>
                     {% endif %}
                 </tr>
+                {% endif %}
                 {% endfor %}
             </table>
             {% endblock %}
@@ -34,7 +39,7 @@
                 {% if delete_url %}<a class="waves-effect waves-light btn red white-text" href="{{ delete_url }}">{% trans 'Delete' %}</a>{% endif %}
                 {% if change_url %}<a class="waves-effect waves-light btn white-text popup" href="{{ change_url }}">{% trans 'Change' %}</a>{% endif %}
                 {% if object.is_empty != "01" %}
-                    <a class="waves-effect waves-light btn white-text popup">順番待ちへ</a>
+                    <a class="waves-effect waves-light btn white-text popup">空き待ちへ</a>
                 {% endif %}
                 {% endblock actions_row %}
             </div>

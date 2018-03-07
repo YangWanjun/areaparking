@@ -23,7 +23,7 @@ $(document).ready(function(){
         ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
             var parking_lot_name = trigger.text();
             var parking_lot_id = trigger.attr('code');
-            modal.find('h5').text(parking_lot_name);
+            modal.find('h5').html('<a href="/whiteboard/whiteboard/' + parking_lot_id + '/detail/" data-turbolinks="false">' + parking_lot_name + '</a>');
 
             ebjs.utils.ajax_get(
                 ebjs.config.setting.api_whiteboard_positions,
