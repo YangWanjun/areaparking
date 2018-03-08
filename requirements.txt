@@ -7,11 +7,11 @@ django-filter==1.0.4
 django-cors-headers==2.1.0
 pillow==4.3
 xlrd==1.1.0
-pycrypto==2.6.1
 pdfkit==0.6.1
-googlemaps==2.5.1
-GDAL==2.2.3
 requests==2.18.4
+googlemaps==2.5.1
+pycrypto==2.6.1
+GDAL==2.2.3
 ########## Windows上インストール時の注意事項 ##########
 # ■pycryptoインストール失敗の場合
 # ./areaparking/data/pycrypto-2.6.1-cp36-cp36m-win_amd64.whl をインストールしてください。

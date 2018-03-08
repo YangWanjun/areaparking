@@ -307,6 +307,9 @@ class BaseDetailModelView(DetailModelView):
             else:
                 value = getattr(self.object, field.name)
 
+            if isinstance(value, bool):
+                value = '<i class="material-icons tiny">panorama_fish_eye</i>' if value else '<i class="material-icons tiny">close</i>'
+
             if value is not None:
                 yield (field.verbose_name.title(), value)
 

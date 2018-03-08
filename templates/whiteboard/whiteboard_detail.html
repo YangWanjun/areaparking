@@ -25,7 +25,7 @@
                     {% elif field_name == "分類" %}
                     <td>{{ object.parking_lot.get_category_names }}</td>
                     {% else %}
-                    <td>{{ value }}</td>
+                    <td>{{ value|safe|linebreaksbr }}</td>
                     {% endif %}
                 </tr>
                 {% endif %}
